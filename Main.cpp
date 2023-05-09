@@ -35,16 +35,21 @@ int main()
 
     const char *vertexShaderSource = "#version 450 core\n"
         "layout (location = 0) in vec3 aPos;\n"
+        "uniform float u_time; \n"
+        "out vec3 test; \n"
+
         "void main()\n"
         "{\n"
-        "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+        "   gl_Position = vec4(aPos.x + cos(u_time), aPos.y, aPos.z, 1.0);\n"
+        "   test.x = aPos.y;\n"
         "}\0";
 
     const char *fragmentShaderSource = "#version 450 core\n"
         "out vec4 FragColor;\n"
+        "in vec3 test;\n"
         "void main()\n"
         "{\n"
-        "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+        "   FragColor = vec4(test.x, test.x, test.x, 1.0f);\n"
     "}\n\0";
 
     unsigned int vertexShader;
@@ -64,6 +69,8 @@ int main()
     glAttachShader(shaderProgram, fragmentShader);
     glLinkProgram(shaderProgram);
     glUseProgram(shaderProgram);
+
+    auto timeUniformLocation = glGetUniformLocation(shaderProgram, "u_time");
 
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
@@ -101,15 +108,18 @@ int main()
     int i = 0;
 
     while (!glfwWindowShouldClose(window)) {
+        auto time = glfwGetTime();
+        glUniform1f(timeUniformLocation, time);
+
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glBindVertexArray(VAO);
 
-        glDrawElements(GL_LINE_LOOP, 3, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
         glBindVertexArray(VAO2);
-        glDrawElements(GL_LINE_LOOP, 3, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
         //glDrawArrays(GL_TRIANGLES, 0, 3);
 
