@@ -137,8 +137,11 @@
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Header.h" />
+    <ClInclude Include="Matrix4.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="Vector3.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment.glsl" />

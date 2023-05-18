@@ -49,3 +49,8 @@ void ShaderProgram::Use()
 {
     glUseProgram(id);
 }
+
+unsigned int ShaderProgram::GetId()
+{
+    return id;
+}

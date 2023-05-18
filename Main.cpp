@@ -4,6 +4,31 @@
 #include <iostream>
 #include "Shader.h"
 #include "Utils.h"
+#include "Matrix4.h"
+
+void checkError() {
+GLenum error;
+    error = glGetError();
+
+    if (error != GL_NO_ERROR)
+    {
+        std::cout << "not working" << std::endl;
+    }
+
+    if (error == GL_INVALID_OPERATION)
+    {
+        std::cout << "INVALID OPERATION" << std::endl;
+    }
+    if (error == GL_NO_ERROR)
+    {
+        std::cout << "No Error! -> CODE CHECKING <-" << std::endl;
+    }
+
+    if (error == GL_INVALID_VALUE)
+    {
+        std::cout << "NO VALUE" << std::endl;
+    }
+}
 
 int main()
 {
@@ -112,7 +137,6 @@ int main()
     //auto timeUniformLocation = glGetUniformLocation(shaderProgram, "u_time");
 
     auto [data, width, height] = readBMP("wall.bmp");
-
     unsigned int texture;
     glGenTextures(1, &texture); 
 
@@ -124,8 +148,8 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data.data());
 
@@ -154,10 +178,57 @@ int main()
 
     glBindVertexArray(VAO);
 
-    glUniform1i(glGetUniformLocation(fragmentShader.GetId(), "text"), 0);
+    float pi = 3.14159;
+    float a = std::tan(pi/4);
+    float r = 10.0/6.0;
+    float n = 0.01, f = 1000.0;
+
+    Vector3 p(-1, -1, 1);
+
+    Matrix4<float> trans(
+        0, 0, 0, -p.x,
+        0, 0, 0, -p.y,
+        0, 0, 0, -p.z,
+        0, 0, 0, 0
+    );
+
+    Vector3 d = Vector3(0, 0, 0) - p;
+    Vector3 u1 = Vector3(1, 1, 1);
+    Vector3 v = u1^d;
+    Vector3 u = v^d;
+
+    Matrix4<float> proj(
+        u.x, u.y, u.z, 0,
+        v.x, v.y, v.z, 0,
+        a, a, a, 0,
+        0, 0, 0, 0
+    );
+
+    Matrix4<float> persp(
+        r/a, 0, 0, 0,
+        0, 1.0/a, 0, 0,
+        0, 0, -(n-f)/(n-f), 2.0*f*n/(n-f),
+        0, 0, 1, 0
+    );
+
+    Matrix4<float> trans2(
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    );
+
+    Matrix4 T = trans*proj*persp;
+
+    checkError();
+    glUniform1i(glGetUniformLocation(s.GetId(), "text"), 0);
+
+    glUniformMatrix4fv(glGetUniformLocation(s.GetId(), "transform"), 1, GL_FALSE, (float*) trans2.m_val);
 
     //glGenVertexArrays(1, &VAO2);
     //glBindVertexArray(VAO2);
+
+    checkError();
 
     //glGenBuffers(1, &VBO2);
     //glBindBuffer(GL_ARRAY_BUFFER, VBO2);

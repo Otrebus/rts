@@ -27,5 +27,6 @@ public:
         glLinkProgram(id);
     }
 
+    unsigned int GetId();
     void Use();
 };

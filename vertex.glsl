@@ -8,6 +8,8 @@ out vec3 test;
 out vec3 col;
 out vec2 tex;
 
+uniform mat4 transform;
+
 void main()
 {
 	//float x = aPos.x + 0.1*cos(u_time);
