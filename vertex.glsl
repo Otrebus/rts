@@ -14,7 +14,7 @@ void main()
 {
 	//float x = aPos.x + 0.1*cos(u_time);
     float x = 1.0;
-    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+    gl_Position = transform*vec4(aPos.x, aPos.y, aPos.z, 1.0);
     col = aCol;
     tex = aTex;
 }
