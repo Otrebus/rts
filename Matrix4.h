@@ -2,37 +2,38 @@
 
 #include "Vector3.h"
 #include <assert.h>
+#include "Utils.h"
 
-template<typename T> class Matrix4
+class Matrix4
 {
 public:
     Matrix4();
-    Matrix4(T m00, T m01, T m02, T m03,
-            T m10, T m11, T m12, T m13,
-            T m20, T m21, T m22, T m23,
-            T m30, T m31, T m32, T m33);
+    Matrix4(real m00, real m01, real m02, real m03,
+            real m10, real m11, real m12, real m13,
+            real m20, real m21, real m22, real m23,
+            real m30, real m31, real m32, real m33);
     ~Matrix4();
 
-    Vector3<T> operator *(const Vector3<T>&) const;
+    Vector3 operator *(const Vector3&) const;
     Matrix4 operator *(const Matrix4& v) const;
-    T& operator() (int i, int j);
-    T operator() (int i, int j) const;
+    real& operator() (int i, int j);
+    real operator() (int i, int j) const;
 
-    T m_val[4][4];
+    real m_val[4][4];
 };
 
 
-template <typename T> Matrix4<T>::Matrix4()
+Matrix4::Matrix4()
 {
 
 }
 
 
-template <typename T> Matrix4<T>::Matrix4(
-    T m00, T m01, T m02, T m03,
-    T m10, T m11, T m12, T m13,
-    T m20, T m21, T m22, T m23,
-    T m30, T m31, T m32, T m33)
+Matrix4(
+    real m00, real m01, real m02, real m03,
+    real m10, real m11, real m12, real m13,
+    real m20, real m21, real m22, real m23,
+    real m30, real m31, real m32, real m33)
 {
     m_val[0][0] = m00; m_val[0][1] = m01; m_val[0][2] = m02; m_val[0][3] = m03;
     m_val[1][0] = m10; m_val[1][1] = m11; m_val[1][2] = m12; m_val[1][3] = m13;
@@ -41,26 +42,26 @@ template <typename T> Matrix4<T>::Matrix4(
 }
 
 
-template <typename T> T& Matrix4<T>::operator() (int i, int j)
+real& Matrix4::operator() (int i, int j)
 {
     assert(i >= 0 && j <= 3 && j >= 0 && j <= 3);
     return m_val[i][j];
 }
 
 
-template <typename T> T Matrix4<T>::operator() (int i, int j) const
+real Matrix4::operator() (int i, int j) const
 {
     assert(i >= 0 && j <= 3 && j >= 0 && j <= 3);
     return m_val[i][j];
 }
 
 
-template <typename T> Matrix4<T>::~Matrix4()
+Matrix4::~Matrix4()
 {
 }
 
 
-template<typename T> Vector3<T> Matrix4<T>::operator *(const Vector3<T>& v) const
+Vector3 Matrix4::operator *(const Vector3& v) const
 {
     return Vector3d(m_val[0][0]*v.x + m_val[0][1]*v.y + m_val[0][2]*v.z + m_val[0][3],
                     m_val[1][0]*v.x + m_val[1][1]*v.y + m_val[1][2]*v.z + m_val[1][3],
@@ -68,7 +69,7 @@ template<typename T> Vector3<T> Matrix4<T>::operator *(const Vector3<T>& v) cons
 }
 
 
-template<typename T> Matrix4<T> Matrix4<T>::operator*(const Matrix4& m) const
+Matrix4 Matrix4::operator*(const Matrix4& m) const
 {
     Matrix4 result;
     for(int i = 0; i < 4; i++)

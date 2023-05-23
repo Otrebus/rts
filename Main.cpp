@@ -230,7 +230,7 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
 
-    glDepthFunc(GL_LESS);
+    //glDepthFunc(GL_LESS);
 
     auto startTime = glfwGetTime();
     while (!glfwWindowShouldClose(window)) {

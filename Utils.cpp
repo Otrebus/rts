@@ -5,6 +5,7 @@
 #include "Matrix4.h"
 #include "Vector3.h"
 
+
 std::tuple<std::vector<char>, int, int> readBMP(std::string filename)
 {
     int i;
@@ -28,11 +29,12 @@ std::tuple<std::vector<char>, int, int> readBMP(std::string filename)
     return { out, width, height };
 }
 
+
 Matrix4<float> getCameraMatrix(Vector3<float> pos, Vector3<float> lookAt, float fov, float ar)
 {
     float pi = 3.141592653589793;
     float a = std::tan(pi*fov/180/2);
-    float n = -1.1, f = -1000.0;
+    float n = -0.001, f = -1000.0;
 
     Matrix4<float> trans(
         1, 0, 0, -pos.x,

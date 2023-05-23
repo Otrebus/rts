@@ -27,6 +27,15 @@
     <ClCompile Include="Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TODO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -42,6 +51,15 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Vector3.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjReader.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
