@@ -69,29 +69,6 @@ int main()
 
     unsigned int VBO, VAO, VBO2, VAO2, EBO, EBO2;
 
-    const char *vertexShaderSource = "#version 450 core\n"
-        "layout (location = 0) in vec3 aPos;\n"
-        "layout (location = 1) in vec3 aCol;\n"
-        "uniform float u_time; \n"
-        //"out vec3 test; \n"
-        "out vec3 col; \n"
-
-        "void main()\n"
-        "{\n"
-        "   float x = aPos.x + 0.1*cos(u_time);\n"
-        "   gl_Position = vec4(x, aPos.y, aPos.z, 1.0);\n"
-        "   col = aCol;\n"
-        "}\0";
-
-
-    const char *fragmentShaderSource = "#version 450 core\n"
-        "out vec4 FragColor;\n"
-        "in vec3 col;\n"
-        "void main()\n"
-        "{\n"
-        "   FragColor = vec4(col, 1.0f);\n"
-    "}\n\0";
-
     /*unsigned int vertexShader;
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);

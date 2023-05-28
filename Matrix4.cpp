@@ -1,27 +1,15 @@
-/**
- * Copyright (c) 2022 Peter Otrebus-Larsson (otrebus@gmail.com)
- * Distributed under GNU GPL v3. For full terms see the LICENSE file.
- * 
- * @file Matrix4.cpp
- * 
- * Implementation of the Matrix4 class.
- */
-
 #include "Matrix4.h"
-#include "assert.h"
 
-/**
- * Constructor.
- */
-template <typename T> Matrix4<T>::Matrix4()
+
+Matrix4::Matrix4()
 {
 
 }
 
-Matrix4::Matrix4(double m00, double m01, double m02, double m03,
-                   double m10, double m11, double m12, double m13,
-                   double m20, double m21, double m22, double m23,
-                   double m30, double m31, double m32, double m33)
+Matrix4::Matrix4(real m00, real m01, real m02, real m03,
+                 real m10, real m11, real m12, real m13,
+                 real m20, real m21, real m22, real m23,
+                 real m30, real m31, real m32, real m33)
 {
     m_val[0][0] = m00; m_val[0][1] = m01; m_val[0][2] = m02; m_val[0][3] = m03;
     m_val[1][0] = m10; m_val[1][1] = m11; m_val[1][2] = m12; m_val[1][3] = m13;
@@ -29,58 +17,34 @@ Matrix4::Matrix4(double m00, double m01, double m02, double m03,
     m_val[3][0] = m30; m_val[3][1] = m31; m_val[3][2] = m32; m_val[3][3] = m33;
 }
 
-/**
- * Returns a reference to the value stored in matrix position (row, col)
- * 
- * @param i The row.
- * @param j The column.
- * @returns A reference to the value M_ij
- */
-double& Matrix4::operator() (int i, int j)
+
+real& Matrix4::operator() (int i, int j)
 {
     assert(i >= 0 && j <= 3 && j >= 0 && j <= 3);
     return m_val[i][j];
 }
 
-/**
- * Returns the value stored in matrix position (row, col)
- * 
- * @param i The row.
- * @param j The column.
- * @returns The value M_ij
- */
-double Matrix4::operator() (int i, int j) const
+
+real Matrix4::operator() (int i, int j) const
 {
     assert(i >= 0 && j <= 3 && j >= 0 && j <= 3);
     return m_val[i][j];
 }
 
-/**
- * Destructor.
- */
+
 Matrix4::~Matrix4()
 {
 }
 
-/**
- * Matrix-vector multiplication.
- * 
- * @param v The vector to multiply with.
- * @returns The resulting vector.
- */
-Vector3d Matrix4::operator *(const Vector3d& v) const
+
+Vector3 Matrix4::operator *(const Vector3& v) const
 {
-    return Vector3d(m_val[0][0]*v.x + m_val[0][1]*v.y + m_val[0][2]*v.z + m_val[0][3],
-                    m_val[1][0]*v.x + m_val[1][1]*v.y + m_val[1][2]*v.z + m_val[1][3],
-                    m_val[2][0]*v.x + m_val[2][1]*v.y + m_val[2][2]*v.z + m_val[2][3]);
+    return Vector3(m_val[0][0]*v.x + m_val[0][1]*v.y + m_val[0][2]*v.z + m_val[0][3],
+                   m_val[1][0]*v.x + m_val[1][1]*v.y + m_val[1][2]*v.z + m_val[1][3],
+                   m_val[2][0]*v.x + m_val[2][1]*v.y + m_val[2][2]*v.z + m_val[2][3]);
 }
 
-/**
- * Matrix-matrix multiplication.
- * 
- * @param m The matrix to multiply with.
- * @returns The resulting matrix.
- */
+
 Matrix4 Matrix4::operator*(const Matrix4& m) const
 {
     Matrix4 result;

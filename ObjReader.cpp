@@ -7,6 +7,7 @@
 #include <fstream>
 #include <charconv>
 #include "Model.h"
+#include "Logger.h"
 
 
 /**
@@ -390,12 +391,12 @@ std::tuple<bool, int, int, int> acceptVertex(Parser& parser)
  * @param parser The parser object.
  * @returns A 3d vector.
  */
-Vector3d expectVector3d(Parser& parser)
+Vector3 expectVector3d(Parser& parser)
 {
-    double arr[3];
+    real arr[3];
     for(int i = 0; i < 3; i++)
         arr[i] = expectReal(parser);
-    return Vector3d(arr[0], arr[1], arr[2]);
+    return Vector3(arr[0], arr[1], arr[2]);
 }
 
 /**
@@ -403,10 +404,10 @@ Vector3d expectVector3d(Parser& parser)
  * 
  * @throws ParseException if a texture coordinate was unable to be parsed.
  * @param parser The parser object.
- * @returns A 3d vector of the coordinates. Depending on the dimensionality of the coordinate
+ * @returns A 2d vector of the coordinates. Depending on the dimensionality of the coordinate
  *          one or several of the trailing entries could be zero.
  */
-Vector3d expectVtCoordinate(Parser& parser)
+Vector2 expectVtCoordinate(Parser& parser)
 {
     double arr[3] = { 0, 0, 0 };
     bool hadSuccess = false;
@@ -421,7 +422,7 @@ Vector3d expectVtCoordinate(Parser& parser)
     }
     if(!hadSuccess)
         throw ParseException("Bad texture coordinate");
-    return Vector3d(arr[0], arr[1], arr[2]);
+    return Vector2(arr[0], arr[1]);
 }
 
 /**
@@ -563,7 +564,6 @@ std::map<std::string, Material*> ReadMaterialFile(const std::string& matfilestr)
     auto parser = Parser(tokenize(matfile, str));
 
     Material* curmat = 0;
-    PhongMaterial* phongmat = 0;
     std::string matName;
     bool phong = false, emissive = false;
     while(!parser.accept(Token::Eof))
@@ -577,42 +577,42 @@ std::map<std::string, Material*> ReadMaterialFile(const std::string& matfilestr)
 
             if(parser.accept(Token(Token::Operator, ":"))) // We expect a special material definition to follow
             {
-                auto b = std::string(expectStr(parser));
-                transform(b.begin(), b.end(), b.begin(), [](char b) { return (char) tolower(b); });
-                if(b == "emissive")
-                    curmat = new EmissiveMaterial;
-                else if(b == "lambertian")
-                    curmat = new LambertianMaterial;
-                else if(b == "mirror")
-                    curmat = new MirrorMaterial;
-                else if(b == "phong")
-                    curmat = new PhongMaterial;
-                else if(b == "dielectric")
-                    curmat = new DielectricMaterial;
-                else if(b == "ashikhminshirley")
-                    curmat = new AshikhminShirley;
-                else
-                    throw ParseException("Unknown material: " + b);
-                
-                while(parser.accept(Token::Newline));
-                parser.expect(Token(Token::Operator, "{"));
+                //auto b = std::string(expectStr(parser));
+                //transform(b.begin(), b.end(), b.begin(), [](char b) { return (char) tolower(b); });
+                //if(b == "emissive")
+                //    curmat = new EmissiveMaterial;
+                //else if(b == "lambertian")
+                //    curmat = new LambertianMaterial;
+                //else if(b == "mirror")
+                //    curmat = new MirrorMaterial;
+                //else if(b == "phong")
+                //    curmat = new PhongMaterial;
+                //else if(b == "dielectric")
+                //    curmat = new DielectricMaterial;
+                //else if(b == "ashikhminshirley")
+                //    curmat = new AshikhminShirley;
+                //else
+                //    throw ParseException("Unknown material: " + b);
+                //
+                //while(parser.accept(Token::Newline));
+                //parser.expect(Token(Token::Operator, "{"));
 
-                Token token(Token::Eof);
-                std::string matArg;
-                while((token = parser.next()) != Token(Token::Operator, "}"))
-                {
-                    if(token == Token::Eof)
-                        throw ParseException("Unexpected end of file");
-                    matArg += std::string(token.str) + " ";
-                }
+                //Token token(Token::Eof);
+                //std::string matArg;
+                //while((token = parser.next()) != Token(Token::Operator, "}"))
+                //{
+                //    if(token == Token::Eof)
+                //        throw ParseException("Unexpected end of file");
+                //    matArg += std::string(token.str) + " ";
+                //}
 
-                materials[matName] = curmat;
-                std::stringstream ss(matArg);
-                curmat->ReadProperties(ss);
+                //materials[matName] = curmat;
+                //std::stringstream ss(matArg);
+                //curmat->ReadProperties(ss);
             }
             else
             {
-                curmat = new PhongMaterial;
+                //curmat = new PhongMaterial;
                 materials[matName] = curmat;
                 phong = true;
             }
@@ -642,8 +642,7 @@ std::map<std::string, Material*> ReadMaterialFile(const std::string& matfilestr)
                 throw ParseException("No current material specified"); // TODO: not really a parse exception
             if(phong)
             {
-                phongmat = static_cast<PhongMaterial*>(curmat);
-                phongmat->Kd = expectVector3d(parser);
+
             }
             else if(!emissive)
                 throw ParseException("Kd specified for custom material");
@@ -654,8 +653,7 @@ std::map<std::string, Material*> ReadMaterialFile(const std::string& matfilestr)
                 throw ParseException("No current material specified"); // TODO: not really a parse exception
             if(phong)
             {
-                phongmat = static_cast<PhongMaterial*>(curmat);
-                phongmat->Ks = expectVector3d(parser);
+
             }
             else if(!emissive)
                 throw ParseException("Ks specified for custom material");
@@ -666,27 +664,13 @@ std::map<std::string, Material*> ReadMaterialFile(const std::string& matfilestr)
                 throw ParseException("No current material specified"); // TODO: not really a parse exception
             if(phong)
             {
-                phongmat = static_cast<PhongMaterial*>(curmat);
-                phongmat->alpha = expectInt(parser);
+
             }
             else if(!emissive)
                 throw ParseException("Ns specified for custom material");
         }
         else if(acceptAnyCaseStr(parser, "ke")) 
-        {
-            Color intensity;
-            intensity = expectVector3d(parser);
-
-            if(intensity)
-            {
-                phong = false;
-                emissive = true;
-                delete curmat;
-                MeshLight* ml = new MeshLight(intensity);
-                curmat = ml->material;
-                materials[matName] = curmat;
-            }
-        }
+            expectVector3d(parser);
         else if(acceptAnyCaseStr(parser, "ni")) 
             expectReal(parser);
         else if(acceptAnyCaseStr(parser, "illum")) 
@@ -700,15 +684,8 @@ std::map<std::string, Material*> ReadMaterialFile(const std::string& matfilestr)
     return materials;
 }
 
-/**
- * Parses a Wavefront .obj file and returns the resulting triangle mesh and vector of light meshes.
- *
- * @throws ParseException if something didn't parse correctly. 
- * @param file The name of the obj file.
- * @param meshMat An alternate material to be used for the entire mesh, or null.
- * @returns A pair of the resulting TriangleMesh and a vector of MeshLights.
- */
-std::pair<TriangleMesh*, std::vector<MeshLight*>> ReadFromFile(const std::string& file, Material* meshMat)
+
+Model3d ReadFromFile(const std::string& file, Material* meshMat)
 {
     Material* curmat = nullptr;
     std::ifstream myfile;
@@ -717,20 +694,30 @@ std::pair<TriangleMesh*, std::vector<MeshLight*>> ReadFromFile(const std::string
     std::map<std::string, Material*> materials;
     std::set<MeshLight*> meshLights;
 
-    TriangleMesh* mesh = new TriangleMesh();
+    Model3d* model = new Model3d();
     bool normalInterp;
     std::string str;
+    int currentSmoothingGroup = 0;
 
-    std::vector<MeshVertex*> vectors;
-    std::vector<Vector3d> normals;
-    std::map<int, MeshVertex*> groupVertices; // The vertices that have been added to the current group so far
+    std::vector<Vector3> positions;
+    std::vector<Vector3> normals;
+    std::vector<Vector2> textureCoords;
 
-    TriangleMesh* currentMesh = mesh;
+    std::unordered_map<int, std::vector<ObjVertex*>> smoothingVertices[33]; // The vertices that have been added to the current smoothing group so far
+    std::vector<ObjTriangle*> smoothingTriangles[33];
 
-    std::unordered_map<MeshVertex*, Vertex3d*> replacement;
+    auto getOrMakeVertex = [&smoothingVertices, &positions, &normals, &textureCoords] (int group, int position, int normal, int tex)
+    {
+        for(auto v : smoothingVertices[group][position]) {
+            if(v->texture == textureCoords[tex])
+                return v;
+        }
+        auto v = new ObjVertex(positions[position], normals[normal], textureCoords[tex]);
+        smoothingVertices[group][position].push_back(v);
+        return v;
+    };
 
     try {
-
         if(myfile.fail())
         {
             myfile.close();
@@ -746,7 +733,7 @@ std::pair<TriangleMesh*, std::vector<MeshLight*>> ReadFromFile(const std::string
 
             if(parser.accept("f"))
             {
-                std::vector<MeshVertex*> faceVertices;
+                std::vector<ObjVertex*> faceVertices;
 
                 while(true)
                 {
@@ -755,63 +742,38 @@ std::pair<TriangleMesh*, std::vector<MeshLight*>> ReadFromFile(const std::string
                         break;
 
                     if(v < 0)
-                        v = (int) vectors.size() + v + 1;
+                        v = (int) positions.size() + v + 1;
 
-                    MeshVertex* mv;
-
-                    auto it = groupVertices.find(v-1);
-                    if(it == groupVertices.end())
-                    { // We have not seen this vertex before in this group so create a new one
-                        mv = groupVertices[v-1] = new MeshVertex(*vectors[v-1]);
-                        if(n)
-                        {
-                            normalInterp = false; // A normal was submitted so let's trust that one in accordance with .obj standards
-                            mv->normal = normals[n-1];
-                        }
-                        currentMesh->points.push_back(mv);
-                    }
-                    else
-                    { // This vertex is already among the parsed vertices in this group so use that particular one
-                        mv = it->second;
-                        if(n)
-                        {
-                            normalInterp = false;
-                            if(mv->normal != normals[n-1])  // A different normal was given though, so we still need
-                            {                               // to create an entirely new vertex
-                                mv = new MeshVertex(*mv); 
-                                currentMesh->points.push_back(mv);
-                            }
-                            mv->normal = normals[n-1];
-                        }  
-                    }
-                    faceVertices.push_back(mv);
+                    auto vertex = getOrMakeVertex(currentSmoothingGroup, v, n, t);
+                    faceVertices.push_back(vertex);
                 }
 
                 for(int i = 0; i < (int) faceVertices.size()-2; i++)
                 {
                     auto pv0 = faceVertices[0], pv1 = faceVertices[i+1], pv2 = faceVertices[i+2];
 
-                    MeshTriangle* tri = new MeshTriangle(pv0, pv1, pv2);
-                    currentMesh->triangles.push_back(tri);
+                    ObjTriangle* tri = new ObjTriangle(pv0, pv1, pv2);
+
+                    smoothingTriangles[currentSmoothingGroup].push_back(tri);
                     for(auto& p : { pv0, pv1, pv2 })
                         p->triangles.push_back(tri);
 
-                    if(!pv0->normal)
-                        for(auto& v : { tri->v0, tri->v1, tri->v2 })
-                            v->normal = tri->GetNormal();
+                    //if(!pv0->normal)
+                    //    for(auto& v : { tri->v0, tri->v1, tri->v2 })
+                    //        v->normal = tri->GetNormal();
 
-                    // No material defined, set to diffuse
-                    if(!curmat)
-                    {
-                        LambertianMaterial* mat = new LambertianMaterial();
-                        mat->Kd = Color(0.7, 0.7, 0.7);
-                        tri->SetMaterial(mat);
-                        currentMesh->materials.push_back(mat);
-                    }
-                    if(curmat && !meshMat)
-                        tri->SetMaterial(curmat);
-                    else if(meshMat)
-                        tri->SetMaterial(meshMat);
+                    //// No material defined, set to diffuse
+                    //if(!curmat)
+                    //{
+                    //    LambertianMaterial* mat = new LambertianMaterial();
+                    //    mat->Kd = Color(0.7, 0.7, 0.7);
+                    //    tri->SetMaterial(mat);
+                    //    currentMesh->materials.push_back(mat);
+                    //}
+                    //if(curmat && !meshMat)
+                    //    tri->SetMaterial(curmat);
+                    //else if(meshMat)
+                    //    tri->SetMaterial(meshMat);
                 }
             }
             else if(parser.accept("g") || parser.peek() == Token::Eof)
@@ -819,68 +781,29 @@ std::pair<TriangleMesh*, std::vector<MeshLight*>> ReadFromFile(const std::string
                 // We don't care about the name of the group
                 for(auto p = acceptStr(parser); std::get<0>(p); p = acceptStr(parser));
 
-                std::stack<MeshVertex*> vs;
-
-                for(auto& v : groupVertices)
-                    vs.push(v.second);
-
-                // Create duplicate vertices for every vertex that is part of 
-                // triangles that are above a certain angle threshold to each other
-                if(true)
+                for(int i = 1; i < 33; i++)
                 {
-                    while(!vs.empty())
+                    for(auto& [_, vs] : smoothingVertices[i])
                     {
-                        MeshVertex* v = vs.top();
-                        vs.pop();
-        
-                        // Check if we have two triangles at a large angle sharing this vertex
-                        for(auto& t1 : v->triangles)
+                        for(auto& v : vs)
                         {
-                            for(auto& t2 : v->triangles)
-                            {
-                                if(t1->GetNormal() * t2->GetNormal() < 0.7)
-                                {
-                                    // Create two new vertices
-                                    MeshVertex*& v1 = v;
+                            v->normal = Vector3(0, 0, 0);
+                            for(auto& tri : v->triangles)
+                                v->normal += tri->GetNormal();
 
-                                    v1->triangles.clear();
-                                    MeshVertex* v2 = new MeshVertex(*v);
-                                    currentMesh->points.push_back(v2);
-                                    v2->triangles.clear();
-                                    v1->normal = t1->GetNormal(); // Just the geometric normal for now, maybe averaged is better
-                                    v2->normal = t2->GetNormal();
-                                    // Reassign the triangles that belonged to v to either v1 or v2 depending on their normal
-                                    for(auto& t3 : v->triangles)
-                                    {
-                                        if(t3->GetNormal() * v1->normal >= 0.7)
-                                        {
-                                            // First reassign the correct vector in the triangle
-                                            for(auto vv : { &t3->v0, &t3->v1, &t3->v2 })
-                                                if(*vv == v)
-                                                    *vv = v1;
-                                            // Then reassign the triangle in the vector's triangle list
-                                            v1->triangles.push_back(t3);
-                                        }
-                                        else
-                                        {
-                                            for(auto vv : { &t3->v0, &t3->v1, &t3->v2 })
-                                                if(*vv == v)
-                                                    *vv = v2;
-                                            v2->triangles.push_back(t3);
-                                        }
-                                    }
-                                    vs.push(v1);
-                                    vs.push(v2);
-                                    goto nextwhile; // Yes, it's goto, since nested continues don't exist
-                                }
-                            }
+                            v->normal /= v->triangles.size();
                         }
-                nextwhile:;
-                    } // while(!vs.empty() ..
-                } // if(normalInterp ..
-
-                normalInterp = true;
-                groupVertices.clear();
+                    }
+                }
+                for(auto& t : smoothingTriangles[0])
+                {
+                    if(!t->v0->normal)
+                        t->v0->normal = t->GetNormal();
+                    if(!t->v1->normal)
+                        t->v1->normal = t->GetNormal();
+                    if(!t->v2->normal)
+                        t->v2->normal = t->GetNormal();
+                }
             } // if(a == "g" ..
             else if(parser.accept("mtllib"))
             {
@@ -898,14 +821,19 @@ std::pair<TriangleMesh*, std::vector<MeshLight*>> ReadFromFile(const std::string
                 auto texturecoords = expectVtCoordinate(parser);
             else if(parser.accept("s")) // Smoothing group ending or starting
             {
-                auto [success, s1] = acceptStr(parser);
+                auto [success, s1] = acceptInt(parser);
                 if(success)
-                    normalInterp = s1 != "off";
+                    currentSmoothingGroup = s1;
                 else
-                    normalInterp = expectInt(parser) != 0;
+                {
+                    auto s1 = expectStr(parser);
+                    if(s1 != "off")
+                        throw ParseException("Expected 'off'");
+                    currentSmoothingGroup = 0;
+                }
             }
             else if(parser.accept("v"))
-                vectors.push_back(new MeshVertex(expectVector3d(parser)));
+                positions.push_back(expectVector3d(parser));
             else if(parser.accept("usemtl"))
             {
                 auto mtl = std::string(expectStr(parser));
@@ -913,16 +841,7 @@ std::pair<TriangleMesh*, std::vector<MeshLight*>> ReadFromFile(const std::string
                 if(it == materials.end())
                     curmat = 0;
                 else
-                {
-                    if(materials[mtl]->light)
-                    {
-                        meshLights.emplace(static_cast<MeshLight*>(materials[mtl]->light));
-                        currentMesh = (static_cast<MeshLight*>(materials[mtl]->light)->mesh);
-                    }
-                    else
-                        currentMesh = mesh;
                     curmat = materials[mtl];
-                }
             }
             else if(parser.accept(Token::Newline));
             else if(parser.accept("l"))
@@ -960,30 +879,6 @@ std::pair<TriangleMesh*, std::vector<MeshLight*>> ReadFromFile(const std::string
     for(auto& p : mesh->points)
         if(replacement.find(static_cast<MeshVertex*>(p)) != replacement.end())
             p = replacement[static_cast<MeshVertex*>(p)];
-
-    for(auto& m : meshLights)
-    {
-        for(auto& t : m->mesh->triangles)
-        {
-            for(auto vv : { &t->v0, &t->v1, &t->v2 })
-            {
-                auto& v = (*((MeshVertex**) vv));
-                if(replacement.find(v) == replacement.end())
-                {
-                    auto oldv = v;
-                    v = static_cast<MeshVertex*>(new Vertex3d(v->pos, v->normal, v->texpos));
-                    replacement[oldv] = static_cast<Vertex3d*>(v);
-                    m->mesh->points.push_back(v);
-                    replacement[v] = v;
-                }
-                else
-                    v = static_cast<MeshVertex*>(replacement[v]);
-            }
-        }
-        for(auto& p : m->mesh->points)
-            if(replacement.find(static_cast<MeshVertex*>(p)) != replacement.end())
-                p = replacement[static_cast<MeshVertex*>(p)];
-    }
 
     for(auto it = materials.begin(); it != materials.end(); it++)
         mesh->materials.push_back((*it).second);

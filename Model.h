@@ -1,24 +1,25 @@
-#include "Vector3"
-#include "Vector2"
+#include "Vector3.h"
+#include "Vector2.h"
+#include "Shader.h"
 
 
-template <typename T> class Vertex3d
+class Vertex3d
 {
-    Vector3<T> pos;
-    Vector3<T> normal;
-    Vector2<T> tex;
+    Vector3 pos;
+    Vector3 normal;
+    Vector2 tex;
 };
 
 
-template <typename T> class Mesh3d
+class Mesh3d
 {
-    std::vector<3dVertex> v;
+    std::vector<Vertex3d> v;
     std::vector<int> tri;
     Shader* shader;
 };
 
 
-template <typename T> class Model3d
+class Model3d
 {
     std::vector<Mesh3d> v;
 };
