@@ -706,6 +706,9 @@ Model3d ReadFromFile(const std::string& file, Material* meshMat)
     std::unordered_map<int, std::vector<ObjVertex*>> smoothingVertices[33]; // The vertices that have been added to the current smoothing group so far
     std::vector<ObjTriangle*> smoothingTriangles[33];
 
+    std::vector<Mesh3d> mesh;
+    Model3d model;
+
     auto getOrMakeVertex = [&smoothingVertices, &positions, &normals, &textureCoords] (int group, int position, int normal, int tex)
     {
         for(auto v : smoothingVertices[group][position]) {
@@ -716,6 +719,37 @@ Model3d ReadFromFile(const std::string& file, Material* meshMat)
         smoothingVertices[group][position].push_back(v);
         return v;
     };
+
+    auto addMesh = [&smoothingTriangles] ()
+    {
+        Mesh3d mesh;
+        std::vector<ObjVertex*> vertices[33];
+        std::unordered_map<ObjTriangle*, int> m[33];
+
+        int mt = 0;
+
+        for(int i = 0; i < 33; i++)
+        {
+            Mesh3d mesh;
+            std::vector<Vertex3d> vertices;
+            std::vector<int> indices;
+            std::unordered_map<ObjVertex*, int> vertMap;
+
+            for(auto& t : smoothingTriangles[i]) {
+                for(auto& v : { t->v0, t->v1, t->v2 } )
+                {
+                    if(vertMap.find(v) == vertMap.end())
+                    {
+                        vertMap[v] = vertices.size();
+                        vertices.push_back({v->position, v->normal, v->texture});
+                    }
+                    indices.push_back(vertMap[v]);
+                }
+            }
+            model.meshes.push_back(mesh);
+        }
+        return mesh;
+    }
 
     try {
         if(myfile.fail())
@@ -757,23 +791,6 @@ Model3d ReadFromFile(const std::string& file, Material* meshMat)
                     smoothingTriangles[currentSmoothingGroup].push_back(tri);
                     for(auto& p : { pv0, pv1, pv2 })
                         p->triangles.push_back(tri);
-
-                    //if(!pv0->normal)
-                    //    for(auto& v : { tri->v0, tri->v1, tri->v2 })
-                    //        v->normal = tri->GetNormal();
-
-                    //// No material defined, set to diffuse
-                    //if(!curmat)
-                    //{
-                    //    LambertianMaterial* mat = new LambertianMaterial();
-                    //    mat->Kd = Color(0.7, 0.7, 0.7);
-                    //    tri->SetMaterial(mat);
-                    //    currentMesh->materials.push_back(mat);
-                    //}
-                    //if(curmat && !meshMat)
-                    //    tri->SetMaterial(curmat);
-                    //else if(meshMat)
-                    //    tri->SetMaterial(meshMat);
                 }
             }
             else if(parser.accept("g") || parser.peek() == Token::Eof)
@@ -858,32 +875,4 @@ Model3d ReadFromFile(const std::string& file, Material* meshMat)
         logger.Box(p.message);
         __debugbreak();
     }
-
-    for(auto& t : mesh->triangles)
-    {
-        for(auto vv : { &t->v0, &t->v1, &t->v2 })
-        {
-            auto& v = (*(reinterpret_cast<MeshVertex**>(vv)));
-            if(replacement.find(v) == replacement.end())
-            {
-                auto oldv = v;
-                v = static_cast<MeshVertex*>(new Vertex3d(v->pos, v->normal, v->texpos));
-                replacement[oldv] = (Vertex3d*) v;
-                mesh->points.push_back(v);
-                replacement[v] = v;
-            }
-            else
-                v = static_cast<MeshVertex*>(replacement[v]);
-        }
-    }
-    for(auto& p : mesh->points)
-        if(replacement.find(static_cast<MeshVertex*>(p)) != replacement.end())
-            p = replacement[static_cast<MeshVertex*>(p)];
-
-    for(auto it = materials.begin(); it != materials.end(); it++)
-        mesh->materials.push_back((*it).second);
-
-    myfile.close();
-    auto meshLightVector = std::vector<MeshLight*>(meshLights.begin(), meshLights.end());
-    return { mesh, meshLightVector };
 }
