@@ -10,8 +10,8 @@ class TriangleMesh;
 class MeshLight;
 class Model3d;
 
-Model3d ReadFromFile(const std::string& file, Material* meshMat);
-std::map<std::string, Material*> ReadMaterialFile(const std::string& matfilestr);
+Model3d ReadFromFile(const std::string& file);
+std::map<std::string, int> ReadMaterialFile(const std::string& matfilestr);
 
 
 class ObjTriangle;

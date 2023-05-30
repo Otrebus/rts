@@ -548,11 +548,11 @@ std::vector<Token> tokenize(std::ifstream& file, std::string& str)
  * @param matefilestr The name of the materials file.
  * @returns A map from the name of the material to the material object.
  */
-std::map<std::string, Material*> ReadMaterialFile(const std::string& matfilestr)
+std::map<std::string, int> ReadMaterialFile(const std::string& matfilestr)
 {
     std::ifstream matfile;
     matfile.open(matfilestr.c_str(), std::ios::out);
-    std::map<std::string, Material*> materials;
+    std::map<std::string, int> materials;
 
     if(matfile.fail())
     {
@@ -563,7 +563,7 @@ std::map<std::string, Material*> ReadMaterialFile(const std::string& matfilestr)
     std::string str;
     auto parser = Parser(tokenize(matfile, str));
 
-    Material* curmat = 0;
+    int curmat = 0;
     std::string matName;
     bool phong = false, emissive = false;
     while(!parser.accept(Token::Eof))
@@ -613,6 +613,7 @@ std::map<std::string, Material*> ReadMaterialFile(const std::string& matfilestr)
             else
             {
                 //curmat = new PhongMaterial;
+                curmat = 1;
                 materials[matName] = curmat;
                 phong = true;
             }
@@ -642,7 +643,7 @@ std::map<std::string, Material*> ReadMaterialFile(const std::string& matfilestr)
                 throw ParseException("No current material specified"); // TODO: not really a parse exception
             if(phong)
             {
-
+                expectVector3d(parser);
             }
             else if(!emissive)
                 throw ParseException("Kd specified for custom material");
@@ -653,7 +654,7 @@ std::map<std::string, Material*> ReadMaterialFile(const std::string& matfilestr)
                 throw ParseException("No current material specified"); // TODO: not really a parse exception
             if(phong)
             {
-
+                expectVector3d(parser);
             }
             else if(!emissive)
                 throw ParseException("Ks specified for custom material");
@@ -664,7 +665,7 @@ std::map<std::string, Material*> ReadMaterialFile(const std::string& matfilestr)
                 throw ParseException("No current material specified"); // TODO: not really a parse exception
             if(phong)
             {
-
+                expectReal(parser);
             }
             else if(!emissive)
                 throw ParseException("Ns specified for custom material");
@@ -685,16 +686,15 @@ std::map<std::string, Material*> ReadMaterialFile(const std::string& matfilestr)
 }
 
 
-Model3d ReadFromFile(const std::string& file, Material* meshMat)
+Model3d ReadFromFile(const std::string& file)
 {
-    Material* curmat = nullptr;
+    int curmat = 0;
     std::ifstream myfile;
     myfile.open(file.c_str(), std::ios::out);
 
-    std::map<std::string, Material*> materials;
+    std::map<std::string, int> materials;
     std::set<MeshLight*> meshLights;
 
-    Model3d* model = new Model3d();
     bool normalInterp;
     std::string str;
     int currentSmoothingGroup = 0;
@@ -712,21 +712,19 @@ Model3d ReadFromFile(const std::string& file, Material* meshMat)
     auto getOrMakeVertex = [&smoothingVertices, &positions, &normals, &textureCoords] (int group, int position, int normal, int tex)
     {
         for(auto v : smoothingVertices[group][position]) {
-            if(v->texture == textureCoords[tex])
+            if((v->texture == (tex ? textureCoords[tex-1] : Vector2(0, 0))) && v->normal == (normal ? normals[normal-1] : Vector3(0, 0, 0)))
                 return v;
         }
-        auto v = new ObjVertex(positions[position], normals[normal], textureCoords[tex]);
+        auto v = new ObjVertex(positions[position-1], normal ? normals[normal] : Vector3(0, 0, 0), tex ? textureCoords[tex] : Vector2(0, 0));
         smoothingVertices[group][position].push_back(v);
         return v;
     };
 
-    auto addMesh = [&smoothingTriangles] ()
+    auto addMesh = [&smoothingTriangles, &model] ()
     {
         Mesh3d mesh;
         std::vector<ObjVertex*> vertices[33];
         std::unordered_map<ObjTriangle*, int> m[33];
-
-        int mt = 0;
 
         for(int i = 0; i < 33; i++)
         {
@@ -735,13 +733,14 @@ Model3d ReadFromFile(const std::string& file, Material* meshMat)
             std::vector<int> indices;
             std::unordered_map<ObjVertex*, int> vertMap;
 
-            for(auto& t : smoothingTriangles[i]) {
+            for(auto& t : smoothingTriangles[i])
+            {
                 for(auto& v : { t->v0, t->v1, t->v2 } )
                 {
                     if(vertMap.find(v) == vertMap.end())
                     {
                         vertMap[v] = vertices.size();
-                        vertices.push_back({v->position, v->normal, v->texture});
+                        vertices.emplace_back(v->position, v->normal, v->texture);
                     }
                     indices.push_back(vertMap[v]);
                 }
@@ -749,7 +748,7 @@ Model3d ReadFromFile(const std::string& file, Material* meshMat)
             model.meshes.push_back(mesh);
         }
         return mesh;
-    }
+    };
 
     try {
         if(myfile.fail())
@@ -826,8 +825,7 @@ Model3d ReadFromFile(const std::string& file, Material* meshMat)
             {
                 // Check if there's an associated materials file, and parse it
                 auto matfilestr = expectStr(parser);
-                if(!meshMat)
-                    materials = ReadMaterialFile(std::string(matfilestr));
+                materials = ReadMaterialFile(std::string(matfilestr));
                 continue;
             }
             else if(parser.accept("vn"))

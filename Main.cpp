@@ -5,6 +5,9 @@
 #include "Shader.h"
 #include "Utils.h"
 #include "Matrix4.h"
+#include "ObjReader.h"
+#include "Model.h"
+
 
 void checkError() {
 GLenum error;
@@ -68,6 +71,8 @@ int main()
     };
 
     unsigned int VBO, VAO, VBO2, VAO2, EBO, EBO2;
+
+    auto model = ReadFromFile("CornellBox-Original.obj");
 
     /*unsigned int vertexShader;
     vertexShader = glCreateShader(GL_VERTEX_SHADER);

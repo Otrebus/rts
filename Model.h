@@ -3,15 +3,16 @@
 #include "Shader.h"
 
 
-class Vertex3d
+struct Vertex3d
 {
+    Vertex3d(Vector3 pos, Vector3 normal, Vector2 tex) : pos(pos), normal(normal), tex(tex) {}
     Vector3 pos;
     Vector3 normal;
     Vector2 tex;
 };
 
 
-class Mesh3d
+struct Mesh3d
 {
     std::vector<Vertex3d> v;
     std::vector<int> tri;
@@ -19,7 +20,7 @@ class Mesh3d
 };
 
 
-class Model3d
+struct Model3d
 {
-    std::vector<Mesh3d> v;
+    std::vector<Mesh3d> meshes;
 };
