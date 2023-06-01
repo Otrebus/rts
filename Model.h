@@ -15,7 +15,7 @@ struct Vertex3d
 struct Mesh3d
 {
     std::vector<Vertex3d> v;
-    std::vector<int> tri;
+    std::vector<int> triangles;
     Shader* shader;
 };
 

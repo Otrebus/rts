@@ -33,6 +33,8 @@ GLenum error;
     }
 }
 
+        int blah = 0;
+
 int main()
 {
     if (!glfwInit()) {
@@ -241,6 +243,20 @@ int main()
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         //glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            glfwSetWindowShouldClose(window, true);
+        }
+
+        auto key_callback = [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
+            if (key == GLFW_KEY_F && action == GLFW_PRESS)
+                blah++;
+
+            std::cout << blah << std::endl;
+        };
+
+
+        glfwSetKeyCallback(window, key_callback);
 
         glfwSwapBuffers(window);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

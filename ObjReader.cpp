@@ -720,11 +720,9 @@ Model3d ReadFromFile(const std::string& file)
         return v;
     };
 
-    auto addMesh = [&smoothingTriangles, &model] ()
+    auto addMesh = [&smoothingTriangles, &smoothingVertices, &model] ()
     {
-        Mesh3d mesh;
         std::vector<ObjVertex*> vertices[33];
-        std::unordered_map<ObjTriangle*, int> m[33];
 
         for(int i = 0; i < 33; i++)
         {
@@ -744,10 +742,23 @@ Model3d ReadFromFile(const std::string& file)
                     }
                     indices.push_back(vertMap[v]);
                 }
+                delete t;
             }
-            model.meshes.push_back(mesh);
+
+            for(auto& p : smoothingVertices[i]) {
+                for(auto& v : p.second)
+                    delete v;
+                p.second.clear();
+            }
+            smoothingVertices[i].clear();
+            smoothingTriangles[i].clear();
+
+            mesh.v = vertices;
+            mesh.triangles = indices;
+
+            if(mesh.triangles.size())
+                model.meshes.push_back(mesh);
         }
-        return mesh;
     };
 
     try {
@@ -820,6 +831,8 @@ Model3d ReadFromFile(const std::string& file)
                     if(!t->v2->normal)
                         t->v2->normal = t->GetNormal();
                 }
+
+                addMesh();
             } // if(a == "g" ..
             else if(parser.accept("mtllib"))
             {
@@ -873,4 +886,6 @@ Model3d ReadFromFile(const std::string& file)
         logger.Box(p.message);
         __debugbreak();
     }
+
+    return model;
 }
