@@ -1,3 +1,6 @@
+#define NOMINMAX
+
+#include <cmath>
 #include <stdio.h>
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
@@ -7,6 +10,7 @@
 #include "Matrix4.h"
 #include "ObjReader.h"
 #include "Model.h"
+#include <queue>
 
 
 void checkError() {
@@ -33,7 +37,77 @@ GLenum error;
     }
 }
 
-        int blah = 0;
+static const real pi = std::acos(-1);
+
+struct Input
+{
+    double time;
+    enum Type
+    {
+        MousePress, KeyPress, MousePosition
+    } type;
+    int key, state;
+    real posX, posY;
+};
+
+struct InputQueue // Tightly coupled with glfw
+{
+    std::queue<Input> queue;
+    bool mouseState[8];
+    bool keyState[255];
+    real posX, posY;
+
+    double timeMouse[8];
+    double timeKey[255];
+
+    InputQueue()
+    {
+        std::memset(mouseState, 0, sizeof(mouseState));
+        std::memset(keyState, 0, sizeof(keyState));
+    }
+
+    void addKeyInput(double time, int key, int state)
+    {
+        queue.push({ time, Input::Type::KeyPress, key, state });
+    }
+
+    void addMouseInput(double time, int key, int state)
+    {
+        queue.push({ time, Input::Type::MousePress, key, state });
+    }
+
+    void addMousePosition(double time, real x, real y)
+    {
+        queue.push({ time, Input::Type::MousePosition, 0, 0, x, y });
+    }
+
+    bool hasInput()
+    {
+        return !queue.empty();
+    }
+
+    Input pop()
+    {
+        auto input = queue.front();
+        queue.pop();
+        if(input.type == Input::Type::MousePress) {
+            timeMouse[input.key] = input.time;
+            mouseState[input.key] = input.state;
+        }
+
+        if(input.type == Input::Type::KeyPress) {
+            timeKey[input.key] = input.time;
+            keyState[input.key] = input.state;
+        }
+        
+        if(input.type == Input::Type::MousePosition) {
+            std::cout << input.posX << " " << input.posY << std::endl;
+            posX = input.posX, posY = input.posY;
+        }
+        return input;
+    }
+} inputQueue;
+
 
 int main()
 {
@@ -174,7 +248,6 @@ int main()
 
     checkError();
     glUniform1i(glGetUniformLocation(s.GetId(), "text"), 0);
-    auto T = getCameraMatrix( { -1, 1, 0 }, { 0, 0, -1 }, 59, 16.0/10.0);
 
     glGenVertexArrays(1, &VAO2);
     glBindVertexArray(VAO2);
@@ -215,8 +288,37 @@ int main()
     glEnable(GL_DEPTH_TEST);
 
     //glDepthFunc(GL_LESS);
+    
+    auto key_callback = [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
+        /*if (key == GLFW_KEY_F && action == GLFW_PRESS)
+        {
+            blah++;
+            std::cout << blah << std::endl;
+        }*/
+        inputQueue.addKeyInput(glfwGetTime(), key, action);
+    };
+
+    auto mouseButton_callback = [] (GLFWwindow* window, int button, int action, int mods) {
+        inputQueue.addMouseInput(glfwGetTime(), button, action);
+    };
+
+    auto cursor_position_callback = [] (GLFWwindow* window, double xpos, double ypos)
+    {         
+        inputQueue.addMousePosition(glfwGetTime(), xpos, ypos);
+    };
+
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetMouseButtonCallback(window, mouseButton_callback);
+    glfwSetCursorPosCallback(window, cursor_position_callback);
 
     auto startTime = glfwGetTime();
+
+    int panningX = 0, panningY = 0;
+    bool panning = false;
+    real theta = 0, phi = 0;
+    real startTheta = 0, startPhi = 0;
+
+
     while (!glfwWindowShouldClose(window)) {
         auto time = glfwGetTime();
         //glUniform1f(timeUniformLocation, time);
@@ -226,6 +328,16 @@ int main()
         glActiveTexture(GL_TEXTURE0);
         glBindVertexArray(VAO);
 
+        Vector3 f(0, 0, 1), r(1, 0, 0), u(0, 1, 0);
+        Vector3 h = f*std::sin(theta) + r*std::cos(theta);
+        Vector3 dir = u*std::sin(phi) + h*std::cos(phi);
+
+        /*std::cout << phi << " " << theta << std::endl;
+        std::cout << dir;*/
+
+
+        auto T = getCameraMatrix( { -1, 1, 0 }, Vector3{ -1, 1, 0 } + dir, 59, 16.0/10.0);
+        // auto T = getCameraMatrix( { -1, 1, 0 }, Vector3{ -1, 1, 0 } + dir, 59, 16.0/10.0);
         glUniformMatrix4fv(glGetUniformLocation(s.GetId(), "transform"), 1, GL_TRUE, (float*) T.m_val);
         glBindTexture(GL_TEXTURE_2D, textures[0]);
 
@@ -248,18 +360,49 @@ int main()
             glfwSetWindowShouldClose(window, true);
         }
 
-        auto key_callback = [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
-            if (key == GLFW_KEY_F && action == GLFW_PRESS)
-                blah++;
+        int test = 0;
 
-            std::cout << blah << std::endl;
-        };
-
-
-        glfwSetKeyCallback(window, key_callback);
+        //for(int i = 0; i < 1000000000; i++) {
+        //    test++;
+        //}
 
         glfwSwapBuffers(window);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        while(inputQueue.hasInput())
+        {
+            auto input = inputQueue.pop();
+            if(input.type == Input::Type::KeyPress)
+            {
+                if(input.state == GLFW_PRESS || input.state == GLFW_RELEASE)
+                    std::cout << input.time << ": " << (std::string("key was ") + ((input.state == GLFW_PRESS) ? "pressed" : "released")) << std::endl;
+            }
+        }
+
+        if(!panning && inputQueue.mouseState[GLFW_MOUSE_BUTTON_1]) {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            double xpos, ypos;
+            glfwGetCursorPos(window, &xpos, &ypos);
+
+            std::cout << panningY << " " << inputQueue.posY << std::endl;
+            startTheta = theta;
+            startPhi = phi;
+            panningX = xpos;
+            panningY = ypos;
+            panning = true;
+        }
+
+        if(panning && inputQueue.mouseState[GLFW_MOUSE_BUTTON_1] == GLFW_RELEASE) {
+            panningX = inputQueue.posX;
+            panningY = inputQueue.posY;
+            panning = false;
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        }
+
+        if(panning) {
+            phi = startPhi + (inputQueue.posY - panningY)/300;
+            theta = startTheta + (inputQueue.posX - panningX)/300;
+        }
 
         glfwPollEvents();
     }

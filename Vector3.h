@@ -40,5 +40,10 @@ public:
     Vector3 Normalized() const;
     bool IsValid() const;
 
+
     real x, y, z;
 };
+
+class ostream;
+
+std::ostream& operator<<(std::ostream& s, const Vector3& v);
