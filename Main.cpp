@@ -7,6 +7,7 @@
 #include <iostream>
 #include "Shader.h"
 #include "Utils.h"
+#include "Camera.h"
 #include "Matrix4.h"
 #include "ObjReader.h"
 #include "Model.h"
@@ -57,8 +58,8 @@ struct InputQueue // Tightly coupled with glfw
     bool keyState[255];
     real posX, posY;
 
-    double timeMouse[8];
-    double timeKey[255];
+    real timeMouse[8];
+    real timeKey[255];
 
     InputQueue()
     {
@@ -84,6 +85,11 @@ struct InputQueue // Tightly coupled with glfw
     bool hasInput()
     {
         return !queue.empty();
+    }
+
+    Input peek()
+    {
+        return queue.front();
     }
 
     Input pop()
@@ -318,9 +324,13 @@ int main()
     real theta = 0, phi = 0;
     real startTheta = 0, startPhi = 0;
 
+    Camera cam;
+    cam.pos = { -1, 1, 0 };
+    real prevTime = glfwGetTime(), time = glfwGetTime();
 
     while (!glfwWindowShouldClose(window)) {
-        auto time = glfwGetTime();
+        prevTime = time;
+        time = glfwGetTime();
         //glUniform1f(timeUniformLocation, time);
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -328,15 +338,18 @@ int main()
         glActiveTexture(GL_TEXTURE0);
         glBindVertexArray(VAO);
 
-        Vector3 f(0, 0, 1), r(1, 0, 0), u(0, 1, 0);
+        Vector3 f(0, 0, 1), r(1, 0, 0);
+        
+        cam.up = Vector3 (0, 1, 0);
         Vector3 h = f*std::sin(theta) + r*std::cos(theta);
-        Vector3 dir = u*std::sin(phi) + h*std::cos(phi);
+        cam.dir = cam.up*std::sin(phi) + h*std::cos(phi);
 
         /*std::cout << phi << " " << theta << std::endl;
         std::cout << dir;*/
 
 
-        auto T = getCameraMatrix( { -1, 1, 0 }, Vector3{ -1, 1, 0 } + dir, 59, 16.0/10.0);
+
+        auto T = getCameraMatrix( cam.pos, cam.pos + cam.dir, 59, 16.0/10.0);
         // auto T = getCameraMatrix( { -1, 1, 0 }, Vector3{ -1, 1, 0 } + dir, 59, 16.0/10.0);
         glUniformMatrix4fv(glGetUniformLocation(s.GetId(), "transform"), 1, GL_TRUE, (float*) T.m_val);
         glBindTexture(GL_TEXTURE_2D, textures[0]);
@@ -369,39 +382,93 @@ int main()
         glfwSwapBuffers(window);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        if(inputQueue.keyState[GLFW_KEY_E] == GLFW_PRESS)
+        {
+            auto duration = inputQueue.timeKey[GLFW_KEY_E];
+            auto t = std::min(time - prevTime, duration);
+            cam.pos = cam.pos + cam.dir*t*10;
+        }
+        if(inputQueue.keyState[GLFW_KEY_D] == GLFW_PRESS)
+        {
+            auto duration = inputQueue.timeKey[GLFW_KEY_D];
+            auto t = std::min(time - prevTime, duration);
+            cam.pos = cam.pos - cam.dir*t*10;
+        }
+        if(inputQueue.keyState[GLFW_KEY_S] == GLFW_PRESS)
+        {
+            auto duration = inputQueue.timeKey[GLFW_KEY_S];
+            auto t = std::min(time - prevTime, duration);
+            cam.pos = cam.pos + (cam.up^cam.dir)*t*10;
+        }
+        if(inputQueue.keyState[GLFW_KEY_F] == GLFW_PRESS)
+        {
+            auto duration = inputQueue.timeKey[GLFW_KEY_F];
+            auto t = std::min(time - prevTime, duration);
+            cam.pos = cam.pos - (cam.up^cam.dir)*t*10;
+        }
+
         while(inputQueue.hasInput())
         {
-            auto input = inputQueue.pop();
+            auto input = inputQueue.peek();
             if(input.type == Input::Type::KeyPress)
             {
-                if(input.state == GLFW_PRESS || input.state == GLFW_RELEASE)
+                if(input.state == GLFW_PRESS || input.state == GLFW_RELEASE) {
                     std::cout << input.time << ": " << (std::string("key was ") + ((input.state == GLFW_PRESS) ? "pressed" : "released")) << std::endl;
+                }
             }
-        }
 
-        if(!panning && inputQueue.mouseState[GLFW_MOUSE_BUTTON_1]) {
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-            double xpos, ypos;
-            glfwGetCursorPos(window, &xpos, &ypos);
+            if(!panning && inputQueue.mouseState[GLFW_MOUSE_BUTTON_1]) {
+                glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+                double xpos, ypos;
+                glfwGetCursorPos(window, &xpos, &ypos);
 
-            std::cout << panningY << " " << inputQueue.posY << std::endl;
-            startTheta = theta;
-            startPhi = phi;
-            panningX = xpos;
-            panningY = ypos;
-            panning = true;
-        }
+                std::cout << panningY << " " << inputQueue.posY << std::endl;
+                startTheta = theta;
+                startPhi = phi;
+                panningX = xpos;
+                panningY = ypos;
+                panning = true;
+            }
 
-        if(panning && inputQueue.mouseState[GLFW_MOUSE_BUTTON_1] == GLFW_RELEASE) {
-            panningX = inputQueue.posX;
-            panningY = inputQueue.posY;
-            panning = false;
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-        }
+            if(inputQueue.keyState[GLFW_KEY_E] == GLFW_RELEASE)
+            {
+                auto duration = inputQueue.timeKey[GLFW_KEY_E];
+                auto t = std::min(time - prevTime, duration);
+                cam.pos = cam.pos + cam.dir*t*10;
+            }
+            if(inputQueue.keyState[GLFW_KEY_D] == GLFW_RELEASE)
+            {
+                auto duration = inputQueue.timeKey[GLFW_KEY_D];
+                auto t = std::min(time - prevTime, duration);
+                cam.pos = cam.pos - cam.dir*t*10;
+            }
+            if(inputQueue.keyState[GLFW_KEY_S] == GLFW_RELEASE)
+            {
+                auto duration = inputQueue.timeKey[GLFW_KEY_S];
+                auto t = std::min(time - prevTime, duration);
+                cam.pos = cam.pos + (cam.up^cam.dir)*t*10;
+            }
+            if(inputQueue.keyState[GLFW_KEY_F] == GLFW_RELEASE)
+            {
+                auto duration = inputQueue.timeKey[GLFW_KEY_F];
+                auto t = std::min(time - prevTime, duration);
+                cam.pos = cam.pos - (cam.up^cam.dir)*t*10;
+            }
 
-        if(panning) {
-            phi = startPhi + (inputQueue.posY - panningY)/300;
-            theta = startTheta + (inputQueue.posX - panningX)/300;
+            if(panning && inputQueue.mouseState[GLFW_MOUSE_BUTTON_1] == GLFW_RELEASE) {
+                panningX = inputQueue.posX;
+                panningY = inputQueue.posY;
+                panning = false;
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            }
+
+            if(panning) {
+                phi = startPhi + (inputQueue.posY - panningY)/500;
+                theta = startTheta + (inputQueue.posX - panningX)/500;
+            }
+            inputQueue.pop();
+
         }
 
         glfwPollEvents();
