@@ -39,18 +39,3 @@ unsigned int Shader::GetId() const
 {
     return id;
 }
-
-ShaderProgram::ShaderProgram()
-{
-    id = glCreateProgram();
-}
-
-void ShaderProgram::Use()
-{
-    glUseProgram(id);
-}
-
-unsigned int ShaderProgram::GetId()
-{
-    return id;
-}

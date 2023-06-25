@@ -12,21 +12,3 @@ public:
     Shader(std::string filename, unsigned int type);
     unsigned int GetId() const;
 };
-
-class ShaderProgram
-{
-    unsigned int id;
-
-public:
-    ShaderProgram();
-
-    template<typename... Shaders>
-    void AddShaders(const Shaders&... shaders)
-    {
-        (glAttachShader(id, shaders.GetId()), ...);
-        glLinkProgram(id);
-    }
-
-    unsigned int GetId();
-    void Use();
-};

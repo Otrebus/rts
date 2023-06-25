@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "Shader.h"
+#include "ShaderProgram.h"
 #include "Utils.h"
 #include "Camera.h"
 #include "Matrix4.h"
@@ -42,7 +43,7 @@ static const real pi = std::acos(-1);
 
 struct Input
 {
-    double time;
+    real time;
     enum Type
     {
         MousePress, KeyPress, MousePosition
@@ -67,17 +68,17 @@ struct InputQueue // Tightly coupled with glfw
         std::memset(keyState, 0, sizeof(keyState));
     }
 
-    void addKeyInput(double time, int key, int state)
+    void addKeyInput(real time, int key, int state)
     {
         queue.push({ time, Input::Type::KeyPress, key, state });
     }
 
-    void addMouseInput(double time, int key, int state)
+    void addMouseInput(real time, int key, int state)
     {
         queue.push({ time, Input::Type::MousePress, key, state });
     }
 
-    void addMousePosition(double time, real x, real y)
+    void addMousePosition(real time, real x, real y)
     {
         queue.push({ time, Input::Type::MousePosition, 0, 0, x, y });
     }
@@ -321,7 +322,7 @@ int main()
 
     int panningX = 0, panningY = 0;
     bool panning = false;
-    real theta = 0, phi = 0;
+    real theta = 2.2, phi = -2.6;
     real startTheta = 0, startPhi = 0;
 
     Camera cam;
@@ -346,8 +347,6 @@ int main()
 
         /*std::cout << phi << " " << theta << std::endl;
         std::cout << dir;*/
-
-
 
         auto T = getCameraMatrix( cam.pos, cam.pos + cam.dir, 59, 16.0/10.0);
         // auto T = getCameraMatrix( { -1, 1, 0 }, Vector3{ -1, 1, 0 } + dir, 59, 16.0/10.0);
@@ -375,37 +374,8 @@ int main()
 
         int test = 0;
 
-        //for(int i = 0; i < 1000000000; i++) {
-        //    test++;
-        //}
-
         glfwSwapBuffers(window);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        if(inputQueue.keyState[GLFW_KEY_E] == GLFW_PRESS)
-        {
-            auto duration = inputQueue.timeKey[GLFW_KEY_E];
-            auto t = std::min(time - prevTime, duration);
-            cam.pos = cam.pos + cam.dir*t*10;
-        }
-        if(inputQueue.keyState[GLFW_KEY_D] == GLFW_PRESS)
-        {
-            auto duration = inputQueue.timeKey[GLFW_KEY_D];
-            auto t = std::min(time - prevTime, duration);
-            cam.pos = cam.pos - cam.dir*t*10;
-        }
-        if(inputQueue.keyState[GLFW_KEY_S] == GLFW_PRESS)
-        {
-            auto duration = inputQueue.timeKey[GLFW_KEY_S];
-            auto t = std::min(time - prevTime, duration);
-            cam.pos = cam.pos + (cam.up^cam.dir)*t*10;
-        }
-        if(inputQueue.keyState[GLFW_KEY_F] == GLFW_PRESS)
-        {
-            auto duration = inputQueue.timeKey[GLFW_KEY_F];
-            auto t = std::min(time - prevTime, duration);
-            cam.pos = cam.pos - (cam.up^cam.dir)*t*10;
-        }
 
         while(inputQueue.hasInput())
         {
@@ -414,6 +384,31 @@ int main()
             {
                 if(input.state == GLFW_PRESS || input.state == GLFW_RELEASE) {
                     std::cout << input.time << ": " << (std::string("key was ") + ((input.state == GLFW_PRESS) ? "pressed" : "released")) << std::endl;
+
+                    if(input.state == GLFW_RELEASE && input.key == GLFW_KEY_E)
+                    {
+                        auto duration = input.time - inputQueue.timeKey[GLFW_KEY_E];
+                        auto t = std::min(time - prevTime, duration);
+                        cam.pos = cam.pos + cam.dir*t*3;
+                    }
+                    if(input.state == GLFW_RELEASE && input.key == GLFW_KEY_D)
+                    {
+                        auto duration = input.time - inputQueue.timeKey[GLFW_KEY_D];
+                        auto t = std::min(time - prevTime, duration);
+                        cam.pos = cam.pos - cam.dir*t*3;
+                    }
+                    if(input.state == GLFW_RELEASE && input.key == GLFW_KEY_S)
+                    {
+                        auto duration = input.time - inputQueue.timeKey[GLFW_KEY_S];
+                        auto t = std::min(time - prevTime, duration);
+                        cam.pos = cam.pos + (cam.up^cam.dir)*t*3;
+                    }
+                    if(input.state == GLFW_RELEASE && input.key == GLFW_KEY_F)
+                    {
+                        auto duration = time - inputQueue.timeKey[GLFW_KEY_F];
+                        auto t = std::min(time - prevTime, duration);
+                        cam.pos = cam.pos - (cam.up^cam.dir)*t*3;
+                    }
                 }
             }
 
@@ -431,31 +426,6 @@ int main()
                 panning = true;
             }
 
-            if(inputQueue.keyState[GLFW_KEY_E] == GLFW_RELEASE)
-            {
-                auto duration = inputQueue.timeKey[GLFW_KEY_E];
-                auto t = std::min(time - prevTime, duration);
-                cam.pos = cam.pos + cam.dir*t*10;
-            }
-            if(inputQueue.keyState[GLFW_KEY_D] == GLFW_RELEASE)
-            {
-                auto duration = inputQueue.timeKey[GLFW_KEY_D];
-                auto t = std::min(time - prevTime, duration);
-                cam.pos = cam.pos - cam.dir*t*10;
-            }
-            if(inputQueue.keyState[GLFW_KEY_S] == GLFW_RELEASE)
-            {
-                auto duration = inputQueue.timeKey[GLFW_KEY_S];
-                auto t = std::min(time - prevTime, duration);
-                cam.pos = cam.pos + (cam.up^cam.dir)*t*10;
-            }
-            if(inputQueue.keyState[GLFW_KEY_F] == GLFW_RELEASE)
-            {
-                auto duration = inputQueue.timeKey[GLFW_KEY_F];
-                auto t = std::min(time - prevTime, duration);
-                cam.pos = cam.pos - (cam.up^cam.dir)*t*10;
-            }
-
             if(panning && inputQueue.mouseState[GLFW_MOUSE_BUTTON_1] == GLFW_RELEASE) {
                 panningX = inputQueue.posX;
                 panningY = inputQueue.posY;
@@ -471,7 +441,35 @@ int main()
 
         }
 
+        if(inputQueue.keyState[GLFW_KEY_E] == GLFW_PRESS)
+        {
+            auto duration = inputQueue.timeKey[GLFW_KEY_E];
+            auto t = std::min(time - prevTime, duration);
+            cam.pos = cam.pos + cam.dir*t*3;
+        }
+        if(inputQueue.keyState[GLFW_KEY_D] == GLFW_PRESS)
+        {
+            auto duration = inputQueue.timeKey[GLFW_KEY_D];
+            auto t = std::min(time - prevTime, duration);
+            cam.pos = cam.pos - cam.dir*t*3;
+        }
+        if(inputQueue.keyState[GLFW_KEY_S] == GLFW_PRESS)
+        {
+            auto duration = inputQueue.timeKey[GLFW_KEY_S];
+            auto t = std::min(time - prevTime, duration);
+            cam.pos = cam.pos + (cam.up^cam.dir)*t*3;
+        }
+        if(inputQueue.keyState[GLFW_KEY_F] == GLFW_PRESS)
+        {
+            auto duration = inputQueue.timeKey[GLFW_KEY_F];
+            auto t = std::min(time - prevTime, duration);
+            cam.pos = cam.pos - (cam.up^cam.dir)*t*3;
+        }
+
+        //for(int i = 0; i < 100000; i++) {
         glfwPollEvents();
+        //}
+        
     }
 
     glfwTerminate();

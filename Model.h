@@ -1,6 +1,6 @@
 #include "Vector3.h"
 #include "Vector2.h"
-#include "Shader.h"
+#include "ShaderProgram.h"
 
 
 struct Vertex3d
@@ -16,7 +16,9 @@ struct Mesh3d
 {
     std::vector<Vertex3d> v;
     std::vector<int> triangles;
-    Shader* shader;
+    ShaderProgram* program;
+
+    void BuildShader();
 };
 
 
