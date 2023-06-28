@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{08483b5c-4197-4c36-8bf6-77052361ab4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Materials">
+      <UniqueIdentifier>{cf3ef958-2933-4b56-a1e3-dda3a00d304a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -54,6 +60,12 @@
     <ClCompile Include="ShaderProgram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Source Files\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="LambertianMaterial.cpp">
+      <Filter>Source Files\Materials</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -89,13 +101,22 @@
     <ClInclude Include="ShaderProgram.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Source Files\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="LambertianMaterial.h">
+      <Filter>Source Files\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="vertex.glsl">
-      <Filter>Source Files</Filter>
+      <Filter>Shaders</Filter>
     </None>
     <None Include="fragment.glsl">
-      <Filter>Source Files</Filter>
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="lambertian.glsl">
+      <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>
