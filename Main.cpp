@@ -139,21 +139,21 @@ int main()
         return -1;
     }
 
-    float vertices[] = {
-      -0.5f, -0.5f, -1.0f, 1, 1, 0, 0.0, 0.0,
-       0.5f, -0.5f, -1.0f, 0, 1, 1, 1.0, 0.0,
-       0.5f,  0.5f, -1.0f, 1, 0, 1, 1.0, 1.0,
-       -0.5f, 0.5f, -1.0f, 1, 0, 0, 0.0, 1.0
-    };
+    //float vertices[] = {
+    //  -0.5f, -0.5f, -1.0f, 1, 1, 0, 0.0, 0.0,
+    //   0.5f, -0.5f, -1.0f, 0, 1, 1, 1.0, 0.0,
+    //   0.5f,  0.5f, -1.0f, 1, 0, 1, 1.0, 1.0,
+    //   -0.5f, 0.5f, -1.0f, 1, 0, 0, 0.0, 1.0
+    //};
 
-    float vertices2[] = {
-      -0.5f, -0.5f, -1.5f, 1, 1, 0, 0.0, 0.0,
-       0.5f, -0.5f, -1.5f, 0, 1, 1, 1.0, 0.0,
-       0.5f,  0.5f, -1.5f, 1, 0, 1, 1.0, 1.0,
-       -0.5f, 0.5f, -1.5f, 1, 0, 0, 0.0, 1.0
-    };
+    //float vertices2[] = {
+    //  -0.5f, -0.5f, -1.5f, 1, 1, 0, 0.0, 0.0,
+    //   0.5f, -0.5f, -1.5f, 0, 1, 1, 1.0, 0.0,
+    //   0.5f,  0.5f, -1.5f, 1, 0, 1, 1.0, 1.0,
+    //   -0.5f, 0.5f, -1.5f, 1, 0, 0, 0.0, 1.0
+    //};
 
-    unsigned int VBO, VAO, VBO2, VAO2, EBO, EBO2;
+    //unsigned int VBO, VAO, VBO2, VAO2, EBO, EBO2;
 
     auto model = ReadFromFile("CornellBox-Original.obj");
 
@@ -162,8 +162,8 @@ int main()
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
     glCompileShader(vertexShader);*/
 
-    Shader vertexShader("vertex.glsl", GL_VERTEX_SHADER);
-    Shader fragmentShader("fragment.glsl", GL_FRAGMENT_SHADER);
+    //Shader vertexShader("vertex.glsl", GL_VERTEX_SHADER);
+    //Shader fragmentShader("fragment.glsl", GL_FRAGMENT_SHADER);
 
     /*unsigned int fragmentShader;
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -173,9 +173,9 @@ int main()
     /*unsigned int shaderProgram;
     shaderProgram = glCreateProgram();*/
 
-    ShaderProgram s;
-    s.AddShaders(vertexShader, fragmentShader);
-    s.Use();
+    //ShaderProgram s;
+    //s.AddShaders(vertexShader, fragmentShader);
+    //s.Use();
 
     int success;
     char infoLog[512];
@@ -200,97 +200,97 @@ int main()
 
     //auto timeUniformLocation = glGetUniformLocation(shaderProgram, "u_time");
 
-    auto [data, width, height] = readBMP("wall.bmp");
-    auto [data2, width2, height2] = readBMP("grass.bmp");
-    unsigned int textures[2];
-    glGenTextures(2, textures); 
+    //auto [data, width, height] = readBMP("wall.bmp");
+    //auto [data2, width2, height2] = readBMP("grass.bmp");
+    //unsigned int textures[2];
+    //glGenTextures(2, textures); 
 
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    //glGenVertexArrays(1, &VAO);
+    //glBindVertexArray(VAO);
 
-    glBindTexture(GL_TEXTURE_2D, textures[0]);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    //glBindTexture(GL_TEXTURE_2D, textures[0]);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    ////glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data.data());
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data.data());
 
-    glBindTexture(GL_TEXTURE_2D, textures[1]);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    //glBindTexture(GL_TEXTURE_2D, textures[1]);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    ////glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width2, height2, 0, GL_RGB, GL_UNSIGNED_BYTE, data2.data());
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width2, height2, 0, GL_RGB, GL_UNSIGNED_BYTE, data2.data());
 
 
-    /*unsigned int indices[2][3] = { {
-        0, 1, 2,
-        }, { 0, 2, 3 } };*/
+    ///*unsigned int indices[2][3] = { {
+    //    0, 1, 2,
+    //    }, { 0, 2, 3 } };*/
 
-    unsigned int indices[6] = { 0, 1, 2, 0, 2, 3 };
-    unsigned int indices2[6] = { 0, 1, 2, 0, 2, 3 };
+    //unsigned int indices[6] = { 0, 1, 2, 0, 2, 3 };
+    //unsigned int indices2[6] = { 0, 1, 2, 0, 2, 3 };
 
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    //glGenBuffers(1, &VBO);
+    //glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
+    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    //glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
-    glEnableVertexAttribArray(1);
+    //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
+    //glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
+    //glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    //glEnableVertexAttribArray(2);
 
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    //glGenBuffers(1, &EBO);
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    glBindVertexArray(VAO);
+    //glBindVertexArray(VAO);
 
-    checkError();
-    glUniform1i(glGetUniformLocation(s.GetId(), "text"), 0);
-
-    glGenVertexArrays(1, &VAO2);
-    glBindVertexArray(VAO2);
-
-    glGenBuffers(1, &VBO2);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-
-    glGenBuffers(1, &EBO2);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices2), indices2, GL_STATIC_DRAW);
+    //checkError();
+    //glUniform1i(glGetUniformLocation(s.GetId(), "text"), 0);
 
     //glGenVertexArrays(1, &VAO2);
     //glBindVertexArray(VAO2);
 
-    checkError();
-
     //glGenBuffers(1, &VBO2);
     //glBindBuffer(GL_ARRAY_BUFFER, VBO2);
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
+
+    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    //glEnableVertexAttribArray(0);
+
+    //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
+    //glEnableVertexAttribArray(1);
+
+    //glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    //glEnableVertexAttribArray(2);
 
     //glGenBuffers(1, &EBO2);
     //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2);
-    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[1]), indices[1], GL_STATIC_DRAW);
+    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices2), indices2, GL_STATIC_DRAW);
 
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, textures[1]);
+    ////glGenVertexArrays(1, &VAO2);
+    ////glBindVertexArray(VAO2);
+
+    //checkError();
+
+    ////glGenBuffers(1, &VBO2);
+    ////glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+    ////glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    ////glGenBuffers(1, &EBO2);
+    ////glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2);
+    ////glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[1]), indices[1], GL_STATIC_DRAW);
+
+    //glActiveTexture(GL_TEXTURE1);
+    //glBindTexture(GL_TEXTURE_2D, textures[1]);
 
     glEnable(GL_DEPTH_TEST);
 
@@ -329,15 +329,11 @@ int main()
     cam.pos = { -1, 1, 0 };
     real prevTime = glfwGetTime(), time = glfwGetTime();
 
+    model.Setup();
+
     while (!glfwWindowShouldClose(window)) {
         prevTime = time;
         time = glfwGetTime();
-        //glUniform1f(timeUniformLocation, time);
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-        //trans2.m_val[1][3] = (time-startTime)*0.05;
-        glActiveTexture(GL_TEXTURE0);
-        glBindVertexArray(VAO);
 
         Vector3 f(0, 0, 1), r(1, 0, 0);
         
@@ -345,32 +341,13 @@ int main()
         Vector3 h = f*std::sin(theta) + r*std::cos(theta);
         cam.dir = cam.up*std::sin(phi) + h*std::cos(phi);
 
-        /*std::cout << phi << " " << theta << std::endl;
-        std::cout << dir;*/
-
         auto T = getCameraMatrix( cam.pos, cam.pos + cam.dir, 59, 16.0/10.0);
-        // auto T = getCameraMatrix( { -1, 1, 0 }, Vector3{ -1, 1, 0 } + dir, 59, 16.0/10.0);
-        glUniformMatrix4fv(glGetUniformLocation(s.GetId(), "transform"), 1, GL_TRUE, (float*) T.m_val);
-        glBindTexture(GL_TEXTURE_2D, textures[0]);
-
-        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-        //glBindVertexArray(VAO2);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-        glBindVertexArray(VAO2);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, textures[1]);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-        //glDrawArrays(GL_TRIANGLES, 0, 6);
 
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(window, true);
         }
+
+        model.Draw();
 
         int test = 0;
 
