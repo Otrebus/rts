@@ -3,7 +3,7 @@
 #include "Shader.h"
 
 
-LambertianMaterial::LambertianMaterial(Vector3 Kd)
+LambertianMaterial::LambertianMaterial(Vector3 Kd) : Kd(Kd)
 {
     if(!shader) // Or rather !initialized or something
     {

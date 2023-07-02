@@ -28,6 +28,7 @@ Shader::Shader(std::string filename, unsigned int type)
     int success;
     char infoLog[512];
     glGetShaderiv(id, GL_COMPILE_STATUS, &success);
+
     if(!success)
     {
         glGetShaderInfoLog(id, 512, NULL, infoLog);

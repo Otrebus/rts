@@ -108,7 +108,7 @@ struct InputQueue // Tightly coupled with glfw
         }
         
         if(input.type == Input::Type::MousePosition) {
-            std::cout << input.posX << " " << input.posY << std::endl;
+            // std::cout << input.posX << " " << input.posY << std::endl;
             posX = input.posX, posY = input.posY;
         }
         return input;
@@ -334,7 +334,7 @@ int main()
     while (!glfwWindowShouldClose(window)) {
         prevTime = time;
         time = glfwGetTime();
-
+        
         Vector3 f(0, 0, 1), r(1, 0, 0);
         
         cam.up = Vector3 (0, 1, 0);
@@ -346,13 +346,16 @@ int main()
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(window, true);
         }
-
+        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
+        model.SetTransformationMatrix(T);
+        model.SetCameraPosition(cam.pos);
         model.Draw();
+        glfwSwapBuffers(window);
 
         int test = 0;
 
-        glfwSwapBuffers(window);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         while(inputQueue.hasInput())
         {
@@ -395,7 +398,7 @@ int main()
                 double xpos, ypos;
                 glfwGetCursorPos(window, &xpos, &ypos);
 
-                std::cout << panningY << " " << inputQueue.posY << std::endl;
+                // std::cout << panningY << " " << inputQueue.posY << std::endl;
                 startTheta = theta;
                 startPhi = phi;
                 panningX = xpos;

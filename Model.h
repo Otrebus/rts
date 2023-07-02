@@ -25,6 +25,9 @@ struct Mesh3d
 
     void Setup();
     void Draw();
+
+    void SetTransformationMatrix(const Matrix4&);
+    void SetCameraPosition(const Vector3&);
 };
 
 
@@ -34,5 +37,7 @@ public:
     std::vector<Mesh3d> meshes;
     void Setup();
     void Draw();
+
     void SetTransformationMatrix(const Matrix4&);
+    void SetCameraPosition(const Vector3&);
 };

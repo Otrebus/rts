@@ -7,14 +7,15 @@
 
 void Mesh3d::Setup()
 {
-    ShaderProgram s;
-
+    program = new ShaderProgram();
     material = new LambertianMaterial(Vector3(0.5, 0.5, 0.2));
 
     Shader vertexShader("vertex.glsl", GL_VERTEX_SHADER); // This should probably be saved somewhere
 
-    s.AddShaders(vertexShader, *material->GetShader());
-    s.Use();
+    program->AddShaders(vertexShader, *material->GetShader());
+    program->Use();
+
+    material->SetUniforms(program->GetId());
 
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
@@ -41,9 +42,25 @@ void Mesh3d::Setup()
 void Mesh3d::Draw()
 {
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, triangles.size(), GL_UNSIGNED_INT, 0);
 }
 
+
+void Mesh3d::SetTransformationMatrix(const Matrix4& m)
+{
+    glUniformMatrix4fv(glGetUniformLocation(program->GetId(), "transform"), 1, GL_TRUE, (float*) m.m_val);
+}
+
+void Model3d::SetCameraPosition(const Vector3& v)
+{
+    for(auto& mesh : meshes)
+        mesh.SetCameraPosition(v);    
+}
+
+void Mesh3d::SetCameraPosition(const Vector3& v)
+{
+    glUniform3fv(glGetUniformLocation(program->GetId(), "camPos"), 1, (GLfloat*) &v);
+}
 
 void Model3d::Setup()
 {
@@ -60,5 +77,6 @@ void Model3d::Draw()
 
 void Model3d::SetTransformationMatrix(const Matrix4& m)
 {
-
+    for(auto& mesh : meshes)
+        mesh.SetTransformationMatrix(m);
 }
