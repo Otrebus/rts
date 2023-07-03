@@ -8,7 +8,6 @@
 void Mesh3d::Setup()
 {
     program = new ShaderProgram();
-    material = new LambertianMaterial(Vector3(0.5, 0.5, 0.2));
 
     Shader vertexShader("vertex.glsl", GL_VERTEX_SHADER); // This should probably be saved somewhere
 
@@ -16,7 +15,6 @@ void Mesh3d::Setup()
     program->Use();
 
     material->SetUniforms(program->GetId());
-
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
@@ -41,6 +39,7 @@ void Mesh3d::Setup()
 
 void Mesh3d::Draw()
 {
+    program->Use();    
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, triangles.size(), GL_UNSIGNED_INT, 0);
 }
@@ -48,6 +47,7 @@ void Mesh3d::Draw()
 
 void Mesh3d::SetTransformationMatrix(const Matrix4& m)
 {
+    program->Use();   
     glUniformMatrix4fv(glGetUniformLocation(program->GetId(), "transform"), 1, GL_TRUE, (float*) m.m_val);
 }
 

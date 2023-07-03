@@ -8,6 +8,7 @@
 #include <charconv>
 #include "Model.h"
 #include "Logger.h"
+#include "LambertianMaterial.h"
 
 
 /**
@@ -548,11 +549,11 @@ std::vector<Token> tokenize(std::ifstream& file, std::string& str)
  * @param matefilestr The name of the materials file.
  * @returns A map from the name of the material to the material object.
  */
-std::map<std::string, int> ReadMaterialFile(const std::string& matfilestr)
+std::map<std::string, Material*> ReadMaterialFile(const std::string& matfilestr)
 {
     std::ifstream matfile;
     matfile.open(matfilestr.c_str(), std::ios::out);
-    std::map<std::string, int> materials;
+    std::map<std::string, Material*> materials;
 
     if(matfile.fail())
     {
@@ -562,8 +563,9 @@ std::map<std::string, int> ReadMaterialFile(const std::string& matfilestr)
 
     std::string str;
     auto parser = Parser(tokenize(matfile, str));
+    Vector3 Kd;
 
-    int curmat = 0;
+    LambertianMaterial* curmat = nullptr;
     std::string matName;
     bool phong = false, emissive = false;
     while(!parser.accept(Token::Eof))
@@ -606,14 +608,13 @@ std::map<std::string, int> ReadMaterialFile(const std::string& matfilestr)
                 //    matArg += std::string(token.str) + " ";
                 //}
 
-                //materials[matName] = curmat;
+                materials[matName] = curmat;
                 //std::stringstream ss(matArg);
                 //curmat->ReadProperties(ss);
             }
             else
             {
-                //curmat = new PhongMaterial;
-                curmat = 1;
+                curmat = new LambertianMaterial;
                 materials[matName] = curmat;
                 phong = true;
             }
@@ -643,7 +644,8 @@ std::map<std::string, int> ReadMaterialFile(const std::string& matfilestr)
                 throw ParseException("No current material specified"); // TODO: not really a parse exception
             if(phong)
             {
-                expectVector3d(parser);
+                Kd = expectVector3d(parser);
+                curmat->Kd = Kd;
             }
             else if(!emissive)
                 throw ParseException("Kd specified for custom material");
@@ -688,11 +690,11 @@ std::map<std::string, int> ReadMaterialFile(const std::string& matfilestr)
 
 Model3d ReadFromFile(const std::string& file)
 {
-    int curmat = 0;
+    Material* curmat = nullptr;
     std::ifstream myfile;
     myfile.open(file.c_str(), std::ios::out);
 
-    std::map<std::string, int> materials;
+    std::map<std::string, Material*> materials;
     std::set<MeshLight*> meshLights;
 
     bool normalInterp;
@@ -720,13 +722,14 @@ Model3d ReadFromFile(const std::string& file)
         return v;
     };
 
-    auto addMesh = [&smoothingTriangles, &smoothingVertices, &model] ()
+    auto addMesh = [&smoothingTriangles, &smoothingVertices, &model, &curmat] ()
     {
         std::vector<ObjVertex*> vertices[33];
 
         for(int i = 0; i < 33; i++)
         {
             Mesh3d mesh;
+            mesh.material = curmat;
             std::vector<Vertex3d> vertices;
             std::vector<int> indices;
             std::unordered_map<ObjVertex*, int> vertMap;

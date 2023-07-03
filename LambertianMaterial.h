@@ -9,7 +9,7 @@ class Shader;
 class LambertianMaterial : public Material
 {
 public:
-    LambertianMaterial(Vector3 Kd);
+    LambertianMaterial(Vector3 Kd = Vector3(0.0, 0.0, 0.0));
     Shader* GetShader();
     void SetUniforms(unsigned int program);
 

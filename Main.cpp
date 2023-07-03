@@ -354,9 +354,6 @@ int main()
         model.Draw();
         glfwSwapBuffers(window);
 
-        int test = 0;
-
-
         while(inputQueue.hasInput())
         {
             auto input = inputQueue.peek();
@@ -446,9 +443,7 @@ int main()
             cam.pos = cam.pos - (cam.up^cam.dir)*t*3;
         }
 
-        //for(int i = 0; i < 100000; i++) {
         glfwPollEvents();
-        //}
         
     }
 
