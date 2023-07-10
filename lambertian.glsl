@@ -9,13 +9,16 @@ out vec4 FragColor;
 void main()
 {
     vec3 n = normal;
-    normalize(toCam);
-    if(dot(toCam, n) < 0)
+    if(dot(normalize(toCam), n) < 0)
         n = -normal;
 
     vec3 lightDir = vec3(0.5f, -0.3f, -0.4f);
-    normalize(lightDir);
+    lightDir = normalize(lightDir);
     float lambertian = max(dot(n, -lightDir), 0.0);
-    vec3 color = Kd * lambertian;
+
+    FragColor = vec4(lambertian, lambertian, lambertian, 1.0);
+    vec3 color = Kd*lambertian;
     FragColor = vec4(color, 1.0f);
+    //FragColor = vec4(normal.x, normal.y, normal.z, 1.0f);
+    //FragColor = vec4(normal, 1.0);
 }

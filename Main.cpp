@@ -351,6 +351,7 @@ int main()
         
         model.SetTransformationMatrix(T);
         model.SetCameraPosition(cam.pos);
+
         model.Draw();
         glfwSwapBuffers(window);
 
