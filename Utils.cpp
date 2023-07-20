@@ -29,6 +29,29 @@ std::tuple<std::vector<char>, int, int> readBMP(std::string filename)
     return { out, width, height };
 }
 
+void writeBMP(std::vector<char> v, int width, int height, std::string filename)
+{
+    std::ofstream file;
+    file.open(filename, std::ios::binary);
+
+    auto pad = (4 - width*3%4)%4;
+    auto size = (width*3 + pad)*height;
+
+    file.write("BM", 2);
+    int header[] = { size + 54, 0, 54, 40, width, height, 1572865, 0, size, 0, 0, 0, 0 };
+    for(auto x : header)
+        for(int i = 0; i < 4; i++)
+            file.put(0xFF &(x >> (i*8)));
+
+    for(int y = height - 1; y >= 0; y--)
+    {
+        for(int x = 0; x < width*3; x++)
+            file.put(v[y*width*3 + x]);
+        for(int n = 0; n < pad; n++)
+            file.put(0);
+    }
+}
+
 
 Matrix4 getCameraMatrix(Vector3 pos, Vector3 lookAt, float fov, float ar)
 {
