@@ -6,7 +6,7 @@
 #include "Vector3.h"
 
 
-std::tuple<std::vector<char>, int, int> readBMP(std::string filename)
+std::tuple<std::vector<Vector3>, int, int> readBMP(std::string filename)
 {
     int i;
     std::ifstream file;
@@ -19,12 +19,20 @@ std::tuple<std::vector<char>, int, int> readBMP(std::string filename)
     int width = *(int*)&info[18];
     int height = *(int*)&info[22];
 
-    std::vector<char> out(3*width*height);
+    int widthPadded = (width*3 + 3) & (~3);
+    std::vector<Vector3> out(width*height);
     // read the rest of the data at once
-    file.read(out.data(), 3*width*height);
+    std::vector<char> buf(3*widthPadded*height);
+    file.read(buf.data(), 3*widthPadded*height);
 
-    for(i = 0; i < out.size(); i += 3)
-        std::swap(out[i], out[i+2]);
+    for(int y = height-1; y >= 0; y--)
+    {
+        for(int x = 0; x < width; x++)
+        {
+            int i = (height-1-y)*widthPadded + x;
+            out[y*height+x] = { real(buf[i])/255+(real)1e-6, real(buf[i+1])/255+(real)1e-6, real(buf[i+2])/255+(real)1e-6 };
+        }
+    }
 
     return { out, width, height };
 }

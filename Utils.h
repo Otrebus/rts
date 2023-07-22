@@ -9,5 +9,5 @@ class Vector3;
 
 using real = float;
 
-std::tuple<std::vector<char>, int, int> readBMP(std::string filename);
+std::tuple<std::vector<Vector3>, int, int> readBMP(std::string filename);
 Matrix4 getCameraMatrix(Vector3 pos, Vector3 lookAt, real fov, real ar);

@@ -200,8 +200,8 @@ int main()
 
     //auto timeUniformLocation = glGetUniformLocation(shaderProgram, "u_time");
 
-    //auto [data, width, height] = readBMP("wall.bmp");
-    //auto [data2, width2, height2] = readBMP("grass.bmp");
+    auto [data, width, height] = readBMP("wall.bmp");
+    auto [data2, width2, height2] = readBMP("grass.bmp");
     //unsigned int textures[2];
     //glGenTextures(2, textures); 
 
