@@ -4,11 +4,23 @@
 #include <tuple>
 #include "Matrix4.h"
 #include "Vector3.h"
+#include "Utils.h"
+
+
+std::tuple<int, int, int> vectorToRgb(const Vector3& color)
+{
+    return { int(255*color.z), int(255*color.y), int(255*color.x) };
+}
+
+
+Vector3 rgbToVector(int r, int g, int b)
+{
+    return Vector3 { real(r)/255+(real)1e-6, real(g)/255+(real)1e-6, real(b)/255+(real)1e-6 };
+}
 
 
 std::tuple<std::vector<Vector3>, int, int> readBMP(std::string filename)
 {
-    int i;
     std::ifstream file;
     file.open(filename, std::ios::binary);
 
@@ -30,14 +42,14 @@ std::tuple<std::vector<Vector3>, int, int> readBMP(std::string filename)
         for(int x = 0; x < width; x++)
         {
             int i = (height-1-y)*widthPadded + x;
-            out[y*height+x] = { real(buf[i])/255+(real)1e-6, real(buf[i+1])/255+(real)1e-6, real(buf[i+2])/255+(real)1e-6 };
+            out[y*height+x] = rgbToVector(buf[i], buf[i+1], buf[i+2]);
         }
     }
 
     return { out, width, height };
 }
 
-void writeBMP(std::vector<char> v, int width, int height, std::string filename)
+void writeBMP(std::vector<Vector3> v, int width, int height, std::string filename)
 {
     std::ofstream file;
     file.open(filename, std::ios::binary);
@@ -53,8 +65,12 @@ void writeBMP(std::vector<char> v, int width, int height, std::string filename)
 
     for(int y = height - 1; y >= 0; y--)
     {
-        for(int x = 0; x < width*3; x++)
-            file.put(v[y*width*3 + x]);
+        for(int x = 0; x < width; x++)
+        {
+            v[y*width*3+x];
+            v[y*width*3+x+1];
+            v[y*width*3+x+2];
+        }
         for(int n = 0; n < pad; n++)
             file.put(0);
     }
