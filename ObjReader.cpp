@@ -738,29 +738,35 @@ Model3d ReadFromFile(const std::string& file)
             {
                 for(auto& v : { t->v0, t->v1, t->v2 } )
                 {
+                    auto normal = v->normal;
+                    if(!normal)
+                        normal = ((t->v1->position-t->v0->position)^(t->v2->position-t->v0->position)).Normalized();
+
                     if(vertMap.find(v) == vertMap.end())
                     {
                         vertMap[v] = vertices.size();
-                        vertices.emplace_back(v->position, v->normal, v->texture);
+                        vertices.emplace_back(v->position, normal, v->texture);
                     }
                     indices.push_back(vertMap[v]);
                 }
                 delete t;
             }
 
-            for(auto& p : smoothingVertices[i]) {
-                for(auto& v : p.second)
-                    delete v;
-                p.second.clear();
+            if(indices.size()) {
+                for(auto& p : smoothingVertices[i]) {
+                    for(auto& v : p.second)
+                        delete v;
+                    p.second.clear();
+                }
+                smoothingVertices[i].clear();
+                smoothingTriangles[i].clear();
+
+                mesh.v = vertices;
+                mesh.triangles = indices;
+
+                if(mesh.triangles.size())
+                    model.meshes.push_back(mesh);
             }
-            smoothingVertices[i].clear();
-            smoothingTriangles[i].clear();
-
-            mesh.v = vertices;
-            mesh.triangles = indices;
-
-            if(mesh.triangles.size())
-                model.meshes.push_back(mesh);
         }
     };
 
@@ -867,6 +873,7 @@ Model3d ReadFromFile(const std::string& file)
                 positions.push_back(expectVector3d(parser));
             else if(parser.accept("usemtl"))
             {
+                addMesh();
                 auto mtl = std::string(expectStr(parser));
                 auto it = materials.find(mtl);
                 if(it == materials.end())

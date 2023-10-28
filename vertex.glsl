@@ -20,8 +20,9 @@ void main()
     float x = 1.0;
     normal = aNorm;
     toCam = camPos-aPos;
-    normalize(toCam);
+    toCam = normalize(toCam);
     gl_Position = transform*vec4(aPos.x, aPos.y, aPos.z, 1.0);
+
 //    col = aCol;
 //    tex = aTex;
 }

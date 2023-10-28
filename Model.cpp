@@ -59,6 +59,7 @@ void Model3d::SetCameraPosition(const Vector3& v)
 
 void Mesh3d::SetCameraPosition(const Vector3& v)
 {
+    program->Use();
     glUniform3fv(glGetUniformLocation(program->GetId(), "camPos"), 1, (GLfloat*) &v);
 }
 

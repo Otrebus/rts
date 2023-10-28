@@ -71,6 +71,10 @@ int main()
     int success;
     char infoLog[512];
 
+
+    auto [data, width, height] = readBMP("wall.bmp");
+    auto [data2, width2, height2] = readBMP("grass.bmp");
+
     glEnable(GL_DEPTH_TEST);
 
     auto startTime = glfwGetTime();
@@ -103,6 +107,7 @@ int main()
         
         model.SetTransformationMatrix(T);
         model.SetCameraPosition(cam.pos);
+
         model.Draw();
         glfwSwapBuffers(window);
 

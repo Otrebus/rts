@@ -1,13 +1,19 @@
 #version 450 core
 
-out vec4 FragColor;
-in vec3 col;
-in vec2 tex;
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aNorm;
+layout (location = 2) in vec2 aTex;
 
-uniform sampler2D text;
+out vec3 normal;
+out vec3 toCam;
+
+uniform mat4 transform;
+uniform vec3 camPos;
 
 void main()
 {
-    //FragColor = vec4(tex, 1.0f);
-    FragColor = texture(text, tex);
+    normal = aNorm;
+    toCam = camPos-aPos;
+    toCam = normalize(toCam);
+    gl_Position = transform*vec4(aPos.x, aPos.y, aPos.z, 1.0);
 }

@@ -66,7 +66,11 @@
     <ClCompile Include="LambertianMaterial.cpp">
       <Filter>Source Files\Materials</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="Input.cpp">
+=======
+    <ClCompile Include="Terrain.cpp">
+>>>>>>> daaf15331dcb615a09cc3f6573f49b4dec4d0a65
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -110,7 +114,11 @@
     <ClInclude Include="LambertianMaterial.h">
       <Filter>Source Files\Materials</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="Input.h">
+=======
+    <ClInclude Include="Terrain.h">
+>>>>>>> daaf15331dcb615a09cc3f6573f49b4dec4d0a65
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
