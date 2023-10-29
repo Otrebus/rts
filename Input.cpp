@@ -35,7 +35,7 @@ void initInput(GLFWwindow* window)
 
 
 void handleInput(GLFWwindow* window, real prevTime, real time, CameraControl& cameraControl) {
-
+    
     while(inputQueue.hasInput())
     {
         auto input = inputQueue.peek();
@@ -48,12 +48,15 @@ void handleInput(GLFWwindow* window, real prevTime, real time, CameraControl& ca
                 {
                     auto duration = input.time - inputQueue.timeKey[GLFW_KEY_E];
                     auto t = std::min(time - prevTime, duration);
+                    std::cout << t << " " << duration << std::endl;
+                    std::cout << cameraControl.getCamera()->pos.z;
                     cameraControl.moveForward(t*3);
                 }
                 if(input.state == GLFW_RELEASE && input.key == GLFW_KEY_D)
                 {
                     auto duration = input.time - inputQueue.timeKey[GLFW_KEY_D];
                     auto t = std::min(time - prevTime, duration);
+                    std::cout << "pos: " << cameraControl.getCamera()->pos.x << std::endl;
                     cameraControl.moveForward(-t*3);
                 }
                 if(input.state == GLFW_RELEASE && input.key == GLFW_KEY_S)
@@ -76,7 +79,6 @@ void handleInput(GLFWwindow* window, real prevTime, real time, CameraControl& ca
         inputQueue.posX = xpos;
         inputQueue.posY = ypos;
 
-
         if(!panning && inputQueue.mouseState[GLFW_MOUSE_BUTTON_1]) {
             glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -89,7 +91,6 @@ void handleInput(GLFWwindow* window, real prevTime, real time, CameraControl& ca
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
 
-
         if(panning) {
             std :: cout <<inputQueue.posX - prevX << std::endl;
             cameraControl.setAngle(
@@ -99,7 +100,7 @@ void handleInput(GLFWwindow* window, real prevTime, real time, CameraControl& ca
         }
         inputQueue.pop();
         
-        std::cout << cameraControl.getCamera()->dir.x << std::endl;
+        //std::cout << cameraControl.getCamera()->dir.x << std::endl;
 
         prevX = inputQueue.posX;
         prevY = inputQueue.posY;
@@ -121,12 +122,12 @@ void handleInput(GLFWwindow* window, real prevTime, real time, CameraControl& ca
     {
         auto duration = inputQueue.timeKey[GLFW_KEY_S];
         auto t = std::min(time - prevTime, duration);
-        cameraControl.moveRight(t*3);
+        cameraControl.moveRight(-t*3);
     }
     if(inputQueue.keyState[GLFW_KEY_F] == GLFW_PRESS)
     {
         auto duration = inputQueue.timeKey[GLFW_KEY_F];
         auto t = std::min(time - prevTime, duration);
-        cameraControl.moveRight(-t*3);
+        cameraControl.moveRight(t*3);
     }
 }

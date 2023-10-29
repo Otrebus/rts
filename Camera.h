@@ -19,7 +19,9 @@ class CameraControl
 public:
     CameraControl(int panningX, int panningY, bool panning, real theta, real phi, Camera* cam) :
         panningX(panningX), panningY(panningY), panning(panning), theta(theta), phi(phi), cam(cam)
-    {}
+    {
+        setAngle(theta, phi);
+    }
 
     real getPhi() { return phi; }
     real getTheta() { return theta; }
@@ -42,6 +44,6 @@ public:
     }
 
     void moveRight(real t) {
-        cam->pos = cam->pos + (cam->up^cam->dir)*t*3;
+        cam->pos = cam->pos - (cam->up^cam->dir)*t*3;
     }
 };
