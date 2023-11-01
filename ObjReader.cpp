@@ -695,7 +695,6 @@ Model3d ReadFromFile(const std::string& file)
     myfile.open(file.c_str(), std::ios::out);
 
     std::map<std::string, Material*> materials;
-    std::set<MeshLight*> meshLights;
 
     bool normalInterp;
     std::string str;

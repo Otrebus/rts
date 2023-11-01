@@ -8,6 +8,13 @@
 struct Vertex3d
 {
     Vertex3d(Vector3 pos, Vector3 normal, Vector2 tex) : pos(pos), normal(normal), tex(tex) {}
+    Vertex3d(std::initializer_list<float> list) 
+    {
+        auto it = list.begin();
+        pos = Vector3(*it++, *it++, *it++);
+        normal = Vector3(*it++, *it++, *it++);
+        tex = Vector2(*it++, *it++);
+    }
     Vector3 pos;
     Vector3 normal;
     Vector2 tex;
@@ -22,6 +29,8 @@ struct Mesh3d
 
     GLuint VBO, VAO, EBO;
     ShaderProgram* program;
+
+    Mesh3d(std::vector<Vertex3d>, std::vector<int> triangles, Material* material);
 
     void Setup();
     void Draw();

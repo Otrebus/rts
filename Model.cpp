@@ -5,11 +5,17 @@
 #include "LambertianMaterial.h"
 
 
+Mesh3d::Mesh3d(std::vector<Vertex3d> vertices, std::vector<int> triangles, Material* material)
+{
+
+}
+
+
 void Mesh3d::Setup()
 {
     program = new ShaderProgram();
 
-    Shader vertexShader("vertex.glsl", GL_VERTEX_SHADER); // This should probably be saved somewhere
+    Shader vertexShader("vertex.glsl", GL_VERTEX_SHADER);
 
     program->AddShaders(vertexShader, *material->GetShader());
     program->Use();

@@ -1,26 +1,27 @@
-#include "LambertianMaterial.h"
+#include "TextureMaterial.h"
 #include "Vector3.h"
 #include "Shader.h"
 
 
-LambertianMaterial::LambertianMaterial(Vector3 Kd) : Kd(Kd)
+TextureMaterial::TextureMaterial(const std::string& textureFile)
 {
     if(!shader) // Or rather !initialized or something
         shader = new Shader("lambertian.glsl", GL_FRAGMENT_SHADER);
+    auto [data, width, height] = readBMP(textureFile);
 }
 
 
-Shader* LambertianMaterial::GetShader()
+Shader* TextureMaterial::GetShader()
 {
     return shader;
 }
 
 
-void LambertianMaterial::SetUniforms(unsigned int program)
+void TextureMaterial::SetUniforms(unsigned int program)
 {
     GLuint kdLocation = glGetUniformLocation(program, "Kd");
     glUniform3f(kdLocation, Kd.x, Kd.y, Kd.z);
 }
 
 
-Shader* LambertianMaterial::shader = nullptr;
+Shader* TextureMaterial::shader = nullptr;

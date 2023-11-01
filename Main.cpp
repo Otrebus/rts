@@ -12,6 +12,7 @@
 #include "Matrix4.h"
 #include "ObjReader.h"
 #include "Model.h"
+#include "TextureMaterial.h"
 #include "Input.h"
 #include <queue>
 
@@ -68,12 +69,10 @@ int main()
 
     auto model = ReadFromFile("CornellBox-Original.obj");
 
+    TextureMaterial texture("wall.bmp");
+
     int success;
     char infoLog[512];
-
-
-    auto [data, width, height] = readBMP("wall.bmp");
-    auto [data2, width2, height2] = readBMP("grass.bmp");
 
     glEnable(GL_DEPTH_TEST);
 
@@ -91,6 +90,14 @@ int main()
     CameraControl cameraControl(0, 0, false, 2.2, -2.6, &cam);
     real time = glfwGetTime();
 
+    std::vector<Vertex3d> meshVertices = {
+        { -0.5f, -0.5f, -1.0f, 0, 0.0, 0.0, 1, 1 },
+        { 0.5f, -0.5f, -1.0f, 1, 1.0, 0.0, 0, 1, },
+        { 0.5f,  0.5f, -1.0f, 1, 1.0, 1.0, 1, 0, },
+        { -0.5f, 0.5f, -1.0f, 0, 0.0, 1.0, 1, 0, }
+    };
+
+    Mesh3d mesh(meshVertices, { 0, 1, 2, 2, 3, 0 }, &texture);
     model.Setup();
 
     while (!glfwWindowShouldClose(window)) {

@@ -8,94 +8,97 @@
     <ClCompile Include="Input.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
-    <ClCompile Include="LambertianMaterial.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
     <ClCompile Include="Logger.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="Matrix4.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="ObjReader.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderProgram.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="Terrain.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
     <ClCompile Include="Utils.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="Vector2.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="Vector3.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\temp\gl3w\src\gl3w.c">
       <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="LambertianMaterial.cpp">
+      <Filter>Source files\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Source files\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderProgram.cpp">
+      <Filter>Source files\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Source files\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjReader.cpp">
+      <Filter>Source files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>Source files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector3.cpp">
+      <Filter>Source files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector2.cpp">
+      <Filter>Source files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Matrix4.cpp">
+      <Filter>Source files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureMaterial.cpp">
+      <Filter>Source files\Materials</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
       <Filter>Source files</Filter>
     </ClInclude>
-    <ClInclude Include="Header.h">
-      <Filter>Source files</Filter>
-    </ClInclude>
     <ClInclude Include="Input.h">
-      <Filter>Source files</Filter>
-    </ClInclude>
-    <ClInclude Include="LambertianMaterial.h">
       <Filter>Source files</Filter>
     </ClInclude>
     <ClInclude Include="Logger.h">
       <Filter>Source files</Filter>
     </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Source files</Filter>
-    </ClInclude>
-    <ClInclude Include="Matrix4.h">
-      <Filter>Source files</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Source files</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjReader.h">
-      <Filter>Source files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Source files</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderProgram.h">
-      <Filter>Source files</Filter>
-    </ClInclude>
-    <ClInclude Include="Terrain.h">
-      <Filter>Source files</Filter>
-    </ClInclude>
     <ClInclude Include="Utils.h">
       <Filter>Source files</Filter>
     </ClInclude>
-    <ClInclude Include="Vector2.h">
-      <Filter>Source files</Filter>
+    <ClInclude Include="LambertianMaterial.h">
+      <Filter>Source files\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Source files\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderProgram.h">
+      <Filter>Source files\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Source files\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Source files\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjReader.h">
+      <Filter>Source files\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrain.h">
+      <Filter>Source files\Models</Filter>
     </ClInclude>
     <ClInclude Include="Vector3.h">
-      <Filter>Source files</Filter>
+      <Filter>Source files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2.h">
+      <Filter>Source files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix4.h">
+      <Filter>Source files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureMaterial.h">
+      <Filter>Source files\Materials</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -121,6 +124,18 @@
     </Filter>
     <Filter Include="Source files">
       <UniqueIdentifier>{48100221-30ac-4c20-bf8c-bf7e7808cdf6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Materials">
+      <UniqueIdentifier>{939fbeba-4a24-44a7-bbee-47dd888bc68c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Shaders">
+      <UniqueIdentifier>{45cf9774-a626-4dc3-a8eb-600e8115977f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Models">
+      <UniqueIdentifier>{56ebef11-3089-49c4-8c17-9ff355ced8a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Math">
+      <UniqueIdentifier>{13fc9ec7-6edb-4159-b632-313f0891eb2c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

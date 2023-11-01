@@ -7,7 +7,6 @@
 
 class Material;
 class TriangleMesh;
-class MeshLight;
 class Model3d;
 
 Model3d ReadFromFile(const std::string& file);
