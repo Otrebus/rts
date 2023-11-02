@@ -2,8 +2,10 @@
 
 out vec4 FragColor;
 
-in vec3 ourColor;
 in vec2 TexCoord;
+
+in vec3 normal;
+in vec3 toCam;
 
 uniform sampler2D texture1;
 

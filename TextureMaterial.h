@@ -13,9 +13,7 @@ public:
     Shader* GetShader();
     void SetUniforms(unsigned int program);
 
-    Vector3 Kd;
     static Shader* shader;
-    static GLint kdLoc;
-
+    unsigned int texture;
     ShaderProgram* program;
 };

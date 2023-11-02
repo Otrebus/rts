@@ -86,19 +86,20 @@ int main()
     initInput(window);
 
     Camera cam;
-    cam.pos = { -1, 1, 0 };
-    CameraControl cameraControl(0, 0, false, 2.2, -2.6, &cam);
+    cam.pos = { -1.5, 2.5, 3.5 };
+    CameraControl cameraControl(0, 0, false, 2.0, -2.6, &cam);
     real time = glfwGetTime();
 
     std::vector<Vertex3d> meshVertices = {
-        { -0.5f, -0.5f, -1.0f, 0, 0.0, 0.0, 1, 1 },
-        { 0.5f, -0.5f, -1.0f, 1, 1.0, 0.0, 0, 1, },
-        { 0.5f,  0.5f, -1.0f, 1, 1.0, 1.0, 1, 0, },
-        { -0.5f, 0.5f, -1.0f, 0, 0.0, 1.0, 1, 0, }
+        { -0.5f, 0.5f, 1.5f, 0, 0, 1, 0, 0 },
+        { 0.5f, 0.5f, 1.5f, 0, 0, 1, 1, 0, },
+        { 0.5f,  1.5f, 1.5f, 0, 0, 1, 1, 1, },
+        { -0.5f, 1.5f, 1.5f, 0, 0, 1, 0, 1, }
     };
 
     Mesh3d mesh(meshVertices, { 0, 1, 2, 2, 3, 0 }, &texture);
     model.Setup();
+    mesh.Setup();
 
     while (!glfwWindowShouldClose(window)) {
         auto prevTime = time;
@@ -111,10 +112,15 @@ int main()
         }
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
+       
+        mesh.SetTransformationMatrix(T);
+        mesh.SetCameraPosition(cam.pos);
+        mesh.Draw();
+
+        checkError();
+
         model.SetTransformationMatrix(T);
         model.SetCameraPosition(cam.pos);
-
         model.Draw();
         glfwSwapBuffers(window);
 

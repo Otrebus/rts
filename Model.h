@@ -11,9 +11,12 @@ struct Vertex3d
     Vertex3d(std::initializer_list<float> list) 
     {
         auto it = list.begin();
-        pos = Vector3(*it++, *it++, *it++);
-        normal = Vector3(*it++, *it++, *it++);
-        tex = Vector2(*it++, *it++);
+        auto x = *it++, y = *it++, z = *it++;
+        pos = Vector3(x, y, z);
+        auto nx = *it++, ny = *it++, nz = *it++;
+        normal = Vector3(nx, ny, nz);
+        auto tx = *it++, ty = *it++;
+        tex = Vector2(tx, ty);
     }
     Vector3 pos;
     Vector3 normal;
@@ -31,6 +34,7 @@ struct Mesh3d
     ShaderProgram* program;
 
     Mesh3d(std::vector<Vertex3d>, std::vector<int> triangles, Material* material);
+    Mesh3d();
 
     void Setup();
     void Draw();

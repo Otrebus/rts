@@ -5,9 +5,16 @@
 #include "LambertianMaterial.h"
 
 
+Mesh3d::Mesh3d()
+{
+}
+
+
 Mesh3d::Mesh3d(std::vector<Vertex3d> vertices, std::vector<int> triangles, Material* material)
 {
-
+    this->material = material;
+    this->v = vertices;
+    this->triangles = triangles;
 }
 
 

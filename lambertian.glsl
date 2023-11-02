@@ -1,6 +1,9 @@
 #version 450 core
 
 uniform vec3 Kd;
+
+in vec2 TexCoord;
+
 in vec3 normal;
 in vec3 toCam;
 
