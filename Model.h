@@ -1,56 +1,18 @@
+#include "Mesh3d.h"
 #include "Vector3.h"
 #include "Vector2.h"
 #include "Matrix4.h"
 #include "ShaderProgram.h"
 #include "Material.h"
-
-
-struct Vertex3d
-{
-    Vertex3d(Vector3 pos, Vector3 normal, Vector2 tex) : pos(pos), normal(normal), tex(tex) {}
-    Vertex3d(std::initializer_list<float> list) 
-    {
-        auto it = list.begin();
-        auto x = *it++, y = *it++, z = *it++;
-        pos = Vector3(x, y, z);
-        auto nx = *it++, ny = *it++, nz = *it++;
-        normal = Vector3(nx, ny, nz);
-        auto tx = *it++, ty = *it++;
-        tex = Vector2(tx, ty);
-    }
-    Vector3 pos;
-    Vector3 normal;
-    Vector2 tex;
-};
-
-
-struct Mesh3d
-{
-    std::vector<Vertex3d> v;
-    std::vector<int> triangles;
-    Material* material;
-
-    GLuint VBO, VAO, EBO;
-    ShaderProgram* program;
-
-    Mesh3d(std::vector<Vertex3d>, std::vector<int> triangles, Material* material);
-    Mesh3d();
-
-    void Setup();
-    void Draw();
-
-    void SetTransformationMatrix(const Matrix4&);
-    void SetCameraPosition(const Vector3&);
-};
+#include "Camera.h"
 
 
 struct Model3d
 {
 public:
     std::vector<Mesh3d> meshes;
-    void Setup();
+    void Setup(Scene* scene);
     void Draw();
 
-    void SetTransformationMatrix(const Matrix4&);
-    void SetCameraPosition(const Vector3&);
+    void UpdateUniforms();
 };

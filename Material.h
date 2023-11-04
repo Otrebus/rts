@@ -1,10 +1,12 @@
 #pragma once
 
 #include "Shader.h"
+#include "Scene.h"
 
 class Material
 {
 public:
-    virtual void SetUniforms(unsigned int program) = 0;
-    virtual Shader* GetShader() = 0;
+    virtual void Use() = 0;
+public:
+    virtual void UpdateUniforms(Scene* scene) = 0;
 };

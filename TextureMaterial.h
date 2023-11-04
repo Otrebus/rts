@@ -3,6 +3,7 @@
 #include "Material.h"
 #include "Vector3.h"
 #include "ShaderProgram.h"
+#include "Scene.h"
 
 class Shader;
 
@@ -10,10 +11,12 @@ class TextureMaterial : public Material
 {
 public:
     TextureMaterial(const std::string& textureFile);
-    Shader* GetShader();
-    void SetUniforms(unsigned int program);
+    void UpdateUniforms(Scene* scene);
+    void Use();
 
-    static Shader* shader;
+
+    static Shader* fragmentShader, *vertexShader;
     unsigned int texture;
     ShaderProgram* program;
+    Scene* scene;
 };

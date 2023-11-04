@@ -14,7 +14,7 @@ uniform vec3 camPos;
 
 void main()
 {
-	gl_Position = vec4(aPos, 1.0);
+	gl_Position = vec4(aPos, 1.0);  
 	TexCoord = aTex;
 
 	//float x = aPos.x + 0.1*cos(u_time);

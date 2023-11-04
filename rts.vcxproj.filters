@@ -53,6 +53,15 @@
     <ClCompile Include="TextureMaterial.cpp">
       <Filter>Source files\Materials</Filter>
     </ClCompile>
+    <ClCompile Include="Mesh3d.cpp">
+      <Filter>Source files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertex3d.cpp">
+      <Filter>Source files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -100,22 +109,25 @@
     <ClInclude Include="TextureMaterial.h">
       <Filter>Source files\Materials</Filter>
     </ClInclude>
+    <ClInclude Include="Mesh3d.h">
+      <Filter>Source files\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex3d.h">
+      <Filter>Source files\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="vertex.glsl">
-      <Filter>Shaders</Filter>
+    <None Include="lambertian.frag">
+      <Filter>Shaders\Fragment shaders</Filter>
     </None>
-    <None Include="lambertian.glsl">
-      <Filter>Shaders</Filter>
+    <None Include="vertexShader.vert">
+      <Filter>Shaders\Vertex shaders</Filter>
     </None>
-    <None Include="fragment.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="texturevertex.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="texturefragment.glsl">
-      <Filter>Shaders</Filter>
+    <None Include="texture.frag">
+      <Filter>Shaders\Fragment shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -136,6 +148,12 @@
     </Filter>
     <Filter Include="Source files\Math">
       <UniqueIdentifier>{13fc9ec7-6edb-4159-b632-313f0891eb2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Fragment shaders">
+      <UniqueIdentifier>{83966e35-4a7a-4aed-80e0-97cab93b427d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Vertex shaders">
+      <UniqueIdentifier>{57c7a282-1cfb-4e98-aa9e-2f06e719110b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

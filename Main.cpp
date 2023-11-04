@@ -14,6 +14,7 @@
 #include "Model.h"
 #include "TextureMaterial.h"
 #include "Input.h"
+#include "Scene.h"
 #include <queue>
 
 
@@ -97,30 +98,26 @@ int main()
         { -0.5f, 1.5f, 1.5f, 0, 0, 1, 0, 1, }
     };
 
+    Scene scene(&cam);
     Mesh3d mesh(meshVertices, { 0, 1, 2, 2, 3, 0 }, &texture);
-    model.Setup();
-    mesh.Setup();
+    model.Setup(&scene);
+    mesh.Setup(&scene);
 
     while (!glfwWindowShouldClose(window)) {
         auto prevTime = time;
         time = glfwGetTime();
-       
-        auto T = getCameraMatrix( cam.pos, cam.pos + cam.dir, 59, 16.0/10.0);
-
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(window, true);
         }
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
        
-        mesh.SetTransformationMatrix(T);
-        mesh.SetCameraPosition(cam.pos);
+        mesh.UpdateUniforms();
         mesh.Draw();
 
         checkError();
 
-        model.SetTransformationMatrix(T);
-        model.SetCameraPosition(cam.pos);
+        model.UpdateUniforms();
         model.Draw();
         glfwSwapBuffers(window);
 

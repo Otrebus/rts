@@ -6,8 +6,15 @@
 
 TextureMaterial::TextureMaterial(const std::string& textureFile)
 {
-    if(!shader) // Or rather !initialized or something
-        shader = new Shader("texturefragment.glsl", GL_FRAGMENT_SHADER);
+    if(!fragmentShader) // Or rather !initialized or something
+        fragmentShader = new Shader("texture.frag", GL_FRAGMENT_SHADER);
+    if(!vertexShader)
+        vertexShader = new Shader("vertexShader.vert", GL_VERTEX_SHADER);
+
+    program = new ShaderProgram();
+
+    program->AddShaders(*vertexShader, *fragmentShader);
+    program->Use();
     auto [data, width, height] = readBMP(textureFile);
 
     std::vector<unsigned char> data2;
@@ -34,15 +41,19 @@ TextureMaterial::TextureMaterial(const std::string& textureFile)
 }
 
 
-Shader* TextureMaterial::GetShader()
+void TextureMaterial::Use()
 {
-    return shader;
+    program->Use();
 }
 
 
-void TextureMaterial::SetUniforms(unsigned int program)
+void TextureMaterial::UpdateUniforms(Scene* scene)
 {
+    program->Use();
+    glUniform3fv(glGetUniformLocation(program->GetId(), "camPos"), 1, (GLfloat*) &scene->GetCamera()->pos);
+    glUniformMatrix4fv(glGetUniformLocation(program->GetId(), "transform"), 1, GL_TRUE, (float*)&scene->GetCamera()->GetMatrix(59, 16./10.).m_val);
 }
 
 
-Shader* TextureMaterial::shader = nullptr;
+Shader* TextureMaterial::fragmentShader = nullptr;
+Shader* TextureMaterial::vertexShader = nullptr;

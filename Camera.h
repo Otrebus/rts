@@ -2,9 +2,12 @@
 
 #include "Vector3.h"
 #include <iostream>
+#include "Matrix4.h"
 
 class Camera
 {
+public:
+    Matrix4 GetMatrix(float fov, float ar);
 public:
     Vector3 pos, dir, up;
 };

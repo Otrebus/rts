@@ -1,0 +1,25 @@
+#include <vector>
+#include "Vertex3d.h"
+#include "Material.h"
+#include "ShaderProgram.h"
+#include "Vector3.h"
+#include "Camera.h"
+#include "Scene.h"
+
+#pragma once
+struct Mesh3d
+{
+    std::vector<Vertex3d> v;
+    std::vector<int> triangles;
+    Material* material;
+
+    GLuint VBO, VAO, EBO;
+    Scene* scene;
+
+    Mesh3d(std::vector<Vertex3d>, std::vector<int> triangles, Material* material);
+    Mesh3d();
+
+    void Setup(Scene* scene);
+    void Draw();
+    void UpdateUniforms();
+};
