@@ -16,6 +16,7 @@
 #include "Input.h"
 #include "Scene.h"
 #include <queue>
+#include "Terrain.h"
 
 
 void checkError() {
@@ -68,9 +69,10 @@ int main()
         return -1;
     }
 
-    auto model = ReadFromFile("CornellBox-Original.obj");
+    auto model = Model3d("CornellBox-Original.obj");
 
     TextureMaterial texture("wall.bmp");
+    TextureMaterial texture2("grass.bmp");
 
     int success;
     char infoLog[512];
@@ -92,16 +94,28 @@ int main()
     real time = glfwGetTime();
 
     std::vector<Vertex3d> meshVertices = {
-        { -0.5f, 0.5f, 1.5f, 0, 0, 1, 0, 0 },
-        { 0.5f, 0.5f, 1.5f, 0, 0, 1, 1, 0, },
-        { 0.5f,  1.5f, 1.5f, 0, 0, 1, 1, 1, },
-        { -0.5f, 1.5f, 1.5f, 0, 0, 1, 0, 1, }
+        { -0.5f, 0.5f, 0.5f, 0, 0, 1, 0, 0 },
+        { 0.5f, 0.5f, 0.5f, 0, 0, 1, 1, 0, },
+        { 0.5f,  1.5f, 0.5f, 0, 0, 1, 1, 1, },
+        { -0.5f, 1.5f, 0.5f, 0, 0, 1, 0, 1, }
+    };
+
+    std::vector<Vertex3d> meshVertices2 = {
+        { 0.5f, 0.5f, 0.5f, 0, 0, 1, 0, 0 },
+        { 1.5f, 0.5f, 0.5f, 0, 0, 1, 1, 0, },
+        { 1.5f,  1.5f, 0.5f, 0, 0, 1, 1, 1, },
+        { 0.5f, 1.5f, 0.5f, 0, 0, 1, 0, 1, }
     };
 
     Scene scene(&cam);
     Mesh3d mesh(meshVertices, { 0, 1, 2, 2, 3, 0 }, &texture);
+    Mesh3d mesh2(meshVertices2, { 0, 1, 2, 2, 3, 0 }, &texture2);
+
     model.Setup(&scene);
     mesh.Setup(&scene);
+    mesh2.Setup(&scene);
+
+    Terrain terrain("Heightmap.bmp", &scene);
 
     while (!glfwWindowShouldClose(window)) {
         auto prevTime = time;
@@ -115,10 +129,15 @@ int main()
         mesh.UpdateUniforms();
         mesh.Draw();
 
+        mesh2.UpdateUniforms();
+        mesh2.Draw();
+
         checkError();
 
         model.UpdateUniforms();
         model.Draw();
+
+        terrain.Draw();
         glfwSwapBuffers(window);
 
         glfwPollEvents();

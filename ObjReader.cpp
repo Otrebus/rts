@@ -764,7 +764,7 @@ Model3d ReadFromFile(const std::string& file)
                 mesh.triangles = indices;
 
                 if(mesh.triangles.size())
-                    model.meshes.push_back(mesh);
+                    model.AddMesh(mesh);
             }
         }
     };

@@ -16,7 +16,7 @@ struct Mesh3d
     GLuint VBO, VAO, EBO;
     Scene* scene;
 
-    Mesh3d(std::vector<Vertex3d>, std::vector<int> triangles, Material* material);
+    Mesh3d(std::vector<Vertex3d> vertices, std::vector<int> triangles, Material* material);
     Mesh3d();
 
     void Setup(Scene* scene);

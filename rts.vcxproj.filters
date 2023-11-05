@@ -1,22 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="TODO" />
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="Input.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="Logger.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="Utils.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\temp\gl3w\src\gl3w.c">
       <Filter>Source files</Filter>
     </ClCompile>
@@ -38,9 +22,6 @@
     <ClCompile Include="ObjReader.cpp">
       <Filter>Source files\Models</Filter>
     </ClCompile>
-    <ClCompile Include="Terrain.cpp">
-      <Filter>Source files\Models</Filter>
-    </ClCompile>
     <ClCompile Include="Vector3.cpp">
       <Filter>Source files\Math</Filter>
     </ClCompile>
@@ -60,22 +41,28 @@
       <Filter>Source files\Models</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
+      <Filter>Source files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source files\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Source files\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Logger.cpp">
+      <Filter>Source files\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils.cpp">
+      <Filter>Source files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Terrain.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h">
-      <Filter>Source files</Filter>
-    </ClInclude>
-    <ClInclude Include="Input.h">
-      <Filter>Source files</Filter>
-    </ClInclude>
-    <ClInclude Include="Logger.h">
-      <Filter>Source files</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils.h">
-      <Filter>Source files</Filter>
-    </ClInclude>
     <ClInclude Include="LambertianMaterial.h">
       <Filter>Source files\Materials</Filter>
     </ClInclude>
@@ -92,9 +79,6 @@
       <Filter>Source files\Models</Filter>
     </ClInclude>
     <ClInclude Include="ObjReader.h">
-      <Filter>Source files\Models</Filter>
-    </ClInclude>
-    <ClInclude Include="Terrain.h">
       <Filter>Source files\Models</Filter>
     </ClInclude>
     <ClInclude Include="Vector3.h">
@@ -116,6 +100,21 @@
       <Filter>Source files\Models</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
+      <Filter>Source files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Source files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>Source files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Source files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>Source files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrain.h">
       <Filter>Source files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -154,6 +153,15 @@
     </Filter>
     <Filter Include="Shaders\Vertex shaders">
       <UniqueIdentifier>{57c7a282-1cfb-4e98-aa9e-2f06e719110b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Scene">
+      <UniqueIdentifier>{99a7cf4b-4382-4db5-a3e2-d1e974a9dd51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\System">
+      <UniqueIdentifier>{df516111-cb2d-4926-96e9-12a3cf452ba4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Utils">
+      <UniqueIdentifier>{ee1b7728-0fa5-41fc-a3a8-ad4a7c831ce1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

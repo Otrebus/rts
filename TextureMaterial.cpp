@@ -43,6 +43,7 @@ TextureMaterial::TextureMaterial(const std::string& textureFile)
 
 void TextureMaterial::Use()
 {
+    glBindTexture(GL_TEXTURE_2D, texture);
     program->Use();
 }
 

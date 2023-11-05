@@ -1,3 +1,4 @@
+#pragma once
 #include "Mesh3d.h"
 #include "Vector3.h"
 #include "Vector2.h"
@@ -7,12 +8,19 @@
 #include "Camera.h"
 
 
-struct Model3d
+class Model3d
 {
-public:
     std::vector<Mesh3d> meshes;
+
+public:
+    Model3d(std::string filename);
+    Model3d(const Mesh3d& mesh);
+    Model3d();
+
+
     void Setup(Scene* scene);
     void Draw();
+    void AddMesh(const Mesh3d& mesh);
 
     void UpdateUniforms();
 };

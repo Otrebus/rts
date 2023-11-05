@@ -2,9 +2,15 @@
 
 #include "Model.h"
 
+class Scene;
+
 class Terrain
 {
+private:
 	Model3d terrainModel;
+	Scene* scene;
 
-	void readFromFile(const std::string& filestr);
+public:
+	Terrain(const std::string& filestr, Scene* scene);
+	void Draw();
 };

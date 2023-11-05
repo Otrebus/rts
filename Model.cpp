@@ -1,9 +1,35 @@
 #include <vector>
+#include "Utils.h"
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Model.h"
 #include "LambertianMaterial.h"
 #include "Camera.h"
+#include "ObjReader.h"
+
+
+Model3d::Model3d(std::string filename)
+{
+    *this = ReadFromFile(filename);
+}
+
+
+Model3d::Model3d(const Mesh3d& mesh)
+{
+    AddMesh(mesh);
+}
+
+
+Model3d::Model3d()
+{
+}
+
+
+void Model3d::AddMesh(const Mesh3d& mesh)
+{
+    meshes.push_back(mesh);
+}
+
 
 void Model3d::Setup(Scene* scene)
 {
