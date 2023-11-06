@@ -17,14 +17,6 @@ TextureMaterial::TextureMaterial(const std::string& textureFile)
     program->Use();
     auto [data, width, height] = readBMP(textureFile);
 
-    std::vector<unsigned char> data2;
-    for(int i = 0; i < width*height; i++) {
-        auto [r, g, b] = vectorToRgb(data[i]);
-        data2.push_back(b);
-        data2.push_back(g);
-        data2.push_back(r);
-    }
-
     glGenTextures(1, &this->texture); 
 
     //glGenVertexArrays(1, &VAO);
@@ -37,7 +29,7 @@ TextureMaterial::TextureMaterial(const std::string& textureFile)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data2.data());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data.data());
 }
 
 

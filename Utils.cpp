@@ -19,7 +19,7 @@ Vector3 rgbToVector(unsigned char r, unsigned char g, unsigned char b)
 }
 
 
-std::tuple<std::vector<Vector3>, int, int> readBMP(std::string filename)
+std::tuple<std::vector<unsigned char>, int, int> readBMP(std::string filename, bool pad)
 {
     std::ifstream file;
     file.open(filename, std::ios::binary);
@@ -32,16 +32,21 @@ std::tuple<std::vector<Vector3>, int, int> readBMP(std::string filename)
     int height = *(int*)&info[22];
 
     int widthPadded = (width*3 + 3) & (~3);
-    std::vector<Vector3> out(width*height);
+
+    int outWidth = pad ? widthPadded : width*3;
+    std::vector<unsigned char> out(widthPadded*height);
     std::vector<char> buf(widthPadded*height);
     file.read(buf.data(), widthPadded*height);
 
     for(int y = height-1; y >= 0; y--)
     {
-        for(int x = 0; x < width; x++)
+        for(int x = 0; x < width*3; x += 3)
         {
-            int i = (height-1-y)*widthPadded + x*3;
-            out[y*height+x] = rgbToVector(buf[i+2], buf[i+1], buf[i]);
+            int i = (height-1-y)*widthPadded + x;
+            //out.insert(out.end(), { buf[i+2], buf[i+1], buf[i] } );
+            out[outWidth*y+x] = buf[i+2];
+            out[outWidth*y+x+1] = buf[i+1];
+            out[outWidth*y+x+2] = buf[i];
         }
     }
 

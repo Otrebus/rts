@@ -9,7 +9,7 @@ class Vector3;
 
 using real = float;
 
-std::tuple<std::vector<Vector3>, int, int> readBMP(std::string filename);
+std::tuple<std::vector<unsigned char>, int, int> readBMP(std::string filename, bool pad = true);
 
 Vector3 rgbToVector(unsigned char r, unsigned char g, unsigned char b);
 std::tuple<int, int, int> vectorToRgb(const Vector3& color);

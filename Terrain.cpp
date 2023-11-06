@@ -8,7 +8,7 @@
 
 Terrain::Terrain(const std::string& fileName, Scene* scene) : scene(scene)
 {
-    auto [colors, width, height] = readBMP(fileName);
+    auto [colors, width, height] = readBMP(fileName, false);
     std::vector<Vertex3d> vertices(width*height);
     std::vector<int> points;
 
@@ -18,7 +18,7 @@ Terrain::Terrain(const std::string& fileName, Scene* scene) : scene(scene)
         {
             real X = x/(width-1.0f);
             real Y = y/(height-1.0f);
-            vertices[height*y+x] = Vertex3d(X, Y, colors[height*y+x].x/10 + 3.0, 0.0, 0.0, 1.0, X, Y);
+            vertices[height*y+x] = Vertex3d(X, Y, colors[width*3*y+x*3]/255.0/10 + 3.0, 0.0, 0.0, 1.0, X, Y);
         }
     }
     for(int y = 0; y < height-1; y++)
