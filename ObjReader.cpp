@@ -256,7 +256,7 @@ bool acceptAnyCaseStr(Parser& parser, const std::string_view& str)
     if(parser.peek().type != Token::String)
         return false;
 
-    const auto& a = parser.peek().str;
+    auto a = parser.peek().str;
     if(!std::equal(a.begin(), a.end(), str.begin(), str.end(), [](char a, char b) { return tolower(a) == tolower(b); }))
         return false;
 
@@ -291,7 +291,7 @@ int expectInt(Parser& parser)
         throw ParseException("Integer expected", parser.peek());
 
     int d = 0;
-    const auto& st = parser.next().str;
+    auto st = parser.next().str;
     auto res = std::from_chars(st.data(), st.data() + st.size(), d);
     if(res.ec == std::errc::invalid_argument)
         throw ParseException("Integer expected", parser.peek());
@@ -311,7 +311,7 @@ std::tuple<bool, int> acceptInt(Parser& parser)
         return { false, 0 };
 
     int d = 0;
-    const auto& st = parser.next().str;
+    auto st = parser.next().str;
     auto res = std::from_chars(st.data(), st.data() + st.size(), d);
 
     return { true, d };
@@ -330,7 +330,7 @@ double expectReal(Parser& parser)
         throw ParseException("Floating point expected", parser.peek());
 
     double d = 0;
-    const auto& st = parser.next().str;
+    auto st = parser.next().str;
     auto res = std::from_chars(st.data(), st.data() + st.size(), d);
 
     return d;
