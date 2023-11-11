@@ -19,9 +19,10 @@ void main()
     lightDir = normalize(lightDir);
     float lambertian = max(dot(n, -lightDir), 0.0);
 
-    FragColor = vec4(lambertian, lambertian, lambertian, 1.0);
-    vec3 color = Kd*lambertian;
+    vec3 ambient = 0.2*vec3(Kd.x, Kd.y, Kd.z);
+    vec3 color = Kd*lambertian + ambient;
+
+    color = clamp(color, 0.0, 1.0);
+
     FragColor = vec4(color, 1.0f);
-    //FragColor = vec4(normal.x, normal.y, normal.z, 1.0f);
-    //FragColor = vec4(normal, 1.0);
 }
