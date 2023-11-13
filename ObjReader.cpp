@@ -549,7 +549,7 @@ std::vector<Token> tokenize(std::ifstream& file, std::string& str)
  * @param matefilestr The name of the materials file.
  * @returns A map from the name of the material to the material object.
  */
-std::map<std::string, Material*> ReadMaterialFile(const std::string& matfilestr)
+std::map<std::string, Material*> Model3d::ReadMaterialFile(const std::string& matfilestr)
 {
     std::ifstream matfile;
     matfile.open(matfilestr.c_str(), std::ios::out);
@@ -608,7 +608,7 @@ std::map<std::string, Material*> ReadMaterialFile(const std::string& matfilestr)
                 //    matArg += std::string(token.str) + " ";
                 //}
 
-                materials[matName] = curmat;
+                //materials[matName] = curmat;
                 //std::stringstream ss(matArg);
                 //curmat->ReadProperties(ss);
             }
@@ -616,6 +616,7 @@ std::map<std::string, Material*> ReadMaterialFile(const std::string& matfilestr)
             {
                 curmat = new LambertianMaterial;
                 materials[matName] = curmat;
+                this->materials.push_back(curmat);
                 phong = true;
             }
         }
@@ -688,7 +689,7 @@ std::map<std::string, Material*> ReadMaterialFile(const std::string& matfilestr)
 }
 
 
-Model3d ReadFromFile(const std::string& file)
+void Model3d::ReadFromFile(const std::string& file)
 {
     Material* curmat = nullptr;
     std::ifstream myfile;
@@ -708,7 +709,6 @@ Model3d ReadFromFile(const std::string& file)
     std::vector<ObjTriangle*> smoothingTriangles[33];
 
     std::vector<Mesh3d> mesh;
-    Model3d model;
 
     auto getOrMakeVertex = [&smoothingVertices, &positions, &normals, &textureCoords] (int group, int position, int normal, int tex)
     {
@@ -721,7 +721,7 @@ Model3d ReadFromFile(const std::string& file)
         return v;
     };
 
-    auto addMesh = [&smoothingTriangles, &smoothingVertices, &model, &curmat] ()
+    auto addMesh = [&smoothingTriangles, &smoothingVertices, this, &curmat] ()
     {
         std::vector<ObjVertex*> vertices[33];
 
@@ -764,7 +764,7 @@ Model3d ReadFromFile(const std::string& file)
                 mesh.triangles = indices;
 
                 if(mesh.triangles.size())
-                    model.AddMesh(mesh);
+                    this->AddMesh(mesh);
             }
         }
     };
@@ -895,6 +895,4 @@ Model3d ReadFromFile(const std::string& file)
         logger.Box(p.message);
         __debugbreak();
     }
-
-    return model;
 }

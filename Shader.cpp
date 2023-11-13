@@ -36,6 +36,11 @@ Shader::Shader(std::string filename, unsigned int type)
     }
 }
 
+Shader::~Shader()
+{
+    glDeleteShader(id);
+}
+
 unsigned int Shader::GetId() const
 {
     return id;

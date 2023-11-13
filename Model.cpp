@@ -10,7 +10,7 @@
 
 Model3d::Model3d(std::string filename)
 {
-    *this = ReadFromFile(filename);
+    ReadFromFile(filename);
 }
 
 
@@ -24,6 +24,11 @@ Model3d::Model3d()
 {
 }
 
+Model3d::~Model3d()
+{
+    for(auto mat : materials)
+        delete mat;
+}
 
 void Model3d::AddMesh(const Mesh3d& mesh)
 {

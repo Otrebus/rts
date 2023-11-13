@@ -132,10 +132,13 @@ int main()
         mesh2.UpdateUniforms();
         mesh2.Draw();
 
-        checkError();
-
         model.UpdateUniforms();
         model.Draw();
+
+        // Temporary to work out some input bugs
+        auto x = 0; 
+        for(int i = 0; i < 100000000; i++)
+            x++;
 
         terrain.Draw();
         glfwSwapBuffers(window);

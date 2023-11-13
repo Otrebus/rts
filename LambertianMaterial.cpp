@@ -18,6 +18,11 @@ LambertianMaterial::LambertianMaterial(Vector3 Kd) : Kd(Kd)
 }
 
 
+LambertianMaterial::~LambertianMaterial()
+{
+}
+
+
 Shader* LambertianMaterial::GetShader()
 {
     return fragmentShader;

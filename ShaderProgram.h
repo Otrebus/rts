@@ -7,6 +7,7 @@ class ShaderProgram
 
 public:
     ShaderProgram();
+    ~ShaderProgram();
 
     template<typename... Shaders>
     void AddShaders(const Shaders&... shaders)

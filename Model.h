@@ -6,17 +6,22 @@
 #include "ShaderProgram.h"
 #include "Material.h"
 #include "Camera.h"
+#include <map>
 
 
 class Model3d
 {
     std::vector<Mesh3d> meshes;
+    std::vector<Material*> materials;
 
 public:
     Model3d(std::string filename);
     Model3d(const Mesh3d& mesh);
     Model3d();
+    ~Model3d();
 
+    std::map<std::string, Material*> ReadMaterialFile(const std::string& matfilestr);
+    void ReadFromFile(const std::string& file);
 
     void Setup(Scene* scene);
     void Draw();

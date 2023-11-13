@@ -32,6 +32,7 @@ struct InputQueue
 
     InputQueue()
     {
+        posX = posY = NAN;
         std::memset(mouseState, 0, sizeof(mouseState));
         std::memset(keyState, 0, sizeof(keyState));
     }
