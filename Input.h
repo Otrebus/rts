@@ -66,17 +66,20 @@ struct InputQueue
     {
         auto input = queue.front();
         queue.pop();
-        if(input.type == Input::Type::MousePress) {
+        if(input.type == Input::Type::MousePress)
+        {
             timeMouse[input.key] = input.time;
             mouseState[input.key] = input.state;
         }
 
-        if(input.type == Input::Type::KeyPress) {
+        if(input.type == Input::Type::KeyPress)
+        {
             timeKey[input.key] = input.time;
             keyState[input.key] = input.state;
         }
         
-        if(input.type == Input::Type::MousePosition) {
+        if(input.type == Input::Type::MousePosition)
+        {
             // std::cout << input.posX << " " << input.posY << std::endl;
             posX = input.posX, posY = input.posY;
         }
