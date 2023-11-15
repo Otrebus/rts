@@ -56,6 +56,21 @@ Terrain::Terrain(const std::string& fileName, Scene* scene) : scene(scene)
 
 void Terrain::Draw()
 {
+    if(drawMode == DrawMode::Wireframe)
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     terrainModel.UpdateUniforms();
     terrainModel.Draw();
+    if(drawMode != DrawMode::Normal)
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
+void Terrain::SetDrawMode(DrawMode d)
+{
+    drawMode = d;
+}
+
+
+Terrain::DrawMode Terrain::GetDrawMode() const
+{
+    return drawMode;
 }

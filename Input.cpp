@@ -5,6 +5,7 @@
 #include <cmath>
 #include <iostream>
 #include "Camera.h"
+#include "Terrain.h"
 
 
 InputQueue inputQueue;
@@ -34,7 +35,7 @@ void initInput(GLFWwindow* window)
 }
 
 
-void handleInput(GLFWwindow* window, real prevTime, real time, CameraControl& cameraControl) {
+void handleInput(GLFWwindow* window, real prevTime, real time, CameraControl& cameraControl, Terrain& terrain) {
     
     while(inputQueue.hasInput())
     {
@@ -76,10 +77,12 @@ void handleInput(GLFWwindow* window, real prevTime, real time, CameraControl& ca
                     inputQueue.timeKey[GLFW_KEY_F] += t;
                     cameraControl.moveRight(-t*3);
                 }
-                if(input.state == GLFW_RELEASE && input.key == GLFW_KEY_G)
+                if(input.key == GLFW_KEY_Z && input.state == GLFW_PRESS)
                 {
-                    auto duration = time - inputQueue.timeKey[GLFW_KEY_G];
-                    auto t = std::min(time - prevTime, duration);
+                    if(terrain.GetDrawMode() == Terrain::DrawMode::Normal)
+                        terrain.SetDrawMode(Terrain::DrawMode::Wireframe);
+                    else
+                        terrain.SetDrawMode(Terrain::DrawMode::Normal);
                 }
             }
         }
@@ -142,10 +145,5 @@ void handleInput(GLFWwindow* window, real prevTime, real time, CameraControl& ca
         auto t = std::min(time - prevTime, duration);
         inputQueue.timeKey[GLFW_KEY_F] += t;
         cameraControl.moveRight(t*3);
-    }
-    if(inputQueue.keyState[GLFW_KEY_G] == GLFW_PRESS)
-    {
-        auto duration = inputQueue.timeKey[GLFW_KEY_F];
-        auto t = std::min(time - prevTime, duration);
     }
 }

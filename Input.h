@@ -3,10 +3,11 @@
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
 #include "Camera.h"
+#include "Terrain.h"
 
 
 void initInput(GLFWwindow* window);
-void handleInput(GLFWwindow* window, real prevTime, real time, CameraControl& cameraControl);
+void handleInput(GLFWwindow* window, real prevTime, real time, CameraControl& cameraControl, Terrain& terrain);
 
 
 struct Input

@@ -123,6 +123,7 @@ int main()
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(window, true);
         }
+
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
        
@@ -140,7 +141,7 @@ int main()
 
         glfwPollEvents();
         
-        handleInput(window, prevTime, time, cameraControl);
+        handleInput(window, prevTime, time, cameraControl, terrain);
     }
 
     glfwTerminate();
