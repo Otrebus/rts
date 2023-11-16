@@ -20,6 +20,8 @@ struct Mesh3d
     Mesh3d();
 
     void Setup(Scene* scene);
+    void TearDown(Scene* scene);
+
     void Draw();
     void UpdateUniforms();
 };

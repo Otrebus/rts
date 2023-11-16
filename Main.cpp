@@ -144,6 +144,10 @@ int main()
         handleInput(window, prevTime, time, cameraControl, terrain);
     }
 
+    model.TearDown(&scene);
+    mesh.TearDown(&scene);
+    mesh2.TearDown(&scene);
+
     glfwTerminate();
     return 0;
 }

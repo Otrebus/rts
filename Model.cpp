@@ -43,6 +43,13 @@ void Model3d::Setup(Scene* scene)
 }
 
 
+void Model3d::TearDown(Scene* scene)
+{
+    for(auto& mesh : meshes)
+        mesh.TearDown(scene);
+}
+
+
 void Model3d::Draw()
 {
     for(auto& mesh : meshes)

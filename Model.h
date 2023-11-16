@@ -24,6 +24,8 @@ public:
     void ReadFromFile(const std::string& file);
 
     void Setup(Scene* scene);
+    void TearDown(Scene* scene);
+
     void Draw();
     void AddMesh(const Mesh3d& mesh);
 

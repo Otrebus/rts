@@ -40,6 +40,12 @@ void Mesh3d::Setup(Scene* s)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*triangles.size(), triangles.data(), GL_STATIC_DRAW);
 }
 
+void Mesh3d::TearDown(Scene* s)
+{
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+    glDeleteVertexArrays(1, &VAO);
+}
 
 void Mesh3d::Draw()
 {
