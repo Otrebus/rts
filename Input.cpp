@@ -79,8 +79,11 @@ void handleInput(GLFWwindow* window, real prevTime, real time, CameraControl& ca
                 }
                 if(input.key == GLFW_KEY_Z && input.state == GLFW_PRESS)
                 {
-                    if(terrain.GetDrawMode() == Terrain::DrawMode::Normal)
+                    auto mode = terrain.GetDrawMode();
+                    if(mode == Terrain::DrawMode::Normal)
                         terrain.SetDrawMode(Terrain::DrawMode::Wireframe);
+                    else if(mode == Terrain::DrawMode::Wireframe)
+                        terrain.SetDrawMode(Terrain::DrawMode::Flat);
                     else
                         terrain.SetDrawMode(Terrain::DrawMode::Normal);
                 }

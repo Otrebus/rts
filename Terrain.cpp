@@ -7,7 +7,7 @@
 #include "LambertianMaterial.h"
 
 
-Terrain::Terrain(const std::string& fileName, Scene* scene) : scene(scene)
+Mesh3d Terrain::CreateMesh(std::string fileName)
 {
     auto [colors, width, height] = readBMP(fileName, false);
     std::vector<Vertex3d> vertices(width*height);
@@ -45,13 +45,82 @@ Terrain::Terrain(const std::string& fileName, Scene* scene) : scene(scene)
         }
     }
     
-    //TextureMaterial* mat = new TextureMaterial(fileName);
     Material* mat = new LambertianMaterial(Vector3(0.5, 0.5, 0.5));
     auto terrainMesh = Mesh3d(vertices, points, mat);
-    terrainModel = Model3d(terrainMesh);
+    return terrainMesh;
+}
 
-    terrainModel.Setup(scene);
+
+Mesh3d Terrain::CreateFlatMesh(std::string fileName)
+{
+    auto [colors, width, height] = readBMP(fileName, false);
+    std::vector<Vector3> vectors(width*height);
+    std::vector<Vertex3d> vertices(width*height);
+    std::vector<int> points;
+
+    auto H = [&colors, &width] (int x, int y) {
+        return colors[width*3*y+x*3]/255.0/10;
+    };
+
+    for(int y = height-1; y >= 0; y--)
+    {
+        for(int x = 0; x < width; x++)
+        {
+            real X = x/(width-1.0f);
+            real Y = y/(height-1.0f);
+            vectors[width*y+x] = Vector3(X, Y, H(x, y) + 3.0);
+        }
+    }
+
+    for(int y = 0; y < height-1; y++)
+    {
+        for(int x = 0; x < width-1; x++)
+        {
+            int a = width*y + x;
+            int b = width*y + x+1;
+            int c = width*(y+1) + x+1;
+            int d = width*(y+1) + x;
+
+            auto N1 = (vectors[b]-vectors[a])^(vectors[c]-vectors[a]);
+            N1.Normalize();
+            auto N2 = (vectors[c]-vectors[a])^(vectors[d]-vectors[a]);
+            N2.Normalize();
+
+            int j = vertices.size();
+            for(auto i : { a, b, c } )
+                vertices.push_back(Vertex3d(vectors[i].x, vectors[i].y, vectors[i].z, N1.x, N1.y, N1.z, 0, 0));
+            for(auto i : { a, c, d } )
+                vertices.push_back(Vertex3d(vectors[i].x, vectors[i].y, vectors[i].z, N2.x, N2.y, N2.z, 0, 0));
+
+            for(int i = vertices.size()-6; i < vertices.size(); i++)
+                points.push_back(i);
+        }
+    }
+    
+    Material* mat = new LambertianMaterial(Vector3(0.5, 0.5, 0.5));
+    auto terrainMesh = Mesh3d(vertices, points, mat);
+    return terrainMesh;
+}
+
+
+Terrain::Terrain(const std::string& fileName, Scene* scene) : fileName(fileName), scene(scene)
+{
+    SetUp();
 };
+
+
+void Terrain::SetUp()
+{
+    auto terrainMesh = drawMode == DrawMode::Flat ? CreateFlatMesh(fileName) : CreateMesh(fileName);
+    terrainModel = Model3d(terrainMesh);
+    terrainModel.Setup(scene);
+}
+
+
+void Terrain::TearDown()
+{
+    terrainModel.TearDown(scene);
+}
 
 
 void Terrain::Draw()
@@ -67,6 +136,11 @@ void Terrain::Draw()
 void Terrain::SetDrawMode(DrawMode d)
 {
     drawMode = d;
+    std::cout << "Setting drawmode " << drawMode << std::endl;
+    if(drawMode == DrawMode::Flat || drawMode == DrawMode::Normal) {
+        TearDown();
+        SetUp();
+    }
 }
 
 

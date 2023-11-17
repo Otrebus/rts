@@ -58,7 +58,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_DEPTH_BITS, 24);
 
-    auto window = glfwCreateWindow(1000, 600, "awesome", nullptr, nullptr);
+    auto window = glfwCreateWindow(1000, 600, "PolRts", nullptr, nullptr);
     if (!window) {
         return -1;
     }

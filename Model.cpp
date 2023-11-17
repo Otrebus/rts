@@ -32,6 +32,7 @@ Model3d::~Model3d()
 
 void Model3d::AddMesh(const Mesh3d& mesh)
 {
+    std::cout << "Pushing back";
     meshes.push_back(mesh);
 }
 
