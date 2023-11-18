@@ -20,7 +20,7 @@
 
 
 void checkError() {
-GLenum error;
+    GLenum error;
     error = glGetError();
 
     if (error != GL_NO_ERROR)
@@ -44,7 +44,6 @@ GLenum error;
 }
 
 static const real pi = std::acos(-1);
-
 
 int main()
 {

@@ -34,3 +34,50 @@ Matrix4 Camera::GetMatrix(float fov, float ar)
 
     return persp*proj*trans;
 }
+
+
+CameraControl::CameraControl(int panningX, int panningY, bool panning, real theta, real phi, Camera* cam) :
+    panningX(panningX), panningY(panningY), panning(panning), theta(theta), phi(phi), cam(cam)
+{
+    setAngle(theta, phi);
+}
+
+
+real CameraControl::getPhi()
+{
+    return phi;
+}
+
+
+real CameraControl::getTheta()
+{
+    return theta;
+}
+
+
+Camera* CameraControl::getCamera()
+{ 
+    return cam;
+}
+
+
+void CameraControl::setAngle(real theta, real phi) {
+    Vector3 f(0, 0, 1), r(1, 0, 0);
+
+    this->theta = theta;
+    this->phi = phi;
+
+    cam->up = Vector3 (0, 1, 0);
+    Vector3 h = f*std::sin(theta) + r*std::cos(theta);
+    cam->dir = cam->up*std::sin(phi) + h*std::cos(phi);
+}
+
+
+void CameraControl::moveForward(real t) {
+    cam->pos = cam->pos + cam->dir*t*3;
+}
+
+
+void CameraControl::moveRight(real t) {
+    cam->pos = cam->pos - (cam->up^cam->dir)*t*3;
+}

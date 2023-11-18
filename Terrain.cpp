@@ -55,8 +55,10 @@ Mesh3d Terrain::CreateFlatMesh(std::string fileName)
 {
     auto [colors, width, height] = readBMP(fileName, false);
     std::vector<Vector3> vectors(width*height);
-    std::vector<Vertex3d> vertices(width*height);
-    std::vector<int> points;
+
+    const int nVertices = (width-1)*(height-1)*6;
+    std::vector<Vertex3d> vertices(nVertices);
+    std::vector<int> points(nVertices);
 
     auto H = [&colors, &width] (int x, int y) {
         return colors[width*3*y+x*3]/255.0/10;
@@ -66,12 +68,12 @@ Mesh3d Terrain::CreateFlatMesh(std::string fileName)
     {
         for(int x = 0; x < width; x++)
         {
-            real X = x/(width-1.0f);
-            real Y = y/(height-1.0f);
+            real X = x/(width-1.0f), Y = y/(height-1.0f);
             vectors[width*y+x] = Vector3(X, Y, H(x, y) + 3.0);
         }
     }
 
+    int j = 0, k = 0;
     for(int y = 0; y < height-1; y++)
     {
         for(int x = 0; x < width-1; x++)
@@ -86,19 +88,19 @@ Mesh3d Terrain::CreateFlatMesh(std::string fileName)
             auto N2 = (vectors[c]-vectors[a])^(vectors[d]-vectors[a]);
             N2.Normalize();
 
-            int j = vertices.size();
             for(auto i : { a, b, c } )
-                vertices.push_back(Vertex3d(vectors[i].x, vectors[i].y, vectors[i].z, N1.x, N1.y, N1.z, 0, 0));
+                vertices[j++] = Vertex3d(vectors[i].x, vectors[i].y, vectors[i].z, N1.x, N1.y, N1.z, 0, 0);
             for(auto i : { a, c, d } )
-                vertices.push_back(Vertex3d(vectors[i].x, vectors[i].y, vectors[i].z, N2.x, N2.y, N2.z, 0, 0));
+                vertices[j++] = Vertex3d(vectors[i].x, vectors[i].y, vectors[i].z, N2.x, N2.y, N2.z, 0, 0);
 
-            for(int i = vertices.size()-6; i < vertices.size(); i++)
-                points.push_back(i);
+            for(int i = j-6; i < j; i++)
+                points[k++] = i;
         }
     }
-    
+
     Material* mat = new LambertianMaterial(Vector3(0.5, 0.5, 0.5));
     auto terrainMesh = Mesh3d(vertices, points, mat);
+
     return terrainMesh;
 }
 
