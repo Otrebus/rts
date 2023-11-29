@@ -19,6 +19,7 @@ public:
     Vector3 Kd;
     static Shader* fragmentShader;
     static Shader* vertexShader;
+    static Shader* geometryShader;
     static GLint kdLoc;
 
     ShaderProgram* program;

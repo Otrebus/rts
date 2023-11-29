@@ -182,6 +182,7 @@
     <ClInclude Include="Vertex3d.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="geometryShader.geom" />
     <None Include="lambertian.frag" />
     <None Include="texture.frag" />
     <None Include="vertexShader.vert" />

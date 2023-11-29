@@ -16,7 +16,7 @@ public:
     void Use();
 
 
-    static Shader* fragmentShader, *vertexShader;
+    static Shader* fragmentShader, *vertexShader, *geometryShader;
     unsigned int texture;
     ShaderProgram* program;
     Scene* scene;

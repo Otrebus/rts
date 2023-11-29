@@ -10,10 +10,12 @@ TextureMaterial::TextureMaterial(const std::string& textureFile)
         fragmentShader = new Shader("texture.frag", GL_FRAGMENT_SHADER);
     if(!vertexShader)
         vertexShader = new Shader("vertexShader.vert", GL_VERTEX_SHADER);
+    if(!geometryShader)
+        geometryShader = new Shader("geometryShader.geom", GL_GEOMETRY_SHADER);
 
     program = new ShaderProgram();
 
-    program->AddShaders(*vertexShader, *fragmentShader);
+    program->AddShaders(*vertexShader, *fragmentShader, *geometryShader);
     program->Use();
     auto [data, width, height] = readBMP(textureFile);
 
@@ -55,3 +57,4 @@ void TextureMaterial::UpdateUniforms(Scene* scene)
 
 Shader* TextureMaterial::fragmentShader = nullptr;
 Shader* TextureMaterial::vertexShader = nullptr;
+Shader* TextureMaterial::geometryShader = nullptr;

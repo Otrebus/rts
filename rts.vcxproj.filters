@@ -128,6 +128,9 @@
     <None Include="texture.frag">
       <Filter>Shaders\Fragment shaders</Filter>
     </None>
+    <None Include="geometryShader.geom">
+      <Filter>Shaders\Geometry shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">
@@ -162,6 +165,9 @@
     </Filter>
     <Filter Include="Source files\Utils">
       <UniqueIdentifier>{ee1b7728-0fa5-41fc-a3a8-ad4a7c831ce1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Geometry shaders">
+      <UniqueIdentifier>{fe5ba678-c725-47a5-99b3-ce253a562f60}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

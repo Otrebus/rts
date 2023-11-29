@@ -25,11 +25,11 @@ struct InputQueue
 {
     std::queue<Input> queue;
     bool mouseState[8];
-    bool keyState[255];
+    bool keyState[GLFW_KEY_LAST];
     real posX, posY;
 
     real timeMouse[8];
-    real timeKey[255];
+    real timeKey[GLFW_KEY_LAST];
 
     InputQueue();
 

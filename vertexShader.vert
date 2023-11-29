@@ -5,7 +5,7 @@ layout (location = 1) in vec3 aNorm;
 layout (location = 2) in vec2 aTex;
 
 out vec2 TexCoord;
-
+out vec3 VertexPosition; // Pass vertex positions to the geometry shader
 out vec3 normal;
 out vec3 toCam;
 
@@ -14,16 +14,11 @@ uniform vec3 camPos;
 
 void main()
 {
-	gl_Position = vec4(aPos, 1.0);  
-	TexCoord = aTex;
-
-	//float x = aPos.x + 0.1*cos(u_time);
-    float x = 1.0;
+    gl_Position = vec4(aPos, 1.0);  
+    TexCoord = aTex;
+    VertexPosition = aPos; // Pass the vertex position
     normal = aNorm;
-    toCam = camPos-aPos;
+    toCam = camPos - aPos;
     toCam = normalize(toCam);
-    gl_Position = transform*vec4(aPos.x, aPos.y, aPos.z, 1.0);
-
-//    col = aCol;
-//    tex = aTex;
+    gl_Position = transform * vec4(aPos.x, aPos.y, aPos.z, 1.0);
 }

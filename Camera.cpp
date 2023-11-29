@@ -14,7 +14,7 @@ Matrix4 Camera::GetMatrix(float fov, float ar)
     );
 
     Vector3 d = -dir.Normalized();
-    Vector3 u1 = Vector3(0.f, 1.f, 0.f);
+    Vector3 u1 = this->up;
     Vector3 v = (u1^d).Normalized();
     Vector3 u = (d^v).Normalized();
 
@@ -62,12 +62,12 @@ Camera* CameraControl::getCamera()
 
 
 void CameraControl::setAngle(real theta, real phi) {
-    Vector3 f(0, 0, 1), r(1, 0, 0);
+    Vector3 f(0, 1, 0), r(1, 0, 0);
 
     this->theta = theta;
     this->phi = phi;
 
-    cam->up = Vector3 (0, 1, 0);
+    cam->up = Vector3(0, 0, 1);
     Vector3 h = f*std::sin(theta) + r*std::cos(theta);
     cam->dir = cam->up*std::sin(phi) + h*std::cos(phi);
 }

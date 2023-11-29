@@ -80,16 +80,11 @@ int main()
 
     auto startTime = glfwGetTime();
 
-    int panningX = 0, panningY = 0;
-    bool panning = false;
-    real theta = 2.2, phi = -2.6;
-    real startTheta = 0, startPhi = 0;
-
     initInput(window);
 
     Camera cam;
-    cam.pos = { -1.5, 2.5, 3.5 };
-    CameraControl cameraControl(0, 0, false, 2.0, -2.6, &cam);
+    cam.pos = { 0, 0, 3.5 };
+    CameraControl cameraControl(0, 0, false, 0, 0, &cam);
     real time = glfwGetTime();
 
     std::vector<Vertex3d> meshVertices = {
@@ -150,3 +145,4 @@ int main()
     glfwTerminate();
     return 0;
 }
+

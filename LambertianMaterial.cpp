@@ -10,10 +10,13 @@ LambertianMaterial::LambertianMaterial(Vector3 Kd) : Kd(Kd)
         fragmentShader = new Shader("lambertian.frag", GL_FRAGMENT_SHADER);
     if(!vertexShader)
         vertexShader = new Shader("vertexShader.vert", GL_VERTEX_SHADER);
+    if(!geometryShader)
+        geometryShader = new Shader("geometryShader.geom", GL_GEOMETRY_SHADER);
+
 
     program = new ShaderProgram();
 
-    program->AddShaders(*vertexShader, *fragmentShader);
+    program->AddShaders(*vertexShader, *fragmentShader, *geometryShader);
     program->Use();
 }
 
@@ -47,3 +50,4 @@ void LambertianMaterial::UpdateUniforms(Scene* scene)
 
 Shader* LambertianMaterial::fragmentShader = nullptr;
 Shader* LambertianMaterial::vertexShader = nullptr;
+Shader* LambertianMaterial::geometryShader = nullptr;
