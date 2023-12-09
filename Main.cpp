@@ -112,8 +112,7 @@ int main()
     Terrain terrain("Heightmap.bmp", &scene);
 
     while (!glfwWindowShouldClose(window)) {
-        auto prevTime = time;
-        time = glfwGetTime();
+
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(window, true);
         }
@@ -134,7 +133,8 @@ int main()
         glfwSwapBuffers(window);
 
         glfwPollEvents();
-        
+        auto prevTime = time;
+        time = glfwGetTime();
         handleInput(window, prevTime, time, cameraControl, terrain);
     }
 
