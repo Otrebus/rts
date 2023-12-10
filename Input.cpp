@@ -6,6 +6,7 @@
 #include <iostream>
 #include "Camera.h"
 #include "Terrain.h"
+#include <unordered_map>
 
 
 InputQueue::InputQueue()
@@ -18,19 +19,19 @@ InputQueue::InputQueue()
 
 void InputQueue::addKeyInput(real time, int key, int state)
 {
-    queue.push({ time, Input::Type::KeyPress, key, state });
+    queue.push({ time, QueuedInput::Type::KeyPress, key, state });
 }
 
 
 void InputQueue::addMouseInput(real time, int key, int state)
 {
-    queue.push({ time, Input::Type::MousePress, key, state });
+    queue.push({ time, QueuedInput::Type::MousePress, key, state });
 }
 
 
 void InputQueue::addMousePosition(real time, real x, real y)
 {
-    queue.push({ time, Input::Type::MousePosition, 0, 0, x, y });
+    queue.push({ time, QueuedInput::Type::MousePosition, 0, 0, x, y });
 }
 
 
@@ -40,29 +41,29 @@ bool InputQueue::hasInput()
 }
 
 
-Input InputQueue::peek() 
+QueuedInput InputQueue::peek() 
 {
     return queue.front();
 }
 
 
-Input InputQueue::pop()
+QueuedInput InputQueue::pop()
 {
     auto input = queue.front();
     queue.pop();
-    if(input.type == Input::Type::MousePress)
+    if(input.type == QueuedInput::Type::MousePress)
     {
         timeMouse[input.key] = input.time;
         mouseState[input.key] = input.state;
     }
 
-    if(input.type == Input::Type::KeyPress && input.state != GLFW_REPEAT)
+    if(input.type == QueuedInput::Type::KeyPress && input.state != GLFW_REPEAT)
     {
         timeKey[input.key] = input.time;
         keyState[input.key] = input.state;
     }
         
-    if(input.type == Input::Type::MousePosition)
+    if(input.type == QueuedInput::Type::MousePosition)
     {
         // std::cout << input.posX << " " << input.posY << std::endl;
         posX = input.posX, posY = input.posY;
@@ -75,11 +76,13 @@ InputQueue inputQueue;
 bool panning;
 real prevX = NAN, prevY = NAN;
 
-auto key_callback = [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
-        inputQueue.addKeyInput(glfwGetTime(), key, action);
-    };
+auto key_callback = [] (GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    inputQueue.addKeyInput(glfwGetTime(), key, action);
+};
 
-auto mouseButton_callback = [] (GLFWwindow* window, int button, int action, int mods) {
+auto mouseButton_callback = [] (GLFWwindow* window, int button, int action, int mods)
+{
     inputQueue.addMouseInput(glfwGetTime(), button, action);
 };
 
@@ -98,58 +101,96 @@ void initInput(GLFWwindow* window)
 }
 
 
-void handleInput(GLFWwindow* window, real prevTime, real time, CameraControl& cameraControl, Terrain& terrain)
+std::vector<Input> handleInput(GLFWwindow* window, real prevTime, real time, CameraControl& cameraControl, Terrain& terrain)
 {    
     bool slow = false;
     if(inputQueue.keyState[GLFW_KEY_LEFT_SHIFT] == GLFW_PRESS)
         slow = true;
 
+    std::unordered_map<int, Input*> lastInput;
+    std::vector<Input*> inputs;
+
     while(inputQueue.hasInput())
     {
-        auto input = inputQueue.peek();
-        if(input.type == Input::Type::KeyPress)
+        auto queuedInput = inputQueue.peek();
+        if(queuedInput.type == QueuedInput::Type::KeyPress)
         {
-            if(input.state == GLFW_PRESS || input.state == GLFW_RELEASE) {
-                std::cout << input.time << ": " << (std::string("key was ") + ((input.state == GLFW_PRESS) ? "pressed" : "released")) << std::endl;
+            inputs.push_back(new Input());
+            Input* input = inputs.back();
+            input->key = input->key;
 
-                if(input.state == GLFW_RELEASE && input.key == GLFW_KEY_E)
+            if(queuedInput.state == GLFW_RELEASE)
+            {
+                if(lastInput.find(queuedInput.key) == lastInput.end())
+                    // A release without a press means we've held the button since last frame
+                    lastInput[queuedInput.key] = new Input(0, 0, queuedInput.key, Input::Type::KeyHold, Input::Type::KeyRelease, prevTime, queuedInput.time);
+                else
                 {
-                    auto duration = input.time - inputQueue.timeKey[GLFW_KEY_E];
-                    auto t = std::min(time - prevTime, duration);
-                    cameraControl.moveForward(slow ? 0.03*t : t*3);
-                }
-                if(input.state == GLFW_RELEASE && input.key == GLFW_KEY_D)
-                {
-                    auto duration = input.time - inputQueue.timeKey[GLFW_KEY_D];
-                    auto t = std::min(time - prevTime, duration);
-                    cameraControl.moveForward(slow ? -0.03*t : -t*3);
-                }
-                if(input.state == GLFW_RELEASE && input.key == GLFW_KEY_S)
-                {
-                    auto duration = input.time - inputQueue.timeKey[GLFW_KEY_S];
-                    auto t = std::min(time - prevTime, duration);
-                    cameraControl.moveRight(slow ? -0.03*t : -t*3);
-                }
-                if(input.state == GLFW_RELEASE && input.key == GLFW_KEY_F)
-                {
-                    auto duration = input.time - inputQueue.timeKey[GLFW_KEY_F];
-                    auto t = std::min(time - prevTime, duration);
-                    cameraControl.moveRight(slow ? 0.03*t : t*3);
-                }
-                if(input.key == GLFW_KEY_Z && input.state == GLFW_PRESS)
-                {
-                    auto mode = terrain.GetDrawMode();
-                    if(mode == Terrain::DrawMode::Normal)
-                        terrain.SetDrawMode(Terrain::DrawMode::Wireframe);
-                    else if(mode == Terrain::DrawMode::Wireframe)
-                        terrain.SetDrawMode(Terrain::DrawMode::Flat);
-                    else
-                        terrain.SetDrawMode(Terrain::DrawMode::Normal);
+                    // If there's any consistency at all, this previous input that we added for key must be a press or hold
+                    auto prevInput = lastInput[queuedInput.key];
+                    input->timeStart = inputQueue.timeKey[queuedInput.key];
+                    input->timeEnd = queuedInput.time;
+                    input->stateStart = Input::Type::KeyPress;
+
+                    prevInput->stateEnd = Input::Type::KeyRelease;
+                    prevInput->timeEnd = queuedInput.time;
                 }
             }
+            else // queuedInput.state == GLFW_PRESS
+            {
+                if(lastInput.find(queuedInput.key) != lastInput.end())
+                {
+                    auto& prevInput = lastInput[queuedInput.key];
+                    if(!prevInput->stateEnd)
+                    {
+                        prevInput->stateEnd = Input::Type::KeyRelease;
+                        prevInput->timeEnd = queuedInput.time;
+                    }
+                }
+            }
+            lastInput[queuedInput.key] = input;
+
+            std::cout << queuedInput.time << ": " << (std::string("key was ") + ((queuedInput.state == GLFW_PRESS) ? "pressed" : "released")) << std::endl;
+
+            if(queuedInput.state == GLFW_RELEASE && queuedInput.key == GLFW_KEY_E)
+            {
+                auto duration = queuedInput.time - inputQueue.timeKey[GLFW_KEY_E];
+                auto t = std::min(time - prevTime, duration);
+                cameraControl.moveForward(slow ? 0.03*t : t*3);
+            }
+            if(queuedInput.state == GLFW_RELEASE && queuedInput.key == GLFW_KEY_D)
+            {
+                auto duration = queuedInput.time - inputQueue.timeKey[GLFW_KEY_D];
+                auto t = std::min(time - prevTime, duration);
+                cameraControl.moveForward(slow ? -0.03*t : -t*3);
+            }
+            if(queuedInput.state == GLFW_RELEASE && queuedInput.key == GLFW_KEY_S)
+            {
+                auto duration = queuedInput.time - inputQueue.timeKey[GLFW_KEY_S];
+                auto t = std::min(time - prevTime, duration);
+                cameraControl.moveRight(slow ? -0.03*t : -t*3);
+            }
+            if(queuedInput.state == GLFW_RELEASE && queuedInput.key == GLFW_KEY_F)
+            {
+                auto duration = queuedInput.time - inputQueue.timeKey[GLFW_KEY_F];
+                auto t = std::min(time - prevTime, duration);
+                cameraControl.moveRight(slow ? 0.03*t : t*3);
+            }
+            if(queuedInput.key == GLFW_KEY_Z && queuedInput.state == GLFW_PRESS)
+            {
+                auto mode = terrain.GetDrawMode();
+                if(mode == Terrain::DrawMode::Normal)
+                    terrain.SetDrawMode(Terrain::DrawMode::Wireframe);
+                else if(mode == Terrain::DrawMode::Wireframe)
+                    terrain.SetDrawMode(Terrain::DrawMode::Flat);
+                else
+                    terrain.SetDrawMode(Terrain::DrawMode::Normal);
+            }
+            inputs.push_back(input);
         }
 
-        if(!panning && inputQueue.mouseState[GLFW_MOUSE_BUTTON_1]) {
+        if(!panning && inputQueue.mouseState[GLFW_MOUSE_BUTTON_1])
+        {
             glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
             
@@ -158,14 +199,17 @@ void handleInput(GLFWwindow* window, real prevTime, real time, CameraControl& ca
             panning = true;
         }
 
-        if(panning) {
-            if(inputQueue.mouseState[GLFW_MOUSE_BUTTON_1] == GLFW_RELEASE) {
+        if(panning)
+        {
+            if(inputQueue.mouseState[GLFW_MOUSE_BUTTON_1] == GLFW_RELEASE)
+            {
                 panning = false;
                 glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
             }
 
             std::cout << inputQueue.posX - prevX << std::endl;
-            if(!isnan(prevX)) {
+            if(!isnan(prevX))
+            {
                 cameraControl.setAngle(
                     cameraControl.getTheta() - (inputQueue.posX - prevX)/500.0,
                     cameraControl.getPhi() - (inputQueue.posY - prevY)/500.0
@@ -206,4 +250,5 @@ void handleInput(GLFWwindow* window, real prevTime, real time, CameraControl& ca
         inputQueue.timeKey[GLFW_KEY_F] = time;
         cameraControl.moveRight(slow ? t*0.03 : t*3);
     }
+    return {};
 }

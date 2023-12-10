@@ -6,11 +6,7 @@
 #include "Terrain.h"
 
 
-void initInput(GLFWwindow* window);
-void handleInput(GLFWwindow* window, real prevTime, real time, CameraControl& cameraControl, Terrain& terrain);
-
-
-struct Input
+struct QueuedInput
 {
     real time;
     enum Type
@@ -23,7 +19,7 @@ struct Input
 
 struct InputQueue
 {
-    std::queue<Input> queue;
+    std::queue<QueuedInput> queue;
     bool mouseState[8];
     bool keyState[GLFW_KEY_LAST];
     real posX, posY;
@@ -37,6 +33,24 @@ struct InputQueue
     void addMouseInput(real time, int key, int state);
     void addMousePosition(real time, real x, real y);
     bool hasInput();
-    Input peek();
-    Input pop();
+    QueuedInput peek();
+    QueuedInput pop();
 };
+
+struct Input
+{
+    enum Type
+    {
+        MouseRelease = 1, MouseHold = 2, KeyRelease = 4, KeyPress = 8, KeyHold = 16, MousePosition = 32
+    } type;
+    Input() {}
+    Input(real posX, real posY, int key, Type stateStart, Type stateEnd, real timeStart, real timeEnd) : posX(posX), posY(posY), key(key), stateStart(stateStart), stateEnd(stateEnd), timeStart(timeStart), timeEnd(timeEnd) {}
+    real posX, posY;
+    int key;
+    int stateStart, stateEnd;
+    real timeStart, timeEnd;
+};
+
+
+void initInput(GLFWwindow* window);
+std::vector<Input> handleInput(GLFWwindow* window, real prevTime, real time, CameraControl& cameraControl, Terrain& terrain);

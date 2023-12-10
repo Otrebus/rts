@@ -563,7 +563,6 @@ std::map<std::string, Material*> Model3d::ReadMaterialFile(const std::string& ma
 
     std::string str;
     auto parser = Parser(tokenize(matfile, str));
-    Vector3 Kd;
 
     LambertianMaterial* curmat = nullptr;
     std::string matName;
@@ -644,10 +643,7 @@ std::map<std::string, Material*> Model3d::ReadMaterialFile(const std::string& ma
             if(!curmat)
                 throw ParseException("No current material specified"); // TODO: not really a parse exception
             if(phong)
-            {
-                Kd = expectVector3d(parser);
-                curmat->Kd = Kd;
-            }
+                curmat->Kd = expectVector3d(parser);
             else if(!emissive)
                 throw ParseException("Kd specified for custom material");
         }
@@ -656,9 +652,7 @@ std::map<std::string, Material*> Model3d::ReadMaterialFile(const std::string& ma
             if(!curmat)
                 throw ParseException("No current material specified"); // TODO: not really a parse exception
             if(phong)
-            {
                 expectVector3d(parser);
-            }
             else if(!emissive)
                 throw ParseException("Ks specified for custom material");
         }
@@ -667,9 +661,7 @@ std::map<std::string, Material*> Model3d::ReadMaterialFile(const std::string& ma
             if(!curmat)
                 throw ParseException("No current material specified"); // TODO: not really a parse exception
             if(phong)
-            {
                 expectReal(parser);
-            }
             else if(!emissive)
                 throw ParseException("Ns specified for custom material");
         }
