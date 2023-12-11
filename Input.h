@@ -1,3 +1,4 @@
+#pragma once
 #include <Queue>
 #include "Utils.h"
 #include <GL/gl3w.h>
@@ -5,14 +6,16 @@
 #include "Camera.h"
 #include "Terrain.h"
 
+enum InputType
+{
+    MouseRelease = 1, MousePress = 2, MouseHold = 4, KeyRelease = 8, KeyPress = 16, KeyHold = 32, MousePosition = 64
+};
+
 
 struct QueuedInput
 {
     real time;
-    enum Type
-    {
-        MousePress, KeyPress, MousePosition
-    } type;
+    InputType type;
     int key, state;
     real posX, posY;
 };
@@ -39,12 +42,9 @@ struct InputQueue
 
 struct Input
 {
-    enum Type
-    {
-        MouseRelease = 1, MouseHold = 2, KeyRelease = 4, KeyPress = 8, KeyHold = 16, MousePosition = 32
-    } type;
     Input() {}
-    Input(real posX, real posY, int key, Type stateStart, Type stateEnd, real timeStart, real timeEnd) : posX(posX), posY(posY), key(key), stateStart(stateStart), stateEnd(stateEnd), timeStart(timeStart), timeEnd(timeEnd) {}
+    Input(real posX, real posY, int key, InputType stateStart, InputType stateEnd, real timeStart, real timeEnd) : posX(posX), posY(posY), key(key), stateStart(stateStart), stateEnd(stateEnd), timeStart(timeStart), timeEnd(timeEnd) {}
+    InputType type;
     real posX, posY;
     int key;
     int stateStart, stateEnd;
