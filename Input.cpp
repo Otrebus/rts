@@ -12,27 +12,30 @@
 InputQueue::InputQueue()
 {
     posX = posY = NAN;
-    std::memset(mouseState, 0, sizeof(mouseState));
-    std::memset(keyState, 0, sizeof(keyState));
+    for(int i = 0; i < GLFW_KEY_END; i++)
+        keyState[i] = GLFW_RELEASE;
+
+    for(int i = 0; i < GLFW_MOUSE_BUTTON_LAST; i++)
+        mouseState[i] = GLFW_RELEASE;
 }
 
 
 void InputQueue::addKeyInput(real time, int key, int state)
 {
     if(state != GLFW_REPEAT)
-        queue.push({ time, InputType::KeyPress, key, state });
+        queue.push({ time, QueuedInputType::KeyboardKey, key, state });
 }
 
 
 void InputQueue::addMouseInput(real time, int key, int state)
 {
-    queue.push({ time, InputType::MousePress, key, state });
+    queue.push({ time, QueuedInputType::MouseButton, key, state });
 }
 
 
 void InputQueue::addMousePosition(real time, real x, real y)
 {
-    queue.push({ time, InputType::MousePosition, 0, 0, x, y });
+    queue.push({ time, QueuedInputType::MousePosition, 0, 0, x, y });
 }
 
 
@@ -52,19 +55,19 @@ QueuedInput InputQueue::pop()
 {
     auto input = queue.front();
     queue.pop();
-    if(input.type == InputType::MousePress)
+    if(input.type == QueuedInputType::MouseButton)
     {
         timeMouse[input.key] = input.time;
         mouseState[input.key] = input.state;
     }
 
-    if(input.type == InputType::KeyPress)
+    if(input.type == QueuedInputType::KeyboardKey)
     {
         timeKey[input.key] = input.time;
         keyState[input.key] = input.state;
     }
         
-    if(input.type == InputType::MousePosition)
+    if(input.type == QueuedInputType::MousePosition)
     {
         // std::cout << input.posX << " " << input.posY << std::endl;
         posX = input.posX, posY = input.posY;
@@ -79,7 +82,8 @@ real prevX = NAN, prevY = NAN;
 
 auto key_callback = [] (GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    inputQueue.addKeyInput(glfwGetTime(), key, action);
+    if(action != GLFW_REPEAT)
+        inputQueue.addKeyInput(glfwGetTime(), key, action);
 };
 
 auto mouseButton_callback = [] (GLFWwindow* window, int button, int action, int mods)
@@ -115,12 +119,12 @@ std::vector<Input> handleInput(GLFWwindow* window, real prevTime, real time, Cam
     {
         auto queuedInput = inputQueue.peek();
 
-        if(queuedInput.type == KeyPress || queuedInput.type == KeyHold || queuedInput.type == KeyRelease)
+        if(queuedInput.type == KeyboardKey)
         {
             if(auto it = lastInput.find(queuedInput.key); it != lastInput.end())
             {
                 auto prevInput = it->second;
-                if(queuedInput.type == InputType::KeyPress)
+                if(queuedInput.state == GLFW_PRESS)
                 {
                     if(prevInput->stateEnd == InputType::KeyHold || !prevInput->stateEnd)
                         __debugbreak(); // Shouldn't happen
@@ -129,12 +133,13 @@ std::vector<Input> handleInput(GLFWwindow* window, real prevTime, real time, Cam
                         // A keypress after a release, start a new input
                         Input* input = new Input();
                         inputs.push_back(input);
+                        lastInput[queuedInput.key] = input;
                         input->key = queuedInput.key;
                         input->timeStart = queuedInput.time;
                         input->stateStart = queuedInput.type;
                     }
                 }
-                else if(queuedInput.type == InputType::KeyRelease)
+                else if(queuedInput.state == GLFW_RELEASE)
                 {
                     if(!prevInput->stateEnd || prevInput->stateEnd == InputType::KeyHold)
                     {
@@ -151,19 +156,25 @@ std::vector<Input> handleInput(GLFWwindow* window, real prevTime, real time, Cam
             else
             {
                 auto prevInput = inputQueue.keyState[queuedInput.key];
-                if(queuedInput.type == InputType::KeyPress)
+                if(queuedInput.state == GLFW_PRESS)
                 {
-                    if(prevInput)
+                    if(prevInput == GLFW_PRESS)
                         __debugbreak(); // Shouldn't happen
                     else
                     {
                         // A new input after a release
                         Input* input = new Input();
                         inputs.push_back(input);
+                        lastInput[queuedInput.key] = input;
                         input->key = queuedInput.key;
-                        input->timeStart = inputQueue.timeKey[queuedInput.key];
-                        input->stateStart = input->type;
+                        input->timeStart = queuedInput.time;
+                        input->stateStart = InputType::KeyPress;
+                        input->stateEnd = 0;
                     }
+                }
+                else
+                {
+                    __debugbreak(); // Shouldn't happen
                 }
                 // todoododo
                 /*prevInput->stateEnd = InputType::KeyRelease;

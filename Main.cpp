@@ -132,6 +132,8 @@ int main()
         terrain.Draw();
         glfwSwapBuffers(window);
 
+        for(int i = 0; i < 1000000000; i++);
+
         glfwPollEvents();
         auto prevTime = time;
         time = glfwGetTime();
