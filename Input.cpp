@@ -59,12 +59,14 @@ QueuedInput InputQueue::pop()
     {
         timeMouse[input.key] = input.time;
         mouseState[input.key] = input.state;
+        lastMouseKey[input.key] = Input(0, 0, input.key, input.state ? MousePress : MouseRelease, None, input.time, 0.0);
     }
 
     if(input.type == QueuedInputType::KeyboardKey)
     {
         timeKey[input.key] = input.time;
         keyState[input.key] = input.state;
+        lastKeyboardKey[input.key] = Input(0, 0, input.key, input.state ? KeyPress : KeyRelease, None, input.time, 0.0);
     }
         
     if(input.type == QueuedInputType::MousePosition)
@@ -136,7 +138,8 @@ std::vector<Input> handleInput(GLFWwindow* window, real prevTime, real time, Cam
                         lastInput[queuedInput.key] = input;
                         input->key = queuedInput.key;
                         input->timeStart = queuedInput.time;
-                        input->stateStart = queuedInput.type;
+                        input->stateStart = queuedInput.state == GLFW_PRESS ? KeyPress : KeyRelease;
+                        input->stateEnd = None;
                     }
                 }
                 else if(queuedInput.state == GLFW_RELEASE)
@@ -144,7 +147,7 @@ std::vector<Input> handleInput(GLFWwindow* window, real prevTime, real time, Cam
                     if(!prevInput->stateEnd || prevInput->stateEnd == InputType::KeyHold)
                     {
                         // A release after a hold or press, the input will be extended
-                        prevInput->stateEnd = queuedInput.type;
+                        prevInput->stateEnd = queuedInput.state == GLFW_PRESS ? KeyPress : KeyRelease;
                         prevInput->timeEnd = queuedInput.time;
                     }
                     else
@@ -169,31 +172,30 @@ std::vector<Input> handleInput(GLFWwindow* window, real prevTime, real time, Cam
                         input->key = queuedInput.key;
                         input->timeStart = queuedInput.time;
                         input->stateStart = InputType::KeyPress;
-                        input->stateEnd = 0;
+                        input->stateEnd = None;
                     }
                 }
                 else
                 {
-                    __debugbreak(); // Shouldn't happen
+                    if(prevInput == GLFW_RELEASE)
+                        __debugbreak(); // Shouldn't happen
+                    else
+                    {
+                        // A new input after a release
+                        Input* input = new Input();
+                        inputs.push_back(input);
+                        lastInput[queuedInput.key] = input;
+                        input->key = queuedInput.key;
+                        input->timeStart = queuedInput.time;
+                        input->stateStart = InputType::KeyPress;
+                        input->stateEnd = InputType::KeyRelease;
+                    }
                 }
                 // todoododo
                 /*prevInput->stateEnd = InputType::KeyRelease;
                 prevInput->timeEnd = queuedInput.time;*/
                 //lastInput[queuedInput.key] = input
                 //lastInput[queuedInput.key] = new Input(0, 0, queuedInput.key, InputType::KeyHold, InputType::KeyRelease, prevTime, queuedInput.time);
-            }
-            for(int key = 0; key < GLFW_KEY_LAST; key++)
-            {
-                if(inputQueue.keyState[key] == GLFW_PRESS && lastInput.find(key) == lastInput.end())
-                {
-                    Input* input = new Input();
-                    inputs.push_back(input);
-                    input->key = queuedInput.key;
-                    input->timeStart = prevTime;
-                    input->timeEnd = time;
-                    input->stateStart = InputType::KeyHold;
-                    input->stateEnd = InputType::KeyHold;
-                }
             }
 
             if(queuedInput.type == InputType::KeyPress)
@@ -267,6 +269,20 @@ std::vector<Input> handleInput(GLFWwindow* window, real prevTime, real time, Cam
             prevY = inputQueue.posY;
         }
         inputQueue.pop();
+    }
+
+    for(int key = 0; key < GLFW_KEY_LAST; key++)
+    {
+        if(inputQueue.keyState[key] == GLFW_PRESS && lastInput.find(key) == lastInput.end())
+        {
+            Input* input = new Input();
+            inputs.push_back(input);
+            input->key = key;
+            input->timeStart = inputQueue.timeKey[key];
+            input->timeEnd = time;
+            input->stateStart = InputType::KeyHold;
+            input->stateEnd = InputType::KeyHold;
+        }
     }
 
     if(inputQueue.keyState[GLFW_KEY_E] == GLFW_PRESS)

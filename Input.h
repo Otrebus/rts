@@ -8,7 +8,7 @@
 
 enum InputType
 {
-    MouseRelease = 1, MousePress = 2, MouseHold = 4, KeyRelease = 8, KeyPress = 16, KeyHold = 32
+    None = 0, MouseRelease = 1, MousePress = 2, MouseHold = 4, KeyRelease = 8, KeyPress = 16, KeyHold = 32
 };
 
 enum QueuedInputType
@@ -25,8 +25,20 @@ struct QueuedInput
     real posX, posY;
 };
 
+struct Input
+{
+    Input() {}
+    Input(real posX, real posY, int key, InputType stateStart, InputType stateEnd, real timeStart, real timeEnd) : posX(posX), posY(posY), key(key), stateStart(stateStart), stateEnd(stateEnd), timeStart(timeStart), timeEnd(timeEnd) {}
+    real posX, posY;
+    int key;
+    InputType stateStart, stateEnd;
+    real timeStart, timeEnd;
+};
+
 struct InputQueue
 {
+    Input lastKeyboardKey[GLFW_KEY_LAST], lastMouseKey[GLFW_KEY_LAST];
+
     std::queue<QueuedInput> queue;
     bool mouseState[8];
     int keyState[GLFW_KEY_LAST];
@@ -43,17 +55,6 @@ struct InputQueue
     bool hasInput();
     QueuedInput peek();
     QueuedInput pop();
-};
-
-struct Input
-{
-    Input() {}
-    Input(real posX, real posY, int key, InputType stateStart, InputType stateEnd, real timeStart, real timeEnd) : posX(posX), posY(posY), key(key), stateStart(stateStart), stateEnd(stateEnd), timeStart(timeStart), timeEnd(timeEnd) {}
-    InputType type;
-    real posX, posY;
-    int key;
-    int stateStart, stateEnd;
-    real timeStart, timeEnd;
 };
 
 
