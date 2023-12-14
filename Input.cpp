@@ -121,8 +121,20 @@ std::vector<Input> handleInput(GLFWwindow* window, real prevTime, real time, Cam
     {
         auto queuedInput = inputQueue.peek();
 
+        auto pushInput = [&inputs, &lastInput, &queuedInput] ()
+        {
+            Input* input = new Input();
+            inputs.push_back(input);
+            lastInput[queuedInput.key] = input;
+            input->key = queuedInput.key;
+            input->timeStart = queuedInput.time;
+            input->stateStart = KeyPress;
+            input->stateEnd = None;
+        };
+
         if(queuedInput.type == KeyboardKey)
         {
+            // We have an input of this key already in the queue
             if(auto it = lastInput.find(queuedInput.key); it != lastInput.end())
             {
                 auto prevInput = it->second;
@@ -132,14 +144,7 @@ std::vector<Input> handleInput(GLFWwindow* window, real prevTime, real time, Cam
                         __debugbreak(); // Shouldn't happen
                     else
                     {
-                        // A keypress after a release, start a new input
-                        Input* input = new Input();
-                        inputs.push_back(input);
-                        lastInput[queuedInput.key] = input;
-                        input->key = queuedInput.key;
-                        input->timeStart = queuedInput.time;
-                        input->stateStart = queuedInput.state == GLFW_PRESS ? KeyPress : KeyRelease;
-                        input->stateEnd = None;
+                        pushInput();
                     }
                 }
                 else if(queuedInput.state == GLFW_RELEASE)
@@ -147,7 +152,7 @@ std::vector<Input> handleInput(GLFWwindow* window, real prevTime, real time, Cam
                     if(!prevInput->stateEnd || prevInput->stateEnd == InputType::KeyHold)
                     {
                         // A release after a hold or press, the input will be extended
-                        prevInput->stateEnd = queuedInput.state == GLFW_PRESS ? KeyPress : KeyRelease;
+                        prevInput->stateEnd = KeyRelease;
                         prevInput->timeEnd = queuedInput.time;
                     }
                     else
@@ -164,16 +169,7 @@ std::vector<Input> handleInput(GLFWwindow* window, real prevTime, real time, Cam
                     if(prevInput == GLFW_PRESS)
                         __debugbreak(); // Shouldn't happen
                     else
-                    {
-                        // A new input after a release
-                        Input* input = new Input();
-                        inputs.push_back(input);
-                        lastInput[queuedInput.key] = input;
-                        input->key = queuedInput.key;
-                        input->timeStart = queuedInput.time;
-                        input->stateStart = InputType::KeyPress;
-                        input->stateEnd = None;
-                    }
+                        pushInput();
                 }
                 else
                 {
@@ -186,19 +182,15 @@ std::vector<Input> handleInput(GLFWwindow* window, real prevTime, real time, Cam
                         inputs.push_back(input);
                         lastInput[queuedInput.key] = input;
                         input->key = queuedInput.key;
-                        input->timeStart = queuedInput.time;
+                        input->timeStart = inputQueue.timeKey[queuedInput.key];
+                        input->timeEnd = queuedInput.time;
                         input->stateStart = InputType::KeyPress;
                         input->stateEnd = InputType::KeyRelease;
                     }
                 }
-                // todoododo
-                /*prevInput->stateEnd = InputType::KeyRelease;
-                prevInput->timeEnd = queuedInput.time;*/
-                //lastInput[queuedInput.key] = input
-                //lastInput[queuedInput.key] = new Input(0, 0, queuedInput.key, InputType::KeyHold, InputType::KeyRelease, prevTime, queuedInput.time);
             }
 
-            if(queuedInput.type == InputType::KeyPress)
+            if(queuedInput.type == QueuedInputType::KeyboardKey)
             {
                 std::cout << queuedInput.time << ": " << (std::string("key was ") + ((queuedInput.state == GLFW_PRESS) ? "pressed" : "released")) << std::endl;
 
