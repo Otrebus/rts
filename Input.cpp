@@ -177,12 +177,11 @@ std::vector<Input> handleInput(GLFWwindow* window, real prevTime, real time, Cam
                         __debugbreak(); // Shouldn't happen
                     else
                     {
-                        // A new input after a release
                         Input* input = new Input();
                         inputs.push_back(input);
                         lastInput[queuedInput.key] = input;
                         input->key = queuedInput.key;
-                        input->timeStart = inputQueue.timeKey[queuedInput.key];
+                        input->timeStart = prevTime;
                         input->timeEnd = queuedInput.time;
                         input->stateStart = InputType::KeyPress;
                         input->stateEnd = InputType::KeyRelease;
@@ -265,15 +264,26 @@ std::vector<Input> handleInput(GLFWwindow* window, real prevTime, real time, Cam
 
     for(int key = 0; key < GLFW_KEY_LAST; key++)
     {
-        if(inputQueue.keyState[key] == GLFW_PRESS && lastInput.find(key) == lastInput.end())
+        if(inputQueue.keyState[key] == GLFW_PRESS)
         {
-            Input* input = new Input();
-            inputs.push_back(input);
-            input->key = key;
-            input->timeStart = inputQueue.timeKey[key];
-            input->timeEnd = time;
-            input->stateStart = InputType::KeyHold;
-            input->stateEnd = InputType::KeyHold;
+            if(lastInput.find(key) == lastInput.end())
+            {
+                Input* input = new Input();
+                inputs.push_back(input);
+                input->key = key;
+                input->timeStart = inputQueue.timeKey[key];
+                input->timeEnd = time;
+                input->stateStart = InputType::KeyHold;
+                input->stateEnd = InputType::KeyHold;
+            }
+            else
+            {
+                auto prevInput = lastInput[key];
+                if(prevInput->stateEnd || prevInput->stateStart != InputType::KeyPress)
+                    __debugbreak();
+                prevInput->stateEnd = InputType::KeyHold;
+                inputQueue.timeKey[key] = time;
+            }
         }
     }
 
