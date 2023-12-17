@@ -59,4 +59,4 @@ struct InputQueue
 
 
 void initInput(GLFWwindow* window);
-std::vector<Input> handleInput(GLFWwindow* window, real prevTime, real time, CameraControl& cameraControl, Terrain& terrain);
+std::vector<Input*> handleInput(GLFWwindow* window, real prevTime, real time, CameraControl& cameraControl, Terrain& terrain);

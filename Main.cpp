@@ -112,6 +112,8 @@ int main()
 
     Terrain terrain("Heightmap.bmp", &scene);
 
+    auto moveSlow = false;
+
     while (!glfwWindowShouldClose(window)) {
 
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -133,15 +135,52 @@ int main()
         terrain.Draw();
         glfwSwapBuffers(window);
 
-        for(int i = 0; i < 100000000; i++) {
-            if(i % 1000000 == 0)
+        //for(int i = 0; i < 1000000000; i++) {
+        //    if(i % 100000000 == 0)
+        //        glfwPollEvents();
+        //}
+        for(int i = 0; i < 100000; i++)
+            if(i % 10000 == 0)
                 glfwPollEvents();
-        }
 
         auto prevTime = time;
         time = glfwGetTime();
-        handleInput(window, prevTime, time, cameraControl, terrain);
+        auto inputs = handleInput(window, prevTime, time, cameraControl, terrain);
         glfwPollEvents();
+
+        auto isCameraInput = [] (Input* input)
+        {
+            auto key = input->key;
+            return key == GLFW_KEY_E || key == GLFW_KEY_S || key == GLFW_KEY_F || key == GLFW_KEY_D || key == GLFW_KEY_LEFT_SHIFT;
+        };
+
+        for(auto input : inputs)
+        {
+            if(isCameraInput(input))
+            {
+                std::cout << input->timeStart << " - " << input->timeEnd << std::endl;
+                if(input->stateStart == InputType::KeyPress || input->stateStart == InputType::KeyHold)
+                {
+                    auto t = input->timeEnd - input->timeStart;
+                    if(input->key == GLFW_KEY_D)
+                        cameraControl.moveForward(moveSlow ? -t*0.03 : -t*3);
+                    if(input->key == GLFW_KEY_E)
+                        cameraControl.moveForward(moveSlow ? t*0.03 : t*3);
+                    if(input->key == GLFW_KEY_S)
+                        cameraControl.moveRight(moveSlow ? -t*0.03 : -t*3);
+                    if(input->key == GLFW_KEY_F)
+                        cameraControl.moveRight(moveSlow ? t*0.03 : t*3);
+                    if(input->key == GLFW_KEY_LEFT_SHIFT)
+                    {
+                        if(input->stateEnd != InputType::KeyRelease)
+                            moveSlow = true;
+                        else
+                            moveSlow = false;
+                    }
+                }
+            }
+            delete input;
+        }
     }
 
     model.TearDown(&scene);
