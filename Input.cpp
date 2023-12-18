@@ -134,58 +134,39 @@ std::vector<Input*> handleInput(GLFWwindow* window, real prevTime, real time, Ca
 
         if(queuedInput.type == KeyboardKey)
         {
-            // We have an input of this key already in the queue
+            // Check whether we have added an input of this type to the queue already
             if(auto it = lastInput.find(queuedInput.key); it != lastInput.end())
             {
+                // This key was added (the user is spamming the key, or the fps is very low)
                 auto prevInput = it->second;
+
+                // Check if the key is on its way in or out
                 if(queuedInput.state == GLFW_PRESS)
-                {
-                    if(prevInput->stateEnd == InputType::KeyHold || !prevInput->stateEnd)
-                        __debugbreak(); // Shouldn't happen
-                    else
-                    {
-                        pushInput();
-                    }
-                }
+                    pushInput(); // Here we just assume that the previous event of the key must have been a release
                 else if(queuedInput.state == GLFW_RELEASE)
                 {
-                    if(!prevInput->stateEnd || prevInput->stateEnd == InputType::KeyHold)
-                    {
-                        // A release after a hold or press, the input will be extended
-                        prevInput->stateEnd = KeyRelease;
-                        prevInput->timeEnd = queuedInput.time;
-                    }
-                    else
-                        __debugbreak();
+                    // Here we assume that the previous event was a press, so we extend it into a press/release (ha)
+                    prevInput->stateEnd = KeyRelease;
+                    prevInput->timeEnd = queuedInput.time;
                 }
-                else
-                    __debugbreak(); // Shouldn't happen
             }
             else
             {
-                auto prevInput = inputQueue.keyState[queuedInput.key];
+                // No previous action of this key has been recorded yet
                 if(queuedInput.state == GLFW_PRESS)
-                {
-                    if(prevInput == GLFW_PRESS)
-                        __debugbreak(); // Shouldn't happen
-                    else
-                        pushInput();
-                }
+                    // Key was not active, this is a brand new press, we assume
+                    pushInput();
                 else
                 {
-                    if(prevInput == GLFW_RELEASE)
-                        __debugbreak(); // Shouldn't happen
-                    else
-                    {
-                        Input* input = new Input();
-                        inputs.push_back(input);
-                        lastInput[queuedInput.key] = input;
-                        input->key = queuedInput.key;
-                        input->timeStart = prevTime;
-                        input->timeEnd = queuedInput.time;
-                        input->stateStart = InputType::KeyPress;
-                        input->stateEnd = InputType::KeyRelease;
-                    }
+                    // This is a release event so the key must have been pressed to begin with
+                    Input* input = new Input();
+                    inputs.push_back(input);
+                    lastInput[queuedInput.key] = input;
+                    input->key = queuedInput.key;
+                    input->timeStart = prevTime;
+                    input->timeEnd = queuedInput.time;
+                    input->stateStart = InputType::KeyHold;
+                    input->stateEnd = InputType::KeyRelease;
                 }
             }
 
@@ -217,7 +198,7 @@ std::vector<Input*> handleInput(GLFWwindow* window, real prevTime, real time, Ca
                 //    auto t = std::min(time - prevTime, duration);
                 //    cameraControl.moveRight(slow ? 0.03*t : t*3);
                 //}
-                if(queuedInput.key == GLFW_KEY_Z && queuedInput.state == GLFW_PRESS)
+                /*if(queuedInput.key == GLFW_KEY_Z && queuedInput.state == GLFW_PRESS)
                 {
                     auto mode = terrain.GetDrawMode();
                     if(mode == Terrain::DrawMode::Normal)
@@ -226,7 +207,7 @@ std::vector<Input*> handleInput(GLFWwindow* window, real prevTime, real time, Ca
                         terrain.SetDrawMode(Terrain::DrawMode::Flat);
                     else
                         terrain.SetDrawMode(Terrain::DrawMode::Normal);
-                }
+                }*/
             }
         }
 

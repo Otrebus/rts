@@ -153,6 +153,10 @@ int main()
             auto key = input->key;
             return key == GLFW_KEY_E || key == GLFW_KEY_S || key == GLFW_KEY_F || key == GLFW_KEY_D || key == GLFW_KEY_LEFT_SHIFT;
         };
+        auto isGraphicsInput = [] (Input* input)
+        {
+            return input->key == GLFW_KEY_Z;
+        };
 
         for(auto input : inputs)
         {
@@ -177,6 +181,20 @@ int main()
                         else
                             moveSlow = false;
                     }
+                }
+            }
+            else if(isGraphicsInput(input))
+            {
+                if(input->stateStart == InputType::KeyPress && input->key == GLFW_KEY_Z)
+                {
+                    std::cout << "hi";
+                    auto mode = terrain.GetDrawMode();
+                    if(mode == Terrain::DrawMode::Normal)
+                        terrain.SetDrawMode(Terrain::DrawMode::Wireframe);
+                    else if(mode == Terrain::DrawMode::Wireframe)
+                        terrain.SetDrawMode(Terrain::DrawMode::Flat);
+                    else
+                        terrain.SetDrawMode(Terrain::DrawMode::Normal);
                 }
             }
             delete input;
