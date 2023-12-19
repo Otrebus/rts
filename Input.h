@@ -37,7 +37,7 @@ struct Input
 
 struct InputQueue
 {
-    Input lastKeyboardKey[GLFW_KEY_LAST], lastMouseKey[GLFW_KEY_LAST];
+    Input lastKeyboardKey[GLFW_KEY_LAST], lastMouseKey[GLFW_MOUSE_BUTTON_LAST];
 
     std::queue<QueuedInput> queue;
     bool mouseState[8];

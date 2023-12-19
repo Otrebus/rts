@@ -114,26 +114,32 @@ std::vector<Input*> handleInput(GLFWwindow* window, real prevTime, real time, Ca
     if(inputQueue.keyState[GLFW_KEY_LEFT_SHIFT] == GLFW_PRESS)
         slow = true;
 
-    std::unordered_map<int, Input*> lastInput;
+    std::unordered_map<int, Input*> lastKeyInput;
+    std::unordered_map<int, Input*> lastMouseInput;
     std::vector<Input*> inputs;
+
+    auto pushInput = [&inputs] (std::unordered_map<int, Input*>& lastInput, int key, real time, InputType start, InputType end)
+    {
+        Input* input = new Input();
+        inputs.push_back(input);
+        lastInput[key] = input;
+        input->key = key;
+        input->timeStart = time;
+        input->stateStart = start;
+        input->stateEnd = end;
+        return input;
+    };
 
     while(inputQueue.hasInput())
     {
         auto queuedInput = inputQueue.peek();
-
-        auto pushInput = [&inputs, &lastInput, &queuedInput] ()
+        if(queuedInput.type == KeyboardKey || queuedInput.type == MouseButton)
         {
-            Input* input = new Input();
-            inputs.push_back(input);
-            lastInput[queuedInput.key] = input;
-            input->key = queuedInput.key;
-            input->timeStart = queuedInput.time;
-            input->stateStart = KeyPress;
-            input->stateEnd = None;
-        };
+            auto &lastInput = (queuedInput.type == KeyboardKey ? lastKeyInput : lastMouseInput);
+            auto Press = (queuedInput.type == KeyboardKey ? KeyPress : MousePress);
+            auto Release = (queuedInput.type == KeyboardKey ? KeyRelease : MouseRelease);
+            auto Hold = (queuedInput.type == KeyboardKey ? KeyHold : MouseHold);
 
-        if(queuedInput.type == KeyboardKey)
-        {
             // Check whether we have added an input of this type to the queue already
             if(auto it = lastInput.find(queuedInput.key); it != lastInput.end())
             {
@@ -142,72 +148,20 @@ std::vector<Input*> handleInput(GLFWwindow* window, real prevTime, real time, Ca
 
                 // Check if the key is on its way in or out
                 if(queuedInput.state == GLFW_PRESS)
-                    pushInput(); // Here we just assume that the previous event of the key must have been a release
+                    // Here we just assume that the previous event of the key must have been a release
+                    pushInput(lastInput, queuedInput.key, queuedInput.time, Press, None);
                 else if(queuedInput.state == GLFW_RELEASE)
-                {
                     // Here we assume that the previous event was a press, so we extend it into a press/release (ha)
-                    prevInput->stateEnd = KeyRelease;
-                    prevInput->timeEnd = queuedInput.time;
-                }
+                    prevInput->stateEnd = Release, prevInput->timeEnd = queuedInput.time;
             }
             else
             {
                 // No previous action of this key has been recorded yet
                 if(queuedInput.state == GLFW_PRESS)
                     // Key was not active, this is a brand new press, we assume
-                    pushInput();
+                    pushInput(lastInput, queuedInput.key, queuedInput.time, Press, None);
                 else
-                {
-                    // This is a release event so the key must have been pressed to begin with
-                    Input* input = new Input();
-                    inputs.push_back(input);
-                    lastInput[queuedInput.key] = input;
-                    input->key = queuedInput.key;
-                    input->timeStart = prevTime;
-                    input->timeEnd = queuedInput.time;
-                    input->stateStart = InputType::KeyHold;
-                    input->stateEnd = InputType::KeyRelease;
-                }
-            }
-
-            if(queuedInput.type == QueuedInputType::KeyboardKey)
-            {
-                std::cout << queuedInput.time << ": " << (std::string("key was ") + ((queuedInput.state == GLFW_PRESS) ? "pressed" : "released")) << std::endl;
-
-                //if(queuedInput.state == GLFW_RELEASE && queuedInput.key == GLFW_KEY_E)
-                //{
-                //    auto duration = queuedInput.time - inputQueue.timeKey[GLFW_KEY_E];
-                //    auto t = std::min(time - prevTime, duration);
-                //    cameraControl.moveForward(slow ? 0.03*t : t*3);
-                //}
-                //if(queuedInput.state == GLFW_RELEASE && queuedInput.key == GLFW_KEY_D)
-                //{
-                //    auto duration = queuedInput.time - inputQueue.timeKey[GLFW_KEY_D];
-                //    auto t = std::min(time - prevTime, duration);
-                //    cameraControl.moveForward(slow ? -0.03*t : -t*3);
-                //}
-                //if(queuedInput.state == GLFW_RELEASE && queuedInput.key == GLFW_KEY_S)
-                //{
-                //    auto duration = queuedInput.time - inputQueue.timeKey[GLFW_KEY_S];
-                //    auto t = std::min(time - prevTime, duration);
-                //    cameraControl.moveRight(slow ? -0.03*t : -t*3);
-                //}
-                //if(queuedInput.state == GLFW_RELEASE && queuedInput.key == GLFW_KEY_F)
-                //{
-                //    auto duration = queuedInput.time - inputQueue.timeKey[GLFW_KEY_F];
-                //    auto t = std::min(time - prevTime, duration);
-                //    cameraControl.moveRight(slow ? 0.03*t : t*3);
-                //}
-                /*if(queuedInput.key == GLFW_KEY_Z && queuedInput.state == GLFW_PRESS)
-                {
-                    auto mode = terrain.GetDrawMode();
-                    if(mode == Terrain::DrawMode::Normal)
-                        terrain.SetDrawMode(Terrain::DrawMode::Wireframe);
-                    else if(mode == Terrain::DrawMode::Wireframe)
-                        terrain.SetDrawMode(Terrain::DrawMode::Flat);
-                    else
-                        terrain.SetDrawMode(Terrain::DrawMode::Normal);
-                }*/
+                    pushInput(lastInput, queuedInput.key, prevTime, Hold, Release)->timeEnd = queuedInput.time;
             }
         }
 
@@ -247,19 +201,11 @@ std::vector<Input*> handleInput(GLFWwindow* window, real prevTime, real time, Ca
     {
         if(inputQueue.keyState[key] == GLFW_PRESS)
         {
-            if(lastInput.find(key) == lastInput.end())
-            {
-                Input* input = new Input();
-                inputs.push_back(input);
-                input->key = key;
-                input->timeStart = inputQueue.timeKey[key];
-                input->timeEnd = time;
-                input->stateStart = InputType::KeyHold;
-                input->stateEnd = InputType::KeyHold;
-            }
+            if(lastKeyInput.find(key) == lastKeyInput.end())
+                pushInput(lastKeyInput, key, inputQueue.timeKey[key], KeyHold, KeyHold)->timeEnd = time;
             else
             {
-                auto prevInput = lastInput[key];
+                auto prevInput = lastKeyInput[key];
                 if(prevInput->stateEnd || prevInput->stateStart != InputType::KeyPress)
                     __debugbreak();
                 prevInput->stateEnd = InputType::KeyHold;
@@ -269,34 +215,22 @@ std::vector<Input*> handleInput(GLFWwindow* window, real prevTime, real time, Ca
         }
     }
 
-    //if(inputQueue.keyState[GLFW_KEY_E] == GLFW_PRESS)
-    //{
-    //    auto prevT = inputQueue.timeKey[GLFW_KEY_E];
-    //    auto t = std::min(time - prevTime, time-prevT);
-    //    inputQueue.timeKey[GLFW_KEY_E] = time;
-    //    cameraControl.moveForward(slow ? t*0.03 : t*3);
-    //}
-    //if(inputQueue.keyState[GLFW_KEY_D] == GLFW_PRESS)
-    //{
-    //    auto prevT = inputQueue.timeKey[GLFW_KEY_D];
-    //    auto t = std::min(time - prevTime, time-prevT);
-    //    inputQueue.timeKey[GLFW_KEY_D] = time;
-    //    cameraControl.moveForward(slow ? -t*0.03 : -t*3);
-    //}
-    //if(inputQueue.keyState[GLFW_KEY_S] == GLFW_PRESS)
-    //{
-    //    auto prevT = inputQueue.timeKey[GLFW_KEY_S];
-    //    auto t = std::min(time - prevTime, time-prevT);
-    //    inputQueue.timeKey[GLFW_KEY_S] = time;
-    //    cameraControl.moveRight(slow ? -t*0.03 : -t*3);
-    //}
-    //if(inputQueue.keyState[GLFW_KEY_F] == GLFW_PRESS)
-    //{
-    //    auto prevT = inputQueue.timeKey[GLFW_KEY_F];
-    //    auto t = std::min(time - prevTime, time-prevT);
-    //    std::cout << (time - prevTime) << " " << t << std::endl;
-    //    inputQueue.timeKey[GLFW_KEY_F] = time;
-    //    cameraControl.moveRight(slow ? t*0.03 : t*3);
-    //}
+    for(int button = 0; button < GLFW_MOUSE_BUTTON_LAST; button++)
+    {
+        if(inputQueue.mouseState[button] == GLFW_PRESS)
+        {
+            if(lastMouseInput.find(button) == lastMouseInput.end())
+                pushInput(lastMouseInput, button, inputQueue.timeMouse[button], MouseHold, MouseHold)->timeEnd = time;
+            else
+            {
+                auto prevInput = lastMouseInput[button];
+                if(prevInput->stateEnd || prevInput->stateStart != InputType::MousePress)
+                    __debugbreak();
+                prevInput->stateEnd = InputType::MouseHold;
+                prevInput->timeEnd = time;
+            }
+            inputQueue.timeMouse[button] = time;
+        }
+    }
     return inputs;
 }
