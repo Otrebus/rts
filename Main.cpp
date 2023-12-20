@@ -25,23 +25,13 @@ void checkError() {
     error = glGetError();
 
     if (error != GL_NO_ERROR)
-    {
-        std::cout << "not working" << std::endl;
-    }
-
+        std::cout << "Not working" << std::endl;
     if (error == GL_INVALID_OPERATION)
-    {
-        std::cout << "INVALID OPERATION" << std::endl;
-    }
+        std::cout << "Invalid operation" << std::endl;
     if (error == GL_NO_ERROR)
-    {
-        std::cout << "No Error! -> CODE CHECKING <-" << std::endl;
-    }
-
+        std::cout << "No error" << std::endl;
     if (error == GL_INVALID_VALUE)
-    {
-        std::cout << "NO VALUE" << std::endl;
-    }
+        std::cout << "No value" << std::endl;
 }
 
 static const real pi = std::acos(-1);
@@ -151,7 +141,7 @@ int main()
         auto isCameraInput = [] (Input* input)
         {
             auto key = input->key;
-            return key == GLFW_KEY_E || key == GLFW_KEY_S || key == GLFW_KEY_F || key == GLFW_KEY_D || key == GLFW_KEY_LEFT_SHIFT;
+            return key == GLFW_KEY_E || key == GLFW_KEY_S || key == GLFW_KEY_F || key == GLFW_KEY_D || key == GLFW_KEY_LEFT_SHIFT || key == GLFW_MOUSE_BUTTON_1 || key == GLFW_MOUSE_BUTTON_2;
         };
         auto isGraphicsInput = [] (Input* input)
         {
@@ -162,26 +152,7 @@ int main()
         {
             if(isCameraInput(input))
             {
-                std::cout << input->timeStart << " - " << input->timeEnd << std::endl;
-                if(input->stateStart == InputType::KeyPress || input->stateStart == InputType::KeyHold)
-                {
-                    auto t = input->timeEnd - input->timeStart;
-                    if(input->key == GLFW_KEY_D)
-                        cameraControl.moveForward(moveSlow ? -t*0.03 : -t*3);
-                    if(input->key == GLFW_KEY_E)
-                        cameraControl.moveForward(moveSlow ? t*0.03 : t*3);
-                    if(input->key == GLFW_KEY_S)
-                        cameraControl.moveRight(moveSlow ? -t*0.03 : -t*3);
-                    if(input->key == GLFW_KEY_F)
-                        cameraControl.moveRight(moveSlow ? t*0.03 : t*3);
-                    if(input->key == GLFW_KEY_LEFT_SHIFT)
-                    {
-                        if(input->stateEnd != InputType::KeyRelease)
-                            moveSlow = true;
-                        else
-                            moveSlow = false;
-                    }
-                }
+                cameraControl.handleInput(*input);
             }
             else if(isGraphicsInput(input))
             {

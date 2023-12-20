@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "Input.h"
 
 Matrix4 Camera::GetMatrix(float fov, float ar)
 {
@@ -58,6 +59,61 @@ real CameraControl::getTheta()
 Camera* CameraControl::getCamera()
 { 
     return cam;
+}
+
+
+void CameraControl::handleInput(const Input& input)
+{
+    auto& inputQueue = *input.inputQueue;
+
+    if(input.stateStart == InputType::KeyPress || input.stateStart == InputType::KeyHold)
+    {
+        auto t = input.timeEnd - input.timeStart;
+        if(input.key == GLFW_KEY_D)
+            moveForward(moveSlow ? -t*0.03 : -t*3);
+        if(input.key == GLFW_KEY_E)
+            moveForward(moveSlow ? t*0.03 : t*3);
+        if(input.key == GLFW_KEY_S)
+            moveRight(moveSlow ? -t*0.03 : -t*3);
+        if(input.key == GLFW_KEY_F)
+            moveRight(moveSlow ? t*0.03 : t*3);
+        if(input.key == GLFW_KEY_LEFT_SHIFT)
+        {
+            if(input.stateEnd != InputType::KeyRelease)
+                moveSlow = true;
+            else
+                moveSlow = false;
+        }
+    }
+
+    if(!panning && inputQueue.mouseState[GLFW_MOUSE_BUTTON_1])
+    {
+        inputQueue.captureMouse(true);
+            
+        prevX = inputQueue.posX;
+        prevY = inputQueue.posY;
+        panning = true;
+    }
+
+    if(panning)
+    {
+        if(inputQueue.mouseState[GLFW_MOUSE_BUTTON_1] == GLFW_RELEASE)
+        {
+            panning = false;
+            inputQueue.captureMouse(false);
+        }
+
+        std::cout << inputQueue.posX - prevX << std::endl;
+        if(!isnan(prevX))
+        {
+            setAngle(
+                getTheta() - (inputQueue.posX - prevX)/500.0,
+                getPhi() - (inputQueue.posY - prevY)/500.0
+            );
+        }
+        prevX = inputQueue.posX;
+        prevY = inputQueue.posY;
+    }
 }
 
 

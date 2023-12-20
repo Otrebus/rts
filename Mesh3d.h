@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vector>
 #include "Vertex3d.h"
 #include "Material.h"
@@ -6,7 +8,6 @@
 #include "Camera.h"
 #include "Scene.h"
 
-#pragma once
 struct Mesh3d
 {
     std::vector<Vertex3d> v;

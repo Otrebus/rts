@@ -23,19 +23,19 @@ InputQueue::InputQueue()
 void InputQueue::addKeyInput(real time, int key, int state)
 {
     if(state != GLFW_REPEAT)
-        queue.push({ time, QueuedInputType::KeyboardKey, key, state });
+        queue.push({ time, QueuedInputType::KeyboardKey, key, state, 0, 0, this });
 }
 
 
 void InputQueue::addMouseInput(real time, int key, int state)
 {
-    queue.push({ time, QueuedInputType::MouseButton, key, state });
+    queue.push({ time, QueuedInputType::MouseButton, key, state, 0, 0, this });
 }
 
 
 void InputQueue::addMousePosition(real time, real x, real y)
 {
-    queue.push({ time, QueuedInputType::MousePosition, 0, 0, x, y });
+    queue.push({ time, QueuedInputType::MousePosition, 0, 0, x, y, this });
 }
 
 
@@ -59,14 +59,14 @@ QueuedInput InputQueue::pop()
     {
         timeMouse[input.key] = input.time;
         mouseState[input.key] = input.state;
-        lastMouseKey[input.key] = Input(0, 0, input.key, input.state ? MousePress : MouseRelease, None, input.time, 0.0);
+        lastMouseKey[input.key] = Input(0, 0, input.key, input.state ? MousePress : MouseRelease, None, input.time, 0.0, this);
     }
 
     if(input.type == QueuedInputType::KeyboardKey)
     {
         timeKey[input.key] = input.time;
         keyState[input.key] = input.state;
-        lastKeyboardKey[input.key] = Input(0, 0, input.key, input.state ? KeyPress : KeyRelease, None, input.time, 0.0);
+        lastKeyboardKey[input.key] = Input(0, 0, input.key, input.state ? KeyPress : KeyRelease, None, input.time, 0.0, this);
     }
         
     if(input.type == QueuedInputType::MousePosition)
@@ -80,7 +80,6 @@ QueuedInput InputQueue::pop()
 
 InputQueue inputQueue;
 bool panning;
-real prevX = NAN, prevY = NAN;
 
 auto key_callback = [] (GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -107,9 +106,29 @@ void initInput(GLFWwindow* window)
     glfwSetCursorPosCallback(window, cursor_position_callback);
 }
 
+void InputQueue::captureMouse(bool capture)
+{
+    if(capture)
+    {
+        glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+    else
+    {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+}
+
+
+void InputQueue::setWindow(GLFWwindow* window)
+{
+    this->window = window;
+}
+
 
 std::vector<Input*> handleInput(GLFWwindow* window, real prevTime, real time, CameraControl& cameraControl, Terrain& terrain)
-{    
+{
+    inputQueue.setWindow(window);
     bool slow = false;
     if(inputQueue.keyState[GLFW_KEY_LEFT_SHIFT] == GLFW_PRESS)
         slow = true;
@@ -127,6 +146,7 @@ std::vector<Input*> handleInput(GLFWwindow* window, real prevTime, real time, Ca
         input->timeStart = time;
         input->stateStart = start;
         input->stateEnd = end;
+        input->inputQueue = &inputQueue;
         return input;
     };
 
@@ -163,36 +183,6 @@ std::vector<Input*> handleInput(GLFWwindow* window, real prevTime, real time, Ca
                 else
                     pushInput(lastInput, queuedInput.key, prevTime, Hold, Release)->timeEnd = queuedInput.time;
             }
-        }
-
-        if(!panning && inputQueue.mouseState[GLFW_MOUSE_BUTTON_1])
-        {
-            glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-            
-            prevX = inputQueue.posX;
-            prevY = inputQueue.posY;
-            panning = true;
-        }
-
-        if(panning)
-        {
-            if(inputQueue.mouseState[GLFW_MOUSE_BUTTON_1] == GLFW_RELEASE)
-            {
-                panning = false;
-                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-            }
-
-            std::cout << inputQueue.posX - prevX << std::endl;
-            if(!isnan(prevX))
-            {
-                cameraControl.setAngle(
-                    cameraControl.getTheta() - (inputQueue.posX - prevX)/500.0,
-                    cameraControl.getPhi() - (inputQueue.posY - prevY)/500.0
-                );
-            }
-            prevX = inputQueue.posX;
-            prevY = inputQueue.posY;
         }
         inputQueue.pop();
     }

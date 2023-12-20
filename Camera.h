@@ -4,6 +4,8 @@
 #include <iostream>
 #include "Matrix4.h"
 
+class Input;
+
 class Camera
 {
 public:
@@ -12,10 +14,15 @@ public:
     Vector3 pos, dir, up;
 };
 
+class InputQueue;
+
 class CameraControl
 {
     int panningX, panningY;
+    real prevX = NAN, prevY = NAN;
+
     bool panning = false;
+    bool moveSlow;
     real theta, phi;
 
     Camera* cam;
@@ -24,6 +31,8 @@ public:
 
     real getPhi();
     real getTheta();
+
+    void handleInput(const Input& input);
 
     Camera* getCamera();
 

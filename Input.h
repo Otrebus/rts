@@ -23,16 +23,18 @@ struct QueuedInput
     QueuedInputType type;
     int key, state;
     real posX, posY;
+    InputQueue* inputQueue;
 };
 
 struct Input
 {
     Input() {}
-    Input(real posX, real posY, int key, InputType stateStart, InputType stateEnd, real timeStart, real timeEnd) : posX(posX), posY(posY), key(key), stateStart(stateStart), stateEnd(stateEnd), timeStart(timeStart), timeEnd(timeEnd) {}
+    Input(real posX, real posY, int key, InputType stateStart, InputType stateEnd, real timeStart, real timeEnd, InputQueue* queue) : posX(posX), posY(posY), key(key), stateStart(stateStart), stateEnd(stateEnd), timeStart(timeStart), timeEnd(timeEnd), inputQueue(queue) {}
     real posX, posY;
     int key;
     InputType stateStart, stateEnd;
     real timeStart, timeEnd;
+    InputQueue* inputQueue;
 };
 
 struct InputQueue
@@ -43,6 +45,7 @@ struct InputQueue
     bool mouseState[8];
     int keyState[GLFW_KEY_LAST];
     real posX, posY;
+    GLFWwindow* window;
 
     real timeMouse[8];
     real timeKey[GLFW_KEY_LAST];
@@ -52,6 +55,10 @@ struct InputQueue
     void addKeyInput(real time, int key, int state);
     void addMouseInput(real time, int key, int state);
     void addMousePosition(real time, real x, real y);
+
+    void setWindow(GLFWwindow* window);
+    void captureMouse(bool);
+
     bool hasInput();
     QueuedInput peek();
     QueuedInput pop();
