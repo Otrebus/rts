@@ -83,9 +83,9 @@ Mesh3d Terrain::CreateFlatMesh(std::string fileName)
             int c = width*(y+1) + x+1;
             int d = width*(y+1) + x;
 
-            auto N1 = (vectors[b]-vectors[a])^(vectors[c]-vectors[a]);
+            auto N1 = (vectors[b]-vectors[a])%(vectors[c]-vectors[a]);
             N1.Normalize();
-            auto N2 = (vectors[c]-vectors[a])^(vectors[d]-vectors[a]);
+            auto N2 = (vectors[c]-vectors[a])%(vectors[d]-vectors[a]);
             N2.Normalize();
 
             for(auto i : { a, b, c } )

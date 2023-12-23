@@ -26,7 +26,7 @@ public:
     bool operator!=(const Vector3&) const;
     bool operator==(const Vector3&) const;
     real operator*(const Vector3&) const;
-    Vector3 operator^(const Vector3&)	const;
+    Vector3 operator%(const Vector3&)	const;
     Vector3 operator/(real) const;
     Vector3 operator/=(real);
     Vector3 operator*=(real);

@@ -16,8 +16,8 @@ Matrix4 Camera::GetMatrix(float fov, float ar)
 
     Vector3 d = -dir.Normalized();
     Vector3 u1 = this->up;
-    Vector3 v = (u1^d).Normalized();
-    Vector3 u = (d^v).Normalized();
+    Vector3 v = (u1%d).Normalized();
+    Vector3 u = (d%v).Normalized();
 
     Matrix4 proj(
         v.x, v.y, v.z, 0,
@@ -70,13 +70,13 @@ void CameraControl::handleInput(const Input& input)
     {
         auto t = input.timeEnd - input.timeStart;
         if(input.key == GLFW_KEY_D)
-            moveForward(moveSlow ? -t*0.03 : -t*3);
+            moveForward(moveSlow ? -t*0.1 : -t*10);
         if(input.key == GLFW_KEY_E)
-            moveForward(moveSlow ? t*0.03 : t*3);
+            moveForward(moveSlow ? t*0.1 : t*10);
         if(input.key == GLFW_KEY_S)
-            moveRight(moveSlow ? -t*0.03 : -t*3);
+            moveRight(moveSlow ? -t*0.1 : -t*10);
         if(input.key == GLFW_KEY_F)
-            moveRight(moveSlow ? t*0.03 : t*3);
+            moveRight(moveSlow ? t*0.1 : t*10);
         if(input.key == GLFW_KEY_LEFT_SHIFT)
         {
             if(input.stateEnd != InputType::KeyRelease)
@@ -103,7 +103,6 @@ void CameraControl::handleInput(const Input& input)
             inputQueue.captureMouse(false);
         }
 
-        std::cout << inputQueue.posX - prevX << std::endl;
         if(!isnan(prevX))
         {
             setAngle(
@@ -130,10 +129,13 @@ void CameraControl::setAngle(real theta, real phi) {
 
 
 void CameraControl::moveForward(real t) {
-    cam->pos = cam->pos + cam->dir*t*3;
+    cam->pos = cam->pos + cam->dir*t;
 }
 
 
 void CameraControl::moveRight(real t) {
-    cam->pos = cam->pos - (cam->up^cam->dir)*t*3;
+    std::cout << "moveRight enter" << std::endl;
+    //auto a = cam->up^cam->dir*t;
+    cam->pos = cam->pos - cam->up%cam->dir*t;
+    std::cout << "moveRight exit" << std::endl;
 }

@@ -1,5 +1,6 @@
 #include "Vector3.h"
 #include "Matrix4.h"
+#include <iostream>
 
 
 Vector3::Vector3(real x, real y, real z) : x(x), y(y), z(z)
@@ -37,9 +38,9 @@ Vector3 Vector3::operator+=(const Vector3& v)
 
 Vector3 Vector3::operator-=(const Vector3& v)
 {
-    x += v.x;
-    y += v.y;
-    z += v.z;
+    x -= v.x;
+    y -= v.y;
+    z -= v.z;
     return Vector3(x, y, z);
 }
 
@@ -58,7 +59,8 @@ Vector3 Vector3::operator+(const Vector3& v) const
 
 Vector3 Vector3::operator-(const Vector3& v) const
 {
-    return Vector3(x-v.x, y-v.y, z-v.z); 
+    auto ret = Vector3(x-v.x, y-v.y, z-v.z);
+    return ret;
 }
 
 
@@ -68,9 +70,10 @@ real Vector3::operator*(const Vector3& v) const
 }
 
 
-Vector3 Vector3::operator^(const Vector3& v) const
+Vector3 Vector3::operator%(const Vector3& v) const
 {
-    return Vector3(y*v.z-z*v.y, z*v.x-x*v.z, x*v.y-y*v.x);
+    auto ret = Vector3(y*v.z-z*v.y, z*v.x-x*v.z, x*v.y-y*v.x);
+    return ret;
 }
 
 
@@ -99,7 +102,8 @@ Vector3 Vector3::Normalized() const
 
 Vector3 Vector3::operator*(real t) const
 {
-    return Vector3(t*x, t*y, t*z);
+    auto ret = Vector3(t*x, t*y, t*z);
+    return ret;
 }
 
 

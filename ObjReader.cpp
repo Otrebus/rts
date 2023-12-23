@@ -731,7 +731,7 @@ void Model3d::ReadFromFile(const std::string& file)
                 {
                     auto normal = v->normal;
                     if(!normal)
-                        normal = ((t->v1->position-t->v0->position)^(t->v2->position-t->v0->position)).Normalized();
+                        normal = ((t->v1->position-t->v0->position)%(t->v2->position-t->v0->position)).Normalized();
 
                     if(vertMap.find(v) == vertMap.end())
                     {

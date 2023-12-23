@@ -37,7 +37,7 @@ struct ObjTriangle
 
     Vector3 GetNormal() const
     {
-        Vector3 normal = (v1->position-v0->position)^(v2->position-v0->position);
+        Vector3 normal = (v1->position-v0->position)%(v2->position-v0->position);
         normal.Normalize();
         return normal;
     }
