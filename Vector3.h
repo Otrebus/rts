@@ -18,18 +18,18 @@ public:
     Vector3 operator-(const Vector3&) const;
     Vector3 operator-() const;
 
-    Vector3 operator+=(const Vector3& v);
-    Vector3 operator-=(const Vector3& v);
+    Vector3& operator+=(const Vector3& v);
+    Vector3& operator-=(const Vector3& v);
 
-    Vector3 operator*=(const Matrix4& m);
+    Vector3& operator*=(const Matrix4& m);
     bool operator!() const;
     bool operator!=(const Vector3&) const;
     bool operator==(const Vector3&) const;
     real operator*(const Vector3&) const;
     Vector3 operator%(const Vector3&)	const;
     Vector3 operator/(real) const;
-    Vector3 operator/=(real);
-    Vector3 operator*=(real);
+    Vector3& operator/=(real);
+    Vector3& operator*=(real);
     Vector3 operator*(real) const;
     real& operator[](int);
     real operator[](int) const;

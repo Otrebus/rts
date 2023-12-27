@@ -4,7 +4,7 @@
 
 
 Vector3::Vector3(real x, real y, real z) : x(x), y(y), z(z)
-{
+{ 
 }
 
 
@@ -27,21 +27,21 @@ Vector3& Vector3::operator=(const Vector3& v)
 }
 
 
-Vector3 Vector3::operator+=(const Vector3& v)
+Vector3& Vector3::operator+=(const Vector3& v)
 {
     x += v.x;
     y += v.y;
     z += v.z;
-    return Vector3(x, y, z);
+    return *this;
 }
 
 
-Vector3 Vector3::operator-=(const Vector3& v)
+Vector3& Vector3::operator-=(const Vector3& v)
 {
     x -= v.x;
     y -= v.y;
     z -= v.z;
-    return Vector3(x, y, z);
+    return *this;
 }
 
 
@@ -72,8 +72,7 @@ real Vector3::operator*(const Vector3& v) const
 
 Vector3 Vector3::operator%(const Vector3& v) const
 {
-    auto ret = Vector3(y*v.z-z*v.y, z*v.x-x*v.z, x*v.y-y*v.x);
-    return ret;
+    return { y*v.z-z*v.y, z*v.x-x*v.z, x*v.y-y*v.x };
 }
 
 
@@ -107,7 +106,7 @@ Vector3 Vector3::operator*(real t) const
 }
 
 
-Vector3 Vector3::operator/=(real t)
+Vector3& Vector3::operator/=(real t)
 {
     x/= t;
     y/= t;
@@ -116,7 +115,7 @@ Vector3 Vector3::operator/=(real t)
 }
 
 
-Vector3 Vector3::operator*=(real t)
+Vector3& Vector3::operator*=(real t)
 {
     x*= t;
     y*= t;
@@ -185,7 +184,7 @@ real Vector3::Length2() const
 }
 
 
-Vector3 Vector3::operator*=(const Matrix4& m)
+Vector3& Vector3::operator*=(const Matrix4& m)
 {
     *this = m**this;
     return *this;
