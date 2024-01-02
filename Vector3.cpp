@@ -76,15 +76,15 @@ Vector3 Vector3::operator%(const Vector3& v) const
 }
 
 
-real Vector3::Length() const
+real Vector3::length() const
 {
     return sqrt(x*x + y*y + z*z);
 }
 
 
-void Vector3::Normalize()
+void Vector3::normalize()
 {
-    real l = Length();
+    real l = length();
 
     x /= l;
     y /= l;
@@ -92,9 +92,9 @@ void Vector3::Normalize()
 }
 
 
-Vector3 Vector3::Normalized() const
+Vector3 Vector3::normalized() const
 {
-    real l = Length();
+    real l = length();
     return { x/l, y/l, z/l };
 }
 
@@ -160,7 +160,7 @@ std::ostream& operator<<(std::ostream& s, const Vector3& v)
 }
 
 
-bool Vector3::IsValid() const
+bool Vector3::isValid() const
 {
     return std::isfinite(x) && std::isfinite(y) && std::isfinite(z);
 }
@@ -178,7 +178,7 @@ bool Vector3::operator!=(const Vector3& v) const
 }
 
 
-real Vector3::Length2() const
+real Vector3::length2() const
 {
     return x*x + y*y + z*z;
 }

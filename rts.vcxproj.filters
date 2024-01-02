@@ -59,7 +59,7 @@
       <Filter>Source files\Utils</Filter>
     </ClCompile>
     <ClCompile Include="Terrain.cpp">
-      <Filter>Source files</Filter>
+      <Filter>Source files\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -115,7 +115,7 @@
       <Filter>Source files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Terrain.h">
-      <Filter>Source files</Filter>
+      <Filter>Source files\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

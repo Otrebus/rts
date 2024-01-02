@@ -15,8 +15,8 @@ TextureMaterial::TextureMaterial(const std::string& textureFile)
 
     program = new ShaderProgram();
 
-    program->AddShaders(*vertexShader, *fragmentShader, *geometryShader);
-    program->Use();
+    program->addShaders(*vertexShader, *fragmentShader, *geometryShader);
+    program->use();
     auto [data, width, height] = readBMP(textureFile);
 
     glGenTextures(1, &this->texture); 
@@ -40,18 +40,18 @@ TextureMaterial::~TextureMaterial()
 }
 
 
-void TextureMaterial::Use()
+void TextureMaterial::use()
 {
     glBindTexture(GL_TEXTURE_2D, texture);
-    program->Use();
+    program->use();
 }
 
 
-void TextureMaterial::UpdateUniforms(Scene* scene)
+void TextureMaterial::updateUniforms(Scene* scene)
 {
-    program->Use();
-    glUniform3fv(glGetUniformLocation(program->GetId(), "camPos"), 1, (GLfloat*) &scene->GetCamera()->pos);
-    glUniformMatrix4fv(glGetUniformLocation(program->GetId(), "transform"), 1, GL_TRUE, (float*)&scene->GetCamera()->GetMatrix(59, 16./10.).m_val);
+    program->use();
+    glUniform3fv(glGetUniformLocation(program->getId(), "camPos"), 1, (GLfloat*) &scene->getCamera()->pos);
+    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)&scene->getCamera()->getMatrix(59, 16./10.).m_val);
 }
 
 

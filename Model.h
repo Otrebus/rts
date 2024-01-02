@@ -20,14 +20,14 @@ public:
     Model3d();
     ~Model3d();
 
-    std::map<std::string, Material*> ReadMaterialFile(const std::string& matfilestr);
-    void ReadFromFile(const std::string& file);
+    std::map<std::string, Material*> readMaterialFile(const std::string& matfilestr);
+    void readFromFile(const std::string& file);
 
-    void Setup(Scene* scene);
-    void TearDown(Scene* scene);
+    void setup(Scene* scene);
+    void tearDown(Scene* scene);
 
-    void Draw();
-    void AddMesh(const Mesh3d& mesh);
+    void draw();
+    void addMesh(const Mesh3d& mesh);
 
-    void UpdateUniforms();
+    void updateUniforms();
 };

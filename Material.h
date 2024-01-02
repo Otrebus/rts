@@ -6,8 +6,8 @@
 class Material
 {
 public:
-    virtual void Use() = 0;
+    virtual void use() = 0;
     virtual ~Material() {};
 public:
-    virtual void UpdateUniforms(Scene* scene) = 0;
+    virtual void updateUniforms(Scene* scene) = 0;
 };

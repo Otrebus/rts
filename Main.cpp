@@ -96,9 +96,9 @@ int main()
     Mesh3d mesh(meshVertices, { 0, 1, 2, 2, 3, 0 }, &texture);
     Mesh3d mesh2(meshVertices2, { 0, 1, 2, 2, 3, 0 }, &texture2);
 
-    model.Setup(&scene);
-    mesh.Setup(&scene);
-    mesh2.Setup(&scene);
+    model.setup(&scene);
+    mesh.setup(&scene);
+    mesh2.setup(&scene);
 
     Terrain terrain("Heightmap.bmp", &scene);
 
@@ -113,16 +113,16 @@ int main()
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
        
-        mesh.UpdateUniforms();
-        mesh.Draw();
+        mesh.updateUniforms();
+        mesh.draw();
 
-        mesh2.UpdateUniforms();
-        mesh2.Draw();
+        mesh2.updateUniforms();
+        mesh2.draw();
 
-        model.UpdateUniforms();
-        model.Draw();
+        model.updateUniforms();
+        model.draw();
 
-        terrain.Draw();
+        terrain.draw();
         glfwSwapBuffers(window);
 
         //for(int i = 0; i < 1000000000; i++) {
@@ -159,22 +159,22 @@ int main()
                 if(input->stateStart == InputType::KeyPress && input->key == GLFW_KEY_Z)
                 {
                     std::cout << "hi";
-                    auto mode = terrain.GetDrawMode();
+                    auto mode = terrain.getDrawMode();
                     if(mode == Terrain::DrawMode::Normal)
-                        terrain.SetDrawMode(Terrain::DrawMode::Wireframe);
+                        terrain.setDrawMode(Terrain::DrawMode::Wireframe);
                     else if(mode == Terrain::DrawMode::Wireframe)
-                        terrain.SetDrawMode(Terrain::DrawMode::Flat);
+                        terrain.setDrawMode(Terrain::DrawMode::Flat);
                     else
-                        terrain.SetDrawMode(Terrain::DrawMode::Normal);
+                        terrain.setDrawMode(Terrain::DrawMode::Normal);
                 }
             }
             delete input;
         }
     }
 
-    model.TearDown(&scene);
-    mesh.TearDown(&scene);
-    mesh2.TearDown(&scene);
+    model.tearDown(&scene);
+    mesh.tearDown(&scene);
+    mesh2.tearDown(&scene);
 
     glfwTerminate();
     return 0;

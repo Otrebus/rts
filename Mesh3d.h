@@ -20,9 +20,9 @@ struct Mesh3d
     Mesh3d(std::vector<Vertex3d> vertices, std::vector<int> triangles, Material* material);
     Mesh3d();
 
-    void Setup(Scene* scene);
-    void TearDown(Scene* scene);
+    void setup(Scene* scene);
+    void tearDown(Scene* scene);
 
-    void Draw();
-    void UpdateUniforms();
+    void draw();
+    void updateUniforms();
 };

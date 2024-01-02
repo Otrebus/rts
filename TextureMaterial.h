@@ -12,8 +12,8 @@ class TextureMaterial : public Material
 public:
     TextureMaterial(const std::string& textureFile);
     ~TextureMaterial();
-    void UpdateUniforms(Scene* scene);
-    void Use();
+    void updateUniforms(Scene* scene);
+    void use();
 
 
     static Shader* fragmentShader, *vertexShader, *geometryShader;

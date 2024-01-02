@@ -11,8 +11,8 @@ class Material;
 class TriangleMesh;
 class Model3d;
 
-Model3d ReadFromFile(const std::string& file);
-std::map<std::string, Material*> ReadMaterialFile(const std::string& matfilestr);
+Model3d readFromFile(const std::string& file);
+std::map<std::string, Material*> readMaterialFile(const std::string& matfilestr);
 
 
 class ObjTriangle;
@@ -35,10 +35,10 @@ struct ObjTriangle
     ObjTriangle(ObjVertex* v0, ObjVertex* v1, ObjVertex* v2) : v0(v0), v1(v1), v2(v2) {}
     ObjVertex *v0, *v1, *v2;
 
-    Vector3 GetNormal() const
+    Vector3 getNormal() const
     {
         Vector3 normal = (v1->position-v0->position)%(v2->position-v0->position);
-        normal.Normalize();
+        normal.normalize();
         return normal;
     }
 };

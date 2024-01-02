@@ -16,8 +16,8 @@ LambertianMaterial::LambertianMaterial(Vector3 Kd) : Kd(Kd)
 
     program = new ShaderProgram();
 
-    program->AddShaders(*vertexShader, *fragmentShader, *geometryShader);
-    program->Use();
+    program->addShaders(*vertexShader, *fragmentShader, *geometryShader);
+    program->use();
 }
 
 
@@ -26,24 +26,24 @@ LambertianMaterial::~LambertianMaterial()
 }
 
 
-Shader* LambertianMaterial::GetShader()
+Shader* LambertianMaterial::getShader()
 {
     return fragmentShader;
 }
 
 
-void LambertianMaterial::Use()
+void LambertianMaterial::use()
 {
-    program->Use();
+    program->use();
 }
 
 
-void LambertianMaterial::UpdateUniforms(Scene* scene)
+void LambertianMaterial::updateUniforms(Scene* scene)
 {
-    program->Use();
-    glUniform3fv(glGetUniformLocation(program->GetId(), "camPos"), 1, (GLfloat*) &scene->GetCamera()->pos);
-    glUniformMatrix4fv(glGetUniformLocation(program->GetId(), "transform"), 1, GL_TRUE, (float*)&scene->GetCamera()->GetMatrix(59, 16./10.).m_val);
-    GLuint kdLocation = glGetUniformLocation(program->GetId(), "Kd");
+    program->use();
+    glUniform3fv(glGetUniformLocation(program->getId(), "camPos"), 1, (GLfloat*) &scene->getCamera()->pos);
+    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)&scene->getCamera()->getMatrix(59, 16./10.).m_val);
+    GLuint kdLocation = glGetUniformLocation(program->getId(), "Kd");
     glUniform3f(kdLocation, Kd.x, Kd.y, Kd.z);
 }
 

@@ -20,18 +20,16 @@ Vector2& Vector2::operator=(const Vector2& v)
     return *this;
 }
 
-Vector2 Vector2::operator+=(const Vector2& v)
+Vector2& Vector2::operator+=(const Vector2& v)
 {
-    x += v.x;
-    y += v.y;
-    return Vector2(x, y);
+    x += v.x, y += v.y;
+    return *this;
 }
 
-Vector2 Vector2::operator-=(const Vector2& v)
+Vector2& Vector2::operator-=(const Vector2& v)
 {
-    x -= v.x;
-    y -= v.y;
-    return Vector2(x, y);
+    x -= v.x, y -= v.y;
+    return *this;
 }
 
 Vector2 Vector2::operator/(float f) const
@@ -54,21 +52,21 @@ float Vector2::operator*(const Vector2& v) const
     return x * v.x + y * v.y;
 }
 
-float Vector2::Length() const
+float Vector2::length() const
 {
     return sqrt(x * x + y * y);
 }
 
-void Vector2::Normalize()
+void Vector2::normalize()
 {
-    float l = Length();
+    float l = length();
     x /= l;
     y /= l;
 }
 
-Vector2 Vector2::Normalized() const
+Vector2 Vector2::normalized() const
 {
-    float l = Length();
+    float l = length();
     return Vector2(x / l, y / l);
 }
 
@@ -77,17 +75,15 @@ Vector2 Vector2::operator*(float t) const
     return Vector2(t * x, t * y);
 }
 
-Vector2 Vector2::operator/=(float t)
+Vector2& Vector2::operator/=(float t)
 {
-    x /= t;
-    y /= t;
+    x /= t, y /= t;
     return *this;
 }
 
-Vector2 Vector2::operator*=(float t)
+Vector2& Vector2::operator*=(float t)
 {
-    x *= t;
-    y *= t;
+    x *= t, y *= t;
     return *this;
 }
 
@@ -117,7 +113,7 @@ std::ostream& operator<<(std::ostream& s, const Vector2& v)
 }
 
 
-bool Vector2::IsValid() const
+bool Vector2::isValid() const
 {
     return std::isfinite(x) && std::isfinite(y);
 }
@@ -135,7 +131,7 @@ bool Vector2::operator!=(const Vector2& v) const
 }
 
 
-real Vector2::Length2() const
+real Vector2::length2() const
 {
     return x*x + y*y;
 }

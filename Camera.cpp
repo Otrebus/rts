@@ -1,7 +1,7 @@
 #include "Camera.h"
 #include "Input.h"
 
-Matrix4 Camera::GetMatrix(float fov, float ar)
+Matrix4 Camera::getMatrix(float fov, float ar)
 {
     float pi = 3.141592653589793;
     float a = std::tan(pi*fov/180/2);
@@ -14,10 +14,10 @@ Matrix4 Camera::GetMatrix(float fov, float ar)
         0, 0, 0, 1
     );
 
-    Vector3 d = -dir.Normalized();
+    Vector3 d = -dir.normalized();
     Vector3 u1 = this->up;
-    Vector3 v = (u1%d).Normalized();
-    Vector3 u = (d%v).Normalized();
+    Vector3 v = (u1%d).normalized();
+    Vector3 u = (d%v).normalized();
 
     Matrix4 proj(
         v.x, v.y, v.z, 0,

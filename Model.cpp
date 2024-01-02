@@ -10,13 +10,13 @@
 
 Model3d::Model3d(std::string filename)
 {
-    ReadFromFile(filename);
+    readFromFile(filename);
 }
 
 
 Model3d::Model3d(const Mesh3d& mesh)
 {
-    AddMesh(mesh);
+    addMesh(mesh);
 }
 
 
@@ -30,35 +30,35 @@ Model3d::~Model3d()
         delete mat;
 }
 
-void Model3d::AddMesh(const Mesh3d& mesh)
+void Model3d::addMesh(const Mesh3d& mesh)
 {
     std::cout << "Pushing back";
     meshes.push_back(mesh);
 }
 
 
-void Model3d::Setup(Scene* scene)
+void Model3d::setup(Scene* scene)
 {
     for(auto& mesh : meshes)
-        mesh.Setup(scene);
+        mesh.setup(scene);
 }
 
 
-void Model3d::TearDown(Scene* scene)
+void Model3d::tearDown(Scene* scene)
 {
     for(auto& mesh : meshes)
-        mesh.TearDown(scene);
+        mesh.tearDown(scene);
 }
 
 
-void Model3d::Draw()
+void Model3d::draw()
 {
     for(auto& mesh : meshes)
-        mesh.Draw();
+        mesh.draw();
 }
 
-void Model3d::UpdateUniforms()
+void Model3d::updateUniforms()
 {
     for(auto& mesh : meshes)
-        mesh.UpdateUniforms();
+        mesh.updateUniforms();
 }

@@ -11,5 +11,5 @@ class Shader
 public:
     Shader(std::string filename, unsigned int type);
     ~Shader();
-    unsigned int GetId() const;
+    unsigned int getId() const;
 };

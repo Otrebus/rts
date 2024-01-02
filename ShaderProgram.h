@@ -10,12 +10,12 @@ public:
     ~ShaderProgram();
 
     template<typename... Shaders>
-    void AddShaders(const Shaders&... shaders)
+    void addShaders(const Shaders&... shaders)
     {
-        (glAttachShader(id, shaders.GetId()), ...);
+        (glAttachShader(id, shaders.getId()), ...);
         glLinkProgram(id);
     }
 
-    unsigned int GetId();
-    void Use();
+    unsigned int getId();
+    void use();
 };

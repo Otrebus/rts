@@ -14,8 +14,8 @@ public:
     Logger();
     ~Logger();
 
-    static void Box(const std::string&);
-    void File(const std::string&);
+    static void box(const std::string&);
+    void file(const std::string&);
 private:
     std::string m_fileName;
 };

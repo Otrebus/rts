@@ -6,7 +6,7 @@ class Scene
 {
 public:
     Scene(Camera* camera);
-    Camera* GetCamera() const;
+    Camera* getCamera() const;
 private:
     Camera* camera;
 };

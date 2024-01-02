@@ -549,7 +549,7 @@ std::vector<Token> tokenize(std::ifstream& file, std::string& str)
  * @param matefilestr The name of the materials file.
  * @returns A map from the name of the material to the material object.
  */
-std::map<std::string, Material*> Model3d::ReadMaterialFile(const std::string& matfilestr)
+std::map<std::string, Material*> Model3d::readMaterialFile(const std::string& matfilestr)
 {
     std::ifstream matfile;
     matfile.open(matfilestr.c_str(), std::ios::out);
@@ -681,7 +681,7 @@ std::map<std::string, Material*> Model3d::ReadMaterialFile(const std::string& ma
 }
 
 
-void Model3d::ReadFromFile(const std::string& file)
+void Model3d::readFromFile(const std::string& file)
 {
     Material* curmat = nullptr;
     std::ifstream myfile;
@@ -731,7 +731,7 @@ void Model3d::ReadFromFile(const std::string& file)
                 {
                     auto normal = v->normal;
                     if(!normal)
-                        normal = ((t->v1->position-t->v0->position)%(t->v2->position-t->v0->position)).Normalized();
+                        normal = ((t->v1->position-t->v0->position)%(t->v2->position-t->v0->position)).normalized();
 
                     if(vertMap.find(v) == vertMap.end())
                     {
@@ -756,7 +756,7 @@ void Model3d::ReadFromFile(const std::string& file)
                 mesh.triangles = indices;
 
                 if(mesh.triangles.size())
-                    this->AddMesh(mesh);
+                    this->addMesh(mesh);
             }
         }
     };
@@ -816,7 +816,7 @@ void Model3d::ReadFromFile(const std::string& file)
                         {
                             v->normal = Vector3(0, 0, 0);
                             for(auto& tri : v->triangles)
-                                v->normal += tri->GetNormal();
+                                v->normal += tri->getNormal();
 
                             v->normal /= v->triangles.size();
                         }
@@ -825,11 +825,11 @@ void Model3d::ReadFromFile(const std::string& file)
                 for(auto& t : smoothingTriangles[0])
                 {
                     if(!t->v0->normal)
-                        t->v0->normal = t->GetNormal();
+                        t->v0->normal = t->getNormal();
                     if(!t->v1->normal)
-                        t->v1->normal = t->GetNormal();
+                        t->v1->normal = t->getNormal();
                     if(!t->v2->normal)
-                        t->v2->normal = t->GetNormal();
+                        t->v2->normal = t->getNormal();
                 }
 
                 addMesh();
@@ -838,7 +838,7 @@ void Model3d::ReadFromFile(const std::string& file)
             {
                 // Check if there's an associated materials file, and parse it
                 auto matfilestr = expectStr(parser);
-                materials = ReadMaterialFile(std::string(matfilestr));
+                materials = readMaterialFile(std::string(matfilestr));
                 continue;
             }
             else if(parser.accept("vn"))
@@ -884,7 +884,7 @@ void Model3d::ReadFromFile(const std::string& file)
     }
     catch(const ParseException& p)
     {
-        logger.Box(p.message);
+        logger.box(p.message);
         __debugbreak();
     }
 }

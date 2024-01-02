@@ -5,7 +5,7 @@ Scene::Scene(Camera* camera) : camera(camera)
 {
 }
 
-Camera* Scene::GetCamera() const
+Camera* Scene::getCamera() const
 {
     return camera;
 }

@@ -12,9 +12,9 @@ class LambertianMaterial : public Material
 public:
     LambertianMaterial(Vector3 Kd = Vector3(0.0, 0.0, 0.0));
     ~LambertianMaterial();
-    Shader* GetShader();
-    void UpdateUniforms(Scene* scene);
-    void Use();
+    Shader* getShader();
+    void updateUniforms(Scene* scene);
+    void use();
 
     Vector3 Kd;
     static Shader* fragmentShader;

@@ -20,14 +20,14 @@ private:
 	DrawMode drawMode;
 	std::string fileName;
 
-	Mesh3d CreateFlatMesh(std::string fileName);
-	Mesh3d CreateMesh(std::string fileName);
+	Mesh3d createFlatMesh(std::string fileName);
+	Mesh3d createMesh(std::string fileName);
 
 public:
-	void SetUp();
-	void TearDown();
+	void setUp();
+	void tearDown();
 	Terrain(const std::string& filestr, Scene* scene);
-	void Draw();
-	void SetDrawMode(DrawMode d);
-	DrawMode GetDrawMode() const;
+	void draw();
+	void setDrawMode(DrawMode d);
+	DrawMode getDrawMode() const;
 };

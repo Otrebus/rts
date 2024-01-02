@@ -12,12 +12,12 @@ ShaderProgram::~ShaderProgram()
     glDeleteProgram(id);
 }
 
-void ShaderProgram::Use()
+void ShaderProgram::use()
 {
     glUseProgram(id);
 }
 
-unsigned int ShaderProgram::GetId()
+unsigned int ShaderProgram::getId()
 {
     return id;
 }

@@ -20,14 +20,14 @@ Logger::~Logger()
 }
 
 
-void Logger::Box(const std::string& msg)
+void Logger::box(const std::string& msg)
 {
     std::wstring ws(msg.begin(), msg.end());
     MessageBox(0, ws.c_str(), (LPCWSTR) L"Error", MB_OK | MB_ICONERROR);
 }
 
 
-void Logger::File(const std::string& msg)
+void Logger::file(const std::string& msg)
 {
     std::ofstream file;
     time_t currentTime;
@@ -37,7 +37,7 @@ void Logger::File(const std::string& msg)
     file.open (m_fileName.c_str(), std::ofstream::app);
     if(file.fail())
     {
-        Box("Could not open debug log file.");
+        box("Could not open debug log file.");
         exit(1);
     }
     

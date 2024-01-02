@@ -13,33 +13,36 @@ public:
     ~Vector3();
     Vector3();
 
-    Vector3& operator=(const Vector3&);
+    Vector3 operator%(const Vector3&) const;
+    real operator*(const Vector3&) const;
     Vector3 operator+(const Vector3&) const;
     Vector3 operator-(const Vector3&) const;
     Vector3 operator-() const;
 
+    Vector3& operator=(const Vector3&);
     Vector3& operator+=(const Vector3& v);
     Vector3& operator-=(const Vector3& v);
 
     Vector3& operator*=(const Matrix4& m);
+
     bool operator!() const;
     bool operator!=(const Vector3&) const;
     bool operator==(const Vector3&) const;
-    real operator*(const Vector3&) const;
-    Vector3 operator%(const Vector3&)	const;
-    Vector3 operator/(real) const;
+
     Vector3& operator/=(real);
     Vector3& operator*=(real);
+
+    Vector3 operator/(real) const;
     Vector3 operator*(real) const;
+
     real& operator[](int);
     real operator[](int) const;
     
-    real Length() const;
-    real Length2() const;
-    void Normalize();
-    Vector3 Normalized() const;
-    bool IsValid() const;
-
+    real length() const;
+    real length2() const;
+    void normalize();
+    Vector3 normalized() const;
+    bool isValid() const;
 
     real x, y, z;
 };

@@ -7,7 +7,7 @@
 #include "LambertianMaterial.h"
 
 
-Mesh3d Terrain::CreateMesh(std::string fileName)
+Mesh3d Terrain::createMesh(std::string fileName)
 {
     auto [colors, width, height] = readBMP(fileName, false);
     std::vector<Vertex3d> vertices(width*height);
@@ -51,7 +51,7 @@ Mesh3d Terrain::CreateMesh(std::string fileName)
 }
 
 
-Mesh3d Terrain::CreateFlatMesh(std::string fileName)
+Mesh3d Terrain::createFlatMesh(std::string fileName)
 {
     auto [colors, width, height] = readBMP(fileName, false);
     std::vector<Vector3> vectors(width*height);
@@ -84,9 +84,9 @@ Mesh3d Terrain::CreateFlatMesh(std::string fileName)
             int d = width*(y+1) + x;
 
             auto N1 = (vectors[b]-vectors[a])%(vectors[c]-vectors[a]);
-            N1.Normalize();
+            N1.normalize();
             auto N2 = (vectors[c]-vectors[a])%(vectors[d]-vectors[a]);
-            N2.Normalize();
+            N2.normalize();
 
             for(auto i : { a, b, c } )
                 vertices[j++] = Vertex3d(vectors[i].x, vectors[i].y, vectors[i].z, N1.x, N1.y, N1.z, 0, 0);
@@ -107,46 +107,46 @@ Mesh3d Terrain::CreateFlatMesh(std::string fileName)
 
 Terrain::Terrain(const std::string& fileName, Scene* scene) : fileName(fileName), scene(scene)
 {
-    SetUp();
+    setUp();
 };
 
 
-void Terrain::SetUp()
+void Terrain::setUp()
 {
-    auto terrainMesh = drawMode == DrawMode::Flat ? CreateFlatMesh(fileName) : CreateMesh(fileName);
+    auto terrainMesh = drawMode == DrawMode::Flat ? createFlatMesh(fileName) : createMesh(fileName);
     terrainModel = Model3d(terrainMesh);
-    terrainModel.Setup(scene);
+    terrainModel.setup(scene);
 }
 
 
-void Terrain::TearDown()
+void Terrain::tearDown()
 {
-    terrainModel.TearDown(scene);
+    terrainModel.tearDown(scene);
 }
 
 
-void Terrain::Draw()
+void Terrain::draw()
 {
     if(drawMode == DrawMode::Wireframe)
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    terrainModel.UpdateUniforms();
-    terrainModel.Draw();
+    terrainModel.updateUniforms();
+    terrainModel.draw();
     if(drawMode != DrawMode::Normal)
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-void Terrain::SetDrawMode(DrawMode d)
+void Terrain::setDrawMode(DrawMode d)
 {
     drawMode = d;
     std::cout << "Setting drawmode " << drawMode << std::endl;
     if(drawMode == DrawMode::Flat || drawMode == DrawMode::Normal) {
-        TearDown();
-        SetUp();
+        tearDown();
+        setUp();
     }
 }
 
 
-Terrain::DrawMode Terrain::GetDrawMode() const
+Terrain::DrawMode Terrain::getDrawMode() const
 {
     return drawMode;
 }
