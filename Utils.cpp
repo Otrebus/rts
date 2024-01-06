@@ -27,7 +27,6 @@ std::tuple<std::vector<unsigned char>, int, int> readBMP(std::string filename, b
     char info[54];
     file.read(info, 54);
 
-
     int width = *(int*)&info[18];
     int height = *(int*)&info[22];
 
@@ -72,9 +71,8 @@ void writeBMP(std::vector<Vector3> v, int width, int height, std::string filenam
     {
         for(int x = 0; x < width; x++)
         {
-            v[y*width*3+x];
-            v[y*width*3+x+1];
-            v[y*width*3+x+2];
+            auto [r, g, b] = vectorToRgb(v[y*width+x]);
+            file.put(r); file.put(g); file.put(b);
         }
         for(int n = 0; n < pad; n++)
             file.put(0);

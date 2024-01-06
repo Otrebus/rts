@@ -1,4 +1,6 @@
 - Turn InputQueue into serving the user with a bunch of stuff that happened since the last query, like: key was held for this long (even though it might still be held), key was pressed+released. Maybe three different types of events - pressed, pressed+held, released. Removes the need from having to write to timeKey when it was last read, and ugly stuff like that
 + Add some hotkey for changing how the terrain renders - flat, wireframe, normal, and switches between them
+- Now that we have geometric normals we don't really need to create a new mesh for flat rendering
 - Make the camera move slower along the terrain instead etc - could switch between terrain following and freelook with some key
 - Add some way of drawing lines
+- Fix bmp writing

@@ -145,7 +145,7 @@ int main()
         };
         auto isGraphicsInput = [] (Input* input)
         {
-            return input->key == GLFW_KEY_Z;
+            return input->key == GLFW_KEY_Z || input->key == GLFW_KEY_P;
         };
 
         for(auto input : inputs)
@@ -158,7 +158,6 @@ int main()
             {
                 if(input->stateStart == InputType::KeyPress && input->key == GLFW_KEY_Z)
                 {
-                    std::cout << "hi";
                     auto mode = terrain.getDrawMode();
                     if(mode == Terrain::DrawMode::Normal)
                         terrain.setDrawMode(Terrain::DrawMode::Wireframe);
@@ -166,6 +165,31 @@ int main()
                         terrain.setDrawMode(Terrain::DrawMode::Flat);
                     else
                         terrain.setDrawMode(Terrain::DrawMode::Normal);
+                }
+                else if(input->stateStart == InputType::KeyPress && input->key == GLFW_KEY_P)
+                {
+                    int width, height;
+                    glfwGetFramebufferSize(window, &width, &height);
+
+                    GLubyte *pixels = new GLubyte[width*height*3];
+                    std::vector<Vector3> v(width*height);
+
+                    glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
+                    for(int y = 0; y < height; y++)
+                    {
+                        for(int x = 0; x < width; x++)
+                        {
+                            auto i = 3*((height-1-y)*width + x);
+                            auto r = pixels[i];
+                            auto g = pixels[i+1];
+                            auto b = pixels[i+2];
+                            v[x+y*width] = rgbToVector(r, g, b);
+                        }
+                    }
+                    delete[] pixels;
+
+                    writeBMP(v, width, height, "screenshot.bmp");
                 }
             }
             delete input;
