@@ -62,7 +62,7 @@ void writeBMP(std::vector<Vector3> v, int width, int height, std::string filenam
     auto size = (width*3 + pad)*height;
 
     file.write("BM", 2);
-    int header[] = { size + 54, 0, 54, 40, width, height, 1572865, 0, size, 0, 0, 0, 0 };
+    int header[] = { size+54, 0, 54, 40, width, height, 1572865, 0, size, 0, 0, 0, 0 };
     for(auto x : header)
         for(int i = 0; i < 4; i++)
             file.put(0xFF &(x >> (i*8)));

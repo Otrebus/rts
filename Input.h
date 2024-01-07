@@ -8,12 +8,12 @@
 
 enum InputType
 {
-    None = 0, MouseRelease = 1, MousePress = 2, MouseHold = 4, KeyRelease = 8, KeyPress = 16, KeyHold = 32
+    None = 0, MouseRelease = 1, MousePress = 2, MouseHold = 4, KeyRelease = 8, KeyPress = 16, KeyHold = 32, MousePosition = 64
 };
 
 enum QueuedInputType
 {
-    KeyboardKey = 1, MouseButton = 2, MousePosition = 4
+    KeyboardKey = 1, MouseButton = 2, MousePos = 4
 };
 
 

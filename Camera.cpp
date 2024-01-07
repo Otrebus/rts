@@ -85,13 +85,27 @@ void CameraControl::handleInput(const Input& input)
                 moveSlow = false;
         }
     }
+    else if(panning && input.stateStart == InputType::MousePosition)
+    {
+        std::cout << "yaya";
+        if(!isnan(prevX))
+        {
+            setAngle(
+                getTheta() - (input.posX - prevX)/500.0,
+                getPhi() - (input.posY - prevY)/500.0
+            );
+        }
+        prevX = input.posX;
+        prevY = input.posY;
+    }
 
     if(!panning && inputQueue.mouseState[GLFW_MOUSE_BUTTON_1])
     {
         inputQueue.captureMouse(true);
             
-        prevX = inputQueue.posX;
-        prevY = inputQueue.posY;
+        // prevX = inputQueue.posX;
+        // prevY = inputQueue.posY;
+        prevX = prevY = NAN;
         panning = true;
     }
 
@@ -102,16 +116,6 @@ void CameraControl::handleInput(const Input& input)
             panning = false;
             inputQueue.captureMouse(false);
         }
-
-        if(!isnan(prevX))
-        {
-            setAngle(
-                getTheta() - (inputQueue.posX - prevX)/500.0,
-                getPhi() - (inputQueue.posY - prevY)/500.0
-            );
-        }
-        prevX = inputQueue.posX;
-        prevY = inputQueue.posY;
     }
 }
 

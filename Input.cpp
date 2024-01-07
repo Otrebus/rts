@@ -35,7 +35,7 @@ void InputQueue::addMouseInput(real time, int key, int state)
 
 void InputQueue::addMousePosition(real time, real x, real y)
 {
-    queue.push({ time, QueuedInputType::MousePosition, 0, 0, x, y, this });
+    queue.push({ time, QueuedInputType::MousePos, 0, 0, x, y, this });
 }
 
 
@@ -69,7 +69,7 @@ QueuedInput InputQueue::pop()
         lastKeyboardKey[input.key] = Input(0, 0, input.key, input.state ? KeyPress : KeyRelease, None, input.time, 0.0, this);
     }
         
-    if(input.type == QueuedInputType::MousePosition)
+    if(input.type == QueuedInputType::MousePos)
     {
         // std::cout << input.posX << " " << input.posY << std::endl;
         posX = input.posX, posY = input.posY;
@@ -182,6 +182,8 @@ std::vector<Input*> handleInput(GLFWwindow* window, real prevTime, real time, Ca
                     pushInput(lastInput, queuedInput.key, prevTime, Hold, Release)->timeEnd = queuedInput.time;
             }
         }
+        else if(queuedInput.type == MousePos)
+            inputs.push_back(new Input(queuedInput.posX, queuedInput.posY, 0, InputType::MousePosition, None, queuedInput.time, queuedInput.time, &inputQueue));
         inputQueue.pop();
     }
 
