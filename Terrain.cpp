@@ -150,3 +150,9 @@ Terrain::DrawMode Terrain::getDrawMode() const
 {
     return drawMode;
 }
+
+
+std::pair<Vector3, Vector3> Terrain::getBoundingBox() const
+{
+    return { { 0, 0, 3 }, { 1, 1, 3 } };
+}

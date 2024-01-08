@@ -3,8 +3,10 @@
 #include "Utils.h"
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
-#include "Camera.h"
 #include "Terrain.h"
+#include "CameraControl.h"
+
+class InputQueue;
 
 enum InputType
 {

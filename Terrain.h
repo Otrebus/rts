@@ -30,4 +30,5 @@ public:
 	void draw();
 	void setDrawMode(DrawMode d);
 	DrawMode getDrawMode() const;
+	std::pair<Vector3, Vector3> getBoundingBox() const;
 };

@@ -75,7 +75,6 @@ int main()
 
     Camera cam;
     cam.pos = { 0, 0, 3.5 };
-    CameraControl cameraControl(0, 0, false, 0, 0, &cam);
     real time = glfwGetTime();
 
     std::vector<Vertex3d> meshVertices = {
@@ -101,6 +100,7 @@ int main()
     mesh2.setup(&scene);
 
     Terrain terrain("Heightmap.bmp", &scene);
+    CameraControl cameraControl(false, 0, 0, &cam, &terrain);
 
     auto moveSlow = false;
 
@@ -141,7 +141,7 @@ int main()
         auto isCameraInput = [] (Input* input)
         {
             auto key = input->key;
-            return key == GLFW_KEY_E || key == GLFW_KEY_S || key == GLFW_KEY_F || key == GLFW_KEY_D || key == GLFW_KEY_LEFT_SHIFT || key == GLFW_MOUSE_BUTTON_1 || key == GLFW_MOUSE_BUTTON_2 || input->stateStart == MousePosition;
+            return key == GLFW_KEY_E || key == GLFW_KEY_S || key == GLFW_KEY_F || key == GLFW_KEY_D || key == GLFW_KEY_LEFT_SHIFT || key == GLFW_MOUSE_BUTTON_1 || key == GLFW_MOUSE_BUTTON_2 || input->stateStart == MousePosition || key == GLFW_KEY_C;
         };
         auto isGraphicsInput = [] (Input* input)
         {

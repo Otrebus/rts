@@ -61,6 +61,9 @@
     <ClCompile Include="Terrain.cpp">
       <Filter>Source files\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="CameraControl.cpp">
+      <Filter>Source files\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -115,6 +118,9 @@
       <Filter>Source files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Terrain.h">
+      <Filter>Source files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraControl.h">
       <Filter>Source files\Scene</Filter>
     </ClInclude>
   </ItemGroup>
