@@ -1,13 +1,13 @@
 #include "CameraControl.h"
 #include "Input.h"
 
-CameraControl::CameraControl(bool panning, real theta, real phi, Camera* cam, Terrain* terrain) :
-    panningX(0), panningY(0), panning(panning), theta(theta), phi(phi), cam(cam), terrain(terrain)
+CameraControl::CameraControl(Camera* cam, Terrain* terrain) :
+    panningX(0), panningY(0), panning(panning), cam(cam), terrain(terrain)
 {
-    setAngle(theta, phi);
+    setAngle(0, 0);
     auto [p1, p2] = terrain->getBoundingBox();
     terrainPos = (p1 + p2)/2;
-    followingTerrain = false;
+    changeMode(true);
 }
 
 
@@ -29,13 +29,19 @@ Camera* CameraControl::getCamera()
 }
 
 
-void CameraControl::changeMode()
+void CameraControl::changeMode(bool followingTerrain)
 {
-    followingTerrain = !followingTerrain;
+    this->followingTerrain = followingTerrain;
     if(followingTerrain)
     {
         cam->pos = terrainPos + Vector3(0, -1, 1);
         cam->dir = -Vector3(0, -1, 1).normalized();
+    }
+    else
+    {
+        auto theta = std::atan2(cam->dir.y, cam->dir.x);
+        auto phi = std::atan2(cam->dir.z, cam->dir.y);
+        setAngle(theta, phi);
     }
 }
 
@@ -48,17 +54,20 @@ void CameraControl::handleInput(const Input& input)
     {
         auto t = input.timeEnd - input.timeStart;
         if(input.key == GLFW_KEY_D)
-            moveForward(moveSlow ? -t*0.1 : -t*10);
+            moveForward(moveSlow ? -t*0.1 : -t);
         if(input.key == GLFW_KEY_E)
-            moveForward(moveSlow ? t*0.1 : t*10);
+            moveForward(moveSlow ? t*0.1 : t);
         if(input.key == GLFW_KEY_S)
-            moveRight(moveSlow ? -t*0.1 : -t*10);
+            moveRight(moveSlow ? -t*0.1 : -t);
         if(input.key == GLFW_KEY_F)
-            moveRight(moveSlow ? t*0.1 : t*10);
-        if(input.key == GLFW_KEY_C)
-            changeMode();
+            moveRight(moveSlow ? t*0.1 : t);
         if(input.key == GLFW_KEY_LEFT_SHIFT)
             moveSlow = input.stateEnd != InputType::KeyRelease;
+    }
+    if(input.stateStart == InputType::KeyPress)
+    {
+        if(input.key == GLFW_KEY_C)
+            changeMode(!followingTerrain);
     }
     else if(panning && input.stateStart == InputType::MousePosition)
     {

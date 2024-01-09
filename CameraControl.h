@@ -23,7 +23,7 @@ class CameraControl
     Camera* cam;
     Terrain* terrain;
 public:
-    CameraControl(bool panning, real theta, real phi, Camera* cam, Terrain* terrain);
+    CameraControl(Camera* cam, Terrain* terrain);
 
     real getPhi();
     real getTheta();
@@ -35,5 +35,5 @@ public:
     void setAngle(real theta, real phi);
     void moveForward(real t);
     void moveRight(real t);
-    void changeMode();
+    void changeMode(bool);
 };

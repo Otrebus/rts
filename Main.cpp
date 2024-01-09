@@ -49,15 +49,12 @@ int main()
     glfwWindowHint(GLFW_DEPTH_BITS, 24);
 
     auto window = glfwCreateWindow(1000, 600, "PolRts", nullptr, nullptr);
-    if (!window) {
+    if (!window)
         return -1;
-    }
 
     glfwMakeContextCurrent(window);
-    if (gl3wInit()) {
-        printf("failed to initialize OpenGL\n");
+    if (gl3wInit())
         return -1;
-    }
 
     auto model = Model3d("CornellBox-Original.obj");
 
@@ -74,7 +71,8 @@ int main()
     initInput(window);
 
     Camera cam;
-    cam.pos = { 0, 0, 3.5 };
+    cam.pos = { 0, 0, 4 };
+    cam.dir = Vector3(0, 1, -1).normalized();
     real time = glfwGetTime();
 
     std::vector<Vertex3d> meshVertices = {
@@ -100,15 +98,14 @@ int main()
     mesh2.setup(&scene);
 
     Terrain terrain("Heightmap.bmp", &scene);
-    CameraControl cameraControl(false, 0, 0, &cam, &terrain);
+    CameraControl cameraControl(&cam, &terrain);
 
     auto moveSlow = false;
 
     while (!glfwWindowShouldClose(window)) {
 
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
-        }
 
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
