@@ -36,6 +36,11 @@ void checkError() {
 
 static const real pi = std::acos(-1);
 
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
+
 int main()
 {
     if (!glfwInit()) {
@@ -49,12 +54,15 @@ int main()
     glfwWindowHint(GLFW_DEPTH_BITS, 24);
 
     auto window = glfwCreateWindow(1000, 600, "PolRts", nullptr, nullptr);
+    glfwSetWindowAspectRatio(window, 1000, 600);
     if (!window)
         return -1;
 
     glfwMakeContextCurrent(window);
     if (gl3wInit())
         return -1;
+
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     auto model = Model3d("CornellBox-Original.obj");
 

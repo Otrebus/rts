@@ -69,7 +69,7 @@ void CameraControl::handleInput(const Input& input)
         if(input.key == GLFW_KEY_C)
             changeMode(!followingTerrain);
     }
-    else if(panning && input.stateStart == InputType::MousePosition)
+    else if(!followingTerrain && panning && input.stateStart == InputType::MousePosition)
     {
         if(!isnan(prevX))
             setAngle(getTheta() - (input.posX-prevX)/500.0, getPhi() - (input.posY-prevY)/500.0);
