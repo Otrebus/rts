@@ -34,7 +34,7 @@ void CameraControl::changeMode(bool followingTerrain)
     this->followingTerrain = followingTerrain;
     if(followingTerrain)
     {
-        cam->pos = terrainPos + Vector3(0, -1, 1);
+        setPosFromTerrainPos();
         cam->dir = -Vector3(0, -1, 1).normalized();
     }
     else
@@ -43,6 +43,12 @@ void CameraControl::changeMode(bool followingTerrain)
         auto phi = std::atan2(cam->dir.z, cam->dir.y);
         setAngle(theta, phi);
     }
+}
+
+
+void CameraControl::setPosFromTerrainPos()
+{
+    cam->pos = terrainPos + Vector3(0, -1, 1).normalized()*terrainDist;
 }
 
 
@@ -76,8 +82,13 @@ void CameraControl::handleInput(const Input& input)
         prevX = input.posX;
         prevY = input.posY;
     }
+    else if(followingTerrain && input.stateStart == InputType::ScrollOffset)
+    {
+        terrainDist += input.posY*0.1;
+        setPosFromTerrainPos();
+    }
 
-    if(!panning && inputQueue.mouseState[GLFW_MOUSE_BUTTON_1])
+    else if(!panning && inputQueue.mouseState[GLFW_MOUSE_BUTTON_1])
     {
         inputQueue.captureMouse(true);
             
@@ -112,9 +123,11 @@ void CameraControl::setAngle(real theta, real phi) {
 
 void CameraControl::moveForward(real t) {
     if(!followingTerrain)
-        cam->pos = cam->pos + cam->dir*t;
-    else
-        cam->pos += Vector3(0, 1, 0)*t;
+        cam->pos += cam->dir*t;
+    else {
+        terrainPos += Vector3(0, 1, 0)*t;
+        setPosFromTerrainPos();
+    }
 }
 
 
@@ -122,8 +135,10 @@ void CameraControl::moveRight(real t) {
     if(!followingTerrain)
     {
         //auto a = cam->up^cam->dir*t;
-        cam->pos = cam->pos - cam->up%cam->dir*t;
+        cam->pos -= cam->up%cam->dir*t;
     }
-    else
-        cam->pos += Vector3(1, 0, 0)*t;
+    else {
+        terrainPos += Vector3(1, 0, 0)*t;
+        setPosFromTerrainPos();
+    }
 }

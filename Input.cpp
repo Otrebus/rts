@@ -38,6 +38,11 @@ void InputQueue::addMousePosition(real time, real x, real y)
     queue.push({ time, QueuedInputType::MousePos, 0, 0, x, y, this });
 }
 
+void InputQueue::addScrollOffset(real time, real y)
+{
+    std::cout << "scroll is " << y << std::endl;
+    queue.push({ time, QueuedInputType::Scroll, 0, 0, 0, y, this });
+}
 
 bool InputQueue::hasInput()
 {
@@ -81,29 +86,35 @@ QueuedInput InputQueue::pop()
 InputQueue inputQueue;
 bool panning;
 
-auto key_callback = [] (GLFWwindow* window, int key, int scancode, int action, int mods)
+auto keyCallback = [] (GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if(action != GLFW_REPEAT)
         inputQueue.addKeyInput(glfwGetTime(), key, action);
 };
 
-auto mouseButton_callback = [] (GLFWwindow* window, int button, int action, int mods)
+auto mouseButtonCallback = [] (GLFWwindow* window, int button, int action, int mods)
 {
     inputQueue.addMouseInput(glfwGetTime(), button, action);
 };
 
-auto cursor_position_callback = [] (GLFWwindow* window, double xpos, double ypos)
+auto cursorPositionCallback = [] (GLFWwindow* window, double xpos, double ypos)
 {         
     inputQueue.addMousePosition(glfwGetTime(), xpos, ypos);
 };
+
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    inputQueue.addScrollOffset(glfwGetTime(), yoffset);
+}
 
 
 void initInput(GLFWwindow* window)
 {
     panning = false;
-    glfwSetKeyCallback(window, key_callback);
-    glfwSetMouseButtonCallback(window, mouseButton_callback);
-    glfwSetCursorPosCallback(window, cursor_position_callback);
+    glfwSetKeyCallback(window, keyCallback);
+    glfwSetMouseButtonCallback(window, mouseButtonCallback);
+    glfwSetCursorPosCallback(window, cursorPositionCallback);
+    glfwSetScrollCallback(window, scrollCallback);
 }
 
 void InputQueue::captureMouse(bool capture)
@@ -184,6 +195,8 @@ std::vector<Input*> handleInput(GLFWwindow* window, real prevTime, real time, Ca
         }
         else if(queuedInput.type == MousePos)
             inputs.push_back(new Input(queuedInput.posX, queuedInput.posY, 0, InputType::MousePosition, None, queuedInput.time, queuedInput.time, &inputQueue));
+        else if(queuedInput.type == Scroll)
+            inputs.push_back(new Input(queuedInput.posX, queuedInput.posY, 0, InputType::ScrollOffset, None, queuedInput.time, queuedInput.time, &inputQueue));
         inputQueue.pop();
     }
 
