@@ -64,6 +64,12 @@
     <ClCompile Include="CameraControl.cpp">
       <Filter>Source files\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="TerrainMesh.cpp">
+      <Filter>Source files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Line3d.cpp">
+      <Filter>Source files\Models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -123,6 +129,12 @@
     <ClInclude Include="CameraControl.h">
       <Filter>Source files\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="TerrainMesh.h">
+      <Filter>Source files\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Line3d.h">
+      <Filter>Source files\Models</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="lambertian.frag">
@@ -136,6 +148,12 @@
     </None>
     <None Include="geometryShader.geom">
       <Filter>Shaders\Geometry shaders</Filter>
+    </None>
+    <None Include="line.frag">
+      <Filter>Shaders\Fragment shaders</Filter>
+    </None>
+    <None Include="line.vert">
+      <Filter>Shaders\Vertex shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

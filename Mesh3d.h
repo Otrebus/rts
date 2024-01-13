@@ -8,8 +8,10 @@
 #include "Camera.h"
 #include "Scene.h"
 
-struct Mesh3d
+class Mesh3d
 {
+public:
+
     std::vector<Vertex3d> v;
     std::vector<int> triangles;
     Material* material;
@@ -20,9 +22,9 @@ struct Mesh3d
     Mesh3d(std::vector<Vertex3d> vertices, std::vector<int> triangles, Material* material);
     Mesh3d();
 
-    void setup(Scene* scene);
-    void tearDown(Scene* scene);
+    virtual void setup(Scene* scene);
+    virtual void tearDown(Scene* scene);
 
-    void draw();
-    void updateUniforms();
+    virtual void draw();
+    virtual void updateUniforms();
 };

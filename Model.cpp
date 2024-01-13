@@ -14,7 +14,7 @@ Model3d::Model3d(std::string filename)
 }
 
 
-Model3d::Model3d(const Mesh3d& mesh)
+Model3d::Model3d(Mesh3d& mesh)
 {
     addMesh(mesh);
 }
@@ -30,34 +30,37 @@ Model3d::~Model3d()
         delete mat;
 }
 
-void Model3d::addMesh(const Mesh3d& mesh)
+void Model3d::addMesh(Mesh3d& mesh)
 {
-    meshes.push_back(mesh);
+    meshes.push_back(&mesh);
 }
 
 
 void Model3d::setup(Scene* scene)
 {
-    for(auto& mesh : meshes)
-        mesh.setup(scene);
+    for(auto& mesh : meshes) {
+        std::cout << "mesh is " << mesh << std::endl;
+        mesh->setup(scene);
+        std::cout << "mesh " << mesh << " has scene " << mesh->scene << std::endl;
+    }
 }
 
 
 void Model3d::tearDown(Scene* scene)
 {
     for(auto& mesh : meshes)
-        mesh.tearDown(scene);
+        mesh->tearDown(scene);
 }
 
 
 void Model3d::draw()
 {
     for(auto& mesh : meshes)
-        mesh.draw();
+        mesh->draw();
 }
 
 void Model3d::updateUniforms()
 {
     for(auto& mesh : meshes)
-        mesh.updateUniforms();
+        mesh->updateUniforms();
 }

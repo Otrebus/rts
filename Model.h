@@ -11,12 +11,12 @@
 
 class Model3d
 {
-    std::vector<Mesh3d> meshes;
+    std::vector<Mesh3d*> meshes;
     std::vector<Material*> materials;
 
 public:
     Model3d(std::string filename);
-    Model3d(const Mesh3d& mesh);
+    Model3d(Mesh3d& mesh);
     Model3d();
     ~Model3d();
 
@@ -27,7 +27,7 @@ public:
     void tearDown(Scene* scene);
 
     void draw();
-    void addMesh(const Mesh3d& mesh);
+    void addMesh(Mesh3d& mesh);
 
     void updateUniforms();
 };

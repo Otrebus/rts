@@ -1,25 +1,15 @@
-#include "Mesh3d.h"
+#include "TerrainMesh.h"
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
 #include "Matrix4.h"
 
-Mesh3d::Mesh3d()
+
+void TerrainMesh::setup(Scene* s)
 {
-}
-
-
-Mesh3d::Mesh3d(std::vector<Vertex3d> vertices, std::vector<int> triangles, Material* material)
-{
-    this->material = material;
-    this->v = vertices;
-    this->triangles = triangles;
-}
-
-
-void Mesh3d::setup(Scene* s)
-{
+    std::cout << "i am called";
     std::cout << "mesh is now " << this << std::endl;
     scene = s;
+    std::cout << "mesh " << this << " set scene to " << s << std::endl;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
@@ -39,23 +29,4 @@ void Mesh3d::setup(Scene* s)
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*triangles.size(), triangles.data(), GL_STATIC_DRAW);
-}
-
-void Mesh3d::tearDown(Scene* s)
-{
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
-    glDeleteVertexArrays(1, &VAO);
-}
-
-void Mesh3d::draw()
-{
-    material->use();
-    glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, triangles.size(), GL_UNSIGNED_INT, 0);
-}
-
-void Mesh3d::updateUniforms()
-{
-    this->material->updateUniforms(scene);
 }

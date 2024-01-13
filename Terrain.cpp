@@ -1,13 +1,13 @@
 #include "Terrain.h"
 #include "Utils.h"
-#include "Mesh3d.h"
+#include "TerrainMesh.h"
 #include "Model.h"
 #include "Vector3.h"
 #include "TextureMaterial.h"
 #include "LambertianMaterial.h"
 
 
-Mesh3d Terrain::createMesh(std::string fileName)
+TerrainMesh* Terrain::createMesh(std::string fileName)
 {
     auto [colors, width, height] = readBMP(fileName, false);
     std::vector<Vertex3d> vertices(width*height);
@@ -46,12 +46,11 @@ Mesh3d Terrain::createMesh(std::string fileName)
     }
     
     Material* mat = new LambertianMaterial(Vector3(0.5, 0.5, 0.5));
-    auto terrainMesh = Mesh3d(vertices, points, mat);
-    return terrainMesh;
+    return new TerrainMesh(vertices, points, mat);
 }
 
 
-Mesh3d Terrain::createFlatMesh(std::string fileName)
+TerrainMesh* Terrain::createFlatMesh(std::string fileName)
 {
     auto [colors, width, height] = readBMP(fileName, false);
     std::vector<Vector3> vectors(width*height);
@@ -99,9 +98,7 @@ Mesh3d Terrain::createFlatMesh(std::string fileName)
     }
 
     Material* mat = new LambertianMaterial(Vector3(0.5, 0.5, 0.5));
-    auto terrainMesh = Mesh3d(vertices, points, mat);
-
-    return terrainMesh;
+    return new TerrainMesh(vertices, points, mat);
 }
 
 
@@ -114,7 +111,7 @@ Terrain::Terrain(const std::string& fileName, Scene* scene) : fileName(fileName)
 void Terrain::setUp()
 {
     auto terrainMesh = drawMode == DrawMode::Flat ? createFlatMesh(fileName) : createMesh(fileName);
-    terrainModel = Model3d(terrainMesh);
+    terrainModel = Model3d(*terrainMesh);
     terrainModel.setup(scene);
 }
 

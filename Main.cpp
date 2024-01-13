@@ -18,7 +18,7 @@
 #include <queue>
 #include "Terrain.h"
 #include <thread>
-
+#include "Line3d.h"
 
 void checkError() {
     GLenum error;
@@ -101,14 +101,18 @@ int main()
     Mesh3d mesh(meshVertices, { 0, 1, 2, 2, 3, 0 }, &texture);
     Mesh3d mesh2(meshVertices2, { 0, 1, 2, 2, 3, 0 }, &texture2);
 
+    Line3d line({ { 0, 0, 0 }, { 0, 1, 1 } });
+
     model.setup(&scene);
     mesh.setup(&scene);
     mesh2.setup(&scene);
+    line.setup(&scene);
 
     Terrain terrain("Heightmap.bmp", &scene);
     CameraControl cameraControl(&cam, &terrain);
 
     auto moveSlow = false;
+
 
     while (!glfwWindowShouldClose(window)) {
 
@@ -128,6 +132,10 @@ int main()
         model.draw();
 
         terrain.draw();
+
+        
+        line.draw();
+
         glfwSwapBuffers(window);
 
         //for(int i = 0; i < 1000000000; i++) {

@@ -3,6 +3,7 @@
 #include "Model.h"
 
 class Scene;
+class TerrainMesh;
 
 class Terrain
 {
@@ -20,8 +21,8 @@ private:
 	DrawMode drawMode;
 	std::string fileName;
 
-	Mesh3d createFlatMesh(std::string fileName);
-	Mesh3d createMesh(std::string fileName);
+	TerrainMesh* createFlatMesh(std::string fileName);
+	TerrainMesh* createMesh(std::string fileName);
 
 public:
 	void setUp();

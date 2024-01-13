@@ -719,8 +719,8 @@ void Model3d::readFromFile(const std::string& file)
 
         for(int i = 0; i < 33; i++)
         {
-            Mesh3d mesh;
-            mesh.material = curmat;
+            Mesh3d* mesh = new Mesh3d;
+            mesh->material = curmat;
             std::vector<Vertex3d> vertices;
             std::vector<int> indices;
             std::unordered_map<ObjVertex*, int> vertMap;
@@ -752,11 +752,11 @@ void Model3d::readFromFile(const std::string& file)
                 smoothingVertices[i].clear();
                 smoothingTriangles[i].clear();
 
-                mesh.v = vertices;
-                mesh.triangles = indices;
+                mesh->v = vertices;
+                mesh->triangles = indices;
 
-                if(mesh.triangles.size())
-                    this->addMesh(mesh);
+                if(mesh->triangles.size())
+                    this->addMesh(*mesh);
             }
         }
     };
