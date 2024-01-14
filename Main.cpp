@@ -36,8 +36,12 @@ void checkError() {
 
 static const real pi = std::acos(-1);
 
+int xres = 1000, yres = 600;
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
+    xres = width;
+    yres = height;
     glViewport(0, 0, width, height);
 }
 
@@ -53,8 +57,8 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_DEPTH_BITS, 24);
      
-    auto window = glfwCreateWindow(1000, 600, "PolRts", nullptr, nullptr);
-    glfwSetWindowAspectRatio(window, 1000, 600);
+    auto window = glfwCreateWindow(xres, yres, "PolRts", nullptr, nullptr);
+    glfwSetWindowAspectRatio(window, xres, yres);
     if (!window)
         return -1;
 
@@ -79,8 +83,12 @@ int main()
     initInput(window);
 
     Camera cam;
+    cam.fov = 59; // TODO: fix
+    cam.ar = real(xres)/float(yres);
     cam.pos = { 0, 0, 4 };
     cam.dir = Vector3(0, 1, -1).normalized();
+    cam.up = Vector3(0, 0, 1).normalized();
+    cam.up = ((cam.dir%cam.up)%cam.dir).normalized();
     real time = glfwGetTime();
 
     std::vector<Vertex3d> meshVertices = {
@@ -113,6 +121,7 @@ int main()
 
     auto moveSlow = false;
 
+    int mouseX, mouseY;
 
     while (!glfwWindowShouldClose(window)) {
 
@@ -133,7 +142,6 @@ int main()
 
         terrain.draw();
 
-        
         line.draw();
 
         glfwSwapBuffers(window);
@@ -167,6 +175,21 @@ int main()
             {
                 cameraControl.handleInput(*input);
             }
+
+            if(input->stateStart == MousePosition)
+            {
+                mouseX = input->posX;
+                mouseY = input->posY;
+            }
+
+            if(input->stateStart == InputType::MousePress && GLFW_MOUSE_BUTTON_3)
+            {
+                Vector3 dir = cam.dir + cam.up*((yres/2-mouseY)/(yres/2.))*std::tan(pi*cam.fov/180/2)/cam.ar + (cam.dir%cam.up).normalized()*((mouseX-xres/2)/(xres/2.))*std::tan(pi*cam.fov/180/2);
+                dir.normalize();
+                line = Line3d({ cam.pos, cam.pos+dir });
+                line.setup(&scene);
+            }
+
             else if(isGraphicsInput(input))
             {
                 if(input->stateStart == InputType::KeyPress && input->key == GLFW_KEY_Z)

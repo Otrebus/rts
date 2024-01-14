@@ -4,7 +4,7 @@
 CameraControl::CameraControl(Camera* cam, Terrain* terrain) :
     panningX(0), panningY(0), panning(panning), cam(cam), terrain(terrain)
 {
-    setAngle(0, 0);
+    //setAngle(0, 0);
     auto [p1, p2] = terrain->getBoundingBox();
     terrainPos = (p1 + p2)/2;
     changeMode(true);

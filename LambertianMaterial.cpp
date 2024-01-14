@@ -42,7 +42,7 @@ void LambertianMaterial::updateUniforms(Scene* scene)
 {
     program->use();
     glUniform3fv(glGetUniformLocation(program->getId(), "camPos"), 1, (GLfloat*) &scene->getCamera()->pos);
-    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)&scene->getCamera()->getMatrix(59, 16./10.).m_val);
+    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)&scene->getCamera()->getMatrix().m_val);
     GLuint kdLocation = glGetUniformLocation(program->getId(), "Kd");
     glUniform3f(kdLocation, Kd.x, Kd.y, Kd.z);
 }

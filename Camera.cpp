@@ -1,7 +1,7 @@
 #include "Camera.h"
 #include "Input.h"
 
-Matrix4 Camera::getMatrix(float fov, float ar)
+Matrix4 Camera::getMatrix()
 {
     float pi = 3.141592653589793;
     float a = std::tan(pi*fov/180/2);

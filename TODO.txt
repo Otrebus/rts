@@ -6,3 +6,5 @@
 - Add some way of drawing lines
 + Fix bmp writing
 - Setting camera position and transform in the materials classes seems a bit weird
+- Fix fov setting
+- Fix cam initialization (specially up)

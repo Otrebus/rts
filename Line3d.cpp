@@ -40,9 +40,10 @@ void Line3d::setup(Scene* scene) {
 
 void Line3d::draw() {
     program->use();
-    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)&scene->getCamera()->getMatrix(59, 16./10.).m_val);
+    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)&scene->getCamera()->getMatrix().m_val);
     glBindVertexArray(VAO);
     glDrawArrays(GL_LINES, 0, vertexData.size()/3);
+    glLineWidth(2);
 }
 
 void Line3d::tearDown() {

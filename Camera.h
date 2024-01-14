@@ -10,7 +10,8 @@ class Input;
 class Camera
 {
 public:
-    Matrix4 getMatrix(float fov, float ar);
+    Matrix4 getMatrix();
 public:
     Vector3 pos, dir, up;
+    real fov, ar;
 };

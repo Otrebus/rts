@@ -21,9 +21,6 @@ TextureMaterial::TextureMaterial(const std::string& textureFile)
 
     glGenTextures(1, &this->texture); 
 
-    //glGenVertexArrays(1, &VAO);
-    //glBindVertexArray(VAO);
-
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -51,7 +48,7 @@ void TextureMaterial::updateUniforms(Scene* scene)
 {
     program->use();
     glUniform3fv(glGetUniformLocation(program->getId(), "camPos"), 1, (GLfloat*) &scene->getCamera()->pos);
-    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)&scene->getCamera()->getMatrix(59, 16./10.).m_val);
+    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)&scene->getCamera()->getMatrix().m_val);
 }
 
 
