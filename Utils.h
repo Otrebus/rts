@@ -3,11 +3,14 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include <limits>
 
 class Matrix4;
 class Vector3;
 
 using real = float;
+
+const real inf = std::numeric_limits<real>::infinity();
 
 std::tuple<std::vector<unsigned char>, int, int> readBMP(std::string filename, bool pad = true);
 void writeBMP(std::vector<Vector3> v, int width, int height, std::string filename);

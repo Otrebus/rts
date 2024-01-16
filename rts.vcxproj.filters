@@ -70,6 +70,15 @@
     <ClCompile Include="Line3d.cpp">
       <Filter>Source files\Models</Filter>
     </ClCompile>
+    <ClCompile Include="Ray.cpp">
+      <Filter>Source files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math.cpp">
+      <Filter>Source files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="TerrainMaterial.cpp">
+      <Filter>Source files\Materials</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -135,6 +144,15 @@
     <ClInclude Include="Line3d.h">
       <Filter>Source files\Models</Filter>
     </ClInclude>
+    <ClInclude Include="Ray.h">
+      <Filter>Source files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.h">
+      <Filter>Source files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="TerrainMaterial.h">
+      <Filter>Source files\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="lambertian.frag">
@@ -153,6 +171,12 @@
       <Filter>Shaders\Fragment shaders</Filter>
     </None>
     <None Include="line.vert">
+      <Filter>Shaders\Vertex shaders</Filter>
+    </None>
+    <None Include="terrain.frag">
+      <Filter>Shaders\Fragment shaders</Filter>
+    </None>
+    <None Include="terrain.vert">
       <Filter>Shaders\Vertex shaders</Filter>
     </None>
   </ItemGroup>

@@ -23,3 +23,21 @@ Vertex3d::Vertex3d(real x, real y, real z, real nx, real ny, real nz, real tx, r
     normal = Vector3(nx, ny, nz);
     tex = Vector2(tx, ty);
 }
+
+MeshVertex3d::MeshVertex3d(real x, real y, real z, real nx, real ny, real nz, real tx, real ty) 
+{
+    pos = Vector3(x, y, z);
+    normal = Vector3(nx, ny, nz);
+    tex = Vector2(tx, ty);
+}
+
+MeshVertex3d::MeshVertex3d(std::initializer_list<float> list) 
+{
+    auto it = list.begin();
+    auto x = *it++, y = *it++, z = *it++;
+    pos = Vector3(x, y, z);
+    auto nx = *it++, ny = *it++, nz = *it++;
+    normal = Vector3(nx, ny, nz);
+    auto tx = *it++, ty = *it++;
+    tex = Vector2(tx, ty);
+}

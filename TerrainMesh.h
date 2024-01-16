@@ -11,8 +11,11 @@
 
 class TerrainMesh : public Mesh3d
 {
-    //TerrainMesh(std::vector<Vertex3d> vertices, std::vector<int> triangles, Material* material);
+public:
+    TerrainMesh(std::vector<MeshVertex3d> meshData, std::vector<int> triangles, Material* material);
     //TerrainMesh();
+
+    std::vector<MeshVertex3d> v;
 
     using Mesh3d::Mesh3d;
 

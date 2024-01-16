@@ -1,0 +1,27 @@
+#version 450 core
+
+uniform vec3 Kd;
+
+in vec3 N_s;
+in vec3 N_g; // Updated to use the geometric normal
+in vec3 tocam; // Updated to use the toCam vector
+
+out vec4 FragColor;
+
+void main()
+{
+    vec3 n = N_s;
+    if (dot(normalize(tocam), N_g) < 0)
+        n = -N_s; // Make sure the normal is oriented correctly
+
+    vec3 lightDir = vec3(0.5f, -0.3f, -0.4f);
+    lightDir = normalize(lightDir);
+    float lambertian = max(dot(n, -lightDir), 0.0);
+
+    vec3 ambient = 0.2 * vec3(0.5, 0.5, 0.5);
+    vec3 color = vec3(0.5, 0.5, 0.5)*lambertian + ambient;
+
+    color = clamp(color, 0.0, 1.0);
+
+    FragColor = vec4(color, 1.0f);
+}

@@ -15,7 +15,6 @@ public:
     void updateUniforms(Scene* scene);
     void use();
 
-
     static Shader* fragmentShader, *vertexShader, *geometryShader;
     unsigned int texture;
     ShaderProgram* program;
