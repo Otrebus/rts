@@ -5,6 +5,7 @@ layout (triangle_strip, max_vertices = 3) out;
 
 in vec2 TexCoord[3];
 in vec3 VertexPosition[3];
+in float sel[3];
 in vec3 normal[3];
 in vec3 toCam[3];
 
@@ -12,6 +13,7 @@ out vec2 texCoord;
 out vec3 N_g;
 out vec3 N_s;
 out vec3 tocam;
+out float selected;
 
 void main() {
     for (int i = 0; i < 3; ++i) {
@@ -24,6 +26,7 @@ void main() {
         texCoord = TexCoord[i];
         N_g = geometricNormal;
         tocam = toCam[i];
+        selected = sel[i];
 
         EmitVertex();
     }

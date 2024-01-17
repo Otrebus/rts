@@ -1,10 +1,9 @@
 #version 450 core
 
-uniform vec3 Kd;
-
 in vec3 N_s;
 in vec3 N_g; // Updated to use the geometric normal
 in vec3 tocam; // Updated to use the toCam vector
+in float selected;
 
 out vec4 FragColor;
 
@@ -23,5 +22,5 @@ void main()
 
     color = clamp(color, 0.0, 1.0);
 
-    FragColor = vec4(color, 1.0f);
+    FragColor = selected != 0 ? vec4(1, 0, 0, 1) : vec4(color, 1.0f);
 }

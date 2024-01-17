@@ -123,6 +123,8 @@ int main()
 
     int mouseX, mouseY;
 
+    checkError();
+
     while (!glfwWindowShouldClose(window)) {
 
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
