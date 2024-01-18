@@ -15,6 +15,8 @@ public:
     TerrainMesh(std::vector<MeshVertex3d> meshData, std::vector<int> triangles, Material* material);
     //TerrainMesh();
 
+    void selectVertex(int i, bool selected);
+
     std::vector<MeshVertex3d> v;
 
     using Mesh3d::Mesh3d;

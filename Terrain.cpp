@@ -4,13 +4,14 @@
 #include "Model.h"
 #include "Vector3.h"
 #include "TerrainMaterial.h"
+#include "Math.h"
 
 
 TerrainMesh* Terrain::createMesh(std::string fileName)
 {
     auto [colors, width, height] = readBMP(fileName, false);
     std::vector<MeshVertex3d> vertices(width*height);
-    std::vector<int> points;
+    std::vector<int> triangleIndices;
 
     auto H = [&colors, &width, &height] (int x, int y) {
         return colors[width*3*(height-y-1)+x*3]/255.0/10;
@@ -29,7 +30,9 @@ TerrainMesh* Terrain::createMesh(std::string fileName)
             auto dx = ((!lx ? H(x+1, y) : H(x, y)) - (!fx ? H(x-1, y) : H(x, y)))/((!fx + !lx)*1./(width-1.));
             auto dy = ((!ly ? H(x, y+1) : H(x, y)) - (!fy ? H(x, y-1) : H(x, y)))/((!fy + !ly)*1./(height-1.));
             real l = std::sqrt(dx*dx+dy*dy+1);
+            points.push_back(Vector3(X, Y, H(x, y) + 3.0));
             vertices[width*y+x] = MeshVertex3d(X, Y, H(x, y) + 3.0, -dx/l, -dy/l, 1.0/l, X, Y);
+            vertices[width*y+x].selected = false;
         }
     }
     for(int y = 0; y < height-1; y++)
@@ -40,12 +43,15 @@ TerrainMesh* Terrain::createMesh(std::string fileName)
             int b = width*y + x+1;
             int c = width*(y+1) + x+1;
             int d = width*(y+1) + x;
-            points.insert(points.end(), { a, b, c, a, c, d });
+            triangleIndices.insert(triangleIndices.end(), { a, b, c, a, c, d });
         }
     }
+
+    this->width = width;
+    this->height = height;
     
     Material* mat = new TerrainMaterial();
-    return new TerrainMesh(vertices, points, mat);
+    return terrainMesh = new TerrainMesh(vertices, triangleIndices, mat);
 }
 
 
@@ -96,14 +102,76 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
         }
     }
 
+    this->width = width;
+    this->height = height;
+
     Material* mat = new TerrainMaterial();
-    return new TerrainMesh(vertices, points, mat);
+    return terrainMesh = new TerrainMesh(vertices, points, mat);
+}
+
+
+void Terrain::selectTriangle(int i, bool selected)
+{
+    int y = i/2/height;
+    int x = i/2%width;
+
+    int a = width*y + x;
+    int b = width*y + x+1;
+    int c = width*(y+1) + x+1;
+    int d = width*(y+1) + x;
+
+    if(i%2 == 0)
+    {
+        terrainMesh->selectVertex(a, selected);
+        terrainMesh->selectVertex(b, selected);
+        terrainMesh->selectVertex(c, selected);
+    }
+    else
+    {
+        terrainMesh->selectVertex(a, selected);
+        terrainMesh->selectVertex(c, selected);
+        terrainMesh->selectVertex(d, selected);
+    }
+}
+
+
+void Terrain::intersect(const Ray& ray)
+{
+    for(int x = 0; x < width; x++)
+    {
+        for(int y = 0; y < width; y++)
+        {
+            int a = width*y + x;
+            int b = width*y + x+1;
+            int c = width*(y+1) + x+1;
+            int d = width*(y+1) + x;
+            auto [t, u, v] = intersectTriangle(points[a], points[b], points[c], ray);
+            if(t > -inf)
+            {
+                if(pickedTriangle >= 0)
+                    selectTriangle(pickedTriangle, false);
+                pickedTriangle = 2*a;
+                selectTriangle(pickedTriangle, true);
+                return;
+            }
+            auto [t2, u2, v2] = intersectTriangle(points[a], points[c], points[d], ray);
+            if(t2 > -inf)
+            {
+                if(pickedTriangle >= 0)
+                    selectTriangle(pickedTriangle, false);
+                pickedTriangle = 2*a + 1;
+                selectTriangle(pickedTriangle, true);
+                return;
+            }
+        }
+    }
 }
 
 
 Terrain::Terrain(const std::string& fileName, Scene* scene) : fileName(fileName), scene(scene)
 {
     setUp();
+    pickedTriangle = -1;
 };
 
 

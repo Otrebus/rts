@@ -9,6 +9,7 @@ TerrainMesh::TerrainMesh(std::vector<MeshVertex3d> vertices, std::vector<int> tr
     this->v = vertices;
     this->triangles = triangles;
 }
+
 void TerrainMesh::setup(Scene* s)
 {
     scene = s;
@@ -34,4 +35,12 @@ void TerrainMesh::setup(Scene* s)
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*triangles.size(), triangles.data(), GL_STATIC_DRAW);
+}
+
+void TerrainMesh::selectVertex(int i, bool selected)
+{
+    float f = selected ? 1.0 : 0.0;
+    int offset = i*9*sizeof(float) + 8*sizeof(float);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferSubData(GL_ARRAY_BUFFER, offset, sizeof(float), &f);
 }

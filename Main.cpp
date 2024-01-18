@@ -19,6 +19,7 @@
 #include "Terrain.h"
 #include <thread>
 #include "Line3d.h"
+#include "Ray.h"
 
 void checkError() {
     GLenum error;
@@ -184,12 +185,13 @@ int main()
                 mouseY = input->posY;
             }
 
-            if(input->stateStart == InputType::MousePress && GLFW_MOUSE_BUTTON_3)
+            if(input->stateStart == InputType::MousePress && input->key == GLFW_MOUSE_BUTTON_3)
             {
                 Vector3 dir = cam.dir + cam.up*((yres/2-mouseY)/(yres/2.))*std::tan(pi*cam.fov/180/2)/cam.ar + (cam.dir%cam.up).normalized()*((mouseX-xres/2)/(xres/2.))*std::tan(pi*cam.fov/180/2);
                 dir.normalize();
-                line = Line3d({ cam.pos, cam.pos+dir });
-                line.setup(&scene);
+                //line = Line3d({ cam.pos, cam.pos+dir });
+                // line.setup(&scene);
+                terrain.intersect(Ray(cam.pos, dir));
             }
 
             else if(isGraphicsInput(input))

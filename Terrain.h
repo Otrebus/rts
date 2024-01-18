@@ -2,6 +2,7 @@
 
 #include "Model.h"
 
+class Ray;
 class Scene;
 class TerrainMesh;
 
@@ -20,9 +21,17 @@ private:
 	Scene* scene;
 	DrawMode drawMode;
 	std::string fileName;
+	int pickedTriangle;
+	int width, height;
+
+	std::vector<Vector3> points;
+
+	TerrainMesh* terrainMesh;
 
 	TerrainMesh* createFlatMesh(std::string fileName);
 	TerrainMesh* createMesh(std::string fileName);
+
+	void selectTriangle(int i, bool selected);
 
 public:
 	void setUp();
@@ -30,6 +39,7 @@ public:
 	Terrain(const std::string& filestr, Scene* scene);
 	void draw();
 	void setDrawMode(DrawMode d);
+	void intersect(const Ray& ray);
 	DrawMode getDrawMode() const;
 	std::pair<Vector3, Vector3> getBoundingBox() const;
 };
