@@ -25,6 +25,7 @@ private:
 	int width, height;
 
 	std::vector<Vector3> points;
+	std::vector<int> triangleIndices;
 
 	TerrainMesh* terrainMesh;
 

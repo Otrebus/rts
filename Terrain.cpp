@@ -11,7 +11,7 @@ TerrainMesh* Terrain::createMesh(std::string fileName)
 {
     auto [colors, width, height] = readBMP(fileName, false);
     std::vector<MeshVertex3d> vertices(width*height);
-    std::vector<int> triangleIndices;
+    points.clear();
 
     auto H = [&colors, &width, &height] (int x, int y) {
         return colors[width*3*(height-y-1)+x*3]/255.0/10;
@@ -43,7 +43,7 @@ TerrainMesh* Terrain::createMesh(std::string fileName)
             int b = width*y + x+1;
             int c = width*(y+1) + x+1;
             int d = width*(y+1) + x;
-            triangleIndices.insert(triangleIndices.end(), { a, b, c, a, c, d });
+            triangleIndices.insert(triangleIndices.end(), { a, c, d, a, b, c });
         }
     }
 
@@ -59,10 +59,10 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
 {
     auto [colors, width, height] = readBMP(fileName, false);
     std::vector<Vector3> vectors(width*height);
+    points.clear();
 
     const int nVertices = (width-1)*(height-1)*6;
     std::vector<MeshVertex3d> vertices(nVertices);
-    std::vector<int> points(nVertices);
 
     auto H = [&colors, &width, &height] (int x, int y) {
         return colors[width*3*(height-y-1)+x*3]/255.0/10;
@@ -93,12 +93,17 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
             N2.normalize();
 
             for(auto i : { a, b, c } )
+            {
                 vertices[j++] = MeshVertex3d(vectors[i].x, vectors[i].y, vectors[i].z, N1.x, N1.y, N1.z, 0, 0);
-            for(auto i : { a, c, d } )
+                points.push_back({ vectors[i].x, vectors[i].y, vectors[i].z });
+            }
+            for(auto i : { a, c, d } ) {
                 vertices[j++] = MeshVertex3d(vectors[i].x, vectors[i].y, vectors[i].z, N2.x, N2.y, N2.z, 0, 0);
+                points.push_back({ vectors[i].x, vectors[i].y, vectors[i].z });
+            }
 
             for(int i = j-6; i < j; i++)
-                points[k++] = i;
+                triangleIndices[k++] = i;
         }
     }
 
@@ -106,63 +111,48 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
     this->height = height;
 
     Material* mat = new TerrainMaterial();
-    return terrainMesh = new TerrainMesh(vertices, points, mat);
+    return terrainMesh = new TerrainMesh(vertices, triangleIndices, mat);
 }
 
 
 void Terrain::selectTriangle(int i, bool selected)
 {
-    int y = i/2/height;
-    int x = i/2%width;
+    //int y = i/2/height;
+    //int x = i/2%width;
 
-    int a = width*y + x;
-    int b = width*y + x+1;
-    int c = width*(y+1) + x+1;
-    int d = width*(y+1) + x;
+    //int a = width*y + x;
+    //int b = width*y + x+1;
+    //int c = width*(y+1) + x+1;
+    //int d = width*(y+1) + x;
 
-    if(i%2 == 0)
+    /*if(i%2 == 0)
+    {*/
+        terrainMesh->selectVertex(triangleIndices[i*3], selected);
+        terrainMesh->selectVertex(triangleIndices[i*3+1], selected);
+        terrainMesh->selectVertex(triangleIndices[i*3+2], selected);
+    /*}
+    else
     {
         terrainMesh->selectVertex(a, selected);
         terrainMesh->selectVertex(b, selected);
         terrainMesh->selectVertex(c, selected);
-    }
-    else
-    {
-        terrainMesh->selectVertex(a, selected);
-        terrainMesh->selectVertex(c, selected);
-        terrainMesh->selectVertex(d, selected);
-    }
+    }*/
 }
 
 
 void Terrain::intersect(const Ray& ray)
 {
-    for(int x = 0; x < width; x++)
+    for(int i = 0; i < triangleIndices.size()/3; i++)
     {
-        for(int y = 0; y < width; y++)
+        auto a = triangleIndices[i*3], b = triangleIndices[i*3+1], c = triangleIndices[i*3+2];
+        auto [t, u, v] = intersectTriangle(points[a], points[b], points[c], ray);
+        if(t > -inf)
         {
-            int a = width*y + x;
-            int b = width*y + x+1;
-            int c = width*(y+1) + x+1;
-            int d = width*(y+1) + x;
-            auto [t, u, v] = intersectTriangle(points[a], points[b], points[c], ray);
-            if(t > -inf)
-            {
-                if(pickedTriangle >= 0)
-                    selectTriangle(pickedTriangle, false);
-                pickedTriangle = 2*a;
-                selectTriangle(pickedTriangle, true);
-                return;
-            }
-            auto [t2, u2, v2] = intersectTriangle(points[a], points[c], points[d], ray);
-            if(t2 > -inf)
-            {
-                if(pickedTriangle >= 0)
-                    selectTriangle(pickedTriangle, false);
-                pickedTriangle = 2*a + 1;
-                selectTriangle(pickedTriangle, true);
-                return;
-            }
+            if(pickedTriangle >= 0)
+                selectTriangle(pickedTriangle, false);
+            pickedTriangle = i;
+            selectTriangle(pickedTriangle, true);
+            return;
         }
     }
 }

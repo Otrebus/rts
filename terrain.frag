@@ -22,5 +22,5 @@ void main()
 
     color = clamp(color, 0.0, 1.0);
 
-    FragColor = selected != 0 ? vec4(1, 0, 0, 1) : vec4(color, 1.0f);
+    FragColor = selected >= 0.999 ? vec4(1, 0, 0, 1) : vec4(color, 1.0f);
 }
