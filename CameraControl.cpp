@@ -36,6 +36,8 @@ void CameraControl::changeMode(bool followingTerrain)
     {
         setPosFromTerrainPos();
         cam->dir = -Vector3(0, -1, 1).normalized();
+        cam->up = Vector3(0, 0, 1);
+        cam->up = (cam->dir%(cam->up%cam->dir)).normalized();
     }
     else
     {
@@ -84,7 +86,7 @@ void CameraControl::handleInput(const Input& input)
     }
     else if(followingTerrain && input.stateStart == InputType::ScrollOffset)
     {
-        terrainDist += input.posY*-0.1;
+        terrainDist += input.posY*(moveSlow ? -0.01 : -0.1);
         setPosFromTerrainPos();
     }
 
@@ -125,7 +127,8 @@ void CameraControl::setAngle(real theta, real phi) {
 void CameraControl::moveForward(real t) {
     if(!followingTerrain)
         cam->pos += cam->dir*t;
-    else {
+    else
+    {
         terrainPos += Vector3(0, 1, 0)*t;
         setPosFromTerrainPos();
     }

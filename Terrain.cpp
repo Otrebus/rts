@@ -12,6 +12,7 @@ TerrainMesh* Terrain::createMesh(std::string fileName)
     auto [colors, width, height] = readBMP(fileName, false);
     std::vector<MeshVertex3d> vertices(width*height);
     points.clear();
+    triangleIndices.clear();
 
     auto H = [&colors, &width, &height] (int x, int y) {
         return colors[width*3*(height-y-1)+x*3]/255.0/10;
@@ -50,6 +51,8 @@ TerrainMesh* Terrain::createMesh(std::string fileName)
     this->width = width;
     this->height = height;
     
+    if(terrainMesh)
+        delete terrainMesh;
     Material* mat = new TerrainMaterial();
     return terrainMesh = new TerrainMesh(vertices, triangleIndices, mat);
 }
@@ -60,6 +63,7 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
     auto [colors, width, height] = readBMP(fileName, false);
     std::vector<Vector3> vectors(width*height);
     points.clear();
+    triangleIndices.clear();
 
     const int nVertices = (width-1)*(height-1)*6;
     std::vector<MeshVertex3d> vertices(nVertices);
@@ -103,13 +107,15 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
             }
 
             for(int i = j-6; i < j; i++)
-                triangleIndices[k++] = i;
+                triangleIndices.push_back(i);
         }
     }
 
     this->width = width;
     this->height = height;
 
+    if(terrainMesh)
+        delete terrainMesh;
     Material* mat = new TerrainMaterial();
     return terrainMesh = new TerrainMesh(vertices, triangleIndices, mat);
 }

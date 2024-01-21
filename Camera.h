@@ -10,7 +10,9 @@ class Input;
 class Camera
 {
 public:
+    Camera(Vector3 pos, Vector3 dir, Vector3 up, real fov, real ar);
     Matrix4 getMatrix();
+    void setUp(Vector3 up);
 public:
     Vector3 pos, dir, up;
     real fov, ar;

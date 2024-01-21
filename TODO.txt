@@ -2,9 +2,13 @@
 + Add some hotkey for changing how the terrain renders - flat, wireframe, normal, and switches between them
 - Now that we have geometric normals we don't really need to create a new mesh for flat rendering
 + Make the camera move slower along the terrain instead etc
-- Make camera switch between terrain following and freelook with some key
-- Add some way of drawing lines
++ Make camera switch between terrain following and freelook with some key
++ Add some way of drawing lines
 + Fix bmp writing
 - Setting camera position and transform in the materials classes seems a bit weird
 - Fix fov setting
-- Fix cam initialization (specially up)
++ Fix cam initialization (specially up)
+- Work out memory leaks
+- Add entity system and selection mechanics (point/box)
+- Implement path finding
+- Triangle picking doesn't pick the closest triangle

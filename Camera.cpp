@@ -1,6 +1,16 @@
 #include "Camera.h"
 #include "Input.h"
 
+Camera::Camera(Vector3 pos, Vector3 dir, Vector3 up, real fov=90, real ar=1) : pos(pos), dir(dir.normalized()), up(up), fov(fov), ar(ar)
+{
+    setUp(up);
+}
+
+void Camera::setUp(Vector3 up)
+{
+    this->up = ((dir%up)%dir).normalized();
+}
+
 Matrix4 Camera::getMatrix()
 {
     float pi = 3.141592653589793;

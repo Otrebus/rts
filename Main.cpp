@@ -83,13 +83,7 @@ int main()
 
     initInput(window);
 
-    Camera cam;
-    cam.fov = 59; // TODO: fix
-    cam.ar = real(xres)/float(yres);
-    cam.pos = { 0, 0, 4 };
-    cam.dir = Vector3(0, 1, -1).normalized();
-    cam.up = Vector3(0, 0, 1).normalized();
-    cam.up = ((cam.dir%cam.up)%cam.dir).normalized();
+    Camera cam({ 0, 0, 4 }, { 0, 1, -1 }, { 0, 0, 1 }, 59, real(xres)/float(yres));
     real time = glfwGetTime();
 
     std::vector<Vertex3d> meshVertices = {
@@ -185,7 +179,7 @@ int main()
                 mouseY = input->posY;
             }
 
-            if(input->stateStart == InputType::MousePress && input->key == GLFW_MOUSE_BUTTON_3)
+            if(input->stateStart == InputType::MousePress && input->key == GLFW_MOUSE_BUTTON_2)
             {
                 Vector3 dir = cam.dir + cam.up*((yres/2-mouseY)/(yres/2.))*std::tan(pi*cam.fov/180/2)/cam.ar + (cam.dir%cam.up).normalized()*((mouseX-xres/2)/(xres/2.))*std::tan(pi*cam.fov/180/2);
                 dir.normalize();
