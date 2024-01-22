@@ -148,19 +148,25 @@ void Terrain::selectTriangle(int i, bool selected)
 
 void Terrain::intersect(const Ray& ray)
 {
-    for(int i = 0; i < triangleIndices.size()/3; i++)
+    real t1 = glfwGetTime();
+    real closestT = inf;
+    int closestIndex = -1;
+    for(int i = 0; i < triangleIndices.size(); i += 3)
     {
-        auto a = triangleIndices[i*3], b = triangleIndices[i*3+1], c = triangleIndices[i*3+2];
+        auto a = triangleIndices[i], b = triangleIndices[i+1], c = triangleIndices[i+2];
         auto [t, u, v] = intersectTriangle(points[a], points[b], points[c], ray);
-        if(t > -inf)
-        {
-            if(pickedTriangle >= 0)
-                selectTriangle(pickedTriangle, false);
-            pickedTriangle = i;
-            selectTriangle(pickedTriangle, true);
-            return;
-        }
+        if(t > -inf && t < closestT)
+            closestIndex = i/3, closestT = t;
     }
+    if(closestIndex >= 0)
+    {
+        if(pickedTriangle >= 0)
+            selectTriangle(pickedTriangle, false);
+        pickedTriangle = closestIndex;
+        selectTriangle(pickedTriangle, true);
+    }
+    real t2 = glfwGetTime();
+    std::cout << (t2 - t1) << std::endl;
 }
 
 

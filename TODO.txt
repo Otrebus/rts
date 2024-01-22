@@ -6,9 +6,9 @@
 + Add some way of drawing lines
 + Fix bmp writing
 - Setting camera position and transform in the materials classes seems a bit weird
-- Fix fov setting
++ Fix fov setting
 + Fix cam initialization (specially up)
 - Work out memory leaks
 - Add entity system and selection mechanics (point/box)
 - Implement path finding
-- Triangle picking doesn't pick the closest triangle
++ Triangle picking doesn't pick the closest triangle
