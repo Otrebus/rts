@@ -14,9 +14,13 @@ public:
     Entity();
     ~Entity();
 
+    void drawBoundingBound();
+
     Vector3 dir;
     Vector3 up;
     Vector3 pos;
+
+    Mesh3d* boundingBoxMesh;
 
     BoundingBox bbox;
 };
