@@ -36,12 +36,10 @@ void Model3d::addMesh(Mesh3d& mesh)
 }
 
 
-void Model3d::setup(Scene* scene)
+void Model3d::setUp(Scene* scene)
 {
     for(auto& mesh : meshes) {
-        std::cout << "mesh is " << mesh << std::endl;
-        mesh->setup(scene);
-        std::cout << "mesh " << mesh << " has scene " << mesh->scene << std::endl;
+        mesh->setUp(scene);
     }
 }
 

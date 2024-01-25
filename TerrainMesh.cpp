@@ -10,7 +10,7 @@ TerrainMesh::TerrainMesh(std::vector<MeshVertex3d> vertices, std::vector<int> tr
     this->triangles = triangles;
 }
 
-void TerrainMesh::setup(Scene* s)
+void TerrainMesh::setUp(Scene* s)
 {
     scene = s;
     glGenVertexArrays(1, &VAO);

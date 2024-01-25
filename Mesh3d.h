@@ -22,7 +22,7 @@ public:
     Mesh3d(std::vector<Vertex3d> vertices, std::vector<int> triangles, Material* material);
     Mesh3d();
 
-    virtual void setup(Scene* scene);
+    virtual void setUp(Scene* scene);
     virtual void tearDown(Scene* scene);
 
     virtual void draw();

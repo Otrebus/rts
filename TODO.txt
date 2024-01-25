@@ -12,3 +12,4 @@
 - Add entity system and selection mechanics (point/box)
 - Implement path finding
 + Triangle picking doesn't pick the closest triangle
+- Figure out mesh ownership

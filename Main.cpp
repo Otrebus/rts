@@ -20,6 +20,7 @@
 #include <thread>
 #include "Line3d.h"
 #include "Ray.h"
+#include "Entity.h"
 
 void checkError() {
     GLenum error;
@@ -83,7 +84,9 @@ int main()
 
     initInput(window);
 
-    Camera cam({ 0, 0, 4 }, { 0, 1, -1 }, { 0, 0, 1 }, 59, real(xres)/float(yres));
+    // Camera cam({ 0, 0, 4 }, { 0, 1, -1 }, { 0, 0, 1 }, 59, real(xres)/float(yres));
+    Camera cam({ 0, -1, 0 }, { 0, 1, 0 },  { 0, 0, 1 }, 59, real(xres)/float(yres));
+
     real time = glfwGetTime();
 
     std::vector<Vertex3d> meshVertices = {
@@ -106,10 +109,13 @@ int main()
 
     Line3d line({ { 0, 0, 0 }, { 0, 1, 1 } });
 
-    model.setup(&scene);
-    mesh.setup(&scene);
-    mesh2.setup(&scene);
-    line.setup(&scene);
+    Entity entity;
+
+    model.setUp(&scene);
+    mesh.setUp(&scene);
+    mesh2.setUp(&scene);
+    line.setUp(&scene);
+    entity.setUp(&scene);
 
     Terrain terrain("Heightmap.bmp", &scene);
     CameraControl cameraControl(&cam, &terrain);
@@ -120,6 +126,7 @@ int main()
 
     checkError();
 
+
     while (!glfwWindowShouldClose(window)) {
 
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -128,7 +135,11 @@ int main()
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
        
-        mesh.updateUniforms();
+        entity.updateUniforms();
+
+        entity.drawBoundingBox();
+
+        /*mesh.updateUniforms();
         mesh.draw();
 
         mesh2.updateUniforms();
@@ -139,7 +150,7 @@ int main()
 
         terrain.draw();
 
-        line.draw();
+        line.draw();*/
 
         glfwSwapBuffers(window);
 

@@ -181,7 +181,7 @@ void Terrain::setUp()
 {
     auto terrainMesh = drawMode == DrawMode::Flat ? createFlatMesh(fileName) : createMesh(fileName);
     terrainModel = Model3d(*terrainMesh);
-    terrainModel.setup(scene);
+    terrainModel.setUp(scene);
 }
 
 

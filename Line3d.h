@@ -13,7 +13,7 @@ public:
     Line3d(const std::vector<Vector3>& vertices);
     ~Line3d();
 
-    void setup(Scene* scene);
+    void setUp(Scene* scene);
     void draw();
     void tearDown();
 

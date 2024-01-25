@@ -7,6 +7,11 @@
 #include "Scene.h"
 #include "ShaderProgram.h"
 #include "BoundingBox.h"
+#include "Mesh3d.h"
+
+
+class Model3d;
+class Scene;
 
 
 class Entity {
@@ -14,13 +19,15 @@ public:
     Entity();
     ~Entity();
 
-    void drawBoundingBound();
+    void drawBoundingBox();
+    void setUp(Scene* scene);
+    void updateUniforms();
 
     Vector3 dir;
     Vector3 up;
     Vector3 pos;
 
-    Mesh3d* boundingBoxMesh;
+    Model3d* boundingBoxModel;
 
     BoundingBox bbox;
 };

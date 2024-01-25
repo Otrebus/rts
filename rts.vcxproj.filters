@@ -79,6 +79,12 @@
     <ClCompile Include="TerrainMaterial.cpp">
       <Filter>Source files\Materials</Filter>
     </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Source files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="BoundingBox.cpp">
+      <Filter>Source files\Models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -152,6 +158,12 @@
     </ClInclude>
     <ClInclude Include="TerrainMaterial.h">
       <Filter>Source files\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Source files\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="BoundingBox.h">
+      <Filter>Source files\Models</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

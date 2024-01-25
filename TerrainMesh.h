@@ -21,7 +21,7 @@ public:
 
     using Mesh3d::Mesh3d;
 
-    void setup(Scene* scene);
+    void setUp(Scene* scene);
     //void tearDown(Scene* scene);
 
     //void draw();

@@ -142,8 +142,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\temp\gl3w\src\gl3w.c" />
+    <ClCompile Include="BoundingBox.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraControl.cpp" />
+    <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="LambertianMaterial.cpp" />
     <None Include="line.frag">
@@ -175,8 +177,10 @@
     <ClCompile Include="Vertex3d.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BoundingBox.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraControl.h" />
+    <ClInclude Include="Entity.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="LambertianMaterial.h" />
     <ClInclude Include="Line3d.h" />

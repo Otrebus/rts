@@ -23,7 +23,7 @@ public:
     std::map<std::string, Material*> readMaterialFile(const std::string& matfilestr);
     void readFromFile(const std::string& file);
 
-    void setup(Scene* scene);
+    void setUp(Scene* scene);
     void tearDown(Scene* scene);
 
     void draw();

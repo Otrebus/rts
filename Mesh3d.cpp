@@ -16,7 +16,7 @@ Mesh3d::Mesh3d(std::vector<Vertex3d> vertices, std::vector<int> triangles, Mater
 }
 
 
-void Mesh3d::setup(Scene* s)
+void Mesh3d::setUp(Scene* s)
 {
     scene = s;
     glGenVertexArrays(1, &VAO);

@@ -15,7 +15,7 @@ Vector3 calcNormal(Vector3 a, Vector3 b, Vector3 c)
 
 Entity::Entity()
 {
-    int w, h, d;
+    real w = 0.2, h = 0.2, d = 0.2;
 
     std::vector<Vector3> c = {
         { -w/2, -d/2, -h/2 }, // bottom-front-left
@@ -52,8 +52,26 @@ Entity::Entity()
 
     
     auto material = new LambertianMaterial({ 0, 0.8, 0.1 });
-    boundingBoxMesh = new Mesh3d(vertices, triangles, material);
-    Model3d* model = new Model3d(boundingBoxMesh);
+    auto boundingBoxMesh = new Mesh3d(vertices, triangles, material);
+    boundingBoxModel = new Model3d(*boundingBoxMesh);
+}
+
+
+void Entity::drawBoundingBox()
+{
+    boundingBoxModel->draw();
+}
+
+
+void Entity::setUp(Scene* scene)
+{
+    boundingBoxModel->setUp(scene);
+}
+
+
+void Entity::updateUniforms()
+{
+    boundingBoxModel->updateUniforms();
 }
 
 
