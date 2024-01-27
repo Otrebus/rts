@@ -118,7 +118,7 @@ int main()
     entity.setUp(&scene);
 
     Terrain terrain("Heightmap.bmp", &scene);
-    CameraControl cameraControl(&cam, &terrain);
+    CameraControl cameraControl(&cam, &terrain, false);
 
     auto moveSlow = false;
 

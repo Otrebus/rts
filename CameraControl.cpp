@@ -1,13 +1,13 @@
 #include "CameraControl.h"
 #include "Input.h"
 
-CameraControl::CameraControl(Camera* cam, Terrain* terrain) :
+CameraControl::CameraControl(Camera* cam, Terrain* terrain, bool followTerrain) :
     panningX(0), panningY(0), panning(panning), cam(cam), terrain(terrain)
 {
     //setAngle(0, 0);
     auto [p1, p2] = terrain->getBoundingBox();
     terrainPos = (p1 + p2)/2;
-    changeMode(true);
+    changeMode(followTerrain);
 }
 
 

@@ -27,7 +27,7 @@ class CameraControl
     void setPosFromTerrainPos();
 
 public:
-    CameraControl(Camera* cam, Terrain* terrain);
+    CameraControl(Camera* cam, Terrain* terrain, bool followTerrain=true);
 
     real getPhi();
     real getTheta();
