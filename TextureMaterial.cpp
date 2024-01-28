@@ -8,15 +8,7 @@ TextureMaterial::TextureMaterial(const std::string& textureFile)
 {
     if(!fragmentShader) // Or rather !initialized or something
         fragmentShader = new Shader("texture.frag", GL_FRAGMENT_SHADER);
-    if(!vertexShader)
-        vertexShader = new Shader("vertexShader.vert", GL_VERTEX_SHADER);
-    if(!geometryShader)
-        geometryShader = new Shader("geometryShader.geom", GL_GEOMETRY_SHADER);
 
-    program = new ShaderProgram();
-
-    program->addShaders(*vertexShader, *fragmentShader, *geometryShader);
-    program->use();
     auto [data, width, height] = readBMP(textureFile);
 
     glGenTextures(1, &this->texture); 
@@ -37,21 +29,17 @@ TextureMaterial::~TextureMaterial()
 }
 
 
-void TextureMaterial::use()
+Shader* TextureMaterial::getShader()
 {
-    glBindTexture(GL_TEXTURE_2D, texture);
-    program->use();
+    return fragmentShader;
 }
 
 
 void TextureMaterial::updateUniforms(Scene* scene)
 {
-    program->use();
-    glUniform3fv(glGetUniformLocation(program->getId(), "camPos"), 1, (GLfloat*) &scene->getCamera()->pos);
-    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)&scene->getCamera()->getMatrix().m_val);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glUniform3fv(glGetUniformLocation(scene->getShaderProgram()->getId(), "camPos"), 1, (GLfloat*) &scene->getCamera()->pos);
 }
 
 
 Shader* TextureMaterial::fragmentShader = nullptr;
-Shader* TextureMaterial::vertexShader = nullptr;
-Shader* TextureMaterial::geometryShader = nullptr;

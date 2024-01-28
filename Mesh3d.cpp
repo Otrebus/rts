@@ -2,13 +2,18 @@
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
 #include "Matrix4.h"
+#include "Math.h"
 
-Mesh3d::Mesh3d()
+Mesh3d::Mesh3d() : pos({ 0, 0, 0 }), dir({ 1, 0, 0 }), up({ 0, 0, 1 })
 {
+    if(!vertexShader)
+        vertexShader = new Shader("vertexShader.vert", GL_VERTEX_SHADER);
+    if(!geometryShader)
+        geometryShader = new Shader("geometryShader.geom", GL_GEOMETRY_SHADER);
 }
 
 
-Mesh3d::Mesh3d(std::vector<Vertex3d> vertices, std::vector<int> triangles, Material* material)
+Mesh3d::Mesh3d(std::vector<Vertex3d> vertices, std::vector<int> triangles, Material* material) : pos({ 0, 0, 0 }), dir({ 1, 0, 0 }), up({ 0, 0, 1 })
 {
     this->material = material;
     this->v = vertices;
@@ -49,12 +54,57 @@ void Mesh3d::tearDown(Scene* s)
 
 void Mesh3d::draw()
 {
-    material->use();
+    auto s = scene->getShaderProgramManager();
+    auto program = s->getProgram(this->material->getShader(), getGeometryShader(), getVertexShader());
+    scene->setShaderProgram(program);
+    program->use();
+
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, triangles.size(), GL_UNSIGNED_INT, 0);
 }
 
 void Mesh3d::updateUniforms()
 {
+    // TODO: this might as well be cached into a shaderprogram on the mesh3d
+    auto s = scene->getShaderProgramManager();
+    auto program = s->getProgram(this->material->getShader(), getGeometryShader(), getVertexShader());
+    scene->setShaderProgram(program);
+
+    program->use();
+
+    auto perspM = scene->getCamera()->getMatrix();
+    auto transM = getTranslationMatrix(pos);
+    auto dirM = getDirectionMatrix(dir, up);
+
+    auto matrix = transM*dirM;
+
+    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "modelViewMatrix"), 1, GL_TRUE, (float*)matrix.m_val);
+    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "projectionMatrix"), 1, GL_TRUE, (float*)perspM.m_val);
+    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "normalMatrix"), 1, GL_TRUE, (float*)getNormalMatrix(matrix).m_val);
+
     this->material->updateUniforms(scene);
 }
+
+Shader* Mesh3d::getGeometryShader()
+{
+    return geometryShader;
+}
+
+Shader* Mesh3d::getVertexShader()
+{
+    return vertexShader;
+}
+
+void Mesh3d::setDirection(Vector3 dir, Vector3 up)
+{
+    this->dir = dir;
+    this->up = up;
+}
+
+void Mesh3d::setPosition(Vector3 pos)
+{
+    this->pos = pos;
+}
+
+Shader* Mesh3d::vertexShader = nullptr;
+Shader* Mesh3d::geometryShader = nullptr;

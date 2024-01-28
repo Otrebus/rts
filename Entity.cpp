@@ -71,6 +71,8 @@ void Entity::setUp(Scene* scene)
 
 void Entity::updateUniforms()
 {
+    boundingBoxModel->setPosition(pos);
+    boundingBoxModel->setDirection(dir, up);
     boundingBoxModel->updateUniforms();
 }
 

@@ -53,12 +53,28 @@ void Model3d::tearDown(Scene* scene)
 
 void Model3d::draw()
 {
-    for(auto& mesh : meshes)
+    for(auto& mesh : meshes) {
+        mesh->updateUniforms();
         mesh->draw();
+    }
 }
 
 void Model3d::updateUniforms()
 {
     for(auto& mesh : meshes)
         mesh->updateUniforms();
+}
+
+
+void Model3d::setPosition(Vector3 pos)
+{
+    for(auto& mesh : meshes)
+        mesh->setPosition(pos);
+}
+
+
+void Model3d::setDirection(Vector3 dir, Vector3 up)
+{
+    for(auto& mesh : meshes)
+        mesh->setDirection(dir, up);
 }

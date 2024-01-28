@@ -7,13 +7,12 @@
 
 Shader::Shader(std::string filename, unsigned int type)
 {
+    this->filename = filename;
     std::ifstream file(filename);
     
     // Check if file was opened successfully
     if (!file.is_open())
-    {
         throw std::runtime_error("Failed to open file: " + filename);
-    }
 
     std::stringstream buffer;
     buffer << file.rdbuf();
@@ -44,4 +43,9 @@ Shader::~Shader()
 unsigned int Shader::getId() const
 {
     return id;
+}
+
+std::string Shader::getFileName()
+{
+    return filename;
 }

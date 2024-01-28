@@ -17,8 +17,4 @@ public:
     void use();
 
     static Shader* fragmentShader;
-    static Shader* vertexShader;
-    static Shader* geometryShader;
-
-    ShaderProgram* program;
 };

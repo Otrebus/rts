@@ -21,6 +21,7 @@
 #include "Line3d.h"
 #include "Ray.h"
 #include "Entity.h"
+#include "ShaderProgramManager.h"
 
 void checkError() {
     GLenum error;
@@ -103,13 +104,17 @@ int main()
         { 0.5f, 1.5f, 0.5f, 0, 0, 1, 0, 1, }
     };
 
-    Scene scene(&cam);
+    ShaderProgramManager shaderProgramManager;
+
+    Scene scene(&cam, &shaderProgramManager);
     Mesh3d mesh(meshVertices, { 0, 1, 2, 2, 3, 0 }, &texture);
     Mesh3d mesh2(meshVertices2, { 0, 1, 2, 2, 3, 0 }, &texture2);
 
     Line3d line({ { 0, 0, 0 }, { 0, 1, 1 } });
 
     Entity entity;
+    entity.dir = Vector3(1, 0, 0);
+    entity.up = Vector3(0, 0, 1);
 
     model.setUp(&scene);
     mesh.setUp(&scene);
@@ -126,7 +131,6 @@ int main()
 
     checkError();
 
-
     while (!glfwWindowShouldClose(window)) {
 
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -136,36 +140,45 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
        
         entity.updateUniforms();
-
         entity.drawBoundingBox();
 
-        /*mesh.updateUniforms();
-        mesh.draw();
+        //mesh.updateUniforms();
+        //mesh.draw();
 
-        mesh2.updateUniforms();
-        mesh2.draw();
+        //mesh2.updateUniforms();
+        //mesh2.draw();
 
-        model.updateUniforms();
-        model.draw();
+        //model.updateUniforms();
+        //model.draw();
 
-        terrain.draw();
+        //terrain.draw();
 
-        line.draw();*/
-
-        glfwSwapBuffers(window);
+        //line.draw();
 
         //for(int i = 0; i < 1000000000; i++) {
         //    if(i % 100000000 == 0)
         //        glfwPollEvents();
         //}
-        for(int i = 0; i < 100000; i++)
-            if(i % 10000 == 0)
-                glfwPollEvents();
+        //for(int i = 0; i < 100000; i++)
+        //    if(i % 10000 == 0)
+        //glfwPollEvents();
 
         auto prevTime = time;
         time = glfwGetTime();
+        auto dt = time - prevTime;
+
         auto inputs = handleInput(window, prevTime, time, cameraControl, terrain);
         glfwPollEvents();
+
+        //entity.pos += Vector3(0.1, 0, 0)*dt;
+        auto a = dt*1;
+
+        entity.dir *= Matrix4(
+            std::cos(a), -std::sin(a), 0, 0,
+            std::sin(a), std::cos(a), 0, 0,
+            0, 0, 0, 0,
+            0, 0, 0, 0
+        );
 
         auto isCameraInput = [] (Input* input)
         {
@@ -239,6 +252,7 @@ int main()
             }
             delete input;
         }
+        glfwSwapBuffers(window);
     }
 
     model.tearDown(&scene);

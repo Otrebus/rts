@@ -85,6 +85,9 @@
     <ClCompile Include="BoundingBox.cpp">
       <Filter>Source files\Models</Filter>
     </ClCompile>
+    <ClCompile Include="ShaderProgramManager.cpp">
+      <Filter>Source files\Shaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -164,6 +167,9 @@
     </ClInclude>
     <ClInclude Include="BoundingBox.h">
       <Filter>Source files\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderProgramManager.h">
+      <Filter>Source files\Shaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

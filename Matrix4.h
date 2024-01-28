@@ -17,6 +17,8 @@ public:
 
     Vector3 operator *(const Vector3&) const;
     Matrix4 operator *(const Matrix4& v) const;
+    Matrix4 operator *(real f) const;
+    Matrix4 operator /(real f) const;
     real& operator() (int i, int j);
     real operator() (int i, int j) const;
 

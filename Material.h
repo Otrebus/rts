@@ -3,11 +3,14 @@
 #include "Shader.h"
 #include "Scene.h"
 
+class Shader;
+
 class Material
 {
 public:
-    virtual void use() = 0;
     virtual ~Material() {};
+
 public:
     virtual void updateUniforms(Scene* scene) = 0;
+    virtual Shader* getShader() = 0;
 };

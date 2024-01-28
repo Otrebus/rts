@@ -44,6 +44,21 @@ Vector3 Matrix4::operator *(const Vector3& v) const
                    m_val[2][0]*v.x + m_val[2][1]*v.y + m_val[2][2]*v.z + m_val[2][3]);
 }
 
+Matrix4 Matrix4::operator*(real f) const
+{
+    return Matrix4(m_val[0][0]*f, m_val[0][1]*f, m_val[0][2]*f, m_val[0][3]*f,
+                   m_val[1][0]*f, m_val[1][1]*f, m_val[1][2]*f, m_val[1][3]*f,
+                   m_val[2][0]*f, m_val[2][1]*f, m_val[2][2]*f, m_val[2][3]*f,
+                   m_val[3][0]*f, m_val[3][1]*f, m_val[3][2]*f, m_val[3][3]*f);
+}
+
+Matrix4 Matrix4::operator/(real f) const
+{
+    return Matrix4(m_val[0][0]/f, m_val[0][1]/f, m_val[0][2]/f, m_val[0][3]/f,
+                   m_val[1][0]/f, m_val[1][1]/f, m_val[1][2]/f, m_val[1][3]/f,
+                   m_val[2][0]/f, m_val[2][1]/f, m_val[2][2]/f, m_val[2][3]/f,
+                   m_val[3][0]/f, m_val[3][1]/f, m_val[3][2]/f, m_val[3][3]/f);
+}
 
 Matrix4 Matrix4::operator*(const Matrix4& m) const
 {

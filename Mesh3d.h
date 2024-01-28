@@ -15,6 +15,10 @@ public:
     std::vector<Vertex3d> v;
     std::vector<int> triangles;
     Material* material;
+    static Shader* vertexShader;
+    static Shader* geometryShader;
+
+    Vector3 dir, up, pos;
 
     GLuint VBO, VAO, EBO;
     Scene* scene;
@@ -25,6 +29,12 @@ public:
     virtual void setUp(Scene* scene);
     virtual void tearDown(Scene* scene);
 
+    Shader* getVertexShader();
+    Shader* getGeometryShader();
+
     virtual void draw();
     virtual void updateUniforms();
+
+    void setDirection(Vector3 dir, Vector3 up);
+    void setPosition(Vector3 pos);
 };

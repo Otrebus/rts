@@ -30,4 +30,7 @@ public:
     void addMesh(Mesh3d& mesh);
 
     void updateUniforms();
+
+    void setPosition(Vector3 pos);
+    void setDirection(Vector3 dir, Vector3 up);
 };
