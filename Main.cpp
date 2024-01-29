@@ -210,6 +210,7 @@ int main()
                 //line = Line3d({ cam.pos, cam.pos+dir });
                 // line.setup(&scene);
                 terrain.intersect(Ray(cam.pos, dir));
+                entity.intersectBoundingBox(Ray(cam.pos, dir));
             }
 
             else if(isGraphicsInput(input))

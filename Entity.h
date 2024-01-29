@@ -20,6 +20,8 @@ public:
     ~Entity();
 
     void drawBoundingBox();
+    bool intersectBoundingBox(const Ray& ray);
+
     void setUp(Scene* scene);
     void updateUniforms();
 

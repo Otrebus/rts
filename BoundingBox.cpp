@@ -14,9 +14,9 @@ BoundingBox::BoundingBox()
 {
 }
 
-bool BoundingBox::Intersect(const Ray& ray, double& tnear, double& tfar) const
+bool BoundingBox::intersect(const Ray& ray, real& tnear, real& tfar) const
 {  
-    double t1, t2;
+    real t1, t2;
     tfar = inf;
     tnear = -inf;
 

@@ -2,6 +2,7 @@
 #include "Mesh3d.h"
 #include "Vertex3d.h"
 #include "Model.h"
+#include "Ray.h"
 #include "LambertianMaterial.h"
 #include <vector>
 #include <array>
@@ -54,12 +55,37 @@ Entity::Entity()
     auto material = new LambertianMaterial({ 0, 0.8, 0.1 });
     auto boundingBoxMesh = new Mesh3d(vertices, triangles, material);
     boundingBoxModel = new Model3d(*boundingBoxMesh);
+    bbox = BoundingBox(Vector3(-w/2, -d/2, -h/2), Vector3(w/2, d/2, h/2));
 }
 
 
 void Entity::drawBoundingBox()
 {
     boundingBoxModel->draw();
+}
+
+bool Entity::intersectBoundingBox(const Ray& ray)
+{
+    auto a = dir, b = up, c = dir%up, d = ray.dir, e = ray.pos;
+
+    auto det = a*(b%c);
+    auto u = d*(b%c)/det;
+    auto v = a*(d%c)/det;
+    auto w = a*(b%d)/det;
+
+    auto det2 = a*(b%c);
+    auto u2 = e*(b%c)/det2;
+    auto v2 = a*(e%c)/det2;
+    auto w2 = a*(b%e)/det2;
+
+    auto ray2 = Ray(Vector3(u2, v2, w2), Vector3(u, v, w));
+
+    real tnear, tfar;
+    if(bbox.intersect(ray2, tnear, tfar)) {
+        std::cout << "Intersects" << std::endl;
+        return true;
+    }
+    return false;
 }
 
 

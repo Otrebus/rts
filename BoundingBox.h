@@ -10,6 +10,6 @@ public:
     BoundingBox(const Vector3& x, const Vector3& y);
     BoundingBox();
     ~BoundingBox();
-    bool Intersect(const Ray& ray, double& tnear, double& tfar) const;
+    bool intersect(const Ray& ray, real& tnear, real& tfar) const;
     Vector3 c1, c2;
 };
