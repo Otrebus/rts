@@ -78,3 +78,8 @@ void Model3d::setDirection(Vector3 dir, Vector3 up)
     for(auto& mesh : meshes)
         mesh->setDirection(dir, up);
 }
+
+const std::vector<Mesh3d*>& Model3d::getMeshes() const
+{
+    return meshes;
+}

@@ -106,5 +106,10 @@ void Mesh3d::setPosition(Vector3 pos)
     this->pos = pos;
 }
 
+Material* Mesh3d::getMaterial() const
+{
+    return material;
+}
+
 Shader* Mesh3d::vertexShader = nullptr;
 Shader* Mesh3d::geometryShader = nullptr;

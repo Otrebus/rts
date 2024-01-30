@@ -16,7 +16,7 @@ class Scene;
 
 class Entity {
 public:
-    Entity();
+    Entity(Vector3 pos, Vector3 dir, Vector3 up);
     ~Entity();
 
     void drawBoundingBox();
@@ -29,7 +29,11 @@ public:
     Vector3 up;
     Vector3 pos;
 
+    void setSelected(bool selected);
+
     Model3d* boundingBoxModel;
 
     BoundingBox bbox;
+
+    bool selected;
 };

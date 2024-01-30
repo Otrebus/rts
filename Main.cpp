@@ -85,8 +85,8 @@ int main()
 
     initInput(window);
 
-    // Camera cam({ 0, 0, 4 }, { 0, 1, -1 }, { 0, 0, 1 }, 59, real(xres)/float(yres));
-    Camera cam({ 0, -1, 0 }, { 0, 1, 0 },  { 0, 0, 1 }, 59, real(xres)/float(yres));
+    Camera cam({ 0, 0, 4 }, { 0, 1, -1 }, { 0, 0, 1 }, 59, real(xres)/float(yres));
+    // Camera cam({ 0, -1, 0 }, { 0, 1, 0 },  { 0, 0, 1 }, 59, real(xres)/float(yres));
 
     real time = glfwGetTime();
 
@@ -112,9 +112,7 @@ int main()
 
     Line3d line({ { 0, 0, 0 }, { 0, 1, 1 } });
 
-    Entity entity;
-    entity.dir = Vector3(1, 0, 0);
-    entity.up = Vector3(0, 0, 1);
+    Entity entity({ 0.5, 0.5, 3.07 }, { 1, 0, 0 }, { 0, 0, 1 });
 
     model.setUp(&scene);
     mesh.setUp(&scene);
@@ -123,7 +121,7 @@ int main()
     entity.setUp(&scene);
 
     Terrain terrain("Heightmap.bmp", &scene);
-    CameraControl cameraControl(&cam, &terrain, false);
+    CameraControl cameraControl(&cam, &terrain, true);
 
     auto moveSlow = false;
 
@@ -142,18 +140,18 @@ int main()
         entity.updateUniforms();
         entity.drawBoundingBox();
 
-        //mesh.updateUniforms();
-        //mesh.draw();
+        mesh.updateUniforms();
+        mesh.draw();
 
-        //mesh2.updateUniforms();
-        //mesh2.draw();
+        mesh2.updateUniforms();
+        mesh2.draw();
 
-        //model.updateUniforms();
-        //model.draw();
+        model.updateUniforms();
+        model.draw();
 
-        //terrain.draw();
+        terrain.draw();
 
-        //line.draw();
+        line.draw();
 
         //for(int i = 0; i < 1000000000; i++) {
         //    if(i % 100000000 == 0)

@@ -14,9 +14,9 @@ Vector3 calcNormal(Vector3 a, Vector3 b, Vector3 c)
 }
 
 
-Entity::Entity()
+Entity::Entity(Vector3 pos, Vector3 dir, Vector3 up) : pos(pos), dir(dir), up(up)
 {
-    real w = 0.2, h = 0.2, d = 0.2;
+    real w = 0.022, h = 0.022, d = 0.022;
 
     std::vector<Vector3> c = {
         { -w/2, -d/2, -h/2 }, // bottom-front-left
@@ -51,7 +51,6 @@ Entity::Entity()
         triangles.insert(triangles.end(), { j, j+2, j+3 } );
     }
 
-    
     auto material = new LambertianMaterial({ 0, 0.8, 0.1 });
     auto boundingBoxMesh = new Mesh3d(vertices, triangles, material);
     boundingBoxModel = new Model3d(*boundingBoxMesh);
@@ -66,26 +65,36 @@ void Entity::drawBoundingBox()
 
 bool Entity::intersectBoundingBox(const Ray& ray)
 {
-    auto a = dir, b = up, c = dir%up, d = ray.dir, e = ray.pos;
+    auto a = dir, b = up, c = dir%up, d = ray.dir, e = ray.pos-pos;
 
     auto det = a*(b%c);
-    auto u = d*(b%c)/det;
-    auto v = a*(d%c)/det;
-    auto w = a*(b%d)/det;
+    auto u2 = d*(b%c)/det;
+    auto v2 = a*(d%c)/det;
+    auto w2 = a*(b%d)/det;
 
     auto det2 = a*(b%c);
-    auto u2 = e*(b%c)/det2;
-    auto v2 = a*(e%c)/det2;
-    auto w2 = a*(b%e)/det2;
+    auto u = e*(b%c)/det2;
+    auto v = a*(e%c)/det2;
+    auto w = a*(b%e)/det2;
 
-    auto ray2 = Ray(Vector3(u2, v2, w2), Vector3(u, v, w));
+    auto ray2 = Ray(Vector3(u, v, w), Vector3(u2, v2, w2));
 
     real tnear, tfar;
     if(bbox.intersect(ray2, tnear, tfar)) {
         std::cout << "Intersects" << std::endl;
-        return true;
+        //return true;
+        setSelected(!selected);
     }
     return false;
+}
+
+
+void Entity::setSelected(bool selected)
+{
+    this->selected = selected;
+    auto meshes = boundingBoxModel->getMeshes();
+    auto& kd = ((LambertianMaterial*) meshes[0]->getMaterial())->Kd;
+    kd = selected ? Vector3(0.8, 0, 0) : Vector3(0, 0.8, 0);
 }
 
 

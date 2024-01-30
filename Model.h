@@ -23,6 +23,8 @@ public:
     std::map<std::string, Material*> readMaterialFile(const std::string& matfilestr);
     void readFromFile(const std::string& file);
 
+    const std::vector<Mesh3d*>& getMeshes() const;
+
     void setUp(Scene* scene);
     void tearDown(Scene* scene);
 

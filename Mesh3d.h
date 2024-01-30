@@ -37,4 +37,6 @@ public:
 
     void setDirection(Vector3 dir, Vector3 up);
     void setPosition(Vector3 pos);
+
+    Material* getMaterial() const;
 };
