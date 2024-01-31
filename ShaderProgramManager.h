@@ -13,6 +13,7 @@ public:
     ~ShaderProgramManager();
 
     ShaderProgram* getProgram(Shader* fragmentShader, Shader* geometryShader, Shader* vertexShader);
+    ShaderProgram* getProgram(Shader* fragmentShader, Shader* vertexShader);
 
     unsigned int getId();
     void use();

@@ -2,7 +2,7 @@
 #include "Utils.h"
 #include "Vector2.h"
 #include "Vector3.h"
-#include "Model.h"
+#include "Model3d.h"
 #include "LambertianMaterial.h"
 #include "Camera.h"
 #include "ObjReader.h"

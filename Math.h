@@ -9,3 +9,6 @@ std::tuple<double, double, double> intersectTriangle(const Vector3& v0, const Ve
 Matrix4 getTranslationMatrix(Vector3 v);
 Matrix4 getDirectionMatrix(Vector3 dir, Vector3 up);
 Matrix4 getNormalMatrix(const Matrix4& m);
+
+
+extern Matrix4 identityMatrix;

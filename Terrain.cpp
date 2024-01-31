@@ -1,7 +1,7 @@
 #include "Terrain.h"
 #include "Utils.h"
 #include "TerrainMesh.h"
-#include "Model.h"
+#include "Model3d.h"
 #include "Vector3.h"
 #include "TerrainMaterial.h"
 #include "Math.h"

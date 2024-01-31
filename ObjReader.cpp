@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <fstream>
 #include <charconv>
-#include "Model.h"
+#include "Model3d.h"
 #include "Logger.h"
 #include "LambertianMaterial.h"
 

@@ -72,3 +72,11 @@ Matrix4 getNormalMatrix(const Matrix4& m)
         0, 0, 0, 1
     )/det;
 }
+
+
+Matrix4 identityMatrix(
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 1
+);

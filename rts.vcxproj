@@ -161,7 +161,7 @@
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Matrix4.cpp" />
     <ClCompile Include="Mesh3d.cpp" />
-    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Model3d.cpp" />
     <ClCompile Include="ObjReader.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -190,7 +190,7 @@
     <ClInclude Include="Math.h" />
     <ClInclude Include="Matrix4.h" />
     <ClInclude Include="Mesh3d.h" />
-    <ClInclude Include="Model.h" />
+    <ClInclude Include="Model3d.h" />
     <ClInclude Include="ObjReader.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Scene.h" />

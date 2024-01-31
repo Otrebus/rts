@@ -1,5 +1,6 @@
 #include "Line3d.h"
 #include "Shader.h"
+#include "Math.h"
 
 
 Line3d::Line3d() : VAO(0), VBO(0) {}
@@ -14,10 +15,8 @@ Line3d::Line3d(const std::vector<Vector3>& vertices) : VAO(0), VBO(0) {
         fragmentShader = new Shader("line.frag", GL_FRAGMENT_SHADER);
     if(!vertexShader)
         vertexShader = new Shader("line.vert", GL_VERTEX_SHADER);
-
-    program = new ShaderProgram();
-
-    program->addShaders(*vertexShader, *fragmentShader);
+    if(!geometryShader)
+        geometryShader = new Shader("line.vert", GL_GEOMETRY_SHADER);
 }
 
 Line3d::~Line3d() {
@@ -39,8 +38,12 @@ void Line3d::setUp(Scene* scene) {
 }
 
 void Line3d::draw() {
+    auto s = scene->getShaderProgramManager();
+    auto program = s->getProgram(fragmentShader, vertexShader);
+    scene->setShaderProgram(program);
     program->use();
-    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)&scene->getCamera()->getMatrix().m_val);
+    //program->use();
+    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)(&identityMatrix.m_val));
     glBindVertexArray(VAO);
     glDrawArrays(GL_LINES, 0, vertexData.size()/3);
     glLineWidth(2);
@@ -53,4 +56,5 @@ void Line3d::tearDown() {
 
 Shader* Line3d::fragmentShader = nullptr;
 Shader* Line3d::vertexShader = nullptr;
+Shader* Line3d::geometryShader = nullptr;
 

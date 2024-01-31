@@ -26,4 +26,5 @@ private:
 
     static Shader* fragmentShader;
     static Shader* vertexShader;
+    static Shader* geometryShader;
 };

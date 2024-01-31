@@ -11,7 +11,7 @@
 #include "Camera.h"
 #include "Matrix4.h"
 #include "ObjReader.h"
-#include "Model.h"
+#include "Model3d.h"
 #include "TextureMaterial.h"
 #include "Input.h"
 #include "Scene.h"
@@ -41,7 +41,7 @@ static const real pi = std::acos(-1);
 
 int xres = 1000, yres = 600;
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void sizeCallback(GLFWwindow* window, int width, int height)
 {
     xres = width;
     yres = height;
@@ -69,7 +69,7 @@ int main()
     if (gl3wInit())
         return -1;
 
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetFramebufferSizeCallback(window, sizeCallback);
 
     auto model = Model3d("CornellBox-Original.obj");
 

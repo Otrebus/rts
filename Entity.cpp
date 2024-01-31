@@ -1,7 +1,7 @@
 #include "Entity.h"
 #include "Mesh3d.h"
 #include "Vertex3d.h"
-#include "Model.h"
+#include "Model3d.h"
 #include "Ray.h"
 #include "LambertianMaterial.h"
 #include <vector>

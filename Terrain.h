@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Model.h"
+#include "Model3d.h"
 
 class Ray;
 class Scene;
