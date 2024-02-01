@@ -45,8 +45,7 @@ void Line3d::draw() {
     //program->use();
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)(&identityMatrix.m_val));
     glBindVertexArray(VAO);
-    glDrawArrays(GL_LINES, 0, vertexData.size()/3);
-    glLineWidth(2);
+    glDrawArrays(GL_LINE_STRIP, 0, vertexData.size()/3);
 }
 
 void Line3d::tearDown() {

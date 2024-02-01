@@ -88,6 +88,9 @@
     <ClCompile Include="ShaderProgramManager.cpp">
       <Filter>Source files\Shaders</Filter>
     </ClCompile>
+    <ClCompile Include="UserInterface.cpp">
+      <Filter>Source files\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -170,6 +173,9 @@
     </ClInclude>
     <ClInclude Include="ShaderProgramManager.h">
       <Filter>Source files\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface.h">
+      <Filter>Source files\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

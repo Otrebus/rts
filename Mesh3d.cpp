@@ -65,7 +65,6 @@ void Mesh3d::draw()
 
 void Mesh3d::updateUniforms()
 {
-    // TODO: this might as well be cached into a shaderprogram on the mesh3d
     auto s = scene->getShaderProgramManager();
     auto program = s->getProgram(this->material->getShader(), getGeometryShader(), getVertexShader());
     scene->setShaderProgram(program);

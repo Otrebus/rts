@@ -172,6 +172,7 @@
     <ClCompile Include="TerrainMaterial.cpp" />
     <ClCompile Include="TerrainMesh.cpp" />
     <ClCompile Include="TextureMaterial.cpp" />
+    <ClCompile Include="UserInterface.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Vector2.cpp" />
     <ClCompile Include="Vector3.cpp" />
@@ -201,6 +202,7 @@
     <ClInclude Include="TerrainMaterial.h" />
     <ClInclude Include="TerrainMesh.h" />
     <ClInclude Include="TextureMaterial.h" />
+    <ClInclude Include="UserInterface.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="Vector3.h" />

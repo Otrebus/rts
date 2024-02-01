@@ -10,6 +10,7 @@
 #include "Utils.h"
 #include "Camera.h"
 #include "Matrix4.h"
+#include "UserInterface.h"
 #include "ObjReader.h"
 #include "Model3d.h"
 #include "TextureMaterial.h"
@@ -110,14 +111,14 @@ int main()
     Mesh3d mesh(meshVertices, { 0, 1, 2, 2, 3, 0 }, &texture);
     Mesh3d mesh2(meshVertices2, { 0, 1, 2, 2, 3, 0 }, &texture2);
 
-    Line3d line({ { 0, 0, 0 }, { 0, 1, 1 } });
+    //Line3d line({ { 0, 0, 0 }, { 0, 1, 1 } });
 
     Entity entity({ 0.5, 0.5, 3.07 }, { 1, 0, 0 }, { 0, 0, 1 });
 
     model.setUp(&scene);
     mesh.setUp(&scene);
     mesh2.setUp(&scene);
-    line.setUp(&scene);
+    //line.setUp(&scene);
     entity.setUp(&scene);
 
     Terrain terrain("Heightmap.bmp", &scene);
@@ -128,6 +129,8 @@ int main()
     int mouseX, mouseY;
 
     checkError();
+
+    UserInterface interface(&scene);
 
     while (!glfwWindowShouldClose(window)) {
 
@@ -151,7 +154,10 @@ int main()
 
         terrain.draw();
 
-        line.draw();
+        interface.setResolution(xres, yres);
+        interface.draw();
+
+        //line.draw();
 
         //for(int i = 0; i < 1000000000; i++) {
         //    if(i % 100000000 == 0)
@@ -194,6 +200,7 @@ int main()
             {
                 cameraControl.handleInput(*input);
             }
+            interface.handleInput(*input);
 
             if(input->stateStart == MousePosition)
             {
