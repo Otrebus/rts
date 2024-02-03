@@ -15,6 +15,7 @@ public:
     std::vector<Vertex3d> v;
     std::vector<int> triangles;
     Material* material;
+
     static Shader* vertexShader;
     static Shader* geometryShader;
 
@@ -29,8 +30,8 @@ public:
     virtual void setUp(Scene* scene);
     virtual void tearDown(Scene* scene);
 
-    Shader* getVertexShader();
-    Shader* getGeometryShader();
+    virtual Shader* getVertexShader() const;
+    Shader* getGeometryShader() const;
 
     virtual void draw();
     virtual void updateUniforms();

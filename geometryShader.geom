@@ -5,9 +5,9 @@ layout (triangle_strip, max_vertices = 3) out;
 
 in vec2 TexCoord[3];
 in vec3 VertexPosition[3];
-in float sel[3];
 in vec3 normal[3];
 in vec3 toCam[3];
+in float sel[3];
 
 out vec2 texCoord;
 out vec3 N_g;

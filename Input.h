@@ -1,4 +1,5 @@
 #pragma once
+#define NOMINMAX
 #include <Queue>
 #include "Utils.h"
 #include <GL/gl3w.h>

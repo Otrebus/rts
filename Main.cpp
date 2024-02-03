@@ -19,7 +19,7 @@
 #include <queue>
 #include "Terrain.h"
 #include <thread>
-#include "Line3d.h"
+#include "Line.h"
 #include "Ray.h"
 #include "Entity.h"
 #include "ShaderProgramManager.h"
@@ -48,6 +48,20 @@ void sizeCallback(GLFWwindow* window, int width, int height)
     xres = width;
     yres = height;
     glViewport(0, 0, width, height);
+}
+
+void GLAPIENTRY
+MessageCallback( GLenum source,
+                 GLenum type,
+                 GLuint id,
+                 GLenum severity,
+                 GLsizei length,
+                 const GLchar* message,
+                 const void* userParam )
+{
+  fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+           ( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ),
+            type, severity, message );
 }
 
 int main()
@@ -84,6 +98,10 @@ int main()
     glEnable(GL_DEPTH_TEST);
 
     auto startTime = glfwGetTime();
+
+
+glEnable              ( GL_DEBUG_OUTPUT );
+glDebugMessageCallback( MessageCallback, 0 );
 
     initInput(window);
 
@@ -122,6 +140,7 @@ int main()
     line.setUp(&scene);
     entity.setUp(&scene);
 
+
     Terrain terrain("Heightmap.bmp", &scene);
     CameraControl cameraControl(&cam, &terrain, true);
 
@@ -144,17 +163,15 @@ int main()
         entity.updateUniforms();
         entity.drawBoundingBox();
 
-        mesh.updateUniforms();
-        mesh.draw();
+        /*mesh.draw();
 
-        mesh2.updateUniforms();
-        mesh2.draw();
+        mesh2.draw();*/
 
-        model.updateUniforms();
         model.draw();
 
         terrain.draw();
-
+        
+        checkError();
         interface.setResolution(xres, yres);
         interface.draw();
 

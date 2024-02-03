@@ -17,6 +17,10 @@ public:
 
     void selectVertex(int i, bool selected);
 
+    static Shader* terrainVertexShader;
+
+    Shader* getVertexShader() const;
+
     std::vector<MeshVertex3d> v;
 
     using Mesh3d::Mesh3d;

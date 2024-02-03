@@ -84,12 +84,12 @@ void Mesh3d::updateUniforms()
     this->material->updateUniforms(scene);
 }
 
-Shader* Mesh3d::getGeometryShader()
+Shader* Mesh3d::getGeometryShader() const
 {
     return geometryShader;
 }
 
-Shader* Mesh3d::getVertexShader()
+Shader* Mesh3d::getVertexShader() const
 {
     return vertexShader;
 }

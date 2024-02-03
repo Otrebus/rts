@@ -10,8 +10,8 @@ TerrainMesh::TerrainMesh(std::vector<MeshVertex3d> vertices, std::vector<int> tr
     this->triangles = triangles;
     if(!geometryShader)
         geometryShader = new Shader("geometryShader.geom", GL_GEOMETRY_SHADER);
-    if(!vertexShader)
-        vertexShader = new Shader("vertexShader.vert", GL_VERTEX_SHADER);
+    if(!terrainVertexShader)
+        terrainVertexShader = new Shader("terrain.vert", GL_VERTEX_SHADER);
 }
 
 void TerrainMesh::setUp(Scene* s)
@@ -48,3 +48,10 @@ void TerrainMesh::selectVertex(int i, bool selected)
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferSubData(GL_ARRAY_BUFFER, offset, sizeof(float), &f);
 }
+
+Shader* TerrainMesh::getVertexShader() const
+{
+    return terrainVertexShader;
+}
+
+Shader* TerrainMesh::terrainVertexShader = nullptr;

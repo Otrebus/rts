@@ -6,7 +6,7 @@
 
 TerrainMaterial::TerrainMaterial()
 {     
-    if(!fragmentShader) // Or rather !initialized or something
+    if(!fragmentShader)
         fragmentShader = new Shader("terrain.frag", GL_FRAGMENT_SHADER);
 }
 

@@ -6,7 +6,7 @@
 
 LambertianMaterial::LambertianMaterial(Vector3 Kd) : Kd(Kd)
 {     
-    if(!fragmentShader) // Or rather !initialized or something
+    if(!fragmentShader)
         fragmentShader = new Shader("lambertian.frag", GL_FRAGMENT_SHADER);
 }
 

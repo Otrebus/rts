@@ -11,7 +11,9 @@ out vec3 normal;
 out vec3 toCam;
 out float sel;
 
-uniform mat4 transform;
+uniform mat4 modelViewMatrix;
+uniform mat4 normalMatrix;
+uniform mat4 projectionMatrix;
 uniform vec3 camPos;
 
 void main()
@@ -22,6 +24,6 @@ void main()
     normal = aNorm;
     toCam = camPos - aPos;
     toCam = normalize(toCam);
-    gl_Position = transform * vec4(aPos.x, aPos.y, aPos.z, 1.0);
+    gl_Position = projectionMatrix * vec4(aPos.x, aPos.y, aPos.z, 1.0);
     sel = selected;
 }

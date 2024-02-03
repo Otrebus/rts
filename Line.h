@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Vector3.h"
+#include "Vector2.h"
 #include <vector>
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
@@ -26,5 +27,26 @@ private:
 
     static Shader* fragmentShader;
     static Shader* vertexShader;
-    static Shader* geometryShader;
+};
+
+
+class Line2d {
+public:
+    Line2d();
+    Line2d(const std::vector<Vector2>& vertices);
+    ~Line2d();
+
+    void setUp(Scene* scene);
+    void draw();
+    void tearDown();
+
+private:
+    GLuint VAO, VBO;
+    std::vector<float> vertexData;
+    Scene* scene;
+
+    ShaderProgram* program;
+
+    static Shader* fragmentShader;
+    static Shader* vertexShader;
 };
