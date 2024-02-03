@@ -10,6 +10,14 @@ UserInterface::UserInterface(Scene* scene) : scene(scene)
 }
 
 
+void UserInterface::selectEntities(std::vector<Entity*> entities)
+{
+    auto camera = scene->getCamera();
+
+    //getViewRay(camera, 
+}
+
+
 void UserInterface::handleInput(const Input& input)
 {
     auto& inputQueue = *input.inputQueue;

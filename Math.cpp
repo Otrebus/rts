@@ -2,6 +2,8 @@
 #include "Vector3.h"
 #include "Ray.h"
 #include "Matrix4.h"
+#include "Camera.h"
+#include "Math.h"
 
 
 std::tuple<double, double, double> intersectTriangle(const Vector3& v0, const Vector3& v1, const Vector3& v2, const Ray& ray)
@@ -74,9 +76,27 @@ Matrix4 getNormalMatrix(const Matrix4& m)
 }
 
 
-Matrix4 identityMatrix(
+const Matrix4 identityMatrix(
     1, 0, 0, 0,
     0, 1, 0, 0,
     0, 0, 1, 0,
     0, 0, 0, 1
 );
+const real pi = std::acos(-1);
+
+
+const Vector3& getViewRay(Camera& cam, real y, real x)
+{
+    auto d = std::tan(pi*cam.fov/180/2);
+    return cam.dir + cam.up*y*d/cam.ar + (cam.dir%cam.up).normalized()*x*d;
+}
+
+real resToScreenX(real x, int xres)
+{
+    return real(2*x)/xres - 1;
+}
+
+real resToScreenY(real y, int yres)
+{
+    return -(real(2*y)/yres - 1);
+}

@@ -177,6 +177,7 @@
     <ClInclude Include="UserInterface.h">
       <Filter>Source files\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Main.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="lambertian.frag">

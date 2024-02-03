@@ -4,6 +4,7 @@
 
 class Input;
 class Scene;
+class Entity;
 
 class UserInterface
 {
@@ -14,6 +15,8 @@ public:
 
     void handleInput(const Input& input);
     void setResolution(int xres, int yres);
+
+    void selectEntities(std::vector<Entity*> entities);
 
 private:
     int xres, yres;

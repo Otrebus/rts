@@ -23,6 +23,8 @@
 #include "Ray.h"
 #include "Entity.h"
 #include "ShaderProgramManager.h"
+#include "Main.h"
+#include "Math.h"
 
 void checkError() {
     GLenum error;
@@ -38,7 +40,6 @@ void checkError() {
         std::cout << "No value" << std::endl;
 }
 
-static const real pi = std::acos(-1);
 
 int xres = 1000, yres = 600;
 
@@ -111,14 +112,14 @@ int main()
     Mesh3d mesh(meshVertices, { 0, 1, 2, 2, 3, 0 }, &texture);
     Mesh3d mesh2(meshVertices2, { 0, 1, 2, 2, 3, 0 }, &texture2);
 
-    //Line3d line({ { 0, 0, 0 }, { 0, 1, 1 } });
+    Line3d line({ { 0, 0, 0 }, { 0, 1, 1 } });
 
     Entity entity({ 0.5, 0.5, 3.07 }, { 1, 0, 0 }, { 0, 0, 1 });
 
     model.setUp(&scene);
     mesh.setUp(&scene);
     mesh2.setUp(&scene);
-    //line.setUp(&scene);
+    line.setUp(&scene);
     entity.setUp(&scene);
 
     Terrain terrain("Heightmap.bmp", &scene);
@@ -157,7 +158,7 @@ int main()
         interface.setResolution(xres, yres);
         interface.draw();
 
-        //line.draw();
+        line.draw();
 
         //for(int i = 0; i < 1000000000; i++) {
         //    if(i % 100000000 == 0)
@@ -208,14 +209,15 @@ int main()
                 mouseY = input->posY;
             }
 
-            if(input->stateStart == InputType::MousePress && input->key == GLFW_MOUSE_BUTTON_2)
+            if(input->stateStart == InputType::MousePress && input->key == GLFW_MOUSE_BUTTON_3)
             {
-                Vector3 dir = cam.dir + cam.up*((yres/2-mouseY)/(yres/2.))*std::tan(pi*cam.fov/180/2)/cam.ar + (cam.dir%cam.up).normalized()*((mouseX-xres/2)/(xres/2.))*std::tan(pi*cam.fov/180/2);
+                Vector3 dir = getViewRay(cam, resToScreenX(mouseX, xres), resToScreenY(mouseY, yres));
                 dir.normalize();
-                //line = Line3d({ cam.pos, cam.pos+dir });
-                // line.setup(&scene);
+                line = Line3d({ cam.pos, cam.pos+dir });
+                line.setUp(&scene);
+
                 terrain.intersect(Ray(cam.pos, dir));
-                entity.intersectBoundingBox(Ray(cam.pos, dir));
+                //entity.intersectBoundingBox(Ray(cam.pos, dir));
             }
 
             else if(isGraphicsInput(input))
