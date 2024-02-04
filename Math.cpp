@@ -83,7 +83,7 @@ const Matrix4 identityMatrix(
     0, 0, 0, 1
 );
 const real pi = std::acos(-1);
-
+const real eps = 1e-6;
 
 const Vector3& getViewRay(Camera& cam, real x, real y)
 {

@@ -1,3 +1,4 @@
+#define NOMINMAX
 #include "UserInterface.h"
 #include "Input.h"
 #include "Line.h"
@@ -8,8 +9,8 @@
 
 UserInterface::UserInterface(Scene* scene) : scene(scene)
 {
-    drawBoxc1 = { -0.5, -0.5 };
-    drawBoxc2 = { 0.5, 0.5 };
+    drawBoxc1 = { 0, 0 };
+    drawBoxc2 = { 0, 0 };
 }
 
 
@@ -20,34 +21,66 @@ struct Polyhedra {
     std::vector<std::pair<int, int>> faces;
 };
 
+int sideSAT(const Polyhedra& a, Ray r)
+{
+    int neg = 0, pos = 0;
+    for(auto v : a.vertices)
+    {
+        float t = 0;
+        if(v == r.pos)
+            pos++, neg++;
+        else {
+            t = (v-r.pos).normalized()*r.dir;
+            if(t > -eps)
+                pos++;
+            if(t < eps)
+                neg++;
+        }
+    }
+    return neg == a.vertices.size() ? -1 : pos == a.vertices.size() ? 1 : 0;
+}
+
 bool intersectsSAT(const Polyhedra& a, const Polyhedra& b)
 {
     std::vector<Ray> P;
     for(auto& [i, n] : a.faces)
     {
-        auto v1 = (a.vertices[a.faceIndices[i]] - a.vertices[a.faceIndices[i+1]]);
-        auto v2 = (a.vertices[a.faceIndices[i+2]] - a.vertices[a.faceIndices[i]]);
-        P.push_back({ a.vertices[a.faceIndices[i+1]], v1%v2 });
+        auto v1 = (a.vertices[a.faceIndices[i]] - a.vertices[a.faceIndices[i+1]]).normalized();
+        auto v2 = (a.vertices[a.faceIndices[i+2]] - a.vertices[a.faceIndices[i]]).normalized();
+        P.push_back({ a.vertices[a.faceIndices[i+1]], (v1%v2).normalized() });
     }
     for(auto& [i, n] : b.faces)
     {
-        auto v1 = (b.vertices[b.faceIndices[i]] - b.vertices[b.faceIndices[i+1]]);
-        auto v2 = (b.vertices[b.faceIndices[i+2]] - b.vertices[b.faceIndices[i]]);
-        P.push_back({ b.vertices[b.faceIndices[i+1]], v1%v2 });
+        auto v1 = (b.vertices[b.faceIndices[i]] - b.vertices[b.faceIndices[i+1]]).normalized();
+        auto v2 = (b.vertices[b.faceIndices[i+2]] - b.vertices[b.faceIndices[i]]).normalized();
+        P.push_back({ b.vertices[b.faceIndices[i+1]], (v1%v2).normalized() });
     }
 
     for(auto [a1, a2] : a.edges)
     {
         for(auto [b1, b2] : b.edges)
         {
-            P.push_back({ a.vertices[a1], (a.vertices[a1]-a.vertices[a2])%(b.vertices[b1]-b.vertices[b2]) });
+            auto u = (a.vertices[a1]-a.vertices[a2]).normalized();
+            auto v = (b.vertices[b1]-b.vertices[b2]).normalized();
+            auto n = u%v;
+            if(n.length() > eps) {
+                P.push_back({ a.vertices[a1], n.normalized() });
+            }
         }
     }
 
+    for(auto r : P)
+    {
+        auto sa = sideSAT(a, r);
+        auto sb = sideSAT(b, r);
+        if(sa*sb < 0)
+            return false;
+    }
 
+    return true;
 }
 
-bool intersectsFrustum(Vector3 pos, Vector3 v[4], Entity& entity)
+bool intersectsFrustum(Vector3 pos, Vector3 v[4], Entity& entity, Scene* scene)
 {
     auto M = getDirectionMatrix(entity.dir, entity.up);
 
@@ -58,8 +91,8 @@ bool intersectsFrustum(Vector3 pos, Vector3 v[4], Entity& entity)
         Vector3(c1.x, c2.y, c1.z),
         Vector3(c2.x, c2.y, c1.z),
         Vector3(c2.x, c1.y, c1.z),
-        Vector3(c1.x, c2.y, c2.z),
-        Vector3(c2.x, c2.y, c2.z),
+        Vector3(c1.x, c1.y, c2.z),
+        Vector3(c2.x, c1.y, c2.z),
         c2,
         Vector3(c1.x, c2.y, c2.z),
     };
@@ -67,56 +100,38 @@ bool intersectsFrustum(Vector3 pos, Vector3 v[4], Entity& entity)
     for(auto& c : C)
         c = M*c + entity.pos;
 
-    int ci[6][4] = {
-        { 0, 1, 2, 3 },
-        { 0, 5, 6, 2 },
-        { 2, 6, 7, 3 },
-        { 3, 7, 4, 0 },
-        { 0, 1, 5, 4 },
-        { 7, 6, 5, 4 }
+    int ci[24] = {
+        0, 1, 2, 3,
+        0, 3, 5, 4,
+        3, 2, 6, 5,
+        2, 1, 7, 6,
+        1, 0, 4, 7,
+        4, 5, 6, 7
     };
 
-    Ray S[16];
-    for(int i = 0; i < 6; i++)
-        S[i] = { C[ci[i][0]], ((C[ci[i][0]]-C[ci[i][1]])%((C[ci[i][2]]-C[ci[i][1]])).normalized()) };
-    for(int i = 0; i < 6; i++)
-        S[i] = { C[ci[i][0]], ((C[ci[i][0]]-C[ci[i][1]])%((C[ci[i][2]]-C[ci[i][1]])).normalized()) };
-
-    //Vector3 E[12] = {
-    //    C[1]-C[0],
-    //    C[2]-C[1],
-    //    C[3]-C[2],
-    //    C[0]-C[3],
-    //    C[4]-C[0],
-    //    C[5]-C[1],
-    //    C[6]-C[2],
-    //    C[7]-C[3],
-    //    C[5]-C[4],
-    //    C[6]-C[5],
-    //    C[7]-C[6],
-    //    C[4]-C[7]
-    //};
-
-    //Ray S[16] = {
-    //    { pos, (v[0]%v[1]).normalized() },
-    //    { pos, (v[1]%v[2]).normalized() },
-    //    { pos, (v[2]%v[3]).normalized() },
-    //    { pos, (v[3]%v[0]).normalized() },
-    //    { C[0], (E[3]%E[0]).normalized() },
-    //    { C[0], (E[4]%E[0]).normalized() },
-    //    { C[1], (E[5]%E[1]).normalized() },
-    //    { C[2], (E[6]%E[2]).normalized() },
-    //    { C[3], (E[7]%E[3]).normalized() },
-    //    { C[0], (E[4]%E[0]).normalized() },
-    //};
-
-    for(int i = 0; i < 4; i++)
+    std::vector<std::pair<int, int>> edges;
+    for(int i = 0; i < 24; i+=4)
     {
         for(int j = 0; j < 4; j++)
         {
-
+            edges.push_back({ci[i+j], ci[i+(j+1)%4]});
         }
     }
+    Polyhedra a = {
+        std::vector<Vector3>(C, C+8),
+        edges,
+        std::vector(ci, ci+24),
+        { { 0, 4 }, { 4, 4 }, { 8, 4 }, { 12, 4 }, { 16, 4 }, { 20, 4 } }
+    };
+
+    Polyhedra b = {
+        { pos, pos + v[0]*1e3, pos + v[1]*1e3, pos + v[2]*1e3, pos + v[3]*1e3 },
+        { { 0, 1 }, { 0, 2 }, { 0, 3 }, { 0, 4 }, { 1, 2 }, { 2, 3 }, { 3, 4 }, { 4, 1 } },
+        { 0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 1  },
+        { { 0, 3 }, { 3, 3 }, { 6, 3 }, { 9, 3 } }
+    };
+
+    return intersectsSAT(a, b);
 }
 
 
@@ -140,7 +155,7 @@ void UserInterface::selectEntities(std::vector<Entity*> entities)
 
     for(auto e : entities)
     {
-        if(intersectsFrustum(camera->pos, v, *e))
+        if(intersectsFrustum(camera->pos, v, *e, scene))
             e->setSelected(true); // TODO: clean
         else
             e->setSelected(false);
@@ -148,19 +163,22 @@ void UserInterface::selectEntities(std::vector<Entity*> entities)
 }
 
 
-void UserInterface::handleInput(const Input& input)
+void UserInterface::handleInput(const Input& input, std::vector<Entity*> entities)
 {
     auto& inputQueue = *input.inputQueue;
 
-    if(input.stateStart == InputType::MousePress)
+    if(input.stateStart == InputType::MousePress && input.key == GLFW_MOUSE_BUTTON_2)
     {
         drawingBox = true;
         drawBoxc1.x = real(2*mouseX)/xres - 1;
         drawBoxc1.y = -(real(2*mouseY)/yres - 1);
     }
-    if(input.stateEnd == InputType::MouseRelease)
+    if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_2)
     {
+
+
         drawingBox = false;
+        selectEntities(entities);
     }
     if(input.stateStart == InputType::MousePosition)
     {
@@ -190,7 +208,6 @@ void UserInterface::draw()
         { drawBoxc1.x, drawBoxc1.y, }
     });
     line.setUp(scene);
-
     if(drawingBox)
     {
         line.draw();

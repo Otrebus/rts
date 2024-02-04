@@ -99,9 +99,8 @@ int main()
 
     auto startTime = glfwGetTime();
 
-
-glEnable              ( GL_DEBUG_OUTPUT );
-glDebugMessageCallback( MessageCallback, 0 );
+    //glEnable              ( GL_DEBUG_OUTPUT );
+    //glDebugMessageCallback( MessageCallback, 0 );
 
     initInput(window);
 
@@ -132,14 +131,39 @@ glDebugMessageCallback( MessageCallback, 0 );
 
     Line3d line({ { 0, 0, 0 }, { 0, 1, 1 } });
 
-    Entity entity({ 0.5, 0.5, 3.07 }, { 1, 0, 0 }, { 0, 0, 1 });
+    std::vector<Entity*> entities;
+
+    //Entity entity({ 0.5, 0.5, 3.07 }, { 1, 0, 0 }, { 0, 0, 1 });
+
+    for(int x = 0; x < 10; x++)
+    {
+        for(int y = 0; y < 10; y++)
+        {
+            for(int z = 0; z < 10; z++)
+            {
+                entities.push_back(new Entity({ 0.5f+x*0.1f, 0.5f+y*0.1f, 3.07f+z*0.1f }, { 1, 0, 0 }, { 0, 0, 1 }));
+            }
+        }
+    }
+    for(auto& e : entities)
+    {
+        e->setUp(&scene);
+    }
 
     model.setUp(&scene);
     mesh.setUp(&scene);
     mesh2.setUp(&scene);
     line.setUp(&scene);
-    entity.setUp(&scene);
+    //entity.setUp(&scene);
 
+    Line3d line1({ { 0, 0, 0 }, { 0, 1, 1 } });
+    Line3d line2({ { 0, 0, 0 }, { 0, 1, 1 } });
+    Line3d line3({ { 0, 0, 0 }, { 0, 1, 1 } });
+    Line3d line4({ { 0, 0, 0 }, { 0, 1, 1 } });
+    line1.setUp(&scene);
+    line2.setUp(&scene);
+    line3.setUp(&scene);
+    line4.setUp(&scene);
 
     Terrain terrain("Heightmap.bmp", &scene);
     CameraControl cameraControl(&cam, &terrain, true);
@@ -160,8 +184,13 @@ glDebugMessageCallback( MessageCallback, 0 );
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
        
-        entity.updateUniforms();
-        entity.drawBoundingBox();
+        //entity.updateUniforms();
+        //entity.drawBoundingBox();
+        for(auto& entity : entities)
+        {
+            entity->updateUniforms();
+            entity->drawBoundingBox();
+        }
 
         /*mesh.draw();
 
@@ -171,7 +200,7 @@ glDebugMessageCallback( MessageCallback, 0 );
 
         terrain.draw();
         
-        checkError();
+        // checkError();
         interface.setResolution(xres, yres);
         interface.draw();
 
@@ -195,12 +224,13 @@ glDebugMessageCallback( MessageCallback, 0 );
         //entity.pos += Vector3(0.1, 0, 0)*dt;
         auto a = dt*1;
 
-        entity.dir *= Matrix4(
-            std::cos(a), -std::sin(a), 0, 0,
-            std::sin(a), std::cos(a), 0, 0,
-            0, 0, 0, 0,
-            0, 0, 0, 0
-        );
+        //entity.dir *= Matrix4(
+        //    std::cos(a), -std::sin(a), 0, 0,
+        //    std::sin(a), std::cos(a), 0, 0,
+        //    0, 0, 0, 0,
+        //    0, 0, 0, 0
+        //);
+
 
         auto isCameraInput = [] (Input* input)
         {
@@ -218,7 +248,7 @@ glDebugMessageCallback( MessageCallback, 0 );
             {
                 cameraControl.handleInput(*input);
             }
-            interface.handleInput(*input);
+            interface.handleInput(*input, entities);
 
             if(input->stateStart == MousePosition)
             {
