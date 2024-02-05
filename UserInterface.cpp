@@ -40,21 +40,35 @@ int sideSAT(const Polyhedra& a, Ray r)
     return neg == a.vertices.size() ? -1 : pos == a.vertices.size() ? 1 : 0;
 }
 
+bool testSides(const Polyhedra& a, const Polyhedra& b, const Ray& ray)
+{
+    auto sa = sideSAT(a, ray);
+    auto sb = sideSAT(b, ray);
+    return sa*sb < 0;
+}
+
+bool testNormals(const Polyhedra& a, const Polyhedra& b)
+{
+    auto& v = a.vertices;
+    auto& f = a.faceIndices;
+    for (auto& [i, n] : a.faces)
+    {
+        auto v1 = (v[f[i]] - v[f[i+1]]).normalized();
+        auto v2 = (v[f[i+2]] - v[f[i]]).normalized();
+        if (testSides(a, b, { v[f[i+1]], (v1%v2).normalized() }))
+            return false;
+    }
+    return true;
+}
+
 bool intersectsSAT(const Polyhedra& a, const Polyhedra& b)
 {
     std::vector<Ray> P;
-    for(auto& [i, n] : a.faces)
-    {
-        auto v1 = (a.vertices[a.faceIndices[i]] - a.vertices[a.faceIndices[i+1]]).normalized();
-        auto v2 = (a.vertices[a.faceIndices[i+2]] - a.vertices[a.faceIndices[i]]).normalized();
-        P.push_back({ a.vertices[a.faceIndices[i+1]], (v1%v2).normalized() });
-    }
-    for(auto& [i, n] : b.faces)
-    {
-        auto v1 = (b.vertices[b.faceIndices[i]] - b.vertices[b.faceIndices[i+1]]).normalized();
-        auto v2 = (b.vertices[b.faceIndices[i+2]] - b.vertices[b.faceIndices[i]]).normalized();
-        P.push_back({ b.vertices[b.faceIndices[i+1]], (v1%v2).normalized() });
-    }
+
+    if(!testNormals(a, b))
+        return false;
+    if(!testNormals(b, a))
+        return false;
 
     for(auto [a1, a2] : a.edges)
     {
@@ -63,20 +77,10 @@ bool intersectsSAT(const Polyhedra& a, const Polyhedra& b)
             auto u = (a.vertices[a1]-a.vertices[a2]).normalized();
             auto v = (b.vertices[b1]-b.vertices[b2]).normalized();
             auto n = u%v;
-            if(n.length() > eps) {
-                P.push_back({ a.vertices[a1], n.normalized() });
-            }
+            if(testSides(a, b, { a.vertices[a1], n.normalized() }))
+                return false;
         }
     }
-
-    for(auto r : P)
-    {
-        auto sa = sideSAT(a, r);
-        auto sb = sideSAT(b, r);
-        if(sa*sb < 0)
-            return false;
-    }
-
     return true;
 }
 
@@ -109,18 +113,18 @@ bool intersectsFrustum(Vector3 pos, Vector3 v[4], Entity& entity, Scene* scene)
         4, 5, 6, 7
     };
 
-    std::vector<std::pair<int, int>> edges;
-    for(int i = 0; i < 24; i+=4)
-    {
-        for(int j = 0; j < 4; j++)
-        {
-            edges.push_back({ci[i+j], ci[i+(j+1)%4]});
-        }
-    }
+
     Polyhedra a = {
         std::vector<Vector3>(C, C+8),
-        edges,
-        std::vector(ci, ci+24),
+        { { 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 0 }, { 4, 5 }, { 5, 6 }, { 6, 7 }, { 7, 4 }, { 0, 4 }, { 3, 5 }, { 2, 6 }, { 1, 7 } },
+        {
+            0, 1, 2, 3,
+            0, 3, 5, 4,
+            3, 2, 6, 5,
+            2, 1, 7, 6,
+            1, 0, 4, 7,
+            4, 5, 6, 7
+        },
         { { 0, 4 }, { 4, 4 }, { 8, 4 }, { 12, 4 }, { 16, 4 }, { 20, 4 } }
     };
 
@@ -137,6 +141,7 @@ bool intersectsFrustum(Vector3 pos, Vector3 v[4], Entity& entity, Scene* scene)
 
 void UserInterface::selectEntities(std::vector<Entity*> entities)
 {
+    auto time = glfwGetTime();
     auto camera = scene->getCamera();
 
     auto c1 = drawBoxc1, c2 = drawBoxc2;
@@ -160,6 +165,7 @@ void UserInterface::selectEntities(std::vector<Entity*> entities)
         else
             e->setSelected(false);
     }
+    std::cout << (glfwGetTime() - time) << std::endl;
 }
 
 
