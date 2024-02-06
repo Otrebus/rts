@@ -11,6 +11,7 @@ UserInterface::UserInterface(Scene* scene) : scene(scene)
 {
     drawBoxc1 = { 0, 0 };
     drawBoxc2 = { 0, 0 };
+    selectState = NotSelecting;
 }
 
 
@@ -168,6 +169,20 @@ void UserInterface::selectEntities(std::vector<Entity*> entities)
     std::cout << (glfwGetTime() - time) << std::endl;
 }
 
+void UserInterface::selectEntity(const Ray& ray, std::vector<Entity*> entities)
+{
+    auto time = glfwGetTime();
+    auto camera = scene->getCamera();
+    
+    for(auto e : entities)
+    {
+        if(e->intersectBoundingBox(ray))
+            e->setSelected(true);
+        else
+            e->setSelected(false);
+    }
+    std::cout << (glfwGetTime() - time) << std::endl;
+}
 
 void UserInterface::handleInput(const Input& input, std::vector<Entity*> entities)
 {
@@ -175,16 +190,24 @@ void UserInterface::handleInput(const Input& input, std::vector<Entity*> entitie
 
     if(input.stateStart == InputType::MousePress && input.key == GLFW_MOUSE_BUTTON_2)
     {
-        drawingBox = true;
+        selectState = Clicking;
         drawBoxc1.x = real(2*mouseX)/xres - 1;
         drawBoxc1.y = -(real(2*mouseY)/yres - 1);
+        drawBoxc2 = drawBoxc1;
     }
     if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_2)
     {
-
-
-        drawingBox = false;
-        selectEntities(entities);
+        if(selectState == DrawingBox)
+        {
+            selectEntities(entities);
+        }
+        else if(selectState == Clicking)
+        {
+            auto c1 = drawBoxc1;
+            auto dir = getViewRay(*scene->getCamera(), c1.x, c1.y);
+            selectEntity(Ray(scene->getCamera()->pos, dir), entities);
+        }
+        selectState = NotSelecting;
     }
     if(input.stateStart == InputType::MousePosition)
     {
@@ -193,6 +216,9 @@ void UserInterface::handleInput(const Input& input, std::vector<Entity*> entitie
 
         drawBoxc2.x = real(2*mouseX)/xres - 1;
         drawBoxc2.y = -(real(2*mouseY)/yres - 1);
+
+        if(selectState == Clicking && (drawBoxc1-drawBoxc2).length() > 0.02)
+            selectState = DrawingBox;
     }
 }
 
@@ -206,16 +232,15 @@ void UserInterface::setResolution(int xres, int yres)
 
 void UserInterface::draw()
 {
-    Line2d line({
-        { drawBoxc1.x, drawBoxc1.y, },
-        { drawBoxc2.x, drawBoxc1.y, },
-        { drawBoxc2.x, drawBoxc2.y, },
-        { drawBoxc1.x, drawBoxc2.y, },
-        { drawBoxc1.x, drawBoxc1.y, }
-    });
-    line.setUp(scene);
-    if(drawingBox)
-    {
+    if(selectState == DrawingBox) {
+        Line2d line({
+            { drawBoxc1.x, drawBoxc1.y, },
+            { drawBoxc2.x, drawBoxc1.y, },
+            { drawBoxc2.x, drawBoxc2.y, },
+            { drawBoxc1.x, drawBoxc2.y, },
+            { drawBoxc1.x, drawBoxc1.y, }
+        });
+        line.setUp(scene);
         line.draw();
     }
 }

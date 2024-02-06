@@ -85,7 +85,7 @@ const Matrix4 identityMatrix(
 const real pi = std::acos(-1);
 const real eps = 1e-6;
 
-const Vector3& getViewRay(Camera& cam, real x, real y)
+const Vector3& getViewRay(Camera& cam, real x, real y) // TODO: maybe should return a ray instead
 {
     auto d = std::tan(pi*cam.fov/180/2);
     return cam.dir + cam.up*y*d/cam.ar + (cam.dir%cam.up).normalized()*x*d;

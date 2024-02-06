@@ -256,16 +256,16 @@ int main()
                 mouseY = input->posY;
             }
 
-            if(input->stateStart == InputType::MousePress && input->key == GLFW_MOUSE_BUTTON_3)
-            {
-                Vector3 dir = getViewRay(cam, resToScreenX(mouseX, xres), resToScreenY(mouseY, yres));
-                dir.normalize();
-                line = Line3d({ cam.pos, cam.pos+dir });
-                line.setUp(&scene);
+            //if(input->stateStart == InputType::MousePress && input->key == GLFW_MOUSE_BUTTON_3)
+            //{
+            //    Vector3 dir = getViewRay(cam, resToScreenX(mouseX, xres), resToScreenY(mouseY, yres));
+            //    dir.normalize();
+            //    line = Line3d({ cam.pos, cam.pos+dir });
+            //    line.setUp(&scene);
 
-                terrain.intersect(Ray(cam.pos, dir));
-                //entity.intersectBoundingBox(Ray(cam.pos, dir));
-            }
+            //    terrain.intersect(Ray(cam.pos, dir));
+            //    //entity.intersectBoundingBox(Ray(cam.pos, dir));
+            //}
 
             else if(isGraphicsInput(input))
             {

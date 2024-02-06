@@ -82,8 +82,7 @@ bool Entity::intersectBoundingBox(const Ray& ray)
     real tnear, tfar;
     if(bbox.intersect(ray2, tnear, tfar)) {
         std::cout << "Intersects" << std::endl;
-        //return true;
-        setSelected(!selected);
+        return true;
     }
     return false;
 }

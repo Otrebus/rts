@@ -6,6 +6,11 @@
 class Input;
 class Scene;
 class Entity;
+class Ray;
+
+enum SelectState {
+    NotSelecting, Clicking, DrawingBox
+};
 
 class UserInterface
 {
@@ -18,14 +23,12 @@ public:
     void setResolution(int xres, int yres);
 
     void selectEntities(std::vector<Entity*> entities);
+    void selectEntity(const Ray& ray, std::vector<Entity*> entities);
 
 //private:
     int xres, yres;
     int mouseX, mouseY;
-    bool drawingBox;
+    enum SelectState selectState;
     Vector2 drawBoxc1, drawBoxc2;
     Scene* scene;
-
-    Line3d line1, line2, line3, line4;
-
 };
