@@ -32,7 +32,7 @@ TerrainMesh* Terrain::createMesh(std::string fileName)
             auto dy = ((!ly ? H(x, y+1) : H(x, y)) - (!fy ? H(x, y-1) : H(x, y)))/((!fy + !ly)*1./(height-1.));
             real l = std::sqrt(dx*dx+dy*dy+1);
             points.push_back(Vector3(X, Y, H(x, y) + 3.0));
-            vertices[width*y+x] = MeshVertex3d(X, Y, H(x, y) + 3.0, -dx/l, -dy/l, 1.0/l, X, Y);
+            vertices[width*y+x] = MeshVertex3d(X, Y, H(x, y) + 3.0, -dx/l, -dy/l, 1.0/l, x, y);
             vertices[width*y+x].selected = false;
         }
     }
@@ -98,11 +98,11 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
 
             for(auto i : { a, b, c } )
             {
-                vertices[j++] = MeshVertex3d(vectors[i].x, vectors[i].y, vectors[i].z, N1.x, N1.y, N1.z, 0, 0);
+                vertices[j++] = MeshVertex3d(vectors[i].x, vectors[i].y, vectors[i].z, N1.x, N1.y, N1.z, x, y);
                 points.push_back({ vectors[i].x, vectors[i].y, vectors[i].z });
             }
             for(auto i : { a, c, d } ) {
-                vertices[j++] = MeshVertex3d(vectors[i].x, vectors[i].y, vectors[i].z, N2.x, N2.y, N2.z, 0, 0);
+                vertices[j++] = MeshVertex3d(vectors[i].x, vectors[i].y, vectors[i].z, N2.x, N2.y, N2.z, x, y);
                 points.push_back({ vectors[i].x, vectors[i].y, vectors[i].z });
             }
 
