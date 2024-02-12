@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 
 #include <vector>
 #include "Vertex3d.h"
@@ -7,13 +8,15 @@
 #include "Vector3.h"
 #include "Camera.h"
 #include "Scene.h"
+#include "Mesh3d.h"
 
-class Mesh3d
+class LineMesh3d : public Mesh3d
 {
 public:
 
-    std::vector<Vertex3d> v;
-    std::vector<int> triangles;
+    std::vector<Vector3> v;
+    std::vector<std::pair<int, int>> lines;
+    std::vector<GLuint> indices;
     Material* material;
 
     static Shader* vertexShader;
@@ -24,8 +27,8 @@ public:
     GLuint VBO, VAO, EBO;
     Scene* scene;
 
-    Mesh3d(std::vector<Vertex3d> vertices, std::vector<int> triangles, Material* material);
-    Mesh3d();
+    LineMesh3d(std::vector<Vector3> vertices, std::vector<std::pair<int, int>> lines, Material* material);
+    LineMesh3d();
 
     virtual void setUp(Scene* scene);
     virtual void tearDown(Scene* scene);

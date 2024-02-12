@@ -1,5 +1,6 @@
 #pragma once
 
+#define NOMINMAX
 #include "Model3d.h"
 
 class Ray;

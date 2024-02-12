@@ -1,4 +1,5 @@
 #pragma once
+#define NOMINMAX
 #include "Shader.h"
 
 class ShaderProgram

@@ -1,9 +1,14 @@
+
+#define NOMINMAX
 #include "Entity.h"
 #include "Mesh3d.h"
 #include "Vertex3d.h"
 #include "Model3d.h"
+#include "LineMesh3d.h"
+#include "Line.h"
 #include "Ray.h"
 #include "LambertianMaterial.h"
+#include "LineMaterial.h"
 #include <vector>
 #include <array>
 
@@ -55,6 +60,13 @@ Entity::Entity(Vector3 pos, Vector3 dir, Vector3 up) : pos(pos), dir(dir), up(up
     auto boundingBoxMesh = new Mesh3d(vertices, triangles, material);
     boundingBoxModel = new Model3d(*boundingBoxMesh);
     bbox = BoundingBox(Vector3(-w/2, -d/2, -h/2), Vector3(w/2, d/2, h/2));
+    auto d1 = std::max(w, d);
+    auto d2 = std::max(d, h);
+
+    auto material2 = new LineMaterial({ 0, 0.8, 0.1 });
+    std::vector<Vector3> vs({ { 0, 0, 0 }, { 1, 1, 1 }, { -1, -1, -1 }});
+    LineMesh3d* lineMesh = new LineMesh3d(vs, { { 1, 2 }, { 0, 2 } }, material2);
+    boundingBoxModel->addMesh(*lineMesh);
 }
 
 

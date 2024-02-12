@@ -1,5 +1,6 @@
 #pragma once
 
+#define NOMINMAX
 #include "Camera.h"
 #include "ShaderProgramManager.h"
 #include "ShaderProgram.h"

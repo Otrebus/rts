@@ -67,9 +67,6 @@
     <ClCompile Include="TerrainMesh.cpp">
       <Filter>Source files\Models</Filter>
     </ClCompile>
-    <ClCompile Include="Line3d.cpp">
-      <Filter>Source files\Models</Filter>
-    </ClCompile>
     <ClCompile Include="Ray.cpp">
       <Filter>Source files\Math</Filter>
     </ClCompile>
@@ -90,6 +87,13 @@
     </ClCompile>
     <ClCompile Include="UserInterface.cpp">
       <Filter>Source files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Line.cpp" />
+    <ClCompile Include="LineMesh3d.cpp">
+      <Filter>Source files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="LineMaterial.cpp">
+      <Filter>Source files\Materials</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -153,9 +157,6 @@
     <ClInclude Include="TerrainMesh.h">
       <Filter>Source files\Models</Filter>
     </ClInclude>
-    <ClInclude Include="Line3d.h">
-      <Filter>Source files\Models</Filter>
-    </ClInclude>
     <ClInclude Include="Ray.h">
       <Filter>Source files\Math</Filter>
     </ClInclude>
@@ -178,6 +179,13 @@
       <Filter>Source files\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Main.h" />
+    <ClInclude Include="Line.h" />
+    <ClInclude Include="LineMesh3d.h">
+      <Filter>Source files\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="LineMaterial.h">
+      <Filter>Source files\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="lambertian.frag">

@@ -1,5 +1,6 @@
 #pragma once
 
+#define NOMINMAX
 #include "Vector3.h"
 #include <vector>
 #include <GL/gl3w.h>
