@@ -61,9 +61,9 @@ Shader* Line3d::vertexShader = nullptr;
 // Todo: solve this more elegantly with some base class or something
 
 
-Line2d::Line2d() : VAO(0), VBO(0) {}
+Line2d::Line2d() : VAO(0), VBO(0), color({0.85, 0, 0}) {}
 
-Line2d::Line2d(const std::vector<Vector2>& vertices) : VAO(0), VBO(0) {
+Line2d::Line2d(const std::vector<Vector2>& vertices) : VAO(0), VBO(0),color({0.85, 0, 0}) {
         for (const auto& vertex : vertices) {
             vertexData.push_back(vertex.x);
             vertexData.push_back(vertex.y);
@@ -100,6 +100,7 @@ void Line2d::draw() {
     //program->use();
 
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)(&identityMatrix.m_val));
+    glUniform3fv(glGetUniformLocation(program->getId(), "Kd"), 1, (float*)(&color));
     glBindVertexArray(VAO);
     glDrawArrays(GL_LINE_STRIP, 0, vertexData.size()/2);
 }

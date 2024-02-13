@@ -45,6 +45,7 @@ private:
     std::vector<float> vertexData;
     Scene* scene;
 
+    Vector3 color;
     ShaderProgram* program;
 
     static Shader* fragmentShader;

@@ -36,8 +36,8 @@ public:
     virtual void draw();
     virtual void updateUniforms();
 
-    void setDirection(Vector3 dir, Vector3 up);
-    void setPosition(Vector3 pos);
+    virtual void setDirection(Vector3 dir, Vector3 up);
+    virtual void setPosition(Vector3 pos);
 
     Material* getMaterial() const;
 };

@@ -216,6 +216,7 @@
   <ItemGroup>
     <None Include="geometryShader.geom" />
     <None Include="lambertian.frag" />
+    <None Include="lineModel.vert" />
     <None Include="terrain.frag" />
     <None Include="terrain.vert" />
     <None Include="texture.frag" />

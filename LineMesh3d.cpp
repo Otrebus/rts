@@ -8,7 +8,7 @@
 LineMesh3d::LineMesh3d() : pos({ 0, 0, 0 }), dir({ 1, 0, 0 }), up({ 0, 0, 1 })
 {
     if(!vertexShader)
-        vertexShader = new Shader("line.vert", GL_VERTEX_SHADER);
+        vertexShader = new Shader("lineModel.vert", GL_VERTEX_SHADER);
     //if(!geometryShader)
     //    geometryShader = new Shader("geometryShader.geom", GL_GEOMETRY_SHADER);
 }
@@ -20,7 +20,7 @@ LineMesh3d::LineMesh3d(std::vector<Vector3> vertices, std::vector<std::pair<int,
     this->v = vertices;
     this->lines = lines;
     if(!vertexShader)
-        vertexShader = new Shader("line.vert", GL_VERTEX_SHADER);
+        vertexShader = new Shader("lineModel.vert", GL_VERTEX_SHADER);
     //if(!geometryShader)
     //    geometryShader = new Shader("geometryShader.geom", GL_GEOMETRY_SHADER);
 }
@@ -87,7 +87,6 @@ void LineMesh3d::updateUniforms()
 
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "modelViewMatrix"), 1, GL_TRUE, (float*)matrix.m_val);
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "projectionMatrix"), 1, GL_TRUE, (float*)perspM.m_val);
-    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "normalMatrix"), 1, GL_TRUE, (float*)getNormalMatrix(matrix).m_val);
 
     this->material->updateUniforms(scene);
 }

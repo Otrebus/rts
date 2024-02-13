@@ -64,8 +64,8 @@ Entity::Entity(Vector3 pos, Vector3 dir, Vector3 up) : pos(pos), dir(dir), up(up
     auto d2 = std::max(d, h);
 
     auto material2 = new LineMaterial({ 0, 0.8, 0.1 });
-    std::vector<Vector3> vs({ { 0, 0, 0 }, { 1, 1, 1 }, { -1, -1, -1 }});
-    LineMesh3d* lineMesh = new LineMesh3d(vs, { { 1, 2 }, { 0, 2 } }, material2);
+    std::vector<Vector3> vs({ { w/2, 0, 0 }, { (w*3.f)/4, 0, 0 }, { w*(3.f/4 - 1.f/10), w*1.f/10, 0 }, { w*(3.f/4 - 1.f/10), -w*1.f/10, 0 } });
+    LineMesh3d* lineMesh = new LineMesh3d(vs, { { 0, 1 }, { 1, 2 }, { 1, 3 } }, material2);
     boundingBoxModel->addMesh(*lineMesh);
 }
 

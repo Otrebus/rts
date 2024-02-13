@@ -11,5 +11,7 @@
 - Work out memory leaks
 + Add entity system and selection mechanics (point/box)
 - Implement path finding
-+ Triangle picking doesn't pick the closest triangle
+- Triangle picking doesn't pick the closest triangle
 - Figure out mesh ownership
+- Review the two vertex shaders for lines, if we can unify them
++ Work out the relationship between mesh3d and linemesh3d, the latter inherits a bunch of stuff it doesn't need from the former, they should inherit from a common base model or something

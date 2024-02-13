@@ -212,6 +212,9 @@
     <None Include="terrain.vert">
       <Filter>Shaders\Vertex shaders</Filter>
     </None>
+    <None Include="lineModel.vert">
+      <Filter>Shaders\Vertex shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">
