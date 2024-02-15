@@ -14,7 +14,7 @@ LineMesh3d::LineMesh3d() : pos({ 0, 0, 0 }), dir({ 1, 0, 0 }), up({ 0, 0, 1 })
 }
 
 
-LineMesh3d::LineMesh3d(std::vector<Vector3> vertices, std::vector<std::pair<int, int>> lines, Material* material) : pos({ 0, 0, 0 }), dir({ 1, 0, 0 }), up({ 0, 0, 1 })
+LineMesh3d::LineMesh3d(std::vector<Vector3> vertices, std::vector<std::pair<int, int>> lines, Material* material, int lineWidth) : pos({ 0, 0, 0 }), dir({ 1, 0, 0 }), up({ 0, 0, 1 }), lineWidth(lineWidth)
 {
     this->material = material;
     this->v = vertices;
@@ -66,6 +66,7 @@ void LineMesh3d::draw()
     scene->setShaderProgram(program);
     program->use();
 
+    glLineWidth(2);
     glBindVertexArray(VAO);
     glDrawElements(GL_LINES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);

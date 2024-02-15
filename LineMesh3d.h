@@ -17,7 +17,6 @@ public:
     std::vector<Vector3> v;
     std::vector<std::pair<int, int>> lines;
     std::vector<GLuint> indices;
-    Material* material;
 
     static Shader* vertexShader;
     static Shader* geometryShader;
@@ -27,7 +26,9 @@ public:
     GLuint VBO, VAO, EBO;
     Scene* scene;
 
-    LineMesh3d(std::vector<Vector3> vertices, std::vector<std::pair<int, int>> lines, Material* material);
+    int lineWidth;
+
+    LineMesh3d(std::vector<Vector3> vertices, std::vector<std::pair<int, int>> lines, Material* material, int lineWidth = 1);
     LineMesh3d();
 
     virtual void setUp(Scene* scene);

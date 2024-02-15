@@ -64,8 +64,8 @@ Entity::Entity(Vector3 pos, Vector3 dir, Vector3 up) : pos(pos), dir(dir), up(up
     auto d2 = std::max(d, h);
 
     auto material2 = new LineMaterial({ 0, 0.8, 0.1 });
-    std::vector<Vector3> vs({ { w/2, 0, 0 }, { (w*3.f)/4, 0, 0 }, { w*(3.f/4 - 1.f/10), w*1.f/10, 0 }, { w*(3.f/4 - 1.f/10), -w*1.f/10, 0 } });
-    LineMesh3d* lineMesh = new LineMesh3d(vs, { { 0, 1 }, { 1, 2 }, { 1, 3 } }, material2);
+    std::vector<Vector3> vs({ { w/2, 0, 0 }, { w, 0, 0 }, { (1.f - 0.25f)*w, w*0.25f, 0 }, { w*(1.0f - 0.25f), -w*0.25f, 0 }, { 0, 0, h/2 }, { 0, 0, h }, { 0, h*0.25f, (1.f - 0.25f)*h }, { 0, -h*0.25f, h*(1.0f - 0.25f) } });
+    LineMesh3d* lineMesh = new LineMesh3d(vs, { { 0, 1 }, { 1, 2 }, { 1, 3 }, { 4, 5 }, { 5, 6 }, { 5, 7 } }, material2, 2);
     boundingBoxModel->addMesh(*lineMesh);
 }
 
@@ -106,6 +106,8 @@ void Entity::setSelected(bool selected)
     auto meshes = boundingBoxModel->getMeshes();
     auto& kd = ((LambertianMaterial*) meshes[0]->getMaterial())->Kd;
     kd = selected ? Vector3(0.8, 0, 0) : Vector3(0, 0.8, 0);
+    auto& kd2 = ((LineMaterial*) meshes[1]->getMaterial())->Kd;
+    kd2 = selected ? Vector3(0.8, 0, 0) : Vector3(0, 0.8, 0);
 }
 
 
