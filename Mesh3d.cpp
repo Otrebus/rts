@@ -4,7 +4,7 @@
 #include "Matrix4.h"
 #include "Math.h"
 
-Mesh3d::Mesh3d() : pos({ 0, 0, 0 }), dir({ 1, 0, 0 }), up({ 0, 0, 1 })
+Mesh3d::Mesh3d()
 {
     if(!vertexShader)
         vertexShader = new Shader("vertexShader.vert", GL_VERTEX_SHADER);
@@ -13,7 +13,7 @@ Mesh3d::Mesh3d() : pos({ 0, 0, 0 }), dir({ 1, 0, 0 }), up({ 0, 0, 1 })
 }
 
 
-Mesh3d::Mesh3d(std::vector<Vertex3d> vertices, std::vector<int> triangles, Material* material) : pos({ 0, 0, 0 }), dir({ 1, 0, 0 }), up({ 0, 0, 1 })
+Mesh3d::Mesh3d(std::vector<Vertex3d> vertices, std::vector<int> triangles, Material* material)
 {
     this->material = material;
     this->v = vertices;
@@ -92,22 +92,6 @@ Shader* Mesh3d::getGeometryShader() const
 Shader* Mesh3d::getVertexShader() const
 {
     return vertexShader;
-}
-
-void Mesh3d::setDirection(Vector3 dir, Vector3 up)
-{
-    this->dir = dir;
-    this->up = up;
-}
-
-void Mesh3d::setPosition(Vector3 pos)
-{
-    this->pos = pos;
-}
-
-Material* Mesh3d::getMaterial() const
-{
-    return material;
 }
 
 Shader* Mesh3d::vertexShader = nullptr;

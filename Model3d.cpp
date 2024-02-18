@@ -14,7 +14,7 @@ Model3d::Model3d(std::string filename)
 }
 
 
-Model3d::Model3d(Mesh3d& mesh)
+Model3d::Model3d(Mesh& mesh)
 {
     addMesh(mesh);
 }
@@ -30,7 +30,7 @@ Model3d::~Model3d()
         delete mat;
 }
 
-void Model3d::addMesh(Mesh3d& mesh)
+void Model3d::addMesh(Mesh& mesh)
 {
     meshes.push_back(&mesh);
 }
@@ -79,7 +79,7 @@ void Model3d::setDirection(Vector3 dir, Vector3 up)
         mesh->setDirection(dir, up);
 }
 
-const std::vector<Mesh3d*>& Model3d::getMeshes() const
+const std::vector<Mesh*>& Model3d::getMeshes() const
 {
     return meshes;
 }

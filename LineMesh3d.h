@@ -9,8 +9,9 @@
 #include "Camera.h"
 #include "Scene.h"
 #include "Mesh3d.h"
+#include "Mesh.h"
 
-class LineMesh3d : public Mesh3d
+class LineMesh3d : public Mesh
 {
 public:
 
@@ -21,27 +22,17 @@ public:
     static Shader* vertexShader;
     static Shader* geometryShader;
 
-    Vector3 dir, up, pos;
+    void setUp(Scene* scene);
+    void tearDown(Scene* scene);
 
-    GLuint VBO, VAO, EBO;
-    Scene* scene;
+    Shader* getVertexShader() const;
+    Shader* getGeometryShader() const;
+
+    void draw();
+    void updateUniforms();
 
     int lineWidth;
 
     LineMesh3d(std::vector<Vector3> vertices, std::vector<std::pair<int, int>> lines, Material* material, int lineWidth = 1);
     LineMesh3d();
-
-    virtual void setUp(Scene* scene);
-    virtual void tearDown(Scene* scene);
-
-    virtual Shader* getVertexShader() const;
-    virtual Shader* getGeometryShader() const;
-
-    virtual void draw();
-    virtual void updateUniforms();
-
-    void setDirection(Vector3 dir, Vector3 up);
-    void setPosition(Vector3 pos);
-
-    Material* getMaterial() const;
 };

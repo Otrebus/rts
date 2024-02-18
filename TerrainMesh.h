@@ -26,8 +26,4 @@ public:
     using Mesh3d::Mesh3d;
 
     void setUp(Scene* scene);
-    //void tearDown(Scene* scene);
-
-    //void draw();
-    //void updateUniforms();
 };

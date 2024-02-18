@@ -5,7 +5,7 @@
 #include "Math.h"
 #include "Vector3.h"
 
-LineMesh3d::LineMesh3d() : pos({ 0, 0, 0 }), dir({ 1, 0, 0 }), up({ 0, 0, 1 })
+LineMesh3d::LineMesh3d()
 {
     if(!vertexShader)
         vertexShader = new Shader("lineModel.vert", GL_VERTEX_SHADER);
@@ -14,7 +14,7 @@ LineMesh3d::LineMesh3d() : pos({ 0, 0, 0 }), dir({ 1, 0, 0 }), up({ 0, 0, 1 })
 }
 
 
-LineMesh3d::LineMesh3d(std::vector<Vector3> vertices, std::vector<std::pair<int, int>> lines, Material* material, int lineWidth) : pos({ 0, 0, 0 }), dir({ 1, 0, 0 }), up({ 0, 0, 1 }), lineWidth(lineWidth)
+LineMesh3d::LineMesh3d(std::vector<Vector3> vertices, std::vector<std::pair<int, int>> lines, Material* material, int lineWidth) : lineWidth(lineWidth)
 {
     this->material = material;
     this->v = vertices;
@@ -102,21 +102,6 @@ Shader* LineMesh3d::getVertexShader() const
     return vertexShader;
 }
 
-void LineMesh3d::setDirection(Vector3 dir, Vector3 up)
-{
-    this->dir = dir;
-    this->up = up;
-}
-
-void LineMesh3d::setPosition(Vector3 pos)
-{
-    this->pos = pos;
-}
-
-Material* LineMesh3d::getMaterial() const
-{
-    return material;
-}
 
 Shader* LineMesh3d::vertexShader = nullptr;
 Shader* LineMesh3d::geometryShader = nullptr;

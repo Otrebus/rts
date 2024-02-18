@@ -7,22 +7,16 @@
 #include "Vector3.h"
 #include "Camera.h"
 #include "Scene.h"
+#include "Mesh.h"
 
-class Mesh3d
+class Mesh3d : public Mesh
 {
 public:
-
     std::vector<Vertex3d> v;
     std::vector<int> triangles;
-    Material* material;
 
     static Shader* vertexShader;
     static Shader* geometryShader;
-
-    Vector3 dir, up, pos;
-
-    GLuint VBO, VAO, EBO;
-    Scene* scene;
 
     Mesh3d(std::vector<Vertex3d> vertices, std::vector<int> triangles, Material* material);
     Mesh3d();
@@ -33,11 +27,6 @@ public:
     virtual Shader* getVertexShader() const;
     virtual Shader* getGeometryShader() const;
 
-    virtual void draw();
-    virtual void updateUniforms();
-
-    virtual void setDirection(Vector3 dir, Vector3 up);
-    virtual void setPosition(Vector3 pos);
-
-    Material* getMaterial() const;
+    void draw();
+    void updateUniforms();
 };
