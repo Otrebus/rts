@@ -21,6 +21,12 @@ Mesh3d::Mesh3d(std::vector<Vertex3d> vertices, std::vector<int> triangles, Mater
 }
 
 
+Mesh3d::~Mesh3d()
+{
+    std::cout << "Mesh3d destructor" << std::endl;
+}
+
+
 void Mesh3d::setUp(Scene* s)
 {
     scene = s;

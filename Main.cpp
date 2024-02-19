@@ -310,6 +310,11 @@ int main()
         glfwSwapBuffers(window);
     }
 
+    for(auto& e : entities)
+    {
+        delete e;
+    }
+
     model.tearDown(&scene);
     mesh.tearDown(&scene);
     mesh2.tearDown(&scene);

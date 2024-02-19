@@ -16,3 +16,5 @@
 - Review the two vertex shaders for lines, if we can unify them
 + Work out the relationship between mesh3d and linemesh3d, the latter inherits a bunch of stuff it doesn't need from the former, they should inherit from a common base model or something
 + Fix a better way of assigning a color to selected bounding boxes
+- Make sure derived classes have virtual destructors
+- Work out ownership of resources

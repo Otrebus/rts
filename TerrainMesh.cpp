@@ -14,6 +14,10 @@ TerrainMesh::TerrainMesh(std::vector<MeshVertex3d> vertices, std::vector<int> tr
         terrainVertexShader = new Shader("terrain.vert", GL_VERTEX_SHADER);
 }
 
+TerrainMesh::~TerrainMesh()
+{
+}
+
 void TerrainMesh::setUp(Scene* s)
 {
     scene = s;

@@ -16,6 +16,7 @@ public:
     Material* material;
 
     Mesh();
+    virtual ~Mesh();
 
     static Shader* vertexShader;
     static Shader* geometryShader;

@@ -14,6 +14,7 @@
 class LineMesh3d : public Mesh
 {
 public:
+    ~LineMesh3d();
 
     std::vector<Vector3> v;
     std::vector<std::pair<int, int>> lines;

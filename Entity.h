@@ -9,6 +9,7 @@
 #include "ShaderProgram.h"
 #include "BoundingBox.h"
 #include "Mesh3d.h"
+#include "LineMesh3d.h"
 
 
 class Model3d;
@@ -33,6 +34,8 @@ public:
     void setSelected(bool selected);
 
     Model3d* boundingBoxModel;
+    Mesh* boundingBoxMesh;
+    Mesh* lineMesh;
 
     BoundingBox bbox;
 

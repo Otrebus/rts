@@ -57,7 +57,7 @@ Entity::Entity(Vector3 pos, Vector3 dir, Vector3 up) : pos(pos), dir(dir), up(up
     }
 
     auto material = new LambertianMaterial({ 0, 0.8, 0.1 });
-    auto boundingBoxMesh = new Mesh3d(vertices, triangles, material);
+    boundingBoxMesh = new Mesh3d(vertices, triangles, material);
     boundingBoxModel = new Model3d(*boundingBoxMesh);
     bbox = BoundingBox(Vector3(-w/2, -d/2, -h/2), Vector3(w/2, d/2, h/2));
     auto d1 = std::max(w, d);
@@ -65,8 +65,18 @@ Entity::Entity(Vector3 pos, Vector3 dir, Vector3 up) : pos(pos), dir(dir), up(up
 
     auto material2 = new LineMaterial({ 0, 0.8, 0.1 });
     std::vector<Vector3> vs({ { w/2, 0, 0 }, { w, 0, 0 }, { (1.f - 0.25f)*w, w*0.25f, 0 }, { w*(1.0f - 0.25f), -w*0.25f, 0 }, { 0, 0, h/2 }, { 0, 0, h }, { 0, h*0.25f, (1.f - 0.25f)*h }, { 0, -h*0.25f, h*(1.0f - 0.25f) } });
-    LineMesh3d* lineMesh = new LineMesh3d(vs, { { 0, 1 }, { 1, 2 }, { 1, 3 }, { 4, 5 }, { 5, 6 }, { 5, 7 } }, material2, 2);
+    lineMesh = new LineMesh3d(vs, { { 0, 1 }, { 1, 2 }, { 1, 3 }, { 4, 5 }, { 5, 6 }, { 5, 7 } }, material2, 2);
     boundingBoxModel->addMesh(*lineMesh);
+}
+
+
+Entity::~Entity()
+{
+    //delete boundingBoxModel;
+    //delete boundingBoxMesh;
+    std::cout << "deleting linemesh" << std::endl;
+    delete lineMesh;
+    std::cout << "deleted linemesh" << std::endl;
 }
 
 
@@ -121,9 +131,4 @@ void Entity::updateUniforms()
     boundingBoxModel->setPosition(pos);
     boundingBoxModel->setDirection(dir, up);
     boundingBoxModel->updateUniforms();
-}
-
-
-Entity::~Entity()
-{
 }
