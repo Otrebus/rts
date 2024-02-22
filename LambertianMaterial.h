@@ -11,7 +11,7 @@ class LambertianMaterial : public Material
 {
 public:
     LambertianMaterial(Vector3 Kd = Vector3(0.0, 0.0, 0.0));
-    ~LambertianMaterial();
+    virtual ~LambertianMaterial();
 
     void updateUniforms(Scene* scene);
     void use();

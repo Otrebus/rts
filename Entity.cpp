@@ -74,9 +74,7 @@ Entity::~Entity()
 {
     //delete boundingBoxModel;
     //delete boundingBoxMesh;
-    std::cout << "deleting linemesh" << std::endl;
     delete lineMesh;
-    std::cout << "deleted linemesh" << std::endl;
 }
 
 

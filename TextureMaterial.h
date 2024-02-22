@@ -11,7 +11,8 @@ class TextureMaterial : public Material
 {
 public:
     TextureMaterial(const std::string& textureFile);
-    ~TextureMaterial();
+    virtual ~TextureMaterial();
+
     void updateUniforms(Scene* scene);
     void use();
 

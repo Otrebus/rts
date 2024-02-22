@@ -75,10 +75,7 @@ QueuedInput InputQueue::pop()
     }
         
     if(input.type == QueuedInputType::MousePos)
-    {
-        // std::cout << input.posX << " " << input.posY << std::endl;
         posX = input.posX, posY = input.posY;
-    }
     return input;
 }
 

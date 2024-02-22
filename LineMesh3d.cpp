@@ -16,7 +16,6 @@ LineMesh3d::LineMesh3d()
 
 LineMesh3d::~LineMesh3d()
 {
-    std::cout << "Linemesh destructor" << std::endl;
 }
 
 

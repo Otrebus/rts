@@ -105,7 +105,6 @@ int main()
     initInput(window);
 
     Camera cam({ 0, 0, 4 }, { 0, 1, -1 }, { 0, 0, 1 }, 59, real(xres)/float(yres));
-    // Camera cam({ 0, -1, 0 }, { 0, 1, 0 },  { 0, 0, 1 }, 59, real(xres)/float(yres));
 
     real time = glfwGetTime();
 
@@ -136,19 +135,12 @@ int main()
     //Entity entity({ 0.5, 0.5, 3.07 }, { 1, 0, 0 }, { 0, 0, 1 });
 
     for(int x = 0; x < 10; x++)
-    {
         for(int y = 0; y < 10; y++)
-        {
             for(int z = 0; z < 10; z++)
-            {
                 entities.push_back(new Entity({ 0.5f+x*0.1f, 0.5f+y*0.1f, 3.07f+z*0.1f }, { 1, 0, 0 }, { 0, 0, 1 }));
-            }
-        }
-    }
+
     for(auto& e : entities)
-    {
         e->setUp(&scene);
-    }
 
     model.setUp(&scene);
     mesh.setUp(&scene);
@@ -221,17 +213,6 @@ int main()
         auto inputs = handleInput(window, prevTime, time, cameraControl, terrain);
         glfwPollEvents();
 
-        //entity.pos += Vector3(0.1, 0, 0)*dt;
-        auto a = dt*1;
-
-        //entity.dir *= Matrix4(
-        //    std::cos(a), -std::sin(a), 0, 0,
-        //    std::sin(a), std::cos(a), 0, 0,
-        //    0, 0, 0, 0,
-        //    0, 0, 0, 0
-        //);
-
-
         auto isCameraInput = [] (Input* input)
         {
             auto key = input->key;
@@ -255,17 +236,6 @@ int main()
                 mouseX = input->posX;
                 mouseY = input->posY;
             }
-
-            //if(input->stateStart == InputType::MousePress && input->key == GLFW_MOUSE_BUTTON_3)
-            //{
-            //    Vector3 dir = getViewRay(cam, resToScreenX(mouseX, xres), resToScreenY(mouseY, yres));
-            //    dir.normalize();
-            //    line = Line3d({ cam.pos, cam.pos+dir });
-            //    line.setUp(&scene);
-
-            //    terrain.intersect(Ray(cam.pos, dir));
-            //    //entity.intersectBoundingBox(Ray(cam.pos, dir));
-            //}
 
             else if(isGraphicsInput(input))
             {
@@ -311,9 +281,7 @@ int main()
     }
 
     for(auto& e : entities)
-    {
         delete e;
-    }
 
     model.tearDown(&scene);
     mesh.tearDown(&scene);

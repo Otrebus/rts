@@ -12,7 +12,7 @@ class LineMaterial : public Material
 {
 public:
     LineMaterial(Vector3 Kd = Vector3(0.0, 0.0, 0.0));
-    ~LineMaterial();
+    virtual ~LineMaterial();
 
     void updateUniforms(Scene* scene);
     void use();

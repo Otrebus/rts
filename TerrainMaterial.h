@@ -11,7 +11,8 @@ class TerrainMaterial : public Material
 {
 public:
     TerrainMaterial();
-    ~TerrainMaterial();
+    virtual ~TerrainMaterial();
+
     Shader* getShader();
     void updateUniforms(Scene* scene);
     void use();

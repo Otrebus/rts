@@ -6,7 +6,6 @@ Mesh::Mesh() : pos({ 0, 0, 0 }), dir({ 1, 0, 0 }), up({ 0, 0, 1 })
 
 Mesh::~Mesh()
 {
-    std::cout << "Mesh destructor" << std::endl;
 }
 
 void Mesh::setDirection(Vector3 dir, Vector3 up)
