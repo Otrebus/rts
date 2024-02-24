@@ -24,11 +24,13 @@ Model3d::Model3d()
 {
 }
 
+
 Model3d::~Model3d()
 {
     for(auto mat : materials)
         delete mat;
 }
+
 
 void Model3d::addMesh(Mesh& mesh)
 {
@@ -59,6 +61,7 @@ void Model3d::draw()
     }
 }
 
+
 void Model3d::updateUniforms()
 {
     for(auto& mesh : meshes)
@@ -78,6 +81,7 @@ void Model3d::setDirection(Vector3 dir, Vector3 up)
     for(auto& mesh : meshes)
         mesh->setDirection(dir, up);
 }
+
 
 const std::vector<Mesh*>& Model3d::getMeshes() const
 {

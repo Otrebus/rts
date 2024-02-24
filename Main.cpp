@@ -15,6 +15,7 @@
 #include "Model3d.h"
 #include "TextureMaterial.h"
 #include "Input.h"
+#include "Tank.h"
 #include "Scene.h"
 #include <queue>
 #include "Terrain.h"
@@ -134,10 +135,10 @@ int main()
 
     //Entity entity({ 0.5, 0.5, 3.07 }, { 1, 0, 0 }, { 0, 0, 1 });
 
-    for(int x = 0; x < 10; x++)
-        for(int y = 0; y < 10; y++)
-            for(int z = 0; z < 10; z++)
-                entities.push_back(new Entity({ 0.5f+x*0.1f, 0.5f+y*0.1f, 3.07f+z*0.1f }, { 1, 0, 0 }, { 0, 0, 1 }));
+    //for(int x = 0; x < 10; x++)
+    //    for(int y = 0; y < 10; y++)
+    //        for(int z = 0; z < 10; z++)
+    //            entities.push_back(new Entity({ 0.5f+x*0.1f, 0.5f+y*0.1f, 3.07f+z*0.1f }, { 1, 0, 0 }, { 0, 0, 1 }));
 
     for(auto& e : entities)
         e->setUp(&scene);
@@ -159,6 +160,8 @@ int main()
 
     Terrain terrain("Heightmap.bmp", &scene);
     CameraControl cameraControl(&cam, &terrain, true);
+    Tank tank({ 0.5f, 0.5f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 });
+    tank.setUp(&scene);
 
     auto moveSlow = false;
 
@@ -167,6 +170,9 @@ int main()
     checkError();
 
     UserInterface interface(&scene);
+
+    int frames = 0;
+    auto frameTime = glfwGetTime();
 
     while (!glfwWindowShouldClose(window)) {
 
@@ -187,6 +193,8 @@ int main()
         /*mesh.draw();
 
         mesh2.draw();*/
+
+        tank.draw();
 
         model.draw();
 
@@ -278,6 +286,12 @@ int main()
             delete input;
         }
         glfwSwapBuffers(window);
+        frames++;
+        if(frames == 10) {
+            std::cout << (glfwGetTime() - frameTime)/10 << std::endl;
+            frameTime = glfwGetTime();
+            frames = 0;
+        }
     }
 
     for(auto& e : entities)

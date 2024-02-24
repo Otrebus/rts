@@ -18,3 +18,4 @@
 + Fix a better way of assigning a color to selected bounding boxes
 - Make sure derived classes have virtual destructors
 - Work out ownership of resources
+- Move boundingbox mesh construction out of Entity

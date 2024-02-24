@@ -632,8 +632,23 @@ std::map<std::string, Material*> Model3d::readMaterialFile(const std::string& ma
         else if(acceptAnyCaseStr(parser, "tf"))
         {
             // We ignore any transmission filter
-            for(int i = 0; i < 3; i++)
-                expectReal(parser);
+            expectReal(parser);
+
+            if(!curmat)
+                throw ParseException("No current material specified"); // TODO: not really a parse exception
+        }
+        else if(acceptAnyCaseStr(parser, "d"))
+        {
+            // We ignore any optical density
+            expectReal(parser);
+
+            if(!curmat)
+                throw ParseException("No current material specified"); // TODO: not really a parse exception
+        }
+        else if(acceptAnyCaseStr(parser, "tr"))
+        {
+            // We ignore any transparency
+            expectReal(parser);
 
             if(!curmat)
                 throw ParseException("No current material specified"); // TODO: not really a parse exception
@@ -708,7 +723,7 @@ void Model3d::readFromFile(const std::string& file)
             if((v->texture == (tex ? textureCoords[tex-1] : Vector2(0, 0))) && v->normal == (normal ? normals[normal-1] : Vector3(0, 0, 0)))
                 return v;
         }
-        auto v = new ObjVertex(positions[position-1], normal ? normals[normal] : Vector3(0, 0, 0), tex ? textureCoords[tex] : Vector2(0, 0));
+        auto v = new ObjVertex(positions[position-1], normal ? normals[normal-1] : Vector3(0, 0, 0), tex ? textureCoords[tex-1] : Vector2(0, 0));
         smoothingVertices[group][position].push_back(v);
         return v;
     };
@@ -846,7 +861,7 @@ void Model3d::readFromFile(const std::string& file)
             else if(parser.accept("o"))
                 auto str = expectStr(parser);
             else if(parser.accept("vt"))
-                auto texturecoords = expectVtCoordinate(parser);
+                textureCoords.push_back(expectVtCoordinate(parser));
             else if(parser.accept("s")) // Smoothing group ending or starting
             {
                 auto [success, s1] = acceptInt(parser);

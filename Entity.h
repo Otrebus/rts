@@ -16,7 +16,8 @@ class Model3d;
 class Scene;
 
 
-class Entity {
+class Entity 
+{
 public:
     Entity(Vector3 pos, Vector3 dir, Vector3 up);
     ~Entity();
