@@ -44,4 +44,5 @@ public:
 	void intersect(const Ray& ray);
 	DrawMode getDrawMode() const;
 	std::pair<Vector3, Vector3> getBoundingBox() const;
+	real getHeight(real x, real y);
 };

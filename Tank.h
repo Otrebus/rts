@@ -21,7 +21,7 @@ class Scene;
 class Tank : public Entity
 {
 public:
-    Tank(Vector3 pos, Vector3 dir, Vector3 up);
+    Tank(Vector3 pos, Vector3 dir, Vector3 up, real width);
     virtual ~Tank();
 
     virtual void setUp(Scene* scene);

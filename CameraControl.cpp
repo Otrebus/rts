@@ -2,7 +2,7 @@
 #include "Input.h"
 
 CameraControl::CameraControl(Camera* cam, Terrain* terrain, bool followTerrain) :
-    panningX(0), panningY(0), panning(panning), cam(cam), terrain(terrain)
+    panningX(0), panningY(0), panning(panning), cam(cam), terrain(terrain), terrainDist(100)
 {
     //setAngle(0, 0);
     auto [p1, p2] = terrain->getBoundingBox();
@@ -86,7 +86,7 @@ void CameraControl::handleInput(const Input& input)
     }
     else if(followingTerrain && input.stateStart == InputType::ScrollOffset)
     {
-        terrainDist += input.posY*(moveSlow ? -0.01 : -0.1);
+        terrainDist += input.posY*(moveSlow ? -1 : -10);
         setPosFromTerrainPos();
     }
 
@@ -126,10 +126,10 @@ void CameraControl::setAngle(real theta, real phi) {
 
 void CameraControl::moveForward(real t) {
     if(!followingTerrain)
-        cam->pos += cam->dir*t;
+        cam->pos += cam->dir*t*100;
     else
     {
-        terrainPos += Vector3(0, 1, 0)*t;
+        terrainPos += Vector3(0, 1, 0)*t*100;
         setPosFromTerrainPos();
     }
 }
@@ -138,10 +138,10 @@ void CameraControl::moveForward(real t) {
 void CameraControl::moveRight(real t) {
     if(!followingTerrain)
     {
-        cam->pos -= cam->up%cam->dir*t;
+        cam->pos -= cam->up%cam->dir*t*100;
     }
     else {
-        terrainPos += Vector3(1, 0, 0)*t;
+        terrainPos += Vector3(1, 0, 0)*t*100;
         setPosFromTerrainPos();
     }
 }

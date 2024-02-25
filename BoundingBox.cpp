@@ -12,6 +12,8 @@ BoundingBox::~BoundingBox()
 
 BoundingBox::BoundingBox()
 {
+    c1 = { inf, inf, inf };
+    c2 = { -inf, -inf, -inf };
 }
 
 bool BoundingBox::intersect(const Ray& ray, real& tnear, real& tfar) const

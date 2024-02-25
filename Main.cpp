@@ -105,7 +105,7 @@ int main()
 
     initInput(window);
 
-    Camera cam({ 0, 0, 4 }, { 0, 1, -1 }, { 0, 0, 1 }, 59, real(xres)/float(yres));
+    Camera cam({ 0, 0, 100 }, { 0, 1, -1 }, { 0, 0, 1 }, 59, real(xres)/float(yres));
 
     real time = glfwGetTime();
 
@@ -135,18 +135,11 @@ int main()
 
     //Entity entity({ 0.5, 0.5, 3.07 }, { 1, 0, 0 }, { 0, 0, 1 });
 
-    //for(int x = 0; x < 10; x++)
-    //    for(int y = 0; y < 10; y++)
-    //        for(int z = 0; z < 10; z++)
-    //            entities.push_back(new Entity({ 0.5f+x*0.1f, 0.5f+y*0.1f, 3.07f+z*0.1f }, { 1, 0, 0 }, { 0, 0, 1 }));
 
-    for(auto& e : entities)
-        e->setUp(&scene);
-
-    model.setUp(&scene);
-    mesh.setUp(&scene);
-    mesh2.setUp(&scene);
-    line.setUp(&scene);
+    //model.setUp(&scene);
+    //mesh.setUp(&scene);
+    //mesh2.setUp(&scene);
+    //line.setUp(&scene);
     //entity.setUp(&scene);
 
     Line3d line1({ { 0, 0, 0 }, { 0, 1, 1 } });
@@ -160,8 +153,15 @@ int main()
 
     Terrain terrain("Heightmap.bmp", &scene);
     CameraControl cameraControl(&cam, &terrain, true);
-    Tank tank({ 0.5f, 0.5f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 });
+    Tank tank({ 0.5f, 0.5f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1);
     tank.setUp(&scene);
+
+    for(int x = 0; x < 10; x++)
+        for(int y = 0; y < 10; y++)
+            entities.push_back(new Entity({ real(x)+0.75f, real(y)+0.15f, terrain.getHeight(real(x)+0.75f, real(y)+0.15f) }, { 1, 0, 0 }, { 0, 0, 1 }));
+
+    for(auto& e : entities)
+        e->setUp(&scene);
 
     auto moveSlow = false;
 
@@ -196,7 +196,7 @@ int main()
 
         tank.draw();
 
-        model.draw();
+        //model.draw();
 
         terrain.draw();
         
@@ -204,7 +204,7 @@ int main()
         interface.setResolution(xres, yres);
         interface.draw();
 
-        line.draw();
+        //line.draw();
 
         //for(int i = 0; i < 1000000000; i++) {
         //    if(i % 100000000 == 0)
@@ -297,9 +297,9 @@ int main()
     for(auto& e : entities)
         delete e;
 
-    model.tearDown(&scene);
+    /*model.tearDown(&scene);
     mesh.tearDown(&scene);
-    mesh2.tearDown(&scene);
+    mesh2.tearDown(&scene);*/
 
     glfwTerminate();
     return 0;

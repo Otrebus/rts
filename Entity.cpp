@@ -21,7 +21,7 @@ Vector3 calcNormal(Vector3 a, Vector3 b, Vector3 c)
 
 Entity::Entity(Vector3 pos, Vector3 dir, Vector3 up) : pos(pos), dir(dir), up(up)
 {
-    real w = 0.022, h = 0.022, d = 0.022;
+    real w = 0.3, h = 0.3, d = 0.3;
 
     std::vector<Vector3> c = {
         { -w/2, -d/2, -h/2 }, // bottom-front-left

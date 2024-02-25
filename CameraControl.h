@@ -13,7 +13,7 @@ class CameraControl
 {
     int panningX, panningY;
     real prevX = NAN, prevY = NAN; // TODO: make this a vector instead
-    real terrainDist = 1;
+    real terrainDist;
 
     Vector3 terrainPos;
 

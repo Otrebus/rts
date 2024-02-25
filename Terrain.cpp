@@ -15,21 +15,21 @@ TerrainMesh* Terrain::createMesh(std::string fileName)
     triangleIndices.clear();
 
     auto H = [&colors, &width, &height] (int x, int y) {
-        return colors[width*3*(height-y-1)+x*3]/255.0/10;
+        return colors[width*3*(height-y-1)+x*3]/255.0*width/10;
     };
 
     for (int y = 0; y < height; y++)
     {
         for(int x = 0; x < width; x++)
         {
-            real X = x/(width-1.0f);
-            real Y = y/(height-1.0f);
+            real X = x;
+            real Y = y;
 
             auto fx = x == 0, lx = x == width-1;
             auto fy = y == 0, ly = y == height-1;
 
-            auto dx = ((!lx ? H(x+1, y) : H(x, y)) - (!fx ? H(x-1, y) : H(x, y)))/((!fx + !lx)*1./(width-1.));
-            auto dy = ((!ly ? H(x, y+1) : H(x, y)) - (!fy ? H(x, y-1) : H(x, y)))/((!fy + !ly)*1./(height-1.));
+            auto dx = ((!lx ? H(x+1, y) : H(x, y)) - (!fx ? H(x-1, y) : H(x, y)))/((!fx + !lx));
+            auto dy = ((!ly ? H(x, y+1) : H(x, y)) - (!fy ? H(x, y-1) : H(x, y)))/((!fy + !ly));
             real l = std::sqrt(dx*dx+dy*dy+1);
             points.push_back(Vector3(X, Y, H(x, y) + 3.0));
             vertices[width*y+x] = MeshVertex3d(X, Y, H(x, y) + 3.0, -dx/l, -dy/l, 1.0/l, x, y);
@@ -201,6 +201,30 @@ void Terrain::draw()
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
+real Terrain::getHeight(real x, real y)
+{
+    int xl = x, yl = y;
+
+    // TODO: could overflow, check
+    auto p1 = points[yl*width+xl];
+    auto p2 = points[yl*width+xl+1];
+    auto p3 = points[(yl+1)*width+xl+1];
+    auto p4 = points[(yl+1)*width+xl];
+
+    auto dx = x-xl, dy = y-yl;
+    Vector3 a, b, c;
+    if(dy < dx)
+        a = p1, b = p2, c = p3;
+    else
+        a = p1, b = p3, c = p4;
+
+    auto v1 = c-a, v2 = b-a, w = Vector3(x, y, 0), A = Vector3(0, 0, -1);
+
+
+    real z = v1*(v2%-(w-a))/(v1*(v2%-A));
+    return z;
+}
+
 void Terrain::setDrawMode(DrawMode d)
 {
     drawMode = d;
@@ -220,5 +244,5 @@ Terrain::DrawMode Terrain::getDrawMode() const
 
 std::pair<Vector3, Vector3> Terrain::getBoundingBox() const
 {
-    return { { 0, 0, 3 }, { 1, 1, 3 } };
+    return { { 0.f, 0.f, width/10.0f }, { real(width), real(height), width/10.0f } };
 }
