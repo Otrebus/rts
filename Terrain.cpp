@@ -201,7 +201,7 @@ void Terrain::draw()
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-real Terrain::getHeight(real x, real y)
+real Terrain::getHeight(real x, real y) const
 {
     int xl = x, yl = y;
 

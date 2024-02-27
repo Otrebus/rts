@@ -7,6 +7,7 @@
 #include "LineMesh3d.h"
 #include "Line.h"
 #include "Ray.h"
+#include "Terrain.h"
 #include "LambertianMaterial.h"
 #include "LineMaterial.h"
 #include <vector>
@@ -129,4 +130,50 @@ void Entity::updateUniforms()
     boundingBoxModel->setPosition(pos);
     boundingBoxModel->setDirection(dir, up);
     boundingBoxModel->updateUniforms();
+}
+
+
+void Entity::plant(const Terrain& terrain)
+{
+    auto x = Vector3(dir.x, dir.y, 0).normalized();
+    auto y = Vector3(-dir.y, dir.x, 0).normalized();
+    auto z = Vector3(0, 0, 1);
+
+    auto height = (bbox.c2.z-bbox.c1.z)/2;
+    auto width = (bbox.c2.x-bbox.c1.x)/2;
+    auto depth = (bbox.c2.y-bbox.c1.y)/2;
+
+    auto a = pos + x*width + y*depth;
+    auto b = pos - x*width + y*depth;
+    auto c = pos - x*width - y*depth;
+    auto d = pos + x*width - y*depth;
+
+    auto ah = terrain.getHeight(a.x, a.y);
+    auto bh = terrain.getHeight(b.x, b.y);
+    auto ch = terrain.getHeight(c.x, c.y);
+    auto dh = terrain.getHeight(d.x, d.y);
+
+    Vector3 A = Vector3(a.x, a.y, ah);
+    Vector3 B = Vector3(b.x, b.y, bh);
+    Vector3 C = Vector3(c.x, c.y, ch);
+    Vector3 D = Vector3(d.x, d.y, dh);
+
+    up = ((C-B)%(A-B)).normalized();
+    pos = Vector3(pos.x, pos.y, ((A+C)/2).z);
+    auto l = Vector3(0, 0, 1)%x;
+    dir = l%up;
+    setPosition(pos);
+    setDirection(dir.normalized(), up.normalized());
+}
+
+
+void Entity::setPosition(Vector3 pos)
+{
+    this->pos = pos;
+}
+
+void Entity::setDirection(Vector3 dir, Vector3 up)
+{
+    this->dir = dir;
+    this->up = up;
 }

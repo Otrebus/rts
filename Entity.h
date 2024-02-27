@@ -11,10 +11,8 @@
 #include "Mesh3d.h"
 #include "LineMesh3d.h"
 
-
 class Model3d;
 class Scene;
-
 
 class Entity 
 {
@@ -28,11 +26,14 @@ public:
     void setUp(Scene* scene);
     void updateUniforms();
 
-    Vector3 dir;
-    Vector3 up;
-    Vector3 pos;
-
     void setSelected(bool selected);
+
+    virtual void plant(const Terrain& terrain);
+
+    virtual void setPosition(Vector3 pos);
+    virtual void setDirection(Vector3 dir, Vector3 up);
+
+    Vector3 dir, up, pos;
 
     Model3d* boundingBoxModel;
     Mesh* boundingBoxMesh;

@@ -55,6 +55,7 @@ void Tank::setUp(Scene* scene)
     body->setUp(scene);
     turret->setUp(scene);
     gun->setUp(scene);
+    boundingBoxModel->setUp(scene);
 }
 
 
@@ -63,6 +64,7 @@ void Tank::updateUniforms()
     body->updateUniforms();
     turret->updateUniforms();
     gun->updateUniforms();
+    boundingBoxModel->updateUniforms();
 }
 
 
@@ -71,4 +73,23 @@ void Tank::draw()
     body->draw();
     turret->draw();
     gun->draw();
+}
+
+void Tank::setPosition(Vector3 pos)
+{
+    this->pos = pos;
+    body->setPosition(pos);
+    turret->setPosition(pos);
+    gun->setPosition(pos);
+    boundingBoxModel->setPosition(pos);
+}
+
+void Tank::setDirection(Vector3 dir, Vector3 up)
+{
+    this->dir = dir;
+    this->up = up;
+    body->setDirection(dir, up);
+    turret->setDirection(dir, up);
+    gun->setDirection(dir, up);
+    boundingBoxModel->setDirection(dir, up);
 }

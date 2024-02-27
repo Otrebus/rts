@@ -172,9 +172,10 @@ int main()
     UserInterface interface(&scene);
 
     int frames = 0;
-    auto frameTime = glfwGetTime();
+    real frameTime = 0;
 
     while (!glfwWindowShouldClose(window)) {
+        auto time = glfwGetTime();
 
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
@@ -195,6 +196,10 @@ int main()
         mesh2.draw();*/
 
         tank.draw();
+
+        tank.updateUniforms();
+
+
 
         //model.draw();
 
@@ -220,6 +225,12 @@ int main()
 
         auto inputs = handleInput(window, prevTime, time, cameraControl, terrain);
         glfwPollEvents();
+
+        
+        tank.setPosition(tank.pos + Vector3(.5, 1, 0).normalized()*dt);
+        tank.setDirection(Vector3(.5, 1, 0).normalized(), Vector3(0, 0, 1).normalized());
+
+        tank.plant(terrain);
 
         auto isCameraInput = [] (Input* input)
         {
@@ -287,11 +298,6 @@ int main()
         }
         glfwSwapBuffers(window);
         frames++;
-        if(frames == 10) {
-            std::cout << (glfwGetTime() - frameTime)/10 << std::endl;
-            frameTime = glfwGetTime();
-            frames = 0;
-        }
     }
 
     for(auto& e : entities)

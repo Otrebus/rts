@@ -29,6 +29,9 @@ public:
 
     virtual void draw();
 
+    void setPosition(Vector3 pos);
+    void setDirection(Vector3 dir, Vector3 up);
+
     Model3d* body;
     Model3d* turret;
     Model3d* gun;
