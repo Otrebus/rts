@@ -68,6 +68,9 @@ Entity::Entity(Vector3 pos, Vector3 dir, Vector3 up) : pos(pos), dir(dir), up(up
     std::vector<Vector3> vs({ { w/2, 0, 0 }, { w, 0, 0 }, { (1.f - 0.25f)*w, w*0.25f, 0 }, { w*(1.0f - 0.25f), -w*0.25f, 0 }, { 0, 0, h/2 }, { 0, 0, h }, { 0, h*0.25f, (1.f - 0.25f)*h }, { 0, -h*0.25f, h*(1.0f - 0.25f) } });
     lineMesh = new LineMesh3d(vs, { { 0, 1 }, { 1, 2 }, { 1, 3 }, { 4, 5 }, { 5, 6 }, { 5, 7 } }, material2, 2);
     boundingBoxModel->addMesh(*lineMesh);
+
+    boundingBoxModel->setPosition(pos);
+    boundingBoxModel->setDirection(dir, up);
 }
 
 
@@ -127,8 +130,6 @@ void Entity::setUp(Scene* scene)
 
 void Entity::updateUniforms()
 {
-    boundingBoxModel->setPosition(pos);
-    boundingBoxModel->setDirection(dir, up);
     boundingBoxModel->updateUniforms();
 }
 
@@ -170,10 +171,12 @@ void Entity::plant(const Terrain& terrain)
 void Entity::setPosition(Vector3 pos)
 {
     this->pos = pos;
+    boundingBoxModel->setPosition(pos);
 }
 
 void Entity::setDirection(Vector3 dir, Vector3 up)
 {
+    boundingBoxModel->setDirection(dir, up);
     this->dir = dir;
     this->up = up;
 }

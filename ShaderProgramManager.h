@@ -3,7 +3,8 @@
 #include "Shader.h"
 #include "ShaderProgram.h"
 #include "ShaderProgramManager.h"
-#include <unordered_map>
+#include <map>
+
 
 class ShaderProgramManager
 {
@@ -19,5 +20,6 @@ public:
     unsigned int getId();
     void use();
 
-    std::unordered_map<std::string, ShaderProgram*> programMap;
+    // Unordered map doesn't seem any faster for now
+    std::map<std::tuple<int, int, int>, ShaderProgram*> programMap;
 };

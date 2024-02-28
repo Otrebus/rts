@@ -1,7 +1,7 @@
 #include "Camera.h"
 #include "Input.h"
 
-Camera::Camera(Vector3 pos, Vector3 dir, Vector3 up, real fov=90, real ar=1) : pos(pos), dir(dir.normalized()), up(up), fov(fov), ar(ar)
+Camera::Camera(Vector3 pos, Vector3 dir, Vector3 up, real fov=90, real ar=1) : pos(pos), dir(dir.normalized()), up(up), fov(fov), ar(ar), matrixCached(false)
 {
     setUp(up);
 }
@@ -13,6 +13,8 @@ void Camera::setUp(Vector3 up)
 
 Matrix4 Camera::getMatrix()
 {
+    if(matrixCached)
+        return viewMatrix;
     float pi = 3.141592653589793;
     float a = std::tan(pi*fov/180/2);
     float n = -0.001, f = -1000.0;
@@ -43,5 +45,44 @@ Matrix4 Camera::getMatrix()
         0, 0, -1, 0
     );
 
-    return persp*proj*trans;
+    matrixCached = true;
+    return viewMatrix = persp*proj*trans;
+}
+
+
+void Camera::setPos(const Vector3& pos)
+{
+    this->pos = pos;
+    matrixCached = false;
+}
+
+void Camera::setDir(const Vector3& dir)
+{
+    this->dir = dir;
+    matrixCached = false;
+}
+
+const Vector3& Camera::getPos() const
+{
+    return pos;
+}
+
+const Vector3& Camera::getDir() const
+{
+    return dir;
+}
+
+const Vector3& Camera::getUp() const
+{
+    return up;
+}
+
+const real Camera::getAspectRatio() const
+{
+    return ar;
+}
+
+const real Camera::getFov() const
+{
+    return fov;
 }

@@ -158,7 +158,8 @@ int main()
 
     for(int x = 0; x < 10; x++)
         for(int y = 0; y < 10; y++)
-            entities.push_back(new Entity({ real(x)+0.75f, real(y)+0.15f, terrain.getHeight(real(x)+0.75f, real(y)+0.15f) }, { 1, 0, 0 }, { 0, 0, 1 }));
+            for(int z = 0; z < 10; z++)
+                entities.push_back(new Entity({ real(x)+0.75f, real(y)+0.15f, real(z) }, { 1, 0, 0 }, { 0, 0, 1 }));
 
     for(auto& e : entities)
         e->setUp(&scene);
@@ -175,7 +176,6 @@ int main()
     real frameTime = 0;
 
     while (!glfwWindowShouldClose(window)) {
-        auto time = glfwGetTime();
 
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
@@ -297,6 +297,7 @@ int main()
             delete input;
         }
         glfwSwapBuffers(window);
+        std::cout << 1/dt << std::endl;
         frames++;
     }
 

@@ -21,8 +21,6 @@ public:
     static Shader* vertexShader;
     static Shader* geometryShader;
 
-    Vector3 dir, up, pos;
-
     GLuint VBO, VAO, EBO;
     Scene* scene;
 
@@ -38,5 +36,16 @@ public:
     void setDirection(Vector3 dir, Vector3 up);
     void setPosition(Vector3 pos);
 
+    Matrix4 getTransformationMatrix();
+
     Material* getMaterial() const;
+
+    Vector3 getUp() const;
+    Vector3 getDir() const;
+    Vector3 getPos() const;
+
+private:
+    Vector3 dir, up, pos;
+    Matrix4 transformationMatrix;
+    bool matrixCached;
 };

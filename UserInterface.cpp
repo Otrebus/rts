@@ -161,7 +161,7 @@ void UserInterface::selectEntities(std::vector<Entity*> entities)
 
     for(auto e : entities)
     {
-        if(intersectsFrustum(camera->pos, v, *e, scene))
+        if(intersectsFrustum(camera->getPos(), v, *e, scene))
             e->setSelected(true); // TODO: clean
         else
             e->setSelected(false);
@@ -205,7 +205,7 @@ void UserInterface::handleInput(const Input& input, std::vector<Entity*> entitie
         {
             auto c1 = drawBoxc1;
             auto dir = getViewRay(*scene->getCamera(), c1.x, c1.y);
-            selectEntity(Ray(scene->getCamera()->pos, dir), entities);
+            selectEntity(Ray(scene->getCamera()->getPos(), dir), entities);
         }
         selectState = NotSelecting;
     }

@@ -87,8 +87,8 @@ const real eps = 1e-6;
 
 const Vector3& getViewRay(Camera& cam, real x, real y) // TODO: maybe should return a ray instead
 {
-    auto d = std::tan(pi*cam.fov/180/2);
-    return cam.dir + cam.up*y*d/cam.ar + (cam.dir%cam.up).normalized()*x*d;
+    auto d = std::tan(pi*cam.getFov()/180/2);
+    return cam.getDir() + cam.getUp()*y*d/cam.getAspectRatio() + (cam.getDir()%cam.getUp()).normalized()*x*d;
 }
 
 real resToScreenX(real x, int xres)

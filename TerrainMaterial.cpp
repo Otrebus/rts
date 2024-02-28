@@ -24,7 +24,7 @@ Shader* TerrainMaterial::getShader()
 
 void TerrainMaterial::updateUniforms(Scene* scene)
 {
-    glUniform3fv(glGetUniformLocation(scene->getShaderProgram()->getId(), "camPos"), 1, (GLfloat*) &scene->getCamera()->pos);
+    glUniform3fv(glGetUniformLocation(scene->getShaderProgram()->getId(), "camPos"), 1, (GLfloat*) &scene->getCamera()->getPos());
 }
 
 

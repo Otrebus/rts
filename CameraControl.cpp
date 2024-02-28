@@ -35,14 +35,14 @@ void CameraControl::changeMode(bool followingTerrain)
     if(followingTerrain)
     {
         setPosFromTerrainPos();
-        cam->dir = -Vector3(0, -1, 1).normalized();
-        cam->up = Vector3(0, 0, 1);
-        cam->up = (cam->dir%(cam->up%cam->dir)).normalized();
+        cam->setDir(-Vector3(0, -1, 1).normalized());
+        cam->setUp(Vector3(0, 0, 1));
+        //cam->up = (cam->dir%(cam->up%cam->dir)).normalized();
     }
     else
     {
-        auto theta = std::atan2(cam->dir.y, cam->dir.x);
-        auto phi = std::atan2(cam->dir.z, cam->dir.y);
+        auto theta = std::atan2(cam->getDir().y, cam->getDir().x);
+        auto phi = std::atan2(cam->getDir().z, cam->getDir().y);
         setAngle(theta, phi);
     }
 }
@@ -50,7 +50,7 @@ void CameraControl::changeMode(bool followingTerrain)
 
 void CameraControl::setPosFromTerrainPos()
 {
-    cam->pos = terrainPos + Vector3(0, -1, 1).normalized()*terrainDist;
+    cam->setPos(terrainPos + Vector3(0, -1, 1).normalized()*terrainDist);
 }
 
 
@@ -117,16 +117,16 @@ void CameraControl::setAngle(real theta, real phi) {
     this->theta = theta;
     this->phi = phi;
 
-    cam->up = Vector3(0, 0, 1);
+    Vector3 up(0, 0, 1);
     Vector3 h = f*std::sin(theta) + r*std::cos(theta);
-    cam->dir = cam->up*std::sin(phi) + h*std::cos(phi);
-    cam->up = (cam->dir%(cam->up%cam->dir)).normalized();
+    cam->setDir(up*std::sin(phi) + h*std::cos(phi));
+    cam->setUp(up);
 }
 
 
 void CameraControl::moveForward(real t) {
     if(!followingTerrain)
-        cam->pos += cam->dir*t*100;
+        cam->setPos(cam->getPos() + cam->getDir()*t*100);
     else
     {
         terrainPos += Vector3(0, 1, 0)*t*100;
@@ -138,7 +138,7 @@ void CameraControl::moveForward(real t) {
 void CameraControl::moveRight(real t) {
     if(!followingTerrain)
     {
-        cam->pos -= cam->up%cam->dir*t*100;
+        cam->setPos(cam->getPos() - cam->getUp()%cam->getDir()*t*100);
     }
     else {
         terrainPos += Vector3(1, 0, 0)*t*100;

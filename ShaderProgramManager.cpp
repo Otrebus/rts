@@ -10,14 +10,13 @@ ShaderProgramManager::~ShaderProgramManager()
 
 ShaderProgram* ShaderProgramManager::getProgram(Shader* fragmentShader, Shader* geometryShader, Shader* vertexShader)
 {
-    // This can be made faster if we just assign an id to each shader or something
-    auto str = fragmentShader->getFileName() + geometryShader->getFileName() + vertexShader->getFileName();
+    auto key = std::tuple(fragmentShader->getId(), geometryShader->getId(), vertexShader->getId());
 
-    if(auto it = programMap.find(str); it == programMap.end())
+    if(auto it = programMap.find(key); it == programMap.end())
     {
         auto shaderProgram = new ShaderProgram();
         shaderProgram->addShaders(*fragmentShader, *geometryShader, *vertexShader);
-        programMap[str] = shaderProgram;
+        programMap[key] = shaderProgram;
         return shaderProgram;
     }
     else
@@ -26,14 +25,13 @@ ShaderProgram* ShaderProgramManager::getProgram(Shader* fragmentShader, Shader* 
 
 ShaderProgram* ShaderProgramManager::getProgram(Shader* fragmentShader, Shader* vertexShader)
 {
-    // This can be made faster if we just assign an id to each shader or something
-    auto str = fragmentShader->getFileName() + vertexShader->getFileName();
+    auto key = std::tuple(fragmentShader->getId(), 0, vertexShader->getId());
 
-    if(auto it = programMap.find(str); it == programMap.end())
+    if(auto it = programMap.find(key); it == programMap.end())
     {
         auto shaderProgram = new ShaderProgram();
         shaderProgram->addShaders(*fragmentShader, *vertexShader);
-        programMap[str] = shaderProgram;
+        programMap[key] = shaderProgram;
         return shaderProgram;
     }
     else

@@ -86,10 +86,7 @@ void LineMesh3d::updateUniforms()
     program->use();
 
     auto perspM = scene->getCamera()->getMatrix();
-    auto transM = getTranslationMatrix(pos);
-    auto dirM = getDirectionMatrix(dir, up);
-
-    auto matrix = transM*dirM;
+    auto matrix = getTransformationMatrix();
 
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "modelViewMatrix"), 1, GL_TRUE, (float*)matrix.m_val);
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "projectionMatrix"), 1, GL_TRUE, (float*)perspM.m_val);

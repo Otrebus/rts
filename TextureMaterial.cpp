@@ -38,7 +38,7 @@ Shader* TextureMaterial::getShader()
 void TextureMaterial::updateUniforms(Scene* scene)
 {
     glBindTexture(GL_TEXTURE_2D, texture);
-    glUniform3fv(glGetUniformLocation(scene->getShaderProgram()->getId(), "camPos"), 1, (GLfloat*) &scene->getCamera()->pos);
+    glUniform3fv(glGetUniformLocation(scene->getShaderProgram()->getId(), "camPos"), 1, (GLfloat*) &scene->getCamera()->getPos());
 }
 
 

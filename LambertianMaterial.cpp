@@ -24,7 +24,7 @@ Shader* LambertianMaterial::getShader()
 void LambertianMaterial::updateUniforms(Scene* scene)
 {
     auto program = scene->getShaderProgram();
-    glUniform3fv(glGetUniformLocation(program->getId(), "camPos"), 1, (GLfloat*) &scene->getCamera()->pos);
+    glUniform3fv(glGetUniformLocation(program->getId(), "camPos"), 1, (GLfloat*) &scene->getCamera()->getPos());
     GLuint kdLocation = glGetUniformLocation(program->getId(), "Kd");
     glUniform3f(kdLocation, Kd.x, Kd.y, Kd.z);
 }

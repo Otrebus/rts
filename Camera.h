@@ -14,7 +14,20 @@ public:
     Camera(Vector3 pos, Vector3 dir, Vector3 up, real fov, real ar);
     Matrix4 getMatrix();
     void setUp(Vector3 up);
-public:
+
+    void setPos(const Vector3& pos);
+    void setDir(const Vector3& dir);
+
+    const Vector3& getPos() const;
+    const Vector3& getDir() const;
+    const Vector3& getUp() const;
+    const real getFov() const;
+    const real getAspectRatio() const;
+
+private:
+    Matrix4 viewMatrix;
+    bool matrixCached;
+
     Vector3 pos, dir, up;
     real fov, ar;
 };
