@@ -12,7 +12,16 @@ ShaderProgram* ShaderProgramManager::getProgram(Shader* fragmentShader, Shader* 
 {
     auto key = std::tuple(fragmentShader->getId(), geometryShader->getId(), vertexShader->getId());
 
-    if(auto it = programMap.find(key); it == programMap.end())
+    for(auto& t : programMap)
+    {
+        if(t.first == key)
+            return t.second;
+    }
+
+    auto shaderProgram = new ShaderProgram();
+    shaderProgram->addShaders(*fragmentShader, *geometryShader, *vertexShader);
+    programMap.push_back({ key, shaderProgram });
+    /*if(auto it = programMap.find(key); it == programMap.end())
     {
         auto shaderProgram = new ShaderProgram();
         shaderProgram->addShaders(*fragmentShader, *geometryShader, *vertexShader);
@@ -20,20 +29,20 @@ ShaderProgram* ShaderProgramManager::getProgram(Shader* fragmentShader, Shader* 
         return shaderProgram;
     }
     else
-        return it->second;
+        return it->second;*/
 }
 
 ShaderProgram* ShaderProgramManager::getProgram(Shader* fragmentShader, Shader* vertexShader)
 {
     auto key = std::tuple(fragmentShader->getId(), 0, vertexShader->getId());
 
-    if(auto it = programMap.find(key); it == programMap.end())
+    for(auto& t : programMap)
     {
-        auto shaderProgram = new ShaderProgram();
-        shaderProgram->addShaders(*fragmentShader, *vertexShader);
-        programMap[key] = shaderProgram;
-        return shaderProgram;
+        if(t.first == key)
+            return t.second;
     }
-    else
-        return it->second;
+
+    auto shaderProgram = new ShaderProgram();
+    shaderProgram->addShaders(*fragmentShader, *vertexShader);
+    programMap.push_back({ key, shaderProgram });
 }
