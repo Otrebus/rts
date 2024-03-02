@@ -198,9 +198,7 @@ void UserInterface::handleInput(const Input& input, std::vector<Entity*> entitie
     if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_2)
     {
         if(selectState == DrawingBox)
-        {
             selectEntities(entities);
-        }
         else if(selectState == Clicking)
         {
             auto c1 = drawBoxc1;

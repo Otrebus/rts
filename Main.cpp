@@ -245,16 +245,11 @@ int main()
         for(auto input : inputs)
         {
             if(isCameraInput(input))
-            {
                 cameraControl.handleInput(*input);
-            }
             interface.handleInput(*input, entities);
 
             if(input->stateStart == MousePosition)
-            {
-                mouseX = input->posX;
-                mouseY = input->posY;
-            }
+                mouseX = input->posX, mouseY = input->posY;
 
             else if(isGraphicsInput(input))
             {
