@@ -28,6 +28,12 @@ private:
 	std::vector<Vector3> points;
 	std::vector<int> triangleIndices;
 
+	std::vector<Vector2> findPath(Vector2 start, Vector2 destination);
+	std::pair<int, int> getClosestAdmissible(Vector2 v) const;
+	bool isAdmissible(int x, int y) const;
+	const Vector3& getPoint(int x, int y) const;
+	bool inBounds(int x, int y) const;
+
 	TerrainMesh* terrainMesh;
 
 	TerrainMesh* createFlatMesh(std::string fileName);
@@ -46,3 +52,5 @@ public:
 	std::pair<Vector3, Vector3> getBoundingBox() const;
 	real getHeight(real x, real y) const;
 };
+
+const real cosMaxSlope = std::acos(20*pi/180);

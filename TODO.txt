@@ -19,4 +19,5 @@
 - Make sure derived classes have virtual destructors
 - Work out ownership of resources
 - Move boundingbox mesh construction out of Entity
-- Implement flow field pathfinding
+- Implement pathfinding
+- Fix flat terrain shading
