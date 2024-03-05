@@ -2,6 +2,7 @@
 
 #define NOMINMAX
 #include "Model3d.h"
+#include "Math.h"
 
 class Ray;
 class Scene;
@@ -17,6 +18,10 @@ public:
       Flat = 2
    };
 
+   std::pair<int, int> getClosestAdmissible(Vector2 v) const; // TODO: temp public
+   const Vector3& getPoint(int x, int y) const; // same
+   bool isAdmissible(int x, int y) const;
+
 private:
 	Model3d terrainModel;
 	Scene* scene;
@@ -25,13 +30,15 @@ private:
 	int pickedTriangle;
 	int width, height;
 
+	bool* admissiblePoints;
+
 	std::vector<Vector3> points;
 	std::vector<int> triangleIndices;
 
+	void calcAdmissiblePoints();
 	std::vector<Vector2> findPath(Vector2 start, Vector2 destination);
-	std::pair<int, int> getClosestAdmissible(Vector2 v) const;
-	bool isAdmissible(int x, int y) const;
-	const Vector3& getPoint(int x, int y) const;
+	
+	
 	bool inBounds(int x, int y) const;
 
 	TerrainMesh* terrainMesh;
@@ -40,6 +47,8 @@ private:
 	TerrainMesh* createMesh(std::string fileName);
 
 	void selectTriangle(int i, bool selected);
+
+
 
 public:
 	void setUp();
@@ -50,7 +59,9 @@ public:
 	void intersect(const Ray& ray);
 	DrawMode getDrawMode() const;
 	std::pair<Vector3, Vector3> getBoundingBox() const;
-	real getHeight(real x, real y) const;
+	real getElevation(real x, real y) const;
+	real getWidth() const;
+	real getHeight() const;
 };
 
-const real cosMaxSlope = std::acos(20*pi/180);
+const real cosMaxSlope = std::cos(35*pi/180);

@@ -149,10 +149,10 @@ void Entity::plant(const Terrain& terrain)
     auto c = pos - x*width - y*depth;
     auto d = pos + x*width - y*depth;
 
-    auto ah = terrain.getHeight(a.x, a.y);
-    auto bh = terrain.getHeight(b.x, b.y);
-    auto ch = terrain.getHeight(c.x, c.y);
-    auto dh = terrain.getHeight(d.x, d.y);
+    auto ah = terrain.getElevation(a.x, a.y);
+    auto bh = terrain.getElevation(b.x, b.y);
+    auto ch = terrain.getElevation(c.x, c.y);
+    auto dh = terrain.getElevation(d.x, d.y);
 
     Vector3 A = Vector3(a.x, a.y, ah);
     Vector3 B = Vector3(b.x, b.y, bh);
@@ -179,4 +179,9 @@ void Entity::setDirection(Vector3 dir, Vector3 up)
     boundingBoxModel->setDirection(dir, up);
     this->dir = dir;
     this->up = up;
+}
+
+Vector3 Entity::getPosition() const
+{
+    return pos;
 }

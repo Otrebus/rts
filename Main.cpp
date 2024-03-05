@@ -156,10 +156,15 @@ int main()
     Tank tank({ 0.5f, 0.5f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1);
     tank.setUp(&scene);
 
-    for(int x = 0; x < 10; x++)
-        for(int y = 0; y < 10; y++)
-            for(int z = 0; z < 10; z++)
-                entities.push_back(new Entity({ real(x)+0.75f, real(y)+0.15f, real(z) }, { 1, 0, 0 }, { 0, 0, 1 }));
+    //for(int x = 0; x < terrain.getWidth(); x++)
+    //    for(int y = 0; y < 10; y++)
+    //        for(int z = 0; z < 10; z++)
+    //            entities.push_back(new Entity({ real(x)+0.75f, real(y)+0.15f, real(z) }, { 1, 0, 0 }, { 0, 0, 1 }));
+
+    for(int x = 0; x < terrain.getWidth(); x++)
+        for(int y = 0; y < terrain.getHeight(); y++)
+            if(terrain.isAdmissible(x, y))
+                entities.push_back(new Entity({ real(x), real(y), terrain.getElevation(x, y) }, { 1, 0, 0 }, { 0, 0, 1 }));
 
     for(auto& e : entities)
         e->setUp(&scene);
@@ -227,10 +232,16 @@ int main()
         glfwPollEvents();
 
         
-        tank.setPosition(tank.pos + Vector3(.5, 1, 0).normalized()*dt);
-        tank.setDirection(Vector3(.5, 1, 0).normalized(), Vector3(0, 0, 1).normalized());
+        tank.setPosition(tank.pos + Vector3(.3236543, 1, 0).normalized()*dt);
+        tank.setDirection(Vector3(.3236543, 1, 0).normalized(), Vector3(0, 0, 1).normalized());
 
         tank.plant(terrain);
+
+        auto tankPos = tank.getPosition();
+        auto [x, y] = terrain.getClosestAdmissible(Vector2(tankPos.x, tankPos.y));
+        auto p = terrain.getPoint(x, y);
+
+        entities[0]->setPosition(Vector3(x, y, terrain.getElevation(x, y)));
 
         auto isCameraInput = [] (Input* input)
         {

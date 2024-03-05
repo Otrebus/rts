@@ -21,3 +21,4 @@
 - Move boundingbox mesh construction out of Entity
 - Implement pathfinding
 - Fix flat terrain shading
+- Add terrain visualisations of all sorts (lines, arrows, dots, etc)

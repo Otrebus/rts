@@ -33,6 +33,8 @@ public:
     virtual void setPosition(Vector3 pos);
     virtual void setDirection(Vector3 dir, Vector3 up);
 
+    Vector3 getPosition() const;
+
     Vector3 dir, up, pos;
 
     Model3d* boundingBoxModel;

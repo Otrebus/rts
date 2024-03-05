@@ -51,6 +51,10 @@ TerrainMesh* Terrain::createMesh(std::string fileName)
 
     this->width = width;
     this->height = height;
+
+    admissiblePoints = new bool[width*height*2];
+    std::fill(admissiblePoints, admissiblePoints + width*height*2, true);
+    calcAdmissiblePoints();
     
     if(terrainMesh)
         delete terrainMesh;
@@ -70,7 +74,7 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
     std::vector<MeshVertex3d> vertices(nVertices);
 
     auto H = [&colors, &width, &height] (int x, int y) {
-        return colors[width*3*(height-y-1)+x*3]/255.0/10;
+        return colors[width*3*(height-y-1)+x*3]/255.0/30;
     };
 
     for(int y = 0; y < height; y++)
@@ -115,6 +119,9 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
     this->width = width;
     this->height = height;
 
+    admissiblePoints = new bool[width*height*2];
+    std::fill(admissiblePoints, admissiblePoints + width*height*2, true);
+
     if(terrainMesh)
         delete terrainMesh;
     Material* mat = new TerrainMaterial();
@@ -122,28 +129,39 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
 }
 
 
+void Terrain::calcAdmissiblePoints()
+{
+    for(int x = 0; x < width-1; x++)
+    {
+        for(int y = 0; y < height-1; y++)
+        {
+            auto p1 = getPoint(x, y+1);
+            auto p2 = getPoint(x+1, y+1);
+            auto p3 = getPoint(x+1, y);
+            auto p = getPoint(x, y);
+            auto cosSlope = std::abs((((p1-p)%(p2-p)).normalized()).z);
+            auto cosSlope2 = std::abs((((p2-p)%(p3-p)).normalized()).z);
+
+            if(cosSlope < cosMaxSlope) {
+                admissiblePoints[width*y+x] = false;
+                admissiblePoints[width*(y+1)+x+1] = false;
+                admissiblePoints[width*(y+1)+x] = false;
+            }
+            if(cosSlope2 < cosMaxSlope) {
+                admissiblePoints[width*y+x] = false;
+                admissiblePoints[width*(y+1)+x+1] = false;
+                admissiblePoints[width*y+x] = false;
+            }
+        }
+    }
+}
+
+
 void Terrain::selectTriangle(int i, bool selected)
 {
-    //int y = i/2/height;
-    //int x = i/2%width;
-
-    //int a = width*y + x;
-    //int b = width*y + x+1;
-    //int c = width*(y+1) + x+1;
-    //int d = width*(y+1) + x;
-
-    /*if(i%2 == 0)
-    {*/
-        terrainMesh->selectVertex(triangleIndices[i*3], selected);
-        terrainMesh->selectVertex(triangleIndices[i*3+1], selected);
-        terrainMesh->selectVertex(triangleIndices[i*3+2], selected);
-    /*}
-    else
-    {
-        terrainMesh->selectVertex(a, selected);
-        terrainMesh->selectVertex(b, selected);
-        terrainMesh->selectVertex(c, selected);
-    }*/
+    terrainMesh->selectVertex(triangleIndices[i*3], selected);
+    terrainMesh->selectVertex(triangleIndices[i*3+1], selected);
+    terrainMesh->selectVertex(triangleIndices[i*3+2], selected);
 }
 
 
@@ -202,11 +220,16 @@ void Terrain::draw()
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-real Terrain::getHeight(real x, real y) const
+real Terrain::getElevation(real x, real y) const
 {
-    int xl = x, yl = y;
+        // TODO: could overflow, check
+    // temporary hack
+    if(y > 0)
+        y -= 1e-4;
+    if(x > 0)
+        x -= 1e-4;
 
-    // TODO: could overflow, check
+    int xl = x, yl = y;
     auto p1 = points[yl*width+xl];
     auto p2 = points[yl*width+xl+1];
     auto p3 = points[(yl+1)*width+xl+1];
@@ -263,25 +286,7 @@ bool Terrain::inBounds(int x, int y) const
 
 bool Terrain::isAdmissible(int x, int y) const
 {
-    if(!inBounds(x, y))
-        return false;
-    auto p = getPoint(x, y);
-    std::array<std::pair<int, int>, 7> dirs = { { { x, y+1 }, { x-1, y }, { x-1, y-1 }, { x, y-1 }, { x+1, y }, { x+1, y+1 }, { x, y+1 } } };
-    for(int i = 0; i < 6; i++) {
-        auto [x1, y1] = dirs[i];
-        auto [x2, y2] = dirs[i+1];
-
-        if(!inBounds(x1, y1) || !inBounds(x2, y2))
-            continue;
-
-        auto p1 = getPoint(x1, y1);
-        auto p2 = getPoint(x2, y2);
-
-        auto cosSlope = std::abs((((p1-p)%(p2-p)).normalized()).z);
-        if(cosSlope < cosMaxSlope)
-            return false;
-    }
-    return true;
+    return admissiblePoints[y*width+x];
 }
 
 
@@ -307,10 +312,6 @@ std::pair<int, int> Terrain::getClosestAdmissible(Vector2 v) const
         {
             if(isAdmissible(x, y+1))
                 return { x, y+1 };
-            if(1-(v.x-x) > v.y-y && isAdmissible(x+1, y+1))
-                return { x+1, y+1 };
-            if(isAdmissible(x, y))
-                return { x, y };
             return { x+1, y };
         }
     }
@@ -329,11 +330,7 @@ std::pair<int, int> Terrain::getClosestAdmissible(Vector2 v) const
         else
         {
             if(isAdmissible(x+1, y))
-                return { x, y+1 };
-            if(1-(v.x-x) > v.y-y && isAdmissible(x, y))
-                return { x+1, y+1 };
-            if(isAdmissible(x+1, y+1))
-                return { x, y };
+                return { x+1, y };
             return { x, y+1 };
         }
     }
@@ -344,5 +341,15 @@ std::pair<int, int> Terrain::getClosestAdmissible(Vector2 v) const
 
 std::vector<Vector2> Terrain::findPath(Vector2 start, Vector2 destination)
 {
+    return {};
+}
 
+real Terrain::getHeight() const
+{
+    return height;
+}
+
+real Terrain::getWidth() const
+{
+    return width;
 }

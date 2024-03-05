@@ -75,6 +75,7 @@ void Tank::draw()
     gun->draw();
 }
 
+
 void Tank::setPosition(Vector3 pos)
 {
     this->pos = pos;
@@ -84,6 +85,7 @@ void Tank::setPosition(Vector3 pos)
     boundingBoxModel->setPosition(pos);
 }
 
+
 void Tank::setDirection(Vector3 dir, Vector3 up)
 {
     this->dir = dir;
@@ -92,4 +94,9 @@ void Tank::setDirection(Vector3 dir, Vector3 up)
     turret->setDirection(dir, up);
     gun->setDirection(dir, up);
     boundingBoxModel->setDirection(dir, up);
+}
+
+
+void Tank::accelerate(Vector3 dir)
+{
 }
