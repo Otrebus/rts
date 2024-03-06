@@ -26,10 +26,13 @@ public:
     void selectEntities(std::vector<Entity*> entities);
     void selectEntity(const Ray& ray, std::vector<Entity*> entities);
 
+    Vector3 getTarget();
+
 //private:
     int xres, yres;
     int mouseX, mouseY;
     enum SelectState selectState;
     Vector2 drawBoxc1, drawBoxc2;
     Scene* scene;
+    Entity* target; // tmp
 };

@@ -22,3 +22,6 @@
 - Implement pathfinding
 - Fix flat terrain shading
 - Add terrain visualisations of all sorts (lines, arrows, dots, etc)
+- Remove the selecttriangle stuff, not needed anymore
+- Change setUp and setup
+- Terrain set scene / scene set terrain?

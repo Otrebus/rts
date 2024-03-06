@@ -6,6 +6,7 @@
 #include "TerrainMaterial.h"
 #include "Math.h"
 #include <array>
+#include "Ray.h"
 
 
 TerrainMesh* Terrain::createMesh(std::string fileName)
@@ -165,7 +166,7 @@ void Terrain::selectTriangle(int i, bool selected)
 }
 
 
-void Terrain::intersect(const Ray& ray)
+Vector3 Terrain::intersect(const Ray& ray)
 {
     real t1 = glfwGetTime();
     real closestT = inf;
@@ -177,15 +178,9 @@ void Terrain::intersect(const Ray& ray)
         if(t > -inf && t < closestT)
             closestIndex = i/3, closestT = t;
     }
-    if(closestIndex >= 0)
-    {
-        if(pickedTriangle >= 0)
-            selectTriangle(pickedTriangle, false);
-        pickedTriangle = closestIndex;
-        selectTriangle(pickedTriangle, true);
-    }
-    real t2 = glfwGetTime();
-    std::cout << (t2 - t1) << std::endl;
+    if(closestT < inf)
+        return ray.pos + ray.dir*closestT;
+    return { inf, inf, inf };
 }
 
 
@@ -193,6 +188,7 @@ Terrain::Terrain(const std::string& fileName, Scene* scene) : fileName(fileName)
 {
     setUp();
     pickedTriangle = -1;
+    scene->setTerrain(this);
 };
 
 

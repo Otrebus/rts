@@ -5,7 +5,7 @@
 class Scene;
 class Vector3;
 
-Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width) : Entity(pos, dir, up)
+Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width) : Entity(pos, dir, up), turnRate(0), velocity({ 0, 0 }), acceleration(0)
 {
     body = new Model3d("tankbody.obj");
     turret = new Model3d("tankturret.obj");
@@ -97,6 +97,38 @@ void Tank::setDirection(Vector3 dir, Vector3 up)
 }
 
 
-void Tank::accelerate(Vector3 dir)
+void Tank::accelerate(Vector2 accTarget)
 {
+    turn((dir%Vector3(accTarget.x, accTarget.y, 0.f)).z > 0);
+    auto acc = Vector2(-dir.y, dir.x)*turnRate*velocity.length();
+    if(acc*accTarget > 0)
+        acceleration = maxAcc;
+    else
+        acceleration = -maxAcc;
+}
+
+
+void Tank::turn(bool left)
+{
+    turnRate = std::min(maxTurnRate, maxTurnAcc/velocity.length());
+    if(!left)
+        turnRate = -turnRate;
+}
+
+void Tank::updatePosition(real dt)
+{
+    pos += Vector3(velocity.x, velocity.y, 0)*dt;
+    velocity = Vector2(dir.x, dir.y)*velocity.length();
+    velocity += Vector2(dir.x, dir.y)*acceleration*dt;
+    if(velocity.length() > maxSpeed)
+        velocity = velocity.normalized()*maxSpeed;
+
+    auto newDir = Vector2(dir.x, dir.y).normalized().rotated(turnRate*dt);
+    dir = Vector3(newDir.x, newDir.y, 0).normalized();
+    std::cout << pos << " " << velocity << " " << acceleration << " " << dt << std::endl;
+}
+
+Vector2 Tank::getVelocity() const
+{
+    return velocity;
 }

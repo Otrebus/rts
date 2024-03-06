@@ -13,8 +13,11 @@ public:
     ShaderProgramManager* getShaderProgramManager() const;
     void setShaderProgram(ShaderProgram* program);
     ShaderProgram* getShaderProgram() const;
+    void setTerrain(Terrain* terrain);
+    Terrain* getTerrain() const;
 
 private:
+    Terrain* terrain;
     Camera* camera;
     ShaderProgramManager* shaderProgramManager;
     ShaderProgram* shaderProgram;

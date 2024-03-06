@@ -107,11 +107,6 @@ float& Vector2::operator[](int t)
     return (&x)[t];
 }
 
-std::ostream& operator<<(std::ostream& s, const Vector2& v)
-{
-    return(s << "(" << v.x << "," << v.y);
-}
-
 
 bool Vector2::isValid() const
 {
@@ -134,4 +129,15 @@ bool Vector2::operator!=(const Vector2& v) const
 real Vector2::length2() const
 {
     return x*x + y*y;
+}
+
+
+Vector2 Vector2::rotated(real angle) const
+{
+    return Vector2(std::cos(angle)*x-sin(angle)*y, std::sin(angle)*x + cos(angle)*y);
+}
+
+std::ostream& operator<<(std::ostream& s, const Vector2& v)
+{
+    return(s << "(" << v.x << "," << v.y << ")");
 }

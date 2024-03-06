@@ -26,3 +26,13 @@ void Scene::setShaderProgram(ShaderProgram* sp)
 {
     shaderProgram = sp;
 }
+
+void Scene::setTerrain(Terrain* terrain)
+{
+    this->terrain = terrain;
+}
+
+Terrain* Scene::getTerrain() const
+{
+    return terrain;
+}

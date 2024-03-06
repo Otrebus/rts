@@ -37,6 +37,7 @@ public:
     real& operator[](int);
     real operator[](int) const;
 
+    Vector2 rotated(real angle) const;
     real length() const;
     real length2() const;
     void normalize();
@@ -45,3 +46,5 @@ public:
 
     real x, y;
 };
+
+std::ostream& operator<<(std::ostream& s, const Vector2& v);

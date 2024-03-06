@@ -12,6 +12,8 @@ UserInterface::UserInterface(Scene* scene) : scene(scene)
     drawBoxc1 = { 0, 0 };
     drawBoxc2 = { 0, 0 };
     selectState = NotSelecting;
+    target = new Entity( { 0, 0, 0 }, { 1, 0, 0 }, { 0, 0, 1 } );
+    target->setUp(scene);
 }
 
 
@@ -218,6 +220,16 @@ void UserInterface::handleInput(const Input& input, std::vector<Entity*> entitie
         if(selectState == Clicking && (drawBoxc1-drawBoxc2).length() > 0.02)
             selectState = DrawingBox;
     }
+    else if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_3)
+    {
+        auto px = real(2*mouseX)/xres - 1;
+        auto py = -(real(2*mouseY)/yres - 1);
+
+        auto dir = getViewRay(*scene->getCamera(), px, py);
+
+        auto pos = scene->getTerrain()->intersect(Ray(scene->getCamera()->getPos(), dir));
+        target->setPosition(pos);
+    }
 }
 
 
@@ -230,6 +242,7 @@ void UserInterface::setResolution(int xres, int yres)
 
 void UserInterface::draw()
 {
+    target->drawBoundingBox();
     if(selectState == DrawingBox) {
         Line2d line({
             { drawBoxc1.x, drawBoxc1.y, },
@@ -241,4 +254,9 @@ void UserInterface::draw()
         line.setUp(scene);
         line.draw();
     }
+}
+
+Vector3 UserInterface::getTarget()
+{
+    return target->getPosition();
 }

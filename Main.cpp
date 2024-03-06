@@ -161,10 +161,10 @@ int main()
     //        for(int z = 0; z < 10; z++)
     //            entities.push_back(new Entity({ real(x)+0.75f, real(y)+0.15f, real(z) }, { 1, 0, 0 }, { 0, 0, 1 }));
 
-    for(int x = 0; x < terrain.getWidth(); x++)
-        for(int y = 0; y < terrain.getHeight(); y++)
-            if(terrain.isAdmissible(x, y))
-                entities.push_back(new Entity({ real(x), real(y), terrain.getElevation(x, y) }, { 1, 0, 0 }, { 0, 0, 1 }));
+    //for(int x = 0; x < terrain.getWidth(); x++)
+    //    for(int y = 0; y < terrain.getHeight(); y++)
+    //        if(terrain.isAdmissible(x, y))
+    //            entities.push_back(new Entity({ real(x), real(y), terrain.getElevation(x, y) }, { 1, 0, 0 }, { 0, 0, 1 }));
 
     for(auto& e : entities)
         e->setUp(&scene);
@@ -230,10 +230,9 @@ int main()
 
         auto inputs = handleInput(window, prevTime, time, cameraControl, terrain);
         glfwPollEvents();
-
         
-        tank.setPosition(tank.pos + Vector3(.3236543, 1, 0).normalized()*dt);
-        tank.setDirection(Vector3(.3236543, 1, 0).normalized(), Vector3(0, 0, 1).normalized());
+        //tank.setPosition(tank.pos + Vector3(.3236543, 1, 0).normalized()*dt);
+        //tank.setDirection(Vector3(.3236543, 1, 0).normalized(), Vector3(0, 0, 1).normalized());
 
         tank.plant(terrain);
 
@@ -241,7 +240,16 @@ int main()
         auto [x, y] = terrain.getClosestAdmissible(Vector2(tankPos.x, tankPos.y));
         auto p = terrain.getPoint(x, y);
 
-        entities[0]->setPosition(Vector3(x, y, terrain.getElevation(x, y)));
+        if(interface.getTarget().length() > 0.0001) {
+            auto v2 = interface.getTarget() - tank.getPosition();
+            auto v1 = tank.getVelocity();
+            auto v = Vector2(v2.x, v2.y) - v1;
+            tank.accelerate(v);
+        }
+
+        tank.updatePosition(dt);
+
+        //entities[0]->setPosition(Vector3(x, y, terrain.getElevation(x, y)));
 
         auto isCameraInput = [] (Input* input)
         {
@@ -299,11 +307,12 @@ int main()
 
                     writeBMP(v, width, height, "screenshot.bmp");
                 }
+
             }
             delete input;
         }
         glfwSwapBuffers(window);
-        std::cout << 1/dt << std::endl;
+        //std::cout << 1/dt << std::endl;
         frames++;
     }
 

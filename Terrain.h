@@ -56,7 +56,7 @@ public:
 	Terrain(const std::string& filestr, Scene* scene);
 	void draw();
 	void setDrawMode(DrawMode d);
-	void intersect(const Ray& ray);
+	Vector3 intersect(const Ray& ray);
 	DrawMode getDrawMode() const;
 	std::pair<Vector3, Vector3> getBoundingBox() const;
 	real getElevation(real x, real y) const;

@@ -12,6 +12,7 @@
 #include "LineMesh3d.h"
 #include "Entity.h"
 #include "Model3d.h"
+#include "Math.h"
 
 
 class Model3d;
@@ -31,10 +32,23 @@ public:
 
     void setPosition(Vector3 pos);
     void setDirection(Vector3 dir, Vector3 up);
+    Vector2 getVelocity() const;
 
-    void accelerate(Vector3 dir);
+    void accelerate(Vector2 dir);
+    void turn(bool dir);
+
+    void updatePosition(real dt);
 
     Model3d* body;
     Model3d* turret;
     Model3d* gun;
+
+    const real maxTurnRate = 2*pi/4;
+    const real maxTurnAcc = 1;
+    const real maxSpeed = 2;
+    const real maxAcc = 0.7;
+
+    real acceleration;
+    real turnRate;
+    Vector2 velocity;
 };
