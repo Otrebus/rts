@@ -12,8 +12,6 @@ UserInterface::UserInterface(Scene* scene) : scene(scene)
     drawBoxc1 = { 0, 0 };
     drawBoxc2 = { 0, 0 };
     selectState = NotSelecting;
-    target = new Entity( { 0, 0, 0 }, { 1, 0, 0 }, { 0, 0, 1 } );
-    target->setUp(scene);
 }
 
 
@@ -228,7 +226,7 @@ void UserInterface::handleInput(const Input& input, std::vector<Entity*> entitie
         auto dir = getViewRay(*scene->getCamera(), px, py);
 
         auto pos = scene->getTerrain()->intersect(Ray(scene->getCamera()->getPos(), dir));
-        target->setPosition(pos);
+        targetPosition = pos;
     }
 }
 
@@ -242,7 +240,6 @@ void UserInterface::setResolution(int xres, int yres)
 
 void UserInterface::draw()
 {
-    target->drawBoundingBox();
     if(selectState == DrawingBox) {
         Line2d line({
             { drawBoxc1.x, drawBoxc1.y, },
@@ -258,5 +255,5 @@ void UserInterface::draw()
 
 Vector3 UserInterface::getTarget()
 {
-    return target->getPosition();
+    return targetPosition;
 }

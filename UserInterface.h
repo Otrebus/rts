@@ -34,5 +34,5 @@ public:
     enum SelectState selectState;
     Vector2 drawBoxc1, drawBoxc2;
     Scene* scene;
-    Entity* target; // tmp
+    Vector3 targetPosition;
 };

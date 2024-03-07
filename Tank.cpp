@@ -99,12 +99,25 @@ void Tank::setDirection(Vector3 dir, Vector3 up)
 
 void Tank::accelerate(Vector2 accTarget)
 {
-    turn((dir%Vector3(accTarget.x, accTarget.y, 0.f)).z > 0);
-    auto acc = Vector2(-dir.y, dir.x)*turnRate*velocity.length();
-    if(acc*accTarget > 0)
-        acceleration = maxAcc;
-    else
-        acceleration = -maxAcc;
+    turn((this->dir%Vector3(accTarget.x, accTarget.y, 0.f)).z > 0);
+
+    auto linearAcc = Vector2((dir.normalized()*acceleration).x, (dir.normalized()*acceleration).y);
+    auto turnAcc = Vector2(-dir.y, dir.x)*turnRate*velocity.length();
+
+    auto dir = Vector2(this->dir.x, this->dir.y);
+
+    auto projAcc = turnAcc.length()/(turnAcc.normalized()*accTarget.normalized());
+    acceleration = std::max(-maxAcc, std::min(maxAcc, (accTarget.normalized()*projAcc)*dir));
+
+    auto acc = Vector2(-dir.y, dir.x)*turnRate*velocity.length() + linearAcc;
+
+    auto ac = (Vector2(dir.x, dir.y).normalized()*(accTarget-acc));
+    auto acceleration2 = std::max(-maxAcc, std::min(maxAcc, ac));
+    
+    if((dir.normalized()*acceleration2)*accTarget > (dir.normalized()*acceleration)*accTarget)
+        acceleration = acceleration2;
+
+    //std::cout << acceleration << std::endl;
 }
 
 
@@ -118,14 +131,14 @@ void Tank::turn(bool left)
 void Tank::updatePosition(real dt)
 {
     pos += Vector3(velocity.x, velocity.y, 0)*dt;
-    velocity = Vector2(dir.x, dir.y)*velocity.length();
-    velocity += Vector2(dir.x, dir.y)*acceleration*dt;
+    velocity = Vector2(dir.x, dir.y).normalized()*velocity.length();
+    velocity += Vector2(dir.x, dir.y).normalized()*acceleration*dt;
     if(velocity.length() > maxSpeed)
         velocity = velocity.normalized()*maxSpeed;
 
     auto newDir = Vector2(dir.x, dir.y).normalized().rotated(turnRate*dt);
     dir = Vector3(newDir.x, newDir.y, 0).normalized();
-    std::cout << pos << " " << velocity << " " << acceleration << " " << dt << std::endl;
+    std::cout << dir << " " << velocity << std::endl;
 }
 
 Vector2 Tank::getVelocity() const

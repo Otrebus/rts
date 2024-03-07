@@ -153,8 +153,9 @@ int main()
 
     Terrain terrain("Heightmap.bmp", &scene);
     CameraControl cameraControl(&cam, &terrain, true);
-    Tank tank({ 0.5f, 0.5f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1);
-    tank.setUp(&scene);
+    Tank* tank = new Tank({ 0.5f, 0.5f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1);
+    tank->setUp(&scene);
+    entities.push_back(tank);
 
     //for(int x = 0; x < terrain.getWidth(); x++)
     //    for(int y = 0; y < 10; y++)
@@ -190,21 +191,20 @@ int main()
        
         //entity.updateUniforms();
         //entity.drawBoundingBox();
-        for(auto& entity : entities)
+        /*for(auto& entity : entities)
         {
             entity->updateUniforms();
             entity->drawBoundingBox();
+        }*/
+
+        for(auto& entity : entities)
+        {
+            entity->draw();
         }
 
         /*mesh.draw();
 
         mesh2.draw();*/
-
-        tank.draw();
-
-        tank.updateUniforms();
-
-
 
         //model.draw();
 
@@ -234,20 +234,20 @@ int main()
         //tank.setPosition(tank.pos + Vector3(.3236543, 1, 0).normalized()*dt);
         //tank.setDirection(Vector3(.3236543, 1, 0).normalized(), Vector3(0, 0, 1).normalized());
 
-        tank.plant(terrain);
+        tank->plant(terrain);
 
-        auto tankPos = tank.getPosition();
+        auto tankPos = tank->getPosition();
         auto [x, y] = terrain.getClosestAdmissible(Vector2(tankPos.x, tankPos.y));
         auto p = terrain.getPoint(x, y);
 
         if(interface.getTarget().length() > 0.0001) {
-            auto v2 = interface.getTarget() - tank.getPosition();
-            auto v1 = tank.getVelocity();
+            auto v2 = (interface.getTarget() - tank->getPosition()).normalized()*tank->maxSpeed;
+            auto v1 = tank->getVelocity();
             auto v = Vector2(v2.x, v2.y) - v1;
-            tank.accelerate(v);
+            tank->accelerate(v);
         }
 
-        tank.updatePosition(dt);
+        tank->updatePosition(dt);
 
         //entities[0]->setPosition(Vector3(x, y, terrain.getElevation(x, y)));
 

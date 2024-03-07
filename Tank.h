@@ -46,7 +46,7 @@ public:
     const real maxTurnRate = 2*pi/4;
     const real maxTurnAcc = 1;
     const real maxSpeed = 2;
-    const real maxAcc = 0.7;
+    const real maxAcc = 0.7; // TODO: breakacc vs forwardacc
 
     real acceleration;
     real turnRate;
