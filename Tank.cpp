@@ -99,23 +99,24 @@ void Tank::setDirection(Vector3 dir, Vector3 up)
 
 void Tank::accelerate(Vector2 accTarget)
 {
+    // Could use some sort of PID-like thingy as well
     turn((this->dir%Vector3(accTarget.x, accTarget.y, 0.f)).z > 0);
 
     auto linearAcc = Vector2((dir.normalized()*acceleration).x, (dir.normalized()*acceleration).y);
-    auto turnAcc = Vector2(-dir.y, dir.x)*turnRate*velocity.length();
+    auto turnAcc = Vector2(-dir.y, dir.x)*turnRate*maxSpeed;
 
     auto dir = Vector2(this->dir.x, this->dir.y);
 
     auto projAcc = turnAcc.length()/(turnAcc.normalized()*accTarget.normalized());
     acceleration = std::max(-maxAcc, std::min(maxAcc, (accTarget.normalized()*projAcc)*dir));
 
-    auto acc = Vector2(-dir.y, dir.x)*turnRate*velocity.length() + linearAcc;
+    //auto acc = Vector2(-dir.y, dir.x)*turnRate*velocity.length() + linearAcc;
 
-    auto ac = (Vector2(dir.x, dir.y).normalized()*(accTarget-acc));
-    auto acceleration2 = std::max(-maxAcc, std::min(maxAcc, ac));
-    
-    if((dir.normalized()*acceleration2)*accTarget > (dir.normalized()*acceleration)*accTarget)
-        acceleration = acceleration2;
+    //auto ac = (Vector2(dir.x, dir.y).normalized()*(accTarget-acc));
+    //auto acceleration2 = std::max(-maxAcc, std::min(maxAcc, ac));
+    //
+    //if((dir.normalized()*acceleration2)*accTarget > (dir.normalized()*acceleration)*accTarget)
+    //    acceleration = acceleration2;
 
     //std::cout << acceleration << std::endl;
 }

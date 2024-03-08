@@ -1,13 +1,15 @@
 #include "CameraControl.h"
 #include "Input.h"
 
-CameraControl::CameraControl(Camera* cam, Terrain* terrain, bool followTerrain) :
-    panningX(0), panningY(0), panning(panning), cam(cam), terrain(terrain), terrainDist(100)
+CameraControl::CameraControl(Camera* cam, Terrain* terrain) :
+    panningX(0), panningY(0), cam(cam), terrain(terrain), terrainDist(100)
 {
     //setAngle(0, 0);
     auto [p1, p2] = terrain->getBoundingBox();
     terrainPos = (p1 + p2)/2;
-    changeMode(followTerrain);
+    
+    panning = false;
+    changeMode(FollowingReset);
 }
 
 
@@ -29,21 +31,26 @@ Camera* CameraControl::getCamera()
 }
 
 
-void CameraControl::changeMode(bool followingTerrain)
+void CameraControl::changeMode(CameraMode cameraMode)
 {
-    this->followingTerrain = followingTerrain;
-    if(followingTerrain)
+    this->cameraMode = cameraMode;
+    if(cameraMode == FollowingReset)
     {
         setPosFromTerrainPos();
         cam->setDir(-Vector3(0, -1, 1).normalized());
         cam->setUp(Vector3(0, 0, 1));
-        //cam->up = (cam->dir%(cam->up%cam->dir)).normalized();
     }
-    else
+
+    else if(cameraMode == Freelook)
     {
         auto theta = std::atan2(cam->getDir().y, cam->getDir().x);
         auto phi = std::atan2(cam->getDir().z, cam->getDir().y);
         setAngle(theta, phi);
+
+    }
+    else
+    {
+        setPosFromTerrainPos();
     }
 }
 
@@ -75,16 +82,16 @@ void CameraControl::handleInput(const Input& input)
     if(input.stateStart == InputType::KeyPress)
     {
         if(input.key == GLFW_KEY_C)
-            changeMode(!followingTerrain);
+            changeMode(cameraMode == FollowingReset ? Freelook : cameraMode == Freelook ? Following : FollowingReset);
     }
-    else if(!followingTerrain && panning && input.stateStart == InputType::MousePosition)
+    else if(cameraMode == Freelook && panning && input.stateStart == InputType::MousePosition)
     {
         if(!isnan(prevX))
             setAngle(getTheta() - (input.posX-prevX)/500.0, getPhi() - (input.posY-prevY)/500.0);
         prevX = input.posX;
         prevY = input.posY;
     }
-    else if(followingTerrain && input.stateStart == InputType::ScrollOffset)
+    else if(cameraMode != Freelook && input.stateStart == InputType::ScrollOffset)
     {
         terrainDist += input.posY*(moveSlow ? -1 : -10);
         setPosFromTerrainPos();
@@ -125,23 +132,23 @@ void CameraControl::setAngle(real theta, real phi) {
 
 
 void CameraControl::moveForward(real t) {
-    if(!followingTerrain)
+    if(cameraMode == Freelook)
         cam->setPos(cam->getPos() + cam->getDir()*t*100);
     else
     {
-        terrainPos += Vector3(0, 1, 0)*t*100;
+        terrainPos += Vector3(cam->getDir().x, cam->getDir().y, 0).normalized()*t*100;
         setPosFromTerrainPos();
     }
 }
 
 
 void CameraControl::moveRight(real t) {
-    if(!followingTerrain)
+    if(cameraMode == Freelook)
     {
         cam->setPos(cam->getPos() - cam->getUp()%cam->getDir()*t*100);
     }
     else {
-        terrainPos += Vector3(1, 0, 0)*t*100;
+        terrainPos += (Vector3(cam->getDir().x, cam->getDir().y, 0)%Vector3(0, 0, 1)).normalized()*t*100;
         setPosFromTerrainPos();
     }
 }

@@ -43,7 +43,7 @@ public:
     Model3d* turret;
     Model3d* gun;
 
-    const real maxTurnRate = 2*pi/4;
+    const real maxTurnRate = 0.5*pi/4;
     const real maxTurnAcc = 1;
     const real maxSpeed = 2;
     const real maxAcc = 0.7; // TODO: breakacc vs forwardacc

@@ -9,16 +9,24 @@ class Terrain;
 class InputQueue;
 class Input;
 
+
+enum CameraMode
+{
+    FollowingReset, Freelook, Following
+};
+
+
 class CameraControl
 {
-    int panningX, panningY;
+    real panningX, panningY;
     real prevX = NAN, prevY = NAN; // TODO: make this a vector instead
     real terrainDist;
 
+    CameraMode cameraMode;
+    bool panning = false;
+
     Vector3 terrainPos;
 
-    bool followingTerrain = true;
-    bool panning = false;
     bool moveSlow;
     real theta, phi;
 
@@ -28,7 +36,7 @@ class CameraControl
     void setPosFromTerrainPos();
 
 public:
-    CameraControl(Camera* cam, Terrain* terrain, bool followTerrain=true);
+    CameraControl(Camera* cam, Terrain* terrain);
 
     real getPhi();
     real getTheta();
@@ -40,5 +48,5 @@ public:
     void setAngle(real theta, real phi);
     void moveForward(real t);
     void moveRight(real t);
-    void changeMode(bool);
+    void changeMode(CameraMode);
 };
