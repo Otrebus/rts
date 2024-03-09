@@ -8,7 +8,6 @@ CameraControl::CameraControl(Camera* cam, Terrain* terrain) :
     auto [p1, p2] = terrain->getBoundingBox();
     terrainPos = (p1 + p2)/2;
     
-    panning = false;
     changeMode(FollowingReset);
 }
 
@@ -36,13 +35,15 @@ void CameraControl::changeMode(CameraMode cameraMode)
     this->cameraMode = cameraMode;
     if(cameraMode == FollowingReset)
     {
+        cam->setDir(Vector3(0, 1, -1).normalized());
         setPosFromTerrainPos();
-        cam->setDir(-Vector3(0, -1, 1).normalized());
         cam->setUp(Vector3(0, 0, 1));
     }
 
     else if(cameraMode == Freelook)
     {
+        prevX = prevY = NAN;
+        //setPosFromTerrainPos();
         auto theta = std::atan2(cam->getDir().y, cam->getDir().x);
         auto phi = std::atan2(cam->getDir().z, cam->getDir().y);
         setAngle(theta, phi);
@@ -50,20 +51,41 @@ void CameraControl::changeMode(CameraMode cameraMode)
     }
     else
     {
-        setPosFromTerrainPos();
+        setTerrainPosFromPos();
+        //setPosFromTerrainPos();
     }
+}
+
+
+CameraMode CameraControl::getMode() const
+{
+    return cameraMode;
 }
 
 
 void CameraControl::setPosFromTerrainPos()
 {
-    cam->setPos(terrainPos + Vector3(0, -1, 1).normalized()*terrainDist);
+    cam->setPos(terrainPos - cam->getDir().normalized()*terrainDist);
 }
 
+void CameraControl::setTerrainPosFromPos()
+{
+    auto [p1, p2] = terrain->getBoundingBox();
+    auto z = p1.z;
+
+    auto camPos = cam->getPos(), camDir = cam->getDir();
+    terrainPos.x = (z - camPos.z + (camDir.z/camDir.x)*camPos.x)/(camDir.z/camDir.x);
+    terrainPos.y = (z - camPos.z + (camDir.z/camDir.y)*camPos.y)/(camDir.z/camDir.y);
+    
+    auto dx = (terrainPos.x-camPos.x);
+    auto dy = (terrainPos.y-camPos.y);
+    auto dz = (terrainPos.z-camPos.z);
+    terrainDist = std::sqrt(dx*dx + dy*dy + dz*dz);
+}
 
 void CameraControl::handleInput(const Input& input)
 {
-    auto& inputQueue = *input.inputQueue;
+    auto& inputQueue = InputQueue::getInstance();
 
     if(input.stateStart == InputType::KeyPress || input.stateStart == InputType::KeyHold)
     {
@@ -82,9 +104,13 @@ void CameraControl::handleInput(const Input& input)
     if(input.stateStart == InputType::KeyPress)
     {
         if(input.key == GLFW_KEY_C)
-            changeMode(cameraMode == FollowingReset ? Freelook : cameraMode == Freelook ? Following : FollowingReset);
+        {
+            cameraMode = cameraMode == Following ? FollowingReset : cameraMode == FollowingReset ? Freelook : Following;
+            inputQueue.captureMouse(cameraMode == Freelook);
+            changeMode(cameraMode);
+        }
     }
-    else if(cameraMode == Freelook && panning && input.stateStart == InputType::MousePosition)
+    else if(cameraMode == Freelook && input.stateStart == InputType::MousePosition)
     {
         if(!isnan(prevX))
             setAngle(getTheta() - (input.posX-prevX)/500.0, getPhi() - (input.posY-prevY)/500.0);
@@ -95,25 +121,6 @@ void CameraControl::handleInput(const Input& input)
     {
         terrainDist += input.posY*(moveSlow ? -1 : -10);
         setPosFromTerrainPos();
-    }
-
-    else if(!panning && inputQueue.mouseState[GLFW_MOUSE_BUTTON_1])
-    {
-        inputQueue.captureMouse(true);
-            
-        // prevX = inputQueue.posX;
-        // prevY = inputQueue.posY;
-        prevX = prevY = NAN;
-        panning = true;
-    }
-
-    if(panning)
-    {
-        if(inputQueue.mouseState[GLFW_MOUSE_BUTTON_1] == GLFW_RELEASE)
-        {
-            panning = false;
-            inputQueue.captureMouse(false);
-        }
     }
 }
 

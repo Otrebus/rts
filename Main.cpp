@@ -103,7 +103,7 @@ int main()
     //glEnable              ( GL_DEBUG_OUTPUT );
     //glDebugMessageCallback( MessageCallback, 0 );
 
-    initInput(window);
+    InputQueue::getInstance().initInput(window);
 
     Camera cam({ 0, 0, 100 }, { 0, 1, -1 }, { 0, 0, 1 }, 59, real(xres)/float(yres));
 
@@ -154,7 +154,7 @@ int main()
     Terrain terrain("Heightmap.bmp", &scene);
     CameraControl cameraControl(&cam, &terrain);
     Tank* tank = new Tank({ 0.5f, 0.5f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1);
-    tank->setUp(&scene);
+//    tank->setUp(&scene);
     entities.push_back(tank);
 
     //for(int x = 0; x < terrain.getWidth(); x++)
@@ -176,7 +176,7 @@ int main()
 
     checkError();
 
-    UserInterface interface(&scene);
+    UserInterface interface(&scene, &cameraControl);
 
     int frames = 0;
     real frameTime = 0;
@@ -228,7 +228,7 @@ int main()
         time = glfwGetTime();
         auto dt = time - prevTime;
 
-        auto inputs = handleInput(window, prevTime, time, cameraControl, terrain);
+        auto inputs = InputQueue::getInstance().handleInput(prevTime, time);
         glfwPollEvents();
         
         //tank.setPosition(tank.pos + Vector3(.3236543, 1, 0).normalized()*dt);
@@ -236,18 +236,8 @@ int main()
 
         tank->plant(terrain);
 
-        auto tankPos = tank->getPosition();
-        auto [x, y] = terrain.getClosestAdmissible(Vector2(tankPos.x, tankPos.y));
-        auto p = terrain.getPoint(x, y);
-
-        if(interface.getTarget().length() > 0.0001) {
-            auto v2 = (interface.getTarget() - tank->getPosition()).normalized()*tank->maxSpeed;
-            auto v1 = tank->getVelocity();
-            auto v = Vector2(v2.x, v2.y) - v1;
-            tank->accelerate(v);
-        }
-
-        tank->updatePosition(dt);
+        for(auto entity : entities)
+            entity->update(dt);
 
         //entities[0]->setPosition(Vector3(x, y, terrain.getElevation(x, y)));
 

@@ -1,6 +1,7 @@
 #include "Tank.h"
 #include "Model3d.h"
 #include "Utils.h"
+#include "BoundingBoxModel.h"
 
 class Scene;
 class Vector3;
@@ -29,8 +30,10 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width) : Entity(pos, dir, 
     }
 
     auto w = (bb.c2.x - bb.c1.x);
-    auto h = (bb.c2.y - bb.c1.y);
-    auto d = (bb.c2.z - bb.c1.z);
+    auto d = (bb.c2.y - bb.c1.y);
+    auto h = (bb.c2.z - bb.c1.z);
+
+    auto ratio = width/w;
 
     for(auto model : { body, turret, gun }) {
         for(auto& mesh : model->getMeshes()) {
@@ -42,6 +45,11 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width) : Entity(pos, dir, 
         model->setPosition(pos);
         model->setDirection(dir, up);
     }
+
+    height = h*ratio;
+    depth = d*ratio;
+    boundingBoxModel = new BoundingBoxModel(pos, dir, up, width, height, depth);
+    boundingBox = BoundingBox(Vector3(0, 0, 0), Vector3(width, depth, height));
 }
 
 
@@ -73,6 +81,8 @@ void Tank::draw()
     body->draw();
     turret->draw();
     gun->draw();
+    if(selected)
+        boundingBoxModel->draw();
 }
 
 
@@ -129,7 +139,7 @@ void Tank::turn(bool left)
         turnRate = -turnRate;
 }
 
-void Tank::updatePosition(real dt)
+void Tank::update(real dt)
 {
     pos += Vector3(velocity.x, velocity.y, 0)*dt;
     velocity = Vector2(dir.x, dir.y).normalized()*velocity.length();
@@ -139,7 +149,13 @@ void Tank::updatePosition(real dt)
 
     auto newDir = Vector2(dir.x, dir.y).normalized().rotated(turnRate*dt);
     dir = Vector3(newDir.x, newDir.y, 0).normalized();
-    std::cout << dir << " " << velocity << std::endl;
+    
+    if(target.length() > 0.0001) {
+        auto v2 = (target - pos).normalized()*maxSpeed;
+        auto v1 = velocity;
+        auto v = Vector2(v2.x, v2.y) - v1;
+        accelerate(v);
+    }
 }
 
 Vector2 Tank::getVelocity() const

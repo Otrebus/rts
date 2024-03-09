@@ -11,20 +11,21 @@
 #include "Mesh3d.h"
 #include "LineMesh3d.h"
 
+class BoundingBoxModel;
 class Model3d;
 class Scene;
 
 class Entity 
 {
 public:
-    Entity(Vector3 pos, Vector3 dir, Vector3 up);
+    Entity(Vector3 pos, Vector3 dir, Vector3 up, real width = 0.3, real height = 0.3, real depth = 0.3);
     ~Entity();
 
     void drawBoundingBox();
     bool intersectBoundingBox(const Ray& ray);
 
-    void setUp(Scene* scene);
-    void updateUniforms();
+    virtual void setUp(Scene* scene);
+    virtual void updateUniforms();
 
     void setSelected(bool selected);
 
@@ -35,15 +36,20 @@ public:
 
     virtual void draw() = 0;
 
+    virtual void update(real dt) = 0;
+
     Vector3 getPosition() const;
 
+    void setTarget(Vector3 pos);
+    Vector3 getTarget() const;
+
     Vector3 dir, up, pos;
+    Vector3 target;
+    real width, height, depth;
 
-    Model3d* boundingBoxModel;
-    Mesh* boundingBoxMesh;
-    Mesh* lineMesh;
+    BoundingBoxModel* boundingBoxModel;
 
-    BoundingBox bbox;
+    BoundingBox boundingBox;
 
     bool selected;
 };

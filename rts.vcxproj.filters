@@ -103,6 +103,9 @@
     <ClCompile Include="Tank.cpp">
       <Filter>Source files\Models</Filter>
     </ClCompile>
+    <ClCompile Include="BoundingBoxModel.cpp">
+      <Filter>Source files\Models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -202,6 +205,9 @@
       <Filter>Source files\Models</Filter>
     </ClInclude>
     <ClInclude Include="Tank.h">
+      <Filter>Source files\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="BoundingBoxModel.h">
       <Filter>Source files\Models</Filter>
     </ClInclude>
   </ItemGroup>

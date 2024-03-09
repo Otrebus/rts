@@ -11,6 +11,9 @@
 + Triangle picking doesn't pick the closest triangle
 + Work out the relationship between mesh3d and linemesh3d, the latter inherits a bunch of stuff it doesn't need from the former, they should inherit from a common base model or something
 + Fix a better way of assigning a color to selected bounding boxes
++ Remove all the mousestates and keystates of input outside input
+- Fix cameramodes
+- Make inputqueue all static and remove getInstance
 - Selecting units and moving
 - Breakacc vs forwardacc
 - Change setUp and setup
@@ -27,3 +30,4 @@
 - Figure out mesh ownership
 - Work out memory leaks
 - Work out ownership of resources
+- Unify keyinput and mouseinput in inputqueue

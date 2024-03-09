@@ -64,14 +64,14 @@ QueuedInput InputQueue::pop()
     {
         timeMouse[input.key] = input.time;
         mouseState[input.key] = input.state;
-        lastMouseKey[input.key] = Input(0, 0, input.key, input.state ? MousePress : MouseRelease, None, input.time, 0.0, this);
+        lastMouseKey[input.key] = Input(0, 0, input.key, input.state ? MousePress : MouseRelease, None, input.time, 0.0);
     }
 
     if(input.type == QueuedInputType::KeyboardKey)
     {
         timeKey[input.key] = input.time;
         keyState[input.key] = input.state;
-        lastKeyboardKey[input.key] = Input(0, 0, input.key, input.state ? KeyPress : KeyRelease, None, input.time, 0.0, this);
+        lastKeyboardKey[input.key] = Input(0, 0, input.key, input.state ? KeyPress : KeyRelease, None, input.time, 0.0);
     }
         
     if(input.type == QueuedInputType::MousePos)
@@ -79,35 +79,34 @@ QueuedInput InputQueue::pop()
     return input;
 }
 
-
-InputQueue inputQueue;
 bool panning;
 
 auto keyCallback = [] (GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if(action != GLFW_REPEAT)
-        inputQueue.addKeyInput(glfwGetTime(), key, action);
+        InputQueue::getInstance().addKeyInput(glfwGetTime(), key, action);
 };
 
 auto mouseButtonCallback = [] (GLFWwindow* window, int button, int action, int mods)
 {
-    inputQueue.addMouseInput(glfwGetTime(), button, action);
+    InputQueue::getInstance().addMouseInput(glfwGetTime(), button, action);
 };
 
 auto cursorPositionCallback = [] (GLFWwindow* window, double xpos, double ypos)
 {         
-    inputQueue.addMousePosition(glfwGetTime(), xpos, ypos);
+    InputQueue::getInstance().addMousePosition(glfwGetTime(), xpos, ypos);
 };
 
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    inputQueue.addScrollOffset(glfwGetTime(), yoffset);
+    InputQueue::getInstance().addScrollOffset(glfwGetTime(), yoffset);
 }
 
 
-void initInput(GLFWwindow* window)
+void InputQueue::initInput(GLFWwindow* window)
 {
     panning = false;
+    InputQueue::getInstance().setWindow(window);
     glfwSetKeyCallback(window, keyCallback);
     glfwSetMouseButtonCallback(window, mouseButtonCallback);
     glfwSetCursorPosCallback(window, cursorPositionCallback);
@@ -132,18 +131,17 @@ void InputQueue::setWindow(GLFWwindow* window)
 }
 
 
-std::vector<Input*> handleInput(GLFWwindow* window, real prevTime, real time, CameraControl& cameraControl, Terrain& terrain)
+std::vector<Input*> InputQueue::handleInput(real prevTime, real time)
 {
-    inputQueue.setWindow(window);
     bool slow = false;
-    if(inputQueue.keyState[GLFW_KEY_LEFT_SHIFT] == GLFW_PRESS)
+    if(keyState[GLFW_KEY_LEFT_SHIFT] == GLFW_PRESS)
         slow = true;
 
     std::unordered_map<int, Input*> lastKeyInput;
     std::unordered_map<int, Input*> lastMouseInput;
     std::vector<Input*> inputs;
 
-    auto pushInput = [&inputs] (std::unordered_map<int, Input*>& lastInput, int key, real time, InputType start, InputType end)
+    auto pushInput = [&inputs, this] (std::unordered_map<int, Input*>& lastInput, int key, real time, InputType start, InputType end)
     {
         Input* input = new Input();
         inputs.push_back(input);
@@ -152,13 +150,12 @@ std::vector<Input*> handleInput(GLFWwindow* window, real prevTime, real time, Ca
         input->timeStart = time;
         input->stateStart = start;
         input->stateEnd = end;
-        input->inputQueue = &inputQueue;
         return input;
     };
 
-    while(inputQueue.hasInput())
+    while(hasInput())
     {
-        auto queuedInput = inputQueue.peek();
+        auto queuedInput = peek();
         if(queuedInput.type == KeyboardKey || queuedInput.type == MouseButton)
         {
             auto &lastInput = (queuedInput.type == KeyboardKey ? lastKeyInput : lastMouseInput);
@@ -191,18 +188,18 @@ std::vector<Input*> handleInput(GLFWwindow* window, real prevTime, real time, Ca
             }
         }
         else if(queuedInput.type == MousePos)
-            inputs.push_back(new Input(queuedInput.posX, queuedInput.posY, 0, InputType::MousePosition, None, queuedInput.time, queuedInput.time, &inputQueue));
+            inputs.push_back(new Input(queuedInput.posX, queuedInput.posY, 0, InputType::MousePosition, None, queuedInput.time, queuedInput.time));
         else if(queuedInput.type == Scroll)
-            inputs.push_back(new Input(queuedInput.posX, queuedInput.posY, 0, InputType::ScrollOffset, None, queuedInput.time, queuedInput.time, &inputQueue));
-        inputQueue.pop();
+            inputs.push_back(new Input(queuedInput.posX, queuedInput.posY, 0, InputType::ScrollOffset, None, queuedInput.time, queuedInput.time));
+        pop();
     }
 
     for(int key = 0; key < GLFW_KEY_LAST; key++)
     {
-        if(inputQueue.keyState[key] == GLFW_PRESS)
+        if(keyState[key] == GLFW_PRESS)
         {
             if(lastKeyInput.find(key) == lastKeyInput.end())
-                pushInput(lastKeyInput, key, inputQueue.timeKey[key], KeyHold, KeyHold)->timeEnd = time;
+                pushInput(lastKeyInput, key, timeKey[key], KeyHold, KeyHold)->timeEnd = time;
             else
             {
                 auto prevInput = lastKeyInput[key];
@@ -211,16 +208,16 @@ std::vector<Input*> handleInput(GLFWwindow* window, real prevTime, real time, Ca
                 prevInput->stateEnd = InputType::KeyHold;
                 prevInput->timeEnd = time;
             }
-            inputQueue.timeKey[key] = time;
+            timeKey[key] = time;
         }
     }
 
     for(int button = 0; button < GLFW_MOUSE_BUTTON_LAST; button++)
     {
-        if(inputQueue.mouseState[button] == GLFW_PRESS)
+        if(mouseState[button] == GLFW_PRESS)
         {
             if(lastMouseInput.find(button) == lastMouseInput.end())
-                pushInput(lastMouseInput, button, inputQueue.timeMouse[button], MouseHold, MouseHold)->timeEnd = time;
+                pushInput(lastMouseInput, button, timeMouse[button], MouseHold, MouseHold)->timeEnd = time;
             else
             {
                 auto prevInput = lastMouseInput[button];
@@ -229,7 +226,7 @@ std::vector<Input*> handleInput(GLFWwindow* window, real prevTime, real time, Ca
                 prevInput->stateEnd = InputType::MouseHold;
                 prevInput->timeEnd = time;
             }
-            inputQueue.timeMouse[button] = time;
+            timeMouse[button] = time;
         }
     }
     return inputs;

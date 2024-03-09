@@ -17,6 +17,7 @@
 
 class Model3d;
 class Scene;
+class BoundingBoxModel;
 
 
 class Tank : public Entity
@@ -37,7 +38,7 @@ public:
     void accelerate(Vector2 dir);
     void turn(bool dir);
 
-    void updatePosition(real dt);
+    void update(real dt);
 
     Model3d* body;
     Model3d* turret;

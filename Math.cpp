@@ -100,3 +100,8 @@ real resToScreenY(real y, int yres)
 {
     return -(real(2*y)/yres - 1);
 }
+
+Vector3 calcNormal(Vector3 a, Vector3 b, Vector3 c)
+{
+    return ((c-b)%(a-b)).normalized();
+}

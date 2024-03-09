@@ -7,7 +7,7 @@
 #include "Ray.h"
 
 
-UserInterface::UserInterface(Scene* scene) : scene(scene)
+UserInterface::UserInterface(Scene* scene, CameraControl* cameraControl) : scene(scene), cameraControl(cameraControl)
 {
     drawBoxc1 = { 0, 0 };
     drawBoxc2 = { 0, 0 };
@@ -89,7 +89,7 @@ bool intersectsFrustum(Vector3 pos, Vector3 v[4], Entity& entity, Scene* scene)
 {
     auto M = getDirectionMatrix(entity.dir, entity.up);
 
-    auto [c1, c2] = entity.bbox;
+    auto [c1, c2] = entity.boundingBox;
 
     Vector3 C[8] = {
         c1,
@@ -169,7 +169,7 @@ void UserInterface::selectEntities(std::vector<Entity*> entities)
     std::cout << (glfwGetTime() - time) << std::endl;
 }
 
-void UserInterface::selectEntity(const Ray& ray, std::vector<Entity*> entities)
+void UserInterface::selectEntity(const Ray& ray, const std::vector<Entity*>& entities)
 {
     auto time = glfwGetTime();
     auto camera = scene->getCamera();
@@ -184,18 +184,21 @@ void UserInterface::selectEntity(const Ray& ray, std::vector<Entity*> entities)
     std::cout << (glfwGetTime() - time) << std::endl;
 }
 
-void UserInterface::handleInput(const Input& input, std::vector<Entity*> entities)
+void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& entities)
 {
-    auto& inputQueue = *input.inputQueue;
+    auto& inputQueue = InputQueue::getInstance();
 
-    if(input.stateStart == InputType::MousePress && input.key == GLFW_MOUSE_BUTTON_2)
+    if(cameraControl->getMode() == Freelook)
+        return;
+
+    if(input.stateStart == InputType::MousePress && input.key == GLFW_MOUSE_BUTTON_1)
     {
         selectState = Clicking;
         drawBoxc1.x = real(2*mouseX)/xres - 1;
         drawBoxc1.y = -(real(2*mouseY)/yres - 1);
         drawBoxc2 = drawBoxc1;
     }
-    if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_2)
+    if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_1)
     {
         if(selectState == DrawingBox)
             selectEntities(entities);
@@ -218,7 +221,7 @@ void UserInterface::handleInput(const Input& input, std::vector<Entity*> entitie
         if(selectState == Clicking && (drawBoxc1-drawBoxc2).length() > 0.02)
             selectState = DrawingBox;
     }
-    else if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_3)
+    else if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_2)
     {
         auto px = real(2*mouseX)/xres - 1;
         auto py = -(real(2*mouseY)/yres - 1);
@@ -226,7 +229,9 @@ void UserInterface::handleInput(const Input& input, std::vector<Entity*> entitie
         auto dir = getViewRay(*scene->getCamera(), px, py);
 
         auto pos = scene->getTerrain()->intersect(Ray(scene->getCamera()->getPos(), dir));
-        targetPosition = pos;
+        for(auto entity : entities)
+            if(entity->selected)
+                entity->setTarget(pos);
     }
 }
 
@@ -251,9 +256,4 @@ void UserInterface::draw()
         line.setUp(scene);
         line.draw();
     }
-}
-
-Vector3 UserInterface::getTarget()
-{
-    return targetPosition;
 }

@@ -143,6 +143,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\temp\gl3w\src\gl3w.c" />
     <ClCompile Include="BoundingBox.cpp" />
+    <ClCompile Include="BoundingBoxModel.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraControl.cpp" />
     <ClCompile Include="Entity.cpp" />
@@ -184,6 +185,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoundingBox.h" />
+    <ClInclude Include="BoundingBoxModel.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraControl.h" />
     <ClInclude Include="Entity.h" />

@@ -12,73 +12,16 @@
 #include "LineMaterial.h"
 #include <vector>
 #include <array>
+#include "BoundingBoxModel.h"
 
 
-Vector3 calcNormal(Vector3 a, Vector3 b, Vector3 c)
+Entity::Entity(Vector3 pos, Vector3 dir, Vector3 up, real height, real width, real depth) : pos(pos), dir(dir), up(up)
 {
-    return ((c-b)%(a-b)).normalized();
-}
-
-
-Entity::Entity(Vector3 pos, Vector3 dir, Vector3 up) : pos(pos), dir(dir), up(up)
-{
-    real w = 0.3, h = 0.3, d = 0.3;
-
-    std::vector<Vector3> c = {
-        { -w/2, -d/2, -h/2 }, // bottom-front-left
-        {  w/2, -d/2, -h/2 }, // bottom-front-right
-        {  w/2, -d/2,  h/2 }, // top-front-right
-        { -w/2, -d/2,  h/2 }, // top-front-left
-        { -w/2,  d/2, -h/2 }, // bottom-back-left
-        {  w/2,  d/2, -h/2 }, // bottom-back-right
-        {  w/2,  d/2,  h/2 }, // top-back-right
-        { -w/2,  d/2,  h/2 }  // top-back-left
-    };
-
-    std::vector<std::vector<int>> cornerIndices = {
-        { 0, 1, 2, 3 },
-        { 1, 5, 6, 2 },
-        { 4, 7, 6, 5 },
-        { 0, 3, 7, 4 },
-        { 2, 6, 7, 3 },
-        { 0, 4, 5, 1 }
-    };
-
-    std::vector<int> triangles;
-    std::vector<Vertex3d> vertices;
-
-    for(auto ci : cornerIndices) {
-        int t1[3] = { 0, 1, 2 }, t2[3] = { 0, 2, 3 };
-
-        int j = vertices.size();
-        for(int i = 0; i < 4; i++)
-            vertices.push_back({ c[ci[i]], calcNormal(c[ci[0]], c[ci[1]], c[ci[2]]), { 0, 0 } });
-        triangles.insert(triangles.end(), { j, j+1, j+2 } );
-        triangles.insert(triangles.end(), { j, j+2, j+3 } );
-    }
-
-    auto material = new LambertianMaterial({ 0, 0.8, 0.1 });
-    boundingBoxMesh = new Mesh3d(vertices, triangles, material);
-    boundingBoxModel = new Model3d(*boundingBoxMesh);
-    bbox = BoundingBox(Vector3(-w/2, -d/2, -h/2), Vector3(w/2, d/2, h/2));
-    auto d1 = std::max(w, d);
-    auto d2 = std::max(d, h);
-
-    auto material2 = new LineMaterial({ 0, 0.8, 0.1 });
-    std::vector<Vector3> vs({ { w/2, 0, 0 }, { w, 0, 0 }, { (1.f - 0.25f)*w, w*0.25f, 0 }, { w*(1.0f - 0.25f), -w*0.25f, 0 }, { 0, 0, h/2 }, { 0, 0, h }, { 0, h*0.25f, (1.f - 0.25f)*h }, { 0, -h*0.25f, h*(1.0f - 0.25f) } });
-    lineMesh = new LineMesh3d(vs, { { 0, 1 }, { 1, 2 }, { 1, 3 }, { 4, 5 }, { 5, 6 }, { 5, 7 } }, material2, 2);
-    boundingBoxModel->addMesh(*lineMesh);
-
-    boundingBoxModel->setPosition(pos);
-    boundingBoxModel->setDirection(dir, up);
 }
 
 
 Entity::~Entity()
 {
-    //delete boundingBoxModel;
-    //delete boundingBoxMesh;
-    delete lineMesh;
 }
 
 
@@ -104,7 +47,7 @@ bool Entity::intersectBoundingBox(const Ray& ray)
     auto ray2 = Ray(Vector3(u, v, w), Vector3(u2, v2, w2));
 
     real tnear, tfar;
-    if(bbox.intersect(ray2, tnear, tfar)) {
+    if(boundingBox.intersect(ray2, tnear, tfar)) {
         return true;
     }
     return false;
@@ -140,9 +83,9 @@ void Entity::plant(const Terrain& terrain)
     auto y = Vector3(-dir.y, dir.x, 0).normalized();
     auto z = Vector3(0, 0, 1);
 
-    auto height = (bbox.c2.z-bbox.c1.z)/2;
-    auto width = (bbox.c2.x-bbox.c1.x)/2;
-    auto depth = (bbox.c2.y-bbox.c1.y)/2;
+    auto height = (boundingBox.c2.z-boundingBox.c1.z)/2;
+    auto width = (boundingBox.c2.x-boundingBox.c1.x)/2;
+    auto depth = (boundingBox.c2.y-boundingBox.c1.y)/2;
 
     auto a = pos + x*width + y*depth;
     auto b = pos - x*width + y*depth;
@@ -184,4 +127,14 @@ void Entity::setDirection(Vector3 dir, Vector3 up)
 Vector3 Entity::getPosition() const
 {
     return pos;
+}
+
+void Entity::setTarget(Vector3 target)
+{
+    this->target = target;
+}
+
+Vector3 Entity::getTarget() const
+{
+    return target;
 }

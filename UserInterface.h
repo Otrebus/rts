@@ -8,6 +8,7 @@ class Input;
 class Scene;
 class Entity;
 class Ray;
+class CameraControl;
 
 enum SelectState {
     NotSelecting, Clicking, DrawingBox
@@ -16,23 +17,21 @@ enum SelectState {
 class UserInterface
 {
 public:
-    UserInterface(Scene* scene);
+    UserInterface(Scene* scene, CameraControl* cameraControl);
 
     void draw();
 
-    void handleInput(const Input& input, std::vector<Entity*> entities);
+    void handleInput(const Input& input, const std::vector<Entity*>& entities);
     void setResolution(int xres, int yres);
 
     void selectEntities(std::vector<Entity*> entities);
-    void selectEntity(const Ray& ray, std::vector<Entity*> entities);
-
-    Vector3 getTarget();
+    void selectEntity(const Ray& ray, const std::vector<Entity*>& entities);
 
 //private:
+    CameraControl* cameraControl;
     int xres, yres;
     int mouseX, mouseY;
     enum SelectState selectState;
     Vector2 drawBoxc1, drawBoxc2;
     Scene* scene;
-    Vector3 targetPosition;
 };

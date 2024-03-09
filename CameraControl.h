@@ -12,7 +12,7 @@ class Input;
 
 enum CameraMode
 {
-    FollowingReset, Freelook, Following
+    FollowingReset = 0, Freelook = 1, Following = 2
 };
 
 
@@ -23,7 +23,6 @@ class CameraControl
     real terrainDist;
 
     CameraMode cameraMode;
-    bool panning = false;
 
     Vector3 terrainPos;
 
@@ -34,6 +33,7 @@ class CameraControl
     Terrain* terrain;
 
     void setPosFromTerrainPos();
+    void setTerrainPosFromPos();
 
 public:
     CameraControl(Camera* cam, Terrain* terrain);
@@ -49,4 +49,5 @@ public:
     void moveForward(real t);
     void moveRight(real t);
     void changeMode(CameraMode);
+    CameraMode getMode() const;
 };

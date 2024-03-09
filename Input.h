@@ -32,28 +32,23 @@ struct QueuedInput
 struct Input
 {
     Input() {}
-    Input(real posX, real posY, int key, InputType stateStart, InputType stateEnd, real timeStart, real timeEnd, InputQueue* queue) : posX(posX), posY(posY), key(key), stateStart(stateStart), stateEnd(stateEnd), timeStart(timeStart), timeEnd(timeEnd), inputQueue(queue) {}
+    Input(real posX, real posY, int key, InputType stateStart, InputType stateEnd, real timeStart, real timeEnd) : posX(posX), posY(posY), key(key), stateStart(stateStart), stateEnd(stateEnd), timeStart(timeStart), timeEnd(timeEnd) {}
     real posX, posY;
     int key;
     InputType stateStart, stateEnd;
     real timeStart, timeEnd;
-    InputQueue* inputQueue;
 };
 
-struct InputQueue
+class InputQueue
 {
-    Input lastKeyboardKey[GLFW_KEY_LAST], lastMouseKey[GLFW_MOUSE_BUTTON_LAST];
+public:
+    InputQueue(const InputQueue&) = delete;
+    InputQueue& operator=(const InputQueue&) = delete;
 
-    std::queue<QueuedInput> queue;
-    bool mouseState[8];
-    int keyState[GLFW_KEY_LAST];
-    real posX, posY;
-    GLFWwindow* window;
-
-    real timeMouse[8];
-    real timeKey[GLFW_KEY_LAST];
-
-    InputQueue();
+    static InputQueue& getInstance() {
+        static InputQueue instance;
+        return instance;
+    }
 
     void addKeyInput(real time, int key, int state);
     void addMouseInput(real time, int key, int state);
@@ -66,8 +61,24 @@ struct InputQueue
     bool hasInput();
     QueuedInput peek();
     QueuedInput pop();
+
+    std::vector<Input*> handleInput(real prevTime, real time);
+    void initInput(GLFWwindow* window);
+
+private:
+    InputQueue();
+    Input lastKeyboardKey[GLFW_KEY_LAST], lastMouseKey[GLFW_MOUSE_BUTTON_LAST];
+
+    std::queue<QueuedInput> queue;
+    bool mouseState[8];
+    int keyState[GLFW_KEY_LAST];
+    real posX, posY;
+    GLFWwindow* window;
+
+    real timeMouse[8];
+    real timeKey[GLFW_KEY_LAST];
 };
 
 
 void initInput(GLFWwindow* window);
-std::vector<Input*> handleInput(GLFWwindow* window, real prevTime, real time, CameraControl& cameraControl, Terrain& terrain);
+
