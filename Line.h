@@ -17,6 +17,8 @@ public:
     void setUp(Scene* scene);
     void draw();
     void tearDown();
+    void setVertices(const std::vector<Vector3>& vertices);
+    void setInFront(bool); // TODO: dumb
 
 private:
     GLuint VAO, VBO;
@@ -25,6 +27,7 @@ private:
 
     ShaderProgram* program;
 
+    bool inFront;
     static Shader* fragmentShader;
     static Shader* vertexShader;
 };

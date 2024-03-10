@@ -49,7 +49,6 @@ private:
 	void selectTriangle(int i, bool selected);
 
 
-
 public:
 	void setUp();
 	void tearDown();

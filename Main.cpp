@@ -153,7 +153,7 @@ int main()
 
     Terrain terrain("Heightmap.bmp", &scene);
     CameraControl cameraControl(&cam, &terrain);
-    Tank* tank = new Tank({ 0.5f, 0.5f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1);
+    Tank* tank = new Tank({ 0.5f, 0.5f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
 //    tank->setUp(&scene);
     entities.push_back(tank);
 
@@ -196,7 +196,8 @@ int main()
             entity->updateUniforms();
             entity->drawBoundingBox();
         }*/
-
+        
+        terrain.draw();
         for(auto& entity : entities)
         {
             entity->draw();
@@ -208,7 +209,6 @@ int main()
 
         //model.draw();
 
-        terrain.draw();
         
         // checkError();
         interface.setResolution(xres, yres);

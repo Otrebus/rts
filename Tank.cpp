@@ -6,7 +6,7 @@
 class Scene;
 class Vector3;
 
-Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width) : Entity(pos, dir, up), turnRate(0), velocity({ 0, 0 }), acceleration(0)
+Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) : Entity(pos, dir, up), turnRate(0), velocity({ 0, 0 }), acceleration(0), terrain(terrain)
 {
     body = new Model3d("tankbody.obj");
     turret = new Model3d("tankturret.obj");
@@ -60,10 +60,13 @@ Tank::~Tank()
 
 void Tank::setUp(Scene* scene)
 {
+    this->scene = scene;
     body->setUp(scene);
     turret->setUp(scene);
     gun->setUp(scene);
     boundingBoxModel->setUp(scene);
+    destinationLine.setUp(scene);
+    destinationLine.setInFront(true);
 }
 
 
@@ -78,11 +81,18 @@ void Tank::updateUniforms()
 
 void Tank::draw()
 {
+    destinationLine.setVertices( { pos, target });
+
     body->draw();
     turret->draw();
     gun->draw();
     if(selected)
         boundingBoxModel->draw();
+
+    if(selected && target.length() > 0)
+    {
+        destinationLine.draw();
+    }
 }
 
 
@@ -118,7 +128,7 @@ void Tank::accelerate(Vector2 accTarget)
     auto dir = Vector2(this->dir.x, this->dir.y);
 
     auto projAcc = turnAcc.length()/(turnAcc.normalized()*accTarget.normalized());
-    acceleration = std::max(-maxAcc, std::min(maxAcc, (accTarget.normalized()*projAcc)*dir));
+    acceleration = std::max(-maxBreakAcc, std::min(maxForwardAcc, (accTarget.normalized()*projAcc)*dir));
 
     //auto acc = Vector2(-dir.y, dir.x)*turnRate*velocity.length() + linearAcc;
 

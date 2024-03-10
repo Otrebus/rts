@@ -5,11 +5,13 @@
 
 Line3d::Line3d() : VAO(0), VBO(0) {}
 
-Line3d::Line3d(const std::vector<Vector3>& vertices) : VAO(0), VBO(0) {
-        for (const auto& vertex : vertices) {
-            vertexData.push_back(vertex.x);
-            vertexData.push_back(vertex.y);
-            vertexData.push_back(vertex.z);
+Line3d::Line3d(const std::vector<Vector3>& vertices) : VAO(0), VBO(0)
+{
+    for (const auto& vertex : vertices)
+    {
+        vertexData.push_back(vertex.x);
+        vertexData.push_back(vertex.y);
+        vertexData.push_back(vertex.z);
     }
     if(!fragmentShader)
         fragmentShader = new Shader("line.frag", GL_FRAGMENT_SHADER);
@@ -17,11 +19,13 @@ Line3d::Line3d(const std::vector<Vector3>& vertices) : VAO(0), VBO(0) {
         vertexShader = new Shader("line.vert", GL_VERTEX_SHADER);
 }
 
-Line3d::~Line3d() {
+Line3d::~Line3d()
+{
     tearDown();
 }
 
-void Line3d::setUp(Scene* scene) {
+void Line3d::setUp(Scene* scene)
+{
     this->scene = scene;
 
     glGenVertexArrays(1, &VAO);
@@ -35,7 +39,26 @@ void Line3d::setUp(Scene* scene) {
     glEnableVertexAttribArray(0);
 }
 
-void Line3d::draw() {
+void Line3d::setVertices(const std::vector<Vector3>& vertices)
+{
+    vertexData.clear();
+    for (const auto& vertex : vertices)
+    {
+        vertexData.push_back(vertex.x);
+        vertexData.push_back(vertex.y);
+        vertexData.push_back(vertex.z);
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(float), vertexData.data(), GL_STATIC_DRAW);
+}
+
+void Line3d::setInFront(bool inFront)
+{
+    this->inFront = inFront;
+}
+
+void Line3d::draw()
+{
     auto s = scene->getShaderProgramManager();
     auto program = s->getProgram(fragmentShader, vertexShader);
     scene->setShaderProgram(program);
@@ -44,12 +67,18 @@ void Line3d::draw() {
 
     auto perspM = scene->getCamera()->getMatrix();
 
+    bool depthDestIsEnabled = glIsEnabled(GL_DEPTH_TEST);
+    if(inFront)
+        glDisable(GL_DEPTH_TEST);
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)(&perspM.m_val));
     glBindVertexArray(VAO);
     glDrawArrays(GL_LINE_STRIP, 0, vertexData.size()/3);
+    if(inFront && depthDestIsEnabled)
+        glEnable(GL_DEPTH_TEST);
 }
 
-void Line3d::tearDown() {
+void Line3d::tearDown()
+{
     glDeleteBuffers(1, &VBO);
     glDeleteVertexArrays(1, &VAO);
 }

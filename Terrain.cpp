@@ -7,6 +7,7 @@
 #include "Math.h"
 #include <array>
 #include "Ray.h"
+#include <set>
 
 
 TerrainMesh* Terrain::createMesh(std::string fileName)
@@ -218,7 +219,7 @@ void Terrain::draw()
 
 real Terrain::getElevation(real x, real y) const
 {
-        // TODO: could overflow, check
+    // TODO: could overflow, check
     // temporary hack
     if(y > 0)
         y -= 1e-4;
@@ -337,6 +338,63 @@ std::pair<int, int> Terrain::getClosestAdmissible(Vector2 v) const
 
 std::vector<Vector2> Terrain::findPath(Vector2 start, Vector2 destination)
 {
+    auto V = new bool[width*height];
+    auto C = new real[width*height];
+    auto P = new std::pair<int, int>[width*height];
+
+    std::fill(V, V+width*height, false);
+    std::fill(C, C+width*height, inf);
+
+    std::set<std::pair<real, std::pair<int, int>>> Q;
+
+    auto [startX, startY] = getClosestAdmissible(start);
+    auto [destX, destY] = getClosestAdmissible(destination);
+
+    int startIndex = start.y*width + start.x;
+    int endIndex = destination.y*width + destination.x;
+
+    Q.insert({ 0.f, { startX, startY } });
+    while(!Q.empty())
+    {
+        auto it = Q.begin();
+        auto [prio, node] = *it;
+        auto [x, y] = node;
+        Q.erase(it);
+        auto i = x + y*width;
+
+        for(int dx = -1; dx <= 1; dx++)
+        {
+            for(int dy = -1; dy <= 1; dy++)
+            {
+                int j = (y+dy)*width + x+dx;
+                if((dx || dy) && inBounds(x+dx, y+dy) && !V[j])
+                {
+                    int hx = (destY-(y+dy));
+                    int hy = (destX-(x+dx));
+                    real h = std::sqrt(hx*hx + hy*hy);
+                    if(auto c2 = C[i] + std::sqrt(dx*dx+dy*dy); c2 < C[j])
+                    {
+                        Q.erase({ C[j]+h, { x+dx, y+dy } });
+                        Q.insert({ c2 + h, { x+dx, y+dy } });
+                    }
+                }
+            }
+        }
+    };
+    if(C[destX+destY*width] < inf)
+    {
+        std::vector<Vector2> result;
+
+        for(std::pair<int, int> node = { destX, destY };;)
+        {
+            auto [x, y] = node;
+            result.push_back({ x, y });
+            if(x == startX && y == startY)
+                break;
+            node = P[x+y*width];
+        }
+        return result;
+    }
     return {};
 }
 

@@ -13,6 +13,7 @@
 #include "Entity.h"
 #include "Model3d.h"
 #include "Math.h"
+#include "Line.h"
 
 
 class Model3d;
@@ -23,7 +24,7 @@ class BoundingBoxModel;
 class Tank : public Entity
 {
 public:
-    Tank(Vector3 pos, Vector3 dir, Vector3 up, real width);
+    Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain);
     virtual ~Tank();
 
     virtual void setUp(Scene* scene);
@@ -44,12 +45,17 @@ public:
     Model3d* turret;
     Model3d* gun;
 
-    const real maxTurnRate = 0.5*pi/4;
-    const real maxTurnAcc = 1;
+    const real maxTurnRate = 1.2*pi/4;
+    const real maxTurnAcc = 4;
     const real maxSpeed = 2;
-    const real maxAcc = 0.7; // TODO: breakacc vs forwardacc
+    const real maxForwardAcc = 0.7; // TODO: breakacc vs forwardacc
+    const real maxBreakAcc = 1.5;
 
+    Scene* scene;
+    Terrain* terrain;
     real acceleration;
     real turnRate;
     Vector2 velocity;
+
+    Line3d destinationLine;
 };
