@@ -68,6 +68,7 @@ void Line3d::draw()
     auto perspM = scene->getCamera()->getMatrix();
 
     bool depthDestIsEnabled = glIsEnabled(GL_DEPTH_TEST);
+
     if(inFront)
         glDisable(GL_DEPTH_TEST);
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)(&perspM.m_val));

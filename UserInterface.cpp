@@ -230,8 +230,13 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
 
         auto pos = scene->getTerrain()->intersect(Ray(scene->getCamera()->getPos(), dir));
         for(auto entity : entities)
+        {
             if(entity->selected)
+            {
                 entity->setTarget(pos);
+                scene->getTerrain()->findPath(entity->getPosition().to2(), pos.to2());
+            }
+        }
     }
 }
 

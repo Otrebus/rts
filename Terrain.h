@@ -36,7 +36,6 @@ private:
 	std::vector<int> triangleIndices;
 
 	void calcAdmissiblePoints();
-	std::vector<Vector2> findPath(Vector2 start, Vector2 destination);
 	
 	
 	bool inBounds(int x, int y) const;
@@ -58,6 +57,7 @@ public:
 	Vector3 intersect(const Ray& ray);
 	DrawMode getDrawMode() const;
 	std::pair<Vector3, Vector3> getBoundingBox() const;
+	std::vector<Vector2> findPath(Vector2 start, Vector2 destination);
 	real getElevation(real x, real y) const;
 	real getWidth() const;
 	real getHeight() const;

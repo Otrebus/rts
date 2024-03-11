@@ -43,6 +43,9 @@ public:
     void setTarget(Vector3 pos);
     Vector3 getTarget() const;
 
+    void setPath(std::vector<Vector2> path);
+    const std::vector<Vector2>& getPath() const;
+
     Vector3 dir, up, pos;
     Vector3 target;
     real width, height, depth;
@@ -52,4 +55,5 @@ public:
     BoundingBox boundingBox;
 
     bool selected;
+    std::vector<Vector2> path;
 };

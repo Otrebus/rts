@@ -138,3 +138,13 @@ Vector3 Entity::getTarget() const
 {
     return target;
 }
+
+void Entity::setPath(std::vector<Vector2> path)
+{
+    this->path = path;
+}
+
+const std::vector<Vector2>& Entity::getPath() const
+{
+    return path;
+}

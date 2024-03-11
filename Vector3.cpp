@@ -1,6 +1,7 @@
 #include "Vector3.h"
 #include "Matrix4.h"
 #include <iostream>
+#include "Vector2.h"
 
 
 Vector3::Vector3(real x, real y, real z) : x(x), y(y), z(z)
@@ -188,4 +189,9 @@ Vector3& Vector3::operator*=(const Matrix4& m)
 {
     *this = m**this;
     return *this;
+}
+
+Vector2 Vector3::to2() const
+{
+    return { x, y };
 }

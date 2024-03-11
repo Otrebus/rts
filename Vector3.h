@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 class Matrix4;
+class Vector2;
 
 class Vector3
 {
@@ -43,6 +44,8 @@ public:
     void normalize();
     Vector3 normalized() const;
     bool isValid() const;
+
+    Vector2 to2() const;
 
     real x, y, z;
 };

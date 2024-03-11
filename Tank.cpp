@@ -2,10 +2,12 @@
 #include "Model3d.h"
 #include "Utils.h"
 #include "BoundingBoxModel.h"
+#include "Terrain.h"
 
 class Scene;
 class Vector3;
 
+// TODO: no need to get terrain since we have scene->getTerrain()
 Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) : Entity(pos, dir, up), turnRate(0), velocity({ 0, 0 }), acceleration(0), terrain(terrain)
 {
     body = new Model3d("tankbody.obj");
@@ -81,7 +83,12 @@ void Tank::updateUniforms()
 
 void Tank::draw()
 {
-    destinationLine.setVertices( { pos, target });
+    //destinationLine.setVertices( { pos, target });
+    std::vector<Vector3> P;
+    // TODO: slow
+    for(auto p : path)
+        P.push_back( { p.x, p.y, terrain->getElevation(p.x, p.y) });
+    destinationLine.setVertices(P);
 
     body->draw();
     turret->draw();

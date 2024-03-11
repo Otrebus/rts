@@ -372,7 +372,7 @@ std::vector<Vector2> Terrain::findPath(Vector2 start, Vector2 destination)
                     int hx = (destY-(y+dy));
                     int hy = (destX-(x+dx));
                     real h = std::sqrt(hx*hx + hy*hy);
-                    if(auto c2 = C[i] + std::sqrt(dx*dx+dy*dy); c2 < C[j])
+                    if(auto c2 = C[i] + std::sqrt(real(dx*dx+dy*dy)); c2 < C[j])
                     {
                         Q.erase({ C[j]+h, { x+dx, y+dy } });
                         Q.insert({ c2 + h, { x+dx, y+dy } });
@@ -388,7 +388,7 @@ std::vector<Vector2> Terrain::findPath(Vector2 start, Vector2 destination)
         for(std::pair<int, int> node = { destX, destY };;)
         {
             auto [x, y] = node;
-            result.push_back({ x, y });
+            result.push_back({ real(x), real(y) });
             if(x == startX && y == startY)
                 break;
             node = P[x+y*width];
