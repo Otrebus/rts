@@ -338,6 +338,7 @@ std::pair<int, int> Terrain::getClosestAdmissible(Vector2 v) const
 
 std::vector<Vector2> Terrain::findPath(Vector2 start, Vector2 destination)
 {
+    // TODO: dealloc or use container
     auto V = new bool[width*height];
     auto C = new real[width*height];
     auto P = new std::pair<int, int>[width*height];
@@ -350,8 +351,9 @@ std::vector<Vector2> Terrain::findPath(Vector2 start, Vector2 destination)
     auto [startX, startY] = getClosestAdmissible(start);
     auto [destX, destY] = getClosestAdmissible(destination);
 
-    int startIndex = start.y*width + start.x;
-    int endIndex = destination.y*width + destination.x;
+    int startIndex = startY*width + startX;
+    int endIndex = destY*width + destX;
+    C[startIndex] = 0;
 
     Q.insert({ 0.f, { startX, startY } });
     while(!Q.empty())
@@ -361,21 +363,26 @@ std::vector<Vector2> Terrain::findPath(Vector2 start, Vector2 destination)
         auto [x, y] = node;
         Q.erase(it);
         auto i = x + y*width;
+        V[i] = true;
+        if(i == endIndex)
+            break;
 
         for(int dx = -1; dx <= 1; dx++)
         {
             for(int dy = -1; dy <= 1; dy++)
             {
                 int j = (y+dy)*width + x+dx;
-                if((dx || dy) && inBounds(x+dx, y+dy) && !V[j])
+                if((dx || dy) && inBounds(x+dx, y+dy) && !V[j] && isAdmissible(x+dx, y+dy))
                 {
                     int hx = (destY-(y+dy));
                     int hy = (destX-(x+dx));
                     real h = std::sqrt(hx*hx + hy*hy);
                     if(auto c2 = C[i] + std::sqrt(real(dx*dx+dy*dy)); c2 < C[j])
                     {
+                        P[(y+dy)*width+x+dx] = { x, y };
                         Q.erase({ C[j]+h, { x+dx, y+dy } });
                         Q.insert({ c2 + h, { x+dx, y+dy } });
+                        C[j] = c2;
                     }
                 }
             }

@@ -234,7 +234,8 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
             if(entity->selected)
             {
                 entity->setTarget(pos);
-                scene->getTerrain()->findPath(entity->getPosition().to2(), pos.to2());
+                auto path = scene->getTerrain()->findPath(entity->getPosition().to2(), pos.to2());
+                entity->setPath(path);
             }
         }
     }
