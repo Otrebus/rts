@@ -30,6 +30,7 @@ ShaderProgram* ShaderProgramManager::getProgram(Shader* fragmentShader, Shader* 
     }
     else
         return it->second;*/
+    return shaderProgram;
 }
 
 ShaderProgram* ShaderProgramManager::getProgram(Shader* fragmentShader, Shader* vertexShader)
@@ -45,4 +46,5 @@ ShaderProgram* ShaderProgramManager::getProgram(Shader* fragmentShader, Shader* 
     auto shaderProgram = new ShaderProgram();
     shaderProgram->addShaders(*fragmentShader, *vertexShader);
     programMap.push_back({ key, shaderProgram });
+    return shaderProgram;
 }

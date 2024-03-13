@@ -3,7 +3,6 @@
 in vec3 N_s;
 in vec3 N_g; // Updated to use the geometric normal
 in vec3 tocam; // Updated to use the toCam vector
-in float selected;
 
 in vec2 texCoord;
 out vec4 FragColor;
@@ -23,7 +22,7 @@ void main()
 
     color = clamp(color, 0.0, 1.0);
 
-    FragColor = (selected >= 0.999) ? vec4(1, 0, 0, 1) : vec4(color, 1.0f);
+    FragColor = vec4(color, 1.0f);
 
     vec2 p = texCoord;
     vec2 grid = abs(fract(p-0.5)-0.5)/fwidth(p);

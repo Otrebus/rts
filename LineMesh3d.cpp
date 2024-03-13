@@ -74,7 +74,6 @@ void LineMesh3d::draw()
     glLineWidth(2);
     glBindVertexArray(VAO);
     glDrawElements(GL_LINES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
 }
 
 void LineMesh3d::updateUniforms()
