@@ -43,7 +43,8 @@ public:
     void normalize();
     Vector2 normalized() const;
     bool isValid() const;
-
+    
+    Vector3 to3() const;
     real x, y;
 };
 

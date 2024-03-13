@@ -1,4 +1,5 @@
 #include "Vector2.h"
+#include "Vector3.h"
 
 
 Vector2::Vector2(float x, float y) : x(x), y(y)
@@ -140,4 +141,9 @@ Vector2 Vector2::rotated(real angle) const
 std::ostream& operator<<(std::ostream& s, const Vector2& v)
 {
     return(s << "(" << v.x << "," << v.y << ")");
+}
+
+Vector3 Vector2::to3() const
+{
+    return { x, y, 0 };
 }

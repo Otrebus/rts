@@ -167,11 +167,18 @@ void Tank::update(real dt)
     auto newDir = Vector2(dir.x, dir.y).normalized().rotated(turnRate*dt);
     dir = Vector3(newDir.x, newDir.y, 0).normalized();
     
-    if(target.length() > 0.0001) {
-        auto v2 = (target - pos).normalized()*maxSpeed;
-        auto v1 = velocity;
-        auto v = Vector2(v2.x, v2.y) - v1;
-        accelerate(v);
+    if(!path.empty())
+    {
+        auto target = path.back();
+
+        if(target.length() > 0.0001) {
+            if((target - pos.to2()).length() < 0.5)
+                path.pop_back();
+            auto v2 = (target - pos.to2()).normalized()*maxSpeed;
+            auto v1 = velocity;
+            auto v = Vector2(v2.x, v2.y) - v1;
+            accelerate(v);
+        }
     }
 }
 
