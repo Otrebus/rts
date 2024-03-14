@@ -153,6 +153,7 @@ int main()
 
     Terrain terrain("Heightmap.bmp", &scene);
     CameraControl cameraControl(&cam, &terrain);
+
     Tank* tank = new Tank({ 70.5f, 180.5f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
 //    tank->setUp(&scene);
     entities.push_back(tank);
