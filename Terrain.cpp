@@ -400,9 +400,58 @@ std::vector<Vector2> Terrain::findPath(Vector2 start, Vector2 destination)
                 break;
             node = P[x+y*width];
         }
-        return result;
+        return straightenPath(result);
     }
     return {};
+}
+
+
+bool Terrain::isVisible(Vector2 start, Vector2 end) const
+{
+    auto dx = end.x-start.x;
+    auto dy = end.y-start.y;
+    if(std::abs(dx) > std::abs(dy))
+    {
+        if(dx < 0)
+            return isVisible(end, start);
+        for(int x = std::ceil(start.x); x <= std::floor(end.x); x++)
+        {
+            auto y = start.y + (dy/dx)*(x-start.x);
+            int Y = int(y + 0.5f);
+            int X = x;
+            if(!isAdmissible(x, y))
+                return false;
+        }
+    }
+    else
+    {
+        if(dy < 0)
+            return isVisible(end, start);
+        for(int y = std::ceil(start.y); y <= std::floor(end.y); y++)
+        {
+            auto x = start.x + (dx/dy)*(y-start.y);
+            int X = int(x + 0.5f);
+            int Y = y;
+            if(!isAdmissible(x, y))
+                return false;
+        }
+    }
+    return true;
+}
+
+std::vector<Vector2> Terrain::straightenPath(const std::vector<Vector2>& path) const
+{
+    std::vector<Vector2> result;
+    for(int i = 0; i < path.size()-1; i++)
+    {
+        int j = i+1;
+        while(j < path.size()-1 && isVisible(path[i], path[j]))
+            j++;
+        result.push_back(path[i]);
+        result.push_back(path[j]);
+        i = j;
+    }
+    return result;
 }
 
 real Terrain::getHeight() const

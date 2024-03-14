@@ -47,6 +47,9 @@ private:
 
 	void selectTriangle(int i, bool selected);
 
+	bool isVisible(Vector2 start, Vector2 end) const;
+	std::vector<Vector2> straightenPath(const std::vector<Vector2>& path) const;
+
 
 public:
 	void setUp();
