@@ -177,7 +177,7 @@ int main()
 
     checkError();
 
-    UserInterface interface(&scene, &cameraControl);
+    UserInterface interface(window, &scene, &cameraControl);
 
     int frames = 0;
     real frameTime = 0;

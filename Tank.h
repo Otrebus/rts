@@ -37,6 +37,7 @@ public:
     Vector2 getVelocity() const;
 
     void accelerate(Vector2 dir);
+    void brake();
     void turn(bool dir);
 
     void update(real dt);

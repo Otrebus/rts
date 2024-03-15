@@ -17,7 +17,7 @@ enum SelectState {
 class UserInterface
 {
 public:
-    UserInterface(Scene* scene, CameraControl* cameraControl);
+    UserInterface(GLFWwindow* window, Scene* scene, CameraControl* cameraControl);
 
     void draw();
 
@@ -27,6 +27,8 @@ public:
     void selectEntities(std::vector<Entity*> entities);
     void selectEntity(const Ray& ray, const std::vector<Entity*>& entities);
 
+    void setCursor(int shape);
+
 //private:
     CameraControl* cameraControl;
     int xres, yres;
@@ -34,4 +36,7 @@ public:
     enum SelectState selectState;
     Vector2 drawBoxc1, drawBoxc2;
     Scene* scene;
+
+    GLFWcursor* cursor;
+    GLFWwindow* window;
 };

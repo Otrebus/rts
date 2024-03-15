@@ -7,7 +7,7 @@
 #include "Ray.h"
 
 
-UserInterface::UserInterface(Scene* scene, CameraControl* cameraControl) : scene(scene), cameraControl(cameraControl)
+UserInterface::UserInterface(GLFWwindow* window, Scene* scene, CameraControl* cameraControl) : scene(scene), cameraControl(cameraControl), cursor(nullptr), window(window)
 {
     drawBoxc1 = { 0, 0 };
     drawBoxc2 = { 0, 0 };
@@ -197,6 +197,7 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
         drawBoxc1.x = real(2*mouseX)/xres - 1;
         drawBoxc1.y = -(real(2*mouseY)/yres - 1);
         drawBoxc2 = drawBoxc1;
+        setCursor(GLFW_CROSSHAIR_CURSOR);
     }
     if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_1)
     {
@@ -209,6 +210,8 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
             selectEntity(Ray(scene->getCamera()->getPos(), dir), entities);
         }
         selectState = NotSelecting;
+        setCursor(GLFW_ARROW_CURSOR);
+
     }
     if(input.stateStart == InputType::MousePosition)
     {
@@ -262,4 +265,12 @@ void UserInterface::draw()
         line.setUp(scene);
         line.draw();
     }
+}
+
+void UserInterface::setCursor(int shape)
+{
+    if(cursor)
+        glfwDestroyCursor(cursor);
+    cursor = glfwCreateStandardCursor(shape);
+    glfwSetCursor(window, cursor);
 }

@@ -88,6 +88,7 @@ void Tank::draw()
     // TODO: slow
     for(auto p : path)
         P.push_back( { p.x, p.y, terrain->getElevation(p.x, p.y) });
+    P.push_back(getPosition());
     destinationLine.setVertices(P);
 
     body->draw();
@@ -126,7 +127,6 @@ void Tank::setDirection(Vector3 dir, Vector3 up)
 
 void Tank::accelerate(Vector2 accTarget)
 {
-    // Could use some sort of PID-like thingy as well
     turn((this->dir%Vector3(accTarget.x, accTarget.y, 0.f)).z > 0);
 
     auto linearAcc = Vector2((dir.normalized()*acceleration).x, (dir.normalized()*acceleration).y);
@@ -148,6 +148,11 @@ void Tank::accelerate(Vector2 accTarget)
     //std::cout << acceleration << std::endl;
 }
 
+void Tank::brake()
+{
+    turnRate = 0;
+    acceleration = -maxBreakAcc;
+}
 
 void Tank::turn(bool left)
 {
@@ -180,6 +185,8 @@ void Tank::update(real dt)
             accelerate(v);
         }
     }
+    else
+        brake();
 }
 
 Vector2 Tank::getVelocity() const

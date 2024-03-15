@@ -18,7 +18,7 @@ TerrainMesh* Terrain::createMesh(std::string fileName)
     triangleIndices.clear();
 
     auto H = [&colors, &width, &height] (int x, int y) {
-        return colors[width*3*(height-y-1)+x*3]/255.0*width/10;
+        return colors[width*3*(height-y-1)+x*3]/255.0*width/15;
     };
 
     for (int y = 0; y < height; y++)
@@ -338,13 +338,11 @@ std::pair<int, int> Terrain::getClosestAdmissible(Vector2 v) const
 
 std::vector<Vector2> Terrain::findPath(Vector2 start, Vector2 destination)
 {
-    // TODO: dealloc or use container
-    auto V = new bool[width*height];
-    auto C = new real[width*height];
-    auto P = new std::pair<int, int>[width*height];
+    auto time = glfwGetTime();
 
-    std::fill(V, V+width*height, false);
-    std::fill(C, C+width*height, inf);
+    std::vector<bool> V(width*height, false);
+    std::vector<real> C(width*height, inf);
+    std::vector<std::pair<int, int>> P(width*height);
 
     std::set<std::pair<real, std::pair<int, int>>> Q;
 
@@ -388,6 +386,8 @@ std::vector<Vector2> Terrain::findPath(Vector2 start, Vector2 destination)
             }
         }
     };
+
+    std::vector<Vector2> outPath = {};
     if(C[destX+destY*width] < inf)
     {
         std::vector<Vector2> result;
@@ -400,9 +400,11 @@ std::vector<Vector2> Terrain::findPath(Vector2 start, Vector2 destination)
                 break;
             node = P[x+y*width];
         }
-        return straightenPath(result);
+        outPath = straightenPath(result);
+        std::cout << "Constructed path in " << glfwGetTime() - time << std::endl;
     }
-    return {};
+
+    return outPath;
 }
 
 
