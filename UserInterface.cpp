@@ -12,6 +12,7 @@ UserInterface::UserInterface(GLFWwindow* window, Scene* scene, CameraControl* ca
     drawBoxc1 = { 0, 0 };
     drawBoxc2 = { 0, 0 };
     selectState = NotSelecting;
+    intersecting = false;
 }
 
 
@@ -191,6 +192,46 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
     if(cameraControl->getMode() == Freelook)
         return;
 
+    if(intersecting)
+    {
+        auto x = real(2*mouseX)/xres - 1;
+        auto y = -(real(2*mouseY)/yres - 1);
+        
+        auto dir = getViewRay(*scene->getCamera(), x, y);
+        Vector3 w = scene->getTerrain()->intersect(Ray(scene->getCamera()->getPos(), dir));
+        intersectRay.dir = Vector3(w.x-intersectRay.pos.x, w.y-intersectRay.pos.y, 0).normalized();
+
+
+        if(intersectRay.dir == intersectRay.dir)
+        {
+            auto [t, v] = scene->getTerrain()->intersectOcclusion(intersectRay);
+            if(t > -inf) {
+                Line3d line({
+                    intersectRay.pos,
+                    t > -inf ? (intersectRay.pos + intersectRay.dir*t) : Vector3(x, y, 0)
+                });
+                line.setUp(scene);
+                line.setInFront(true);
+                line.draw();
+            }
+        }
+    }
+
+    if(input.stateStart == InputType::MousePress && input.key == GLFW_MOUSE_BUTTON_3)
+    {
+        intersecting = true;
+        auto x = real(2*mouseX)/xres - 1;
+        auto y = -(real(2*mouseY)/yres - 1);
+        
+        auto dir = getViewRay(*scene->getCamera(), x, y);
+        Vector3 w = scene->getTerrain()->intersect(Ray(scene->getCamera()->getPos(), dir));
+        intersectRay.pos = w;
+        
+    }
+    if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_3)
+    {
+        intersecting = false;
+    }
     if(input.stateStart == InputType::MousePress && input.key == GLFW_MOUSE_BUTTON_1)
     {
         selectState = Clicking;

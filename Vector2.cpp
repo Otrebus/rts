@@ -133,6 +133,12 @@ real Vector2::length2() const
 }
 
 
+Vector2 Vector2::perp() const
+{
+    return { -y, x };
+}
+
+
 Vector2 Vector2::rotated(real angle) const
 {
     return Vector2(std::cos(angle)*x-sin(angle)*y, std::sin(angle)*x + cos(angle)*y);

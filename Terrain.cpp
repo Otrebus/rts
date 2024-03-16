@@ -8,6 +8,7 @@
 #include <array>
 #include "Ray.h"
 #include <set>
+#include <algorithm>
 
 
 TerrainMesh* Terrain::createMesh(std::string fileName)
@@ -156,14 +157,6 @@ void Terrain::calcAdmissiblePoints()
             }
         }
     }
-}
-
-
-void Terrain::selectTriangle(int i, bool selected)
-{
-    terrainMesh->selectVertex(triangleIndices[i*3], selected);
-    terrainMesh->selectVertex(triangleIndices[i*3+1], selected);
-    terrainMesh->selectVertex(triangleIndices[i*3+2], selected);
 }
 
 
@@ -407,6 +400,132 @@ std::vector<Vector2> Terrain::findPath(Vector2 start, Vector2 destination)
     return outPath;
 }
 
+
+bool Terrain::isTriangleAdmissible(const Vector3& p1, const Vector3& p2, const Vector3& p3) const
+{
+    auto cosSlope = std::abs((((p2-p1)%(p3-p1)).normalized()).z);
+    return cosSlope >= cosMaxSlope;
+}
+
+
+bool Terrain::isTriangleAdmissible(int x1, int y1, int x2, int y2, int x3, int y3) const
+{
+    if(x1 >= width || x2 >= width || x3 >= width || x1 < 0 || x2 < 0 || x3 < 0)
+        return false;
+    if(y1 >= height || y2 >= height || y3 >= height || y1 < 0 || y2 < 0 || y3 < 0)
+        return false;
+
+    return isTriangleAdmissible(points[y1*width+x1], points[y2*width+x2], points[y3*width+x3]);
+}
+
+
+std::pair<real, Vector2> Terrain::intersectRayOcclusion(Ray ray) const
+{
+    auto p = ray.pos;
+    int x = p.x, y = p.y;
+    int X = x, Y = y;
+    int dx = x-X, dy = y-Y;
+
+    auto v = ray.dir.to2(), w = Vector2(1, 1);
+    real s = (w.x*p.y - p.x*w.y)/(-w.x*v.y+v.x*w.y);
+    real t = inf;
+
+    auto t1 = (1-(p.y-y))/v.y;
+    auto t2 = -(p.y-y)/v.y;
+    auto t3 = (1-(p.x-x))/v.x;
+    auto t4 = -(p.x-x)/v.x;
+
+    if(t1 > eps && t1 < t)
+        t = t1;
+
+    if(t2 > eps && t2 < t)
+        t = t2;
+
+    if(t3 > eps && t3 < t)
+        t = t3;
+
+    if(t4 > eps && t4 < t)
+        t = t4;
+
+    if(t > 0 && s < t)
+    {
+        if(dy < dx && !isTriangleAdmissible(X, Y, X, X+1, X+1, Y+1))
+            return { t, { -real(dx), real(dy) } };
+        if(dx < dy && !isTriangleAdmissible(X, Y, X, X+1, X+1, Y+1))
+            return { t, { real(dx), -real(dy) } };
+    }
+
+    if(t == t1)
+    {
+        if(!isTriangleAdmissible(X, Y+1, X+1, Y+1, X+1, Y+2))
+            return { t, { 0, -1 }};
+    }
+    if(t == t2)
+    {
+        if(!isTriangleAdmissible(X, Y, X+1, Y, X, Y-1))
+            return { t, { 0, 1 }};
+    }
+    if(t == t3)
+    {
+        if(!isTriangleAdmissible(X+1, Y, X+1, Y+1, X+2, Y))
+            return { t, { -1, 0 }};
+    }
+    if(t == t4)
+    {
+        if(!isTriangleAdmissible(X, Y, X-1, Y, X, Y+1))
+            return { t, { 1, 0 }};
+    }
+
+    if(t < inf) {
+        auto [u, V] = intersectRayOcclusion(Ray(ray.pos+ray.dir*t, ray.dir));
+        return { u + t, V };
+    }
+    return { -inf, { 0, 0 } };
+}
+
+real intersectSphereTrianglePath(Vector2 pos, real radius, Vector2 dir, Vector2 p1, Vector2 p2, Vector2 p3)
+{
+    return -inf;
+}
+
+std::pair<real, Vector2> Terrain::intersectSpherePathOcclusion(Vector2 pos, Vector2 pos2, real radius) const
+{
+    auto v = pos2 - pos;
+
+    auto w = v.perp().normalized()*radius;
+
+    Vector2 V[4] = { pos + w, pos + w + v, pos - w, pos - w + v };
+
+    auto y1 = std::min_element(V, V+4, [] (auto u, auto v) { return u.y < v.y; })->y;
+    auto y2 = std::max_element(V, V+4, [] (auto u, auto v) { return u.y < v.y; })->y;
+
+    y1 = int(std::ceil(y1)+eps);
+    y2 = int(y2);
+
+    std::vector<int> L(y2-y1+1, 0);
+    std::vector<int> R(y2-y1+1, 0);
+
+    for(int i = 0; i < 4; i++)
+    {
+        auto a = V[(i+1)%4], b = V[i];
+        auto u = a - b;
+
+        auto ym = std::min(a.y, b.y), yM = std::max(a.y, b.y);
+        auto xm = std::min(a.x, b.x), xM = std::max(a.x, b.x);
+
+        for(int y = std::ceil(ym+eps); y <= int(yM); y++)
+        {
+            auto dy = yM - ym;
+            auto dx = xM - xm;
+            auto x = xm + (dx/dy)*(y-ym);
+            L[y-y1] = std::min(int(x), L[y-y1]);
+            R[y-y1] = std::max(int(std::ceil(x)+eps), L[y-y1]);
+
+            auto t1 = intersectSphereTrianglePath(pos, radius, (pos2-pos).normalized(), getPoint(x, y).to2(), getPoint(x, y-1).to2(), getPoint(x+1, y).to2());
+            auto t2 = intersectSphereTrianglePath(pos, radius, (pos2-pos).normalized(), getPoint(x+1, y).to2(), getPoint(x, y-1).to2(), getPoint(x+1, y+1).to2());
+        }
+    }
+}
 
 bool Terrain::isVisible(Vector2 start, Vector2 end) const
 {

@@ -16,8 +16,6 @@ public:
     //TerrainMesh();
     ~TerrainMesh();
 
-    void selectVertex(int i, bool selected);
-
     static Shader* terrainVertexShader;
 
     Shader* getVertexShader() const;

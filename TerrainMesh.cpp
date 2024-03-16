@@ -45,14 +45,6 @@ void TerrainMesh::setUp(Scene* s)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*triangles.size(), triangles.data(), GL_STATIC_DRAW);
 }
 
-void TerrainMesh::selectVertex(int i, bool selected)
-{
-    float f = selected ? 1.0 : 0.0;
-    int offset = i*9*sizeof(float) + 8*sizeof(float);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferSubData(GL_ARRAY_BUFFER, offset, sizeof(float), &f);
-}
-
 Shader* TerrainMesh::getVertexShader() const
 {
     return terrainVertexShader;

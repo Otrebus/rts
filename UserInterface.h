@@ -3,6 +3,7 @@
 #define NOMINMAX
 #include "Vector2.h"
 #include "Line.h"
+#include "Ray.h"
 
 class Input;
 class Scene;
@@ -27,6 +28,7 @@ public:
     void selectEntities(std::vector<Entity*> entities);
     void selectEntity(const Ray& ray, const std::vector<Entity*>& entities);
 
+
     void setCursor(int shape);
 
 //private:
@@ -37,6 +39,8 @@ public:
     Vector2 drawBoxc1, drawBoxc2;
     Scene* scene;
 
+    bool intersecting;
+    Ray intersectRay;
     GLFWcursor* cursor;
     GLFWwindow* window;
 };

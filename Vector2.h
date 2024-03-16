@@ -42,6 +42,7 @@ public:
     real length2() const;
     void normalize();
     Vector2 normalized() const;
+    Vector2 perp() const;
     bool isValid() const;
     
     Vector3 to3() const;
