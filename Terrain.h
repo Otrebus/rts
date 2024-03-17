@@ -52,7 +52,7 @@ private:
 
 public:
 	std::pair<real, Vector2> intersectRayOcclusion(Ray ray) const;
-    std::pair<real, Vector2> intersectSpherePathOcclusion(Vector2 pos, Vector2 pos2, real radius) const;
+    std::pair<real, Vector2> intersectCirclePathOcclusion(Vector2 pos, Vector2 pos2, real radius) const;
 	void setUp();
 	void tearDown();
 	Terrain(const std::string& filestr, Scene* scene);

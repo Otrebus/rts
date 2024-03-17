@@ -483,48 +483,136 @@ std::pair<real, Vector2> Terrain::intersectRayOcclusion(Ray ray) const
     return { -inf, { 0, 0 } };
 }
 
-real intersectSphereTrianglePath(Vector2 pos, real radius, Vector2 dir, Vector2 p1, Vector2 p2, Vector2 p3)
+real intersectRayCircle(Vector2 pos, Vector2 dir, Vector2 c, real radius)
 {
+    auto p0 = pos, p1 = dir;
+
+    auto C = (p0.length2() - radius*radius)/p1.length2();
+    auto B = 2*(p0.x*p1.x + p0.y*p1.y)/p1.length2();
+
+    auto s = std::sqrt(B*B/4 - C);
+    if(B*B/4 - C < 0)
+        return -inf;
+    auto t1 = -B/2 + s, t2 = -B/2 - s;
+
+    return (t1 < t2 && t1 > 0) ? t1 : t2 > 0 ? t2 : -inf;
+}
+
+real intersectRaySegment(Vector2 pos, Vector2 dir, Vector2 p1, Vector2 p2)
+{
+    auto e = p2 - p1;
+    auto c = pos - p1;
+    auto det = (dir.x*e.y - e.x*dir.y);
+
+    auto s = (c.x*e.y - e.x*c.y)/det;
+    auto t = (dir.x*c.y - c.x*dir.y)/det;
+    if(s >= 0 && s <= 1 && t >= 0)
+        return t;
     return -inf;
 }
 
-std::pair<real, Vector2> Terrain::intersectSpherePathOcclusion(Vector2 pos, Vector2 pos2, real radius) const
+std::pair<real, Vector2> intersectCircleTrianglePath(Vector2 pos, real radius, Vector2 dir, Vector2 p1, Vector2 p2, Vector2 p3)
+{
+    auto pp1 = (p1-p2).perp().normalized(), pp2 = (p2-p3).perp().normalized(), pp3 = (p3-p1).perp().normalized();
+    auto e11 = p1 + pp1*radius, e12 = p2 + pp1*radius;
+    auto e21 = p2 + pp2*radius, e22 = p3 + pp2*radius;
+    auto e31 = p3 + pp3*radius, e32 = p1 + pp3*radius;
+
+    real minT = inf;
+    Vector2 norm;
+
+    real t = intersectRaySegment(pos, dir, e11, e12);
+    if(t > 0)
+        minT = t, norm = pp1;
+
+    t = intersectRaySegment(pos, dir, e21, e22);
+    if(t > 0 && t < minT)
+        minT = t, norm = pp2;
+
+    t = intersectRaySegment(pos, dir, e31, e32);
+    if(t > 0 && t < minT)
+        minT = t, norm = pp3;
+
+    t = intersectRayCircle(pos, dir, p1, radius);
+
+    // TODO: we probably want different normals here
+    if(t > 0 && t < minT)
+        minT = t, norm = (pos-p1).normalized();
+
+    t = intersectRayCircle(pos, dir, p2, radius);
+    if(t > 0 && t < minT)
+        minT = t, norm = (pos-p2).normalized();
+
+    t = intersectRayCircle(pos, dir, p3, radius);
+    if(t > 0 && t < minT)
+        minT = t, norm = (pos-p3).normalized();
+}
+
+std::pair<real, Vector2> Terrain::intersectCirclePathOcclusion(Vector2 pos, Vector2 pos2, real radius) const
 {
     auto v = pos2 - pos;
 
     auto w = v.perp().normalized()*radius;
 
-    Vector2 V[4] = { pos + w, pos + w + v, pos - w, pos - w + v };
+    // For longer travels we might want to do do something like this involving edge lists and stuff to
+    // figure out what quads to intersect with
+    //Vector2 V[4] = { pos + w, pos + w + v, pos - w, pos - w + v };
 
-    auto y1 = std::min_element(V, V+4, [] (auto u, auto v) { return u.y < v.y; })->y;
-    auto y2 = std::max_element(V, V+4, [] (auto u, auto v) { return u.y < v.y; })->y;
+    //auto y1 = std::min_element(V, V+4, [] (auto u, auto v) { return u.y < v.y; })->y;
+    //auto y2 = std::max_element(V, V+4, [] (auto u, auto v) { return u.y < v.y; })->y;
 
-    y1 = int(std::ceil(y1)+eps);
-    y2 = int(y2);
+    //y1 = int(std::ceil(y1)+eps);
+    //y2 = int(y2);
 
-    std::vector<int> L(y2-y1+1, 0);
-    std::vector<int> R(y2-y1+1, 0);
+    //std::vector<int> L(y2-y1+1, 0);
+    //std::vector<int> R(y2-y1+1, 0);
 
-    for(int i = 0; i < 4; i++)
+    //for(int i = 0; i < 4; i++)
+    //{
+    //    auto a = V[(i+1)%4], b = V[i];
+    //    auto u = a - b;
+
+    //    auto ym = std::min(a.y, b.y), yM = std::max(a.y, b.y);
+    //    auto xm = std::min(a.x, b.x), xM = std::max(a.x, b.x);
+
+    //    for(int y = std::ceil(ym+eps); y <= int(yM); y++)
+    //    {
+    //        auto dy = yM - ym;
+    //        auto dx = xM - xm;
+    //        auto x = xm + (dx/dy)*(y-ym);
+    //        L[y-y1] = std::min(int(x), L[y-y1]);
+    //        R[y-y1] = std::max(int(std::ceil(x)+eps), L[y-y1]);
+
+    //        auto t1 = intersectSphereTrianglePath(pos, radius, (pos2-pos).normalized(), getPoint(x, y).to2(), getPoint(x, y-1).to2(), getPoint(x+1, y).to2());
+    //        auto t2 = intersectSphereTrianglePath(pos, radius, (pos2-pos).normalized(), getPoint(x+1, y).to2(), getPoint(x, y-1).to2(), getPoint(x+1, y+1).to2());
+    //    }
+    //}
+    int x = int(pos.x), y = int(pos.y);
+
+    auto mint = inf;
+    Vector2 N;
+
+    for(int dx = -1; dx <= 1; dx++)
     {
-        auto a = V[(i+1)%4], b = V[i];
-        auto u = a - b;
-
-        auto ym = std::min(a.y, b.y), yM = std::max(a.y, b.y);
-        auto xm = std::min(a.x, b.x), xM = std::max(a.x, b.x);
-
-        for(int y = std::ceil(ym+eps); y <= int(yM); y++)
+        for(int dy = -1; dy <= 1; dy++)
         {
-            auto dy = yM - ym;
-            auto dx = xM - xm;
-            auto x = xm + (dx/dy)*(y-ym);
-            L[y-y1] = std::min(int(x), L[y-y1]);
-            R[y-y1] = std::max(int(std::ceil(x)+eps), L[y-y1]);
-
-            auto t1 = intersectSphereTrianglePath(pos, radius, (pos2-pos).normalized(), getPoint(x, y).to2(), getPoint(x, y-1).to2(), getPoint(x+1, y).to2());
-            auto t2 = intersectSphereTrianglePath(pos, radius, (pos2-pos).normalized(), getPoint(x+1, y).to2(), getPoint(x, y-1).to2(), getPoint(x+1, y+1).to2());
+            int X = x+dx, Y = y+dy;
+            auto p1 = getPoint(X, Y), p2 = getPoint(X+1, Y), p3 = getPoint(X+1, Y+1), p4 = getPoint(X, Y+1);
+            if(!isTriangleAdmissible(p1, p2, p3))
+            {
+                auto [t, norm] = intersectCircleTrianglePath(pos, radius, (pos2-pos).normalized(), p1.to2(), p2.to2(), p3.to2());
+                if(t > -inf)
+                    mint = t, N = norm;
+            }
+            if(!isTriangleAdmissible(p1, p3, p4))
+            {
+                auto [t, norm] = intersectCircleTrianglePath(pos, radius, (pos2-pos).normalized(), p1.to2(), p3.to2(), p4.to2());
+                if(t > -inf)
+                    mint = t, N = norm;
+            }
         }
     }
+    return { mint, N };
 }
 
 bool Terrain::isVisible(Vector2 start, Vector2 end) const
