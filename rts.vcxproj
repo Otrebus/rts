@@ -146,6 +146,7 @@
     <ClCompile Include="BoundingBoxModel.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraControl.cpp" />
+    <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="LambertianMaterial.cpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="BoundingBoxModel.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraControl.h" />
+    <ClInclude Include="DebugDraw.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="LambertianMaterial.h" />

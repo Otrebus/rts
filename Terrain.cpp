@@ -419,14 +419,14 @@ bool Terrain::isTriangleAdmissible(int x1, int y1, int x2, int y2, int x3, int y
 }
 
 
-std::pair<real, Vector2> Terrain::intersectRayOcclusion(Ray ray) const
+std::pair<real, Vector2> Terrain::intersectRayOcclusion(Vector2 pos, Vector2 dir) const
 {
-    auto p = ray.pos;
+    auto p = pos;
     int x = p.x, y = p.y;
     int X = x, Y = y;
     int dx = x-X, dy = y-Y;
 
-    auto v = ray.dir.to2(), w = Vector2(1, 1);
+    auto v = dir, w = Vector2(1, 1);
     real s = (w.x*p.y - p.x*w.y)/(-w.x*v.y+v.x*w.y);
     real t = inf;
 
@@ -477,7 +477,7 @@ std::pair<real, Vector2> Terrain::intersectRayOcclusion(Ray ray) const
     }
 
     if(t < inf) {
-        auto [u, V] = intersectRayOcclusion(Ray(ray.pos+ray.dir*t, ray.dir));
+        auto [u, V] = intersectRayOcclusion(pos+dir*t, dir);
         return { u + t, V };
     }
     return { -inf, { 0, 0 } };
@@ -485,7 +485,7 @@ std::pair<real, Vector2> Terrain::intersectRayOcclusion(Ray ray) const
 
 real intersectRayCircle(Vector2 pos, Vector2 dir, Vector2 c, real radius)
 {
-    auto p0 = pos, p1 = dir;
+    auto p0 = pos-c, p1 = dir;
 
     auto C = (p0.length2() - radius*radius)/p1.length2();
     auto B = 2*(p0.x*p1.x + p0.y*p1.y)/p1.length2();
@@ -493,21 +493,21 @@ real intersectRayCircle(Vector2 pos, Vector2 dir, Vector2 c, real radius)
     auto s = std::sqrt(B*B/4 - C);
     if(B*B/4 - C < 0)
         return -inf;
-    auto t1 = -B/2 + s, t2 = -B/2 - s;
+    auto t1 = -B/2 - s, t2 = -B/2 + s;
 
-    return (t1 < t2 && t1 > 0) ? t1 : t2 > 0 ? t2 : -inf;
+    return t1 > 0 ? t1 : t2 > 0 ? t2 : -inf;
 }
 
 real intersectRaySegment(Vector2 pos, Vector2 dir, Vector2 p1, Vector2 p2)
 {
     auto e = p2 - p1;
     auto c = pos - p1;
-    auto det = (dir.x*e.y - e.x*dir.y);
+    auto det = (-dir.x*e.y + e.x*dir.y);
 
     auto s = (c.x*e.y - e.x*c.y)/det;
-    auto t = (dir.x*c.y - c.x*dir.y)/det;
-    if(s >= 0 && s <= 1 && t >= 0)
-        return t;
+    auto t = (-dir.x*c.y + c.x*dir.y)/det;
+    if(t >= 0 && t <= 1 && s >= 0)
+        return s;
     return -inf;
 }
 
@@ -546,6 +546,8 @@ std::pair<real, Vector2> intersectCircleTrianglePath(Vector2 pos, real radius, V
     t = intersectRayCircle(pos, dir, p3, radius);
     if(t > 0 && t < minT)
         minT = t, norm = (pos-p3).normalized();
+
+    return { minT, norm };
 }
 
 std::pair<real, Vector2> Terrain::intersectCirclePathOcclusion(Vector2 pos, Vector2 pos2, real radius) const
@@ -601,13 +603,13 @@ std::pair<real, Vector2> Terrain::intersectCirclePathOcclusion(Vector2 pos, Vect
             if(!isTriangleAdmissible(p1, p2, p3))
             {
                 auto [t, norm] = intersectCircleTrianglePath(pos, radius, (pos2-pos).normalized(), p1.to2(), p2.to2(), p3.to2());
-                if(t > -inf)
+                if(t > -inf && t < mint)
                     mint = t, N = norm;
             }
             if(!isTriangleAdmissible(p1, p3, p4))
             {
                 auto [t, norm] = intersectCircleTrianglePath(pos, radius, (pos2-pos).normalized(), p1.to2(), p3.to2(), p4.to2());
-                if(t > -inf)
+                if(t > -inf && t < mint)
                     mint = t, N = norm;
             }
         }

@@ -26,6 +26,7 @@
 #include "ShaderProgramManager.h"
 #include "Main.h"
 #include "Math.h"
+#include "DebugDraw.h"
 
 void checkError() {
     GLenum error;
@@ -87,6 +88,9 @@ int main()
         return -1;
 
     glfwSetFramebufferSizeCallback(window, sizeCallback);
+
+    debugDraw(window, xres, yres);
+    return 0;
 
     auto model = Model3d("CornellBox-Original.obj");
 

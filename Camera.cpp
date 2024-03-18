@@ -1,7 +1,7 @@
 #include "Camera.h"
 #include "Input.h"
 
-Camera::Camera(Vector3 pos, Vector3 dir, Vector3 up, real fov=90, real ar=1) : pos(pos), dir(dir.normalized()), up(up), fov(fov), ar(ar), matrixCached(false)
+Camera::Camera(Vector3 pos, Vector3 dir, Vector3 up, real fov=90, real ar=1, bool debug) : pos(pos), dir(dir.normalized()), up(up), fov(fov), ar(ar), matrixCached(false), debug(debug)
 {
     setUp(up);
 }
@@ -13,6 +13,10 @@ void Camera::setUp(Vector3 up)
 
 Matrix4 Camera::getMatrix()
 {
+    if(debug) {
+        return Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    }
+
     if(matrixCached)
         return viewMatrix;
     float pi = 3.141592653589793;

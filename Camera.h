@@ -11,7 +11,7 @@ class Input;
 class Camera
 {
 public:
-    Camera(Vector3 pos, Vector3 dir, Vector3 up, real fov, real ar);
+    Camera(Vector3 pos, Vector3 dir, Vector3 up, real fov, real ar, bool debug=false);
     Matrix4 getMatrix();
     void setUp(Vector3 up);
 
@@ -27,6 +27,7 @@ public:
 private:
     Matrix4 viewMatrix;
     bool matrixCached;
+    bool debug;
 
     Vector3 pos, dir, up;
     real fov, ar;

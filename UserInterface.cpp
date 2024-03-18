@@ -204,8 +204,9 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
 
         if(intersectRay.dir == intersectRay.dir)
         {
-            auto [t, v] = scene->getTerrain()->intersectOcclusion(intersectRay);
-            if(t > -inf) {
+            auto [t, v] = scene->getTerrain()->intersectCirclePathOcclusion(intersectRay.pos.to2(), intersectRay.pos.to2() + intersectRay.dir.to2(), 1);
+            if(t > -inf && t < inf) {
+                auto [t, v] = scene->getTerrain()->intersectCirclePathOcclusion(intersectRay.pos.to2(), intersectRay.pos.to2() + intersectRay.dir.to2(), 1);
                 Line3d line({
                     intersectRay.pos,
                     t > -inf ? (intersectRay.pos + intersectRay.dir*t) : Vector3(x, y, 0)
@@ -226,7 +227,6 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
         auto dir = getViewRay(*scene->getCamera(), x, y);
         Vector3 w = scene->getTerrain()->intersect(Ray(scene->getCamera()->getPos(), dir));
         intersectRay.pos = w;
-        
     }
     if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_3)
     {

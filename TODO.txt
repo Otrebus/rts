@@ -17,6 +17,9 @@
 + Implement path finding
 - Change setUp and setup
 - Make a better point picker function (viewray (should be ray)/terrain intersect)
+- Figure out aspect ratio in debug mode
+- Maybe t = inf is better to return when there's no intersection
+- Make camera polymorphic instead of using debug=true
 - Add terrain visualisations of all sorts (lines, arrows, dots, etc)
 - Make entity virtual base
 - Make sure derived classes have virtual destructors

@@ -51,7 +51,7 @@ private:
 	std::vector<Vector2> straightenPath(const std::vector<Vector2>& path) const;
 
 public:
-	std::pair<real, Vector2> intersectRayOcclusion(Ray ray) const;
+	std::pair<real, Vector2> intersectRayOcclusion(Vector2 pos, Vector2 dir) const;
     std::pair<real, Vector2> intersectCirclePathOcclusion(Vector2 pos, Vector2 pos2, real radius) const;
 	void setUp();
 	void tearDown();
@@ -68,3 +68,5 @@ public:
 };
 
 const real cosMaxSlope = std::cos(35*pi/180);
+
+std::pair<real, Vector2> intersectCircleTrianglePath(Vector2 pos, real radius, Vector2 dir, Vector2 p1, Vector2 p2, Vector2 p3);
