@@ -51,11 +51,12 @@ int debugDraw(GLFWwindow* window, int xres, int yres)
     ShaderProgramManager shaderProgramManager;
     Scene scene(&cam, &shaderProgramManager);
 
-
     bool intersecting = false;
     real startX, startY;
     int mouseX, mouseY;
     
+    Ray r1, r2;
+
     //Vector2 p1(0.5, 0.5), p2(0.65, 0.75), p3(0.55, 0.85);
 
     Vector2 p1(0.3, -0.3), p2(0, 0.3), p3(-0.3, 0);
@@ -82,7 +83,8 @@ int debugDraw(GLFWwindow* window, int xres, int yres)
             {
                 intersecting = true;
                 startX = real(2*mouseX)/xres - 1;
-                startY = -(real(2*mouseY)/yres - 1);        
+                startY = -(real(2*mouseY)/yres - 1);
+                r1 = cam.getViewRay(startX, startY);
             }
             if(input->stateEnd == InputType::MouseRelease && input->key == GLFW_MOUSE_BUTTON_1)
             {
@@ -95,20 +97,22 @@ int debugDraw(GLFWwindow* window, int xres, int yres)
         tri.setUp(&scene);
         tri.draw();
 
-        if(intersecting )
+        if(intersecting)
         {
-            auto x = real(2*mouseX)/xres - 1;
+            auto x = real(2*mouseX)/xres - 1; // TODO: we're doing this transformation everywhere
             auto y = -(real(2*mouseY)/yres - 1);
 
-            Vector3 a(real(startX), real(startY), 0);
-            Vector3 b(real(x), real(y), 0);
+            r2 = cam.getViewRay(x, y);
 
-            if(a == b)
+            /*Vector3 a(real(startX), real(startY), 0);
+            Vector3 b(real(x), real(y), 0);*/
+
+            if(r1.pos == r2.pos)
                 continue;
         
             Line3d line({
-                a,
-                b
+                r1.pos,
+                r2.pos
             });
             line.setUp(&scene);
             line.draw();
@@ -116,12 +120,12 @@ int debugDraw(GLFWwindow* window, int xres, int yres)
             Vector2 pos(0, 0);
             real radius = 0.25;
 
-            auto [s, norm] = intersectCircleTrianglePath(a.to2(), radius, (b-a).to2().normalized(), p1, p2, p3);
+            auto [s, norm] = intersectCircleTrianglePath(r1.pos.to2(), radius, (r2.pos-r1.pos).to2().normalized(), p1, p2, p3);
 
 
             if(s > -inf && s < inf)
             {
-                auto circle = makeCircle(a.to2() + (b-a).to2().normalized()*s, radius);
+                auto circle = makeCircle(r1.pos.to2() + (r2.pos-r1.pos).to2().normalized()*s, radius);
                 circle.setUp(&scene);
                 circle.draw();
             }

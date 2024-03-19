@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include "Input.h"
+#include "Ray.h"
 
 Camera::Camera(Vector3 pos, Vector3 dir, Vector3 up, real fov=90, real ar=1, bool debug) : pos(pos), dir(dir.normalized()), up(up), fov(fov), ar(ar), matrixCached(false), debug(debug)
 {
@@ -14,7 +15,7 @@ void Camera::setUp(Vector3 up)
 Matrix4 Camera::getMatrix()
 {
     if(debug) {
-        return Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+        return Matrix4(1, 0, 0, 0, 0, ar, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
     }
 
     if(matrixCached)
@@ -53,6 +54,15 @@ Matrix4 Camera::getMatrix()
     return viewMatrix = persp*proj*trans;
 }
 
+Ray Camera::getViewRay(real x, real y) const
+{
+    if(debug)
+        return Ray(up*y/ar + (dir%up)*x, dir);
+    auto r = std::tan(pi*fov/180/2);
+    auto d =  dir + up*y*r/ar + (dir%up).normalized()*x*r;
+    auto p = pos;
+    return Ray(p, d);
+}
 
 void Camera::setPos(const Vector3& pos)
 {

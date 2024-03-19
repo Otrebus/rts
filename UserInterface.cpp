@@ -154,10 +154,10 @@ void UserInterface::selectEntities(std::vector<Entity*> entities)
     auto br = Vector2(std::max(c1.x, c2.x), std::min(c1.y, c2.y));
 
     Vector3 v[4] = {
-        getViewRay(*camera, tr.x, tr.y),
-        getViewRay(*camera, tl.x, tl.y),
-        getViewRay(*camera, bl.x, bl.y),
-        getViewRay(*camera, br.x, br.y)
+        camera->getViewRay(tr.x, tr.y).dir,
+        camera->getViewRay(tl.x, tl.y).dir,
+        camera->getViewRay(bl.x, bl.y).dir,
+        camera->getViewRay(br.x, br.y).dir
     };
 
     for(auto e : entities)
@@ -197,8 +197,8 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
         auto x = real(2*mouseX)/xres - 1;
         auto y = -(real(2*mouseY)/yres - 1);
         
-        auto dir = getViewRay(*scene->getCamera(), x, y);
-        Vector3 w = scene->getTerrain()->intersect(Ray(scene->getCamera()->getPos(), dir));
+        auto ray = scene->getCamera()->getViewRay(x, y);
+        Vector3 w = scene->getTerrain()->intersect(ray);
         intersectRay.dir = Vector3(w.x-intersectRay.pos.x, w.y-intersectRay.pos.y, 0).normalized();
 
 
@@ -224,8 +224,7 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
         auto x = real(2*mouseX)/xres - 1;
         auto y = -(real(2*mouseY)/yres - 1);
         
-        auto dir = getViewRay(*scene->getCamera(), x, y);
-        Vector3 w = scene->getTerrain()->intersect(Ray(scene->getCamera()->getPos(), dir));
+        Vector3 w = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(x, y));
         intersectRay.pos = w;
     }
     if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_3)
@@ -247,8 +246,7 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
         else if(selectState == Clicking)
         {
             auto c1 = drawBoxc1;
-            auto dir = getViewRay(*scene->getCamera(), c1.x, c1.y);
-            selectEntity(Ray(scene->getCamera()->getPos(), dir), entities);
+            selectEntity(scene->getCamera()->getViewRay(c1.x, c1.y), entities);
         }
         selectState = NotSelecting;
         setCursor(GLFW_ARROW_CURSOR);
@@ -270,9 +268,7 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
         auto px = real(2*mouseX)/xres - 1;
         auto py = -(real(2*mouseY)/yres - 1);
 
-        auto dir = getViewRay(*scene->getCamera(), px, py);
-
-        auto pos = scene->getTerrain()->intersect(Ray(scene->getCamera()->getPos(), dir));
+        auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
         for(auto entity : entities)
         {
             if(entity->selected)

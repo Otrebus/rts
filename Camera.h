@@ -7,6 +7,7 @@
 
 class Terrain;
 class Input;
+class Ray;
 
 class Camera
 {
@@ -23,6 +24,8 @@ public:
     const Vector3& getUp() const;
     const real getFov() const;
     const real getAspectRatio() const;
+
+    Ray getViewRay(real x, real y) const;
 
 private:
     Matrix4 viewMatrix;

@@ -14,8 +14,6 @@ Matrix4 getTranslationMatrix(Vector3 v);
 Matrix4 getDirectionMatrix(Vector3 dir, Vector3 up);
 Matrix4 getNormalMatrix(const Matrix4& m);
 
-const Vector3& getViewRay(Camera& cam, real mouseX, real mouseY);
-
 extern const Matrix4 identityMatrix;
 extern const real pi;
 extern const real eps;
