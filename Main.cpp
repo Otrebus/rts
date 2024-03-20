@@ -215,7 +215,7 @@ int main()
         //model.draw();
 
         
-        // checkError();
+        checkError();
         interface.setResolution(xres, yres);
         interface.draw();
 

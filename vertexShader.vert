@@ -3,11 +3,13 @@
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNorm;
 layout (location = 2) in vec2 aTex;
+layout (location = 3) in float selected;
 
 out vec2 TexCoord;
 out vec3 VertexPosition;
 out vec3 normal;
 out vec3 toCam;
+out float sel;
 
 uniform mat4 modelViewMatrix;
 uniform mat4 normalMatrix;
@@ -25,6 +27,7 @@ void main()
     VertexPosition = vec3(mPos.x, mPos.y, mPos.z);
 
     gl_Position = projectionMatrix * mPos;
+    sel = selected;
 
     vec4 nr;
     nr = normalMatrix * vec4(aNorm.x, aNorm.y, aNorm.z, 0);

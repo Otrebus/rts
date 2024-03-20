@@ -37,7 +37,6 @@ TerrainMesh* Terrain::createMesh(std::string fileName)
             real l = std::sqrt(dx*dx+dy*dy+1);
             points.push_back(Vector3(X, Y, H(x, y) + 3.0));
             vertices[width*y+x] = MeshVertex3d(X, Y, H(x, y) + 3.0, -dx/l, -dy/l, 1.0/l, x, y);
-            vertices[width*y+x].selected = false;
         }
     }
     for(int y = 0; y < height-1; y++)
@@ -73,22 +72,32 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
     points.clear();
     triangleIndices.clear();
 
-    const int nVertices = (width-1)*(height-1)*6;
+    const int nVertices = width*height;
     std::vector<MeshVertex3d> vertices(nVertices);
 
     auto H = [&colors, &width, &height] (int x, int y) {
-        return colors[width*3*(height-y-1)+x*3]/255.0/30;
+        return colors[width*3*(height-y-1)+x*3]/255.0*width/15;
     };
 
     for(int y = 0; y < height; y++)
     {
         for(int x = 0; x < width; x++)
         {
-            real X = x/(width-1.0f), Y = y/(height-1.0f);
-            vectors[width*y+x] = Vector3(X, Y, H(x, y) + 3.0);
+            real X = x;
+            real Y = y;
+
+            auto fx = x == 0, lx = x == width-1;
+            auto fy = y == 0, ly = y == height-1;
+
+            auto dx = ((!lx ? H(x+1, y) : H(x, y)) - (!fx ? H(x-1, y) : H(x, y)))/((!fx + !lx));
+            auto dy = ((!ly ? H(x, y+1) : H(x, y)) - (!fy ? H(x, y-1) : H(x, y)))/((!fy + !ly));
+            real l = std::sqrt(dx*dx+dy*dy+1);
+            points.push_back(Vector3(X, Y, H(x, y) + 3.0));
+            vertices[width*y+x] = MeshVertex3d(X, Y, H(x, y) + 3.0, -dx/l, -dy/l, 1.0/l, x, y);
         }
     }
-
+    
+    std::vector<MeshVertex3d> vertices2;
     int j = 0, k = 0;
     for(int y = 0; y < height-1; y++)
     {
@@ -99,28 +108,35 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
             int c = width*(y+1) + x+1;
             int d = width*(y+1) + x;
 
-            auto N1 = (vectors[b]-vectors[a])%(vectors[c]-vectors[a]);
+            auto N1 = (points[b]-points[a])%(points[c]-points[a]);
             N1.normalize();
-            auto N2 = (vectors[c]-vectors[a])%(vectors[d]-vectors[a]);
+            auto N2 = (points[c]-points[a])%(points[d]-points[a]);
             N2.normalize();
 
             for(auto i : { a, b, c } )
             {
-                vertices[j++] = MeshVertex3d(vectors[i].x, vectors[i].y, vectors[i].z, N1.x, N1.y, N1.z, x, y);
-                points.push_back({ vectors[i].x, vectors[i].y, vectors[i].z });
+                triangleIndices.push_back(vertices2.size());
+                vertices2.push_back(vertices[i]);
+                vertices2.back().normal = N1;
+                if(!isTriangleAdmissible(points[a], points[b], points[c]))
+                    vertices2.back().selected = true;
             }
             for(auto i : { a, c, d } ) {
-                vertices[j++] = MeshVertex3d(vectors[i].x, vectors[i].y, vectors[i].z, N2.x, N2.y, N2.z, x, y);
-                points.push_back({ vectors[i].x, vectors[i].y, vectors[i].z });
+                triangleIndices.push_back(vertices2.size());
+                vertices2.push_back(vertices[i]);
+                vertices2.back().normal = N2;
+                if(!isTriangleAdmissible(points[a], points[b], points[c]))
+                    vertices2.back().selected = true;
             }
-
-            for(int i = j-6; i < j; i++)
-                triangleIndices.push_back(i);
         }
     }
 
     this->width = width;
     this->height = height;
+
+    points.clear();
+    for(auto v : vertices2)
+        points.push_back(v.pos);
 
     admissiblePoints = new bool[width*height*2];
     std::fill(admissiblePoints, admissiblePoints + width*height*2, true);
@@ -128,7 +144,7 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
     if(terrainMesh)
         delete terrainMesh;
     Material* mat = new TerrainMaterial();
-    return terrainMesh = new TerrainMesh(vertices, triangleIndices, mat);
+    return terrainMesh = new TerrainMesh(vertices2, triangleIndices, mat);
 }
 
 
