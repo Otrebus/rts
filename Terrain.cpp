@@ -71,6 +71,7 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
     std::vector<Vector3> vectors(width*height);
     points.clear();
     triangleIndices.clear();
+    std::vector<int> triangleIndices2;
 
     const int nVertices = width*height;
     std::vector<MeshVertex3d> vertices(nVertices);
@@ -115,17 +116,19 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
 
             for(auto i : { a, b, c } )
             {
-                triangleIndices.push_back(vertices2.size());
+                triangleIndices2.push_back(vertices2.size());
+                triangleIndices.push_back(i);
                 vertices2.push_back(vertices[i]);
                 vertices2.back().normal = N1;
                 if(!isTriangleAdmissible(points[a], points[b], points[c]))
                     vertices2.back().selected = true;
             }
             for(auto i : { a, c, d } ) {
-                triangleIndices.push_back(vertices2.size());
+                triangleIndices2.push_back(vertices2.size());
+                triangleIndices.push_back(i);
                 vertices2.push_back(vertices[i]);
                 vertices2.back().normal = N2;
-                if(!isTriangleAdmissible(points[a], points[b], points[c]))
+                if(!isTriangleAdmissible(points[a], points[c], points[d]))
                     vertices2.back().selected = true;
             }
         }
@@ -134,17 +137,14 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
     this->width = width;
     this->height = height;
 
-    points.clear();
-    for(auto v : vertices2)
-        points.push_back(v.pos);
-
     admissiblePoints = new bool[width*height*2];
     std::fill(admissiblePoints, admissiblePoints + width*height*2, true);
+    calcAdmissiblePoints();
 
     if(terrainMesh)
         delete terrainMesh;
     Material* mat = new TerrainMaterial();
-    return terrainMesh = new TerrainMesh(vertices2, triangleIndices, mat);
+    return terrainMesh = new TerrainMesh(vertices2, triangleIndices2, mat);
 }
 
 
@@ -154,22 +154,22 @@ void Terrain::calcAdmissiblePoints()
     {
         for(int y = 0; y < height-1; y++)
         {
-            auto p1 = getPoint(x, y+1);
-            auto p2 = getPoint(x+1, y+1);
-            auto p3 = getPoint(x+1, y);
-            auto p = getPoint(x, y);
+            auto p1 = getPoint(x, y);
+            auto p2 = getPoint(x+1, y);
+            auto p3 = getPoint(x+1, y+1);
+            auto p = getPoint(x, y+1);
             auto cosSlope = std::abs((((p1-p)%(p2-p)).normalized()).z);
             auto cosSlope2 = std::abs((((p2-p)%(p3-p)).normalized()).z);
 
             if(cosSlope < cosMaxSlope) {
                 admissiblePoints[width*y+x] = false;
+                admissiblePoints[width*y+x+1] = false;
                 admissiblePoints[width*(y+1)+x+1] = false;
-                admissiblePoints[width*(y+1)+x] = false;
             }
             if(cosSlope2 < cosMaxSlope) {
                 admissiblePoints[width*y+x] = false;
                 admissiblePoints[width*(y+1)+x+1] = false;
-                admissiblePoints[width*y+x] = false;
+                admissiblePoints[width*(y+1)+x] = false;
             }
         }
     }
@@ -410,6 +410,7 @@ std::vector<Vector2> Terrain::findPath(Vector2 start, Vector2 destination)
             node = P[x+y*width];
         }
         outPath = straightenPath(result);
+        //outPath = result;
         std::cout << "Constructed path in " << glfwGetTime() - time << std::endl;
     }
 
@@ -570,7 +571,7 @@ std::pair<real, Vector2> Terrain::intersectCirclePathOcclusion(Vector2 pos, Vect
 {
     auto v = pos2 - pos;
 
-    auto w = v.perp().normalized()*radius;
+    // auto w = v.perp().normalized()*radius;
 
     // For longer travels we might want to do do something like this involving edge lists and stuff to
     // figure out what quads to intersect with
@@ -614,6 +615,8 @@ std::pair<real, Vector2> Terrain::intersectCirclePathOcclusion(Vector2 pos, Vect
     {
         for(int dy = -1; dy <= 1; dy++)
         {
+            if(!dx && !dy)
+                continue;
             int X = x+dx, Y = y+dy;
             auto p1 = getPoint(X, Y), p2 = getPoint(X+1, Y), p3 = getPoint(X+1, Y+1), p4 = getPoint(X, Y+1);
             if(!isTriangleAdmissible(p1, p2, p3))

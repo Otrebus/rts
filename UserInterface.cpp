@@ -204,12 +204,12 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
 
         if(intersectRay.dir == intersectRay.dir)
         {
-            auto [t, v] = scene->getTerrain()->intersectCirclePathOcclusion(intersectRay.pos.to2(), intersectRay.pos.to2() + intersectRay.dir.to2(), 1);
+            auto [t, v] = scene->getTerrain()->intersectCirclePathOcclusion(intersectRay.pos.to2(), intersectRay.pos.to2() + intersectRay.dir.to2(), 0.5);
             if(t > -inf && t < inf) {
-                auto [t, v] = scene->getTerrain()->intersectCirclePathOcclusion(intersectRay.pos.to2(), intersectRay.pos.to2() + intersectRay.dir.to2(), 1);
+                auto [t, v] = scene->getTerrain()->intersectCirclePathOcclusion(intersectRay.pos.to2(), intersectRay.pos.to2() + intersectRay.dir.to2(), 0.5);
                 Line3d line({
                     intersectRay.pos,
-                    t > -inf ? (intersectRay.pos + intersectRay.dir*t) : Vector3(x, y, 0)
+                    t > -inf ? (intersectRay.pos + intersectRay.dir*t) : Vector3(x, y, scene->getTerrain()->getElevation(x, y))
                 });
                 line.setUp(scene);
                 line.setInFront(true);
