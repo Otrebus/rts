@@ -167,12 +167,19 @@ void Tank::update(real dt)
 
     auto [t, norm] = terrain->intersectCirclePathOcclusion(pos.to2(), pos2.to2(), 0.5);
     if(t > -inf && t < inf)
+    {
         pos += (pos2-pos)*t;
+        auto t2 = (pos2 - pos).length();
+        auto T = std::min(t2, t);
+        auto v2 = norm.perp()*(norm.perp()*(pos2-pos).to2().normalized())*T;
+        pos += v2.to3();
+    }
     else
         pos = pos2;
 
     velocity = Vector2(dir.x, dir.y).normalized()*velocity.length();
     velocity += Vector2(dir.x, dir.y).normalized()*acceleration*dt;
+
     if(velocity.length() > maxSpeed)
         velocity = velocity.normalized()*maxSpeed;
 
