@@ -164,14 +164,13 @@ void Tank::turn(bool left)
 void Tank::update(real dt)
 {
     auto pos2 = pos + Vector3(velocity.x, velocity.y, 0)*dt;
-
+    auto t2 = (pos2 - pos).length();
     auto [t, norm] = terrain->intersectCirclePathOcclusion(pos.to2(), pos2.to2(), 0.5);
-    if(t > -inf && t < inf)
+
+    if(t > -inf && t < t2 && dir.to2()*norm < 0)
     {
-        pos += (pos2-pos)*t;
-        auto t2 = (pos2 - pos).length();
-        auto T = std::min(t2, t);
-        auto v2 = norm.perp()*(norm.perp()*(pos2-pos).to2().normalized())*T;
+        assert(t >= 0);
+        auto v2 = (pos2-pos).to2() - norm*((pos2-pos).to2()*norm);
         pos += v2.to3();
     }
     else

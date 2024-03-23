@@ -1,5 +1,6 @@
 #include <tuple>
 #include "Vector3.h"
+#include "Vector2.h"
 #include "Ray.h"
 #include "Matrix4.h"
 #include "Camera.h"

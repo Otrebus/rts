@@ -9,6 +9,7 @@
 #include "Ray.h"
 #include <set>
 #include <algorithm>
+#include "Math.h"
 
 
 TerrainMesh* Terrain::createMesh(std::string fileName)
@@ -158,18 +159,17 @@ void Terrain::calcAdmissiblePoints()
             auto p2 = getPoint(x+1, y);
             auto p3 = getPoint(x+1, y+1);
             auto p = getPoint(x, y+1);
-            auto cosSlope = std::abs((((p1-p)%(p2-p)).normalized()).z);
-            auto cosSlope2 = std::abs((((p2-p)%(p3-p)).normalized()).z);
-
-            if(cosSlope < cosMaxSlope) {
+            if(!isTriangleAdmissible(x, y, x+1, y, x+1, y+1))
+            {
                 admissiblePoints[width*y+x] = false;
                 admissiblePoints[width*y+x+1] = false;
-                admissiblePoints[width*(y+1)+x+1] = false;
+                admissiblePoints[width*(y+1)+x+1] = false;                
             }
-            if(cosSlope2 < cosMaxSlope) {
+            if(!isTriangleAdmissible(x, y, x+1, y+1, x, y+1))
+            {
                 admissiblePoints[width*y+x] = false;
                 admissiblePoints[width*(y+1)+x+1] = false;
-                admissiblePoints[width*(y+1)+x] = false;
+                admissiblePoints[width*(y+1)+x] = false;                
             }
         }
     }
@@ -528,12 +528,40 @@ real intersectRaySegment(Vector2 pos, Vector2 dir, Vector2 p1, Vector2 p2)
     return -inf;
 }
 
+
+std::tuple<real, Vector2, real> distPointLine(Vector2 p, Vector2 p1, Vector2 p2)
+{
+    auto e = (p2-p1).normalized();
+    auto s = (p-p1)*e;
+    return { (p - (p1 + e*s)).length(), p1 + e*s, s };
+}
+
+
 std::pair<real, Vector2> intersectCircleTrianglePath(Vector2 pos, real radius, Vector2 dir, Vector2 p1, Vector2 p2, Vector2 p3)
 {
     auto pp1 = (p1-p2).perp().normalized(), pp2 = (p2-p3).perp().normalized(), pp3 = (p3-p1).perp().normalized();
     auto e11 = p1 + pp1*radius, e12 = p2 + pp1*radius;
     auto e21 = p2 + pp2*radius, e22 = p3 + pp2*radius;
     auto e31 = p3 + pp3*radius, e32 = p1 + pp3*radius;
+
+    // First check if we're closer than the radius of the circle to the triangle
+    if(auto [t, q, s] = distPointLine(pos, p1, p2); t < radius && s > 0 && s < (p2-p1).length())
+        return { 0, (p1-q).perp().normalized() };
+
+    if(auto [t, q, s] = distPointLine(pos, p2, p3); t < radius && s > 0 && s < (p3-p2).length())
+        return { 0, (p2-q).perp().normalized() };
+
+    if(auto [t, q, s] = distPointLine(pos, p3, p1); t < radius && s > 0 && s < (p1-p3).length())
+        return { 0, (p3-q).perp().normalized() };
+
+    if(auto t = (pos - p1).length(); t < radius)
+        return { 0, (pos - p1).normalized() };
+
+    if(auto t = (pos - p2).length(); t < radius)
+        return { 0, (pos - p2).normalized() };
+
+    if(auto t = (pos - p3).length(); t < radius)
+        return { 0, (pos - p3).normalized() };
 
     real minT = inf;
     Vector2 norm;
@@ -554,15 +582,15 @@ std::pair<real, Vector2> intersectCircleTrianglePath(Vector2 pos, real radius, V
 
     // TODO: we probably want different normals here
     if(t > 0 && t < minT)
-        minT = t, norm = (pos-p1).normalized();
+        minT = t, norm = (pos+dir*t-p1).normalized();
 
     t = intersectRayCircle(pos, dir, p2, radius);
     if(t > 0 && t < minT)
-        minT = t, norm = (pos-p2).normalized();
+        minT = t, norm = (pos+dir*t-p2).normalized();
 
     t = intersectRayCircle(pos, dir, p3, radius);
     if(t > 0 && t < minT)
-        minT = t, norm = (pos-p3).normalized();
+        minT = t, norm = (pos+dir*t-p3).normalized();
 
     return { minT, norm };
 }
@@ -570,6 +598,8 @@ std::pair<real, Vector2> intersectCircleTrianglePath(Vector2 pos, real radius, V
 std::pair<real, Vector2> Terrain::intersectCirclePathOcclusion(Vector2 pos, Vector2 pos2, real radius) const
 {
     auto v = pos2 - pos;
+    if(!v)
+        return { -inf, { 0, 0 } };
 
     // auto w = v.perp().normalized()*radius;
 
@@ -615,8 +645,6 @@ std::pair<real, Vector2> Terrain::intersectCirclePathOcclusion(Vector2 pos, Vect
     {
         for(int dy = -1; dy <= 1; dy++)
         {
-            if(!dx && !dy)
-                continue;
             int X = x+dx, Y = y+dy;
             auto p1 = getPoint(X, Y), p2 = getPoint(X+1, Y), p3 = getPoint(X+1, Y+1), p4 = getPoint(X, Y+1);
             if(!isTriangleAdmissible(p1, p2, p3))

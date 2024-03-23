@@ -55,6 +55,8 @@ public:
     void addMousePosition(real time, real x, real y);
     void addScrollOffset(real time, real y);
 
+    bool isKeyHeld(int key) const;
+
     void setWindow(GLFWwindow* window);
     void captureMouse(bool);
 

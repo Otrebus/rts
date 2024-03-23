@@ -21,3 +21,4 @@ extern const real eps;
 real resToScreenX(real x, int xres);
 real resToScreenY(real y, int yres);
 Vector3 calcNormal(Vector3 a, Vector3 b, Vector3 c);
+

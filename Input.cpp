@@ -124,6 +124,10 @@ void InputQueue::captureMouse(bool capture)
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
+bool InputQueue::isKeyHeld(int key) const
+{
+    return keyState[key];
+}
 
 void InputQueue::setWindow(GLFWwindow* window)
 {

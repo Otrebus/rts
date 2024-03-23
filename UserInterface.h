@@ -28,6 +28,7 @@ public:
     void selectEntities(std::vector<Entity*> entities);
     void selectEntity(const Ray& ray, const std::vector<Entity*>& entities);
 
+    Entity* getEntity(const Ray& ray, const std::vector<Entity*>& entities) const;
 
     void setCursor(int shape);
 
@@ -40,6 +41,8 @@ public:
     Scene* scene;
 
     bool intersecting;
+    Entity* movingEntity;
+
     Ray intersectRay;
     GLFWcursor* cursor;
     GLFWwindow* window;

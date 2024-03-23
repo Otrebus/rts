@@ -17,6 +17,7 @@
 + Implement path finding
 + Figure out aspect ratio in debug mode
 - Left-multiplication by scalar t*A
+- Unit picker/dropper
 - Make a better point picker function (viewray (should be ray)/terrain intersect)
 - Change setUp and setup
 - Maybe t = inf is better to return when there's no intersection

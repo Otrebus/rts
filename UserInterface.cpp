@@ -170,6 +170,14 @@ void UserInterface::selectEntities(std::vector<Entity*> entities)
     std::cout << (glfwGetTime() - time) << std::endl;
 }
 
+Entity* UserInterface::getEntity(const Ray& ray, const std::vector<Entity*>& entities) const
+{
+    for(auto e : entities)
+        if(e->intersectBoundingBox(ray))
+            return e;
+    return nullptr;
+}
+
 void UserInterface::selectEntity(const Ray& ray, const std::vector<Entity*>& entities)
 {
     auto time = glfwGetTime();
@@ -189,6 +197,15 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
 {
     auto& inputQueue = InputQueue::getInstance();
 
+    if(movingEntity)
+    {
+        auto px = real(2*mouseX)/xres - 1;
+        auto py = -(real(2*mouseY)/yres - 1);
+
+        auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
+        movingEntity->setPosition(pos);
+    }
+
     if(cameraControl->getMode() == Freelook)
         return;
 
@@ -201,12 +218,10 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
         Vector3 w = scene->getTerrain()->intersect(ray);
         intersectRay.dir = Vector3(w.x-intersectRay.pos.x, w.y-intersectRay.pos.y, 0).normalized();
 
-
         if(intersectRay.dir == intersectRay.dir)
         {
             auto [t, v] = scene->getTerrain()->intersectCirclePathOcclusion(intersectRay.pos.to2(), intersectRay.pos.to2() + intersectRay.dir.to2(), 0.5);
             if(t > -inf && t < inf) {
-                auto [t, v] = scene->getTerrain()->intersectCirclePathOcclusion(intersectRay.pos.to2(), intersectRay.pos.to2() + intersectRay.dir.to2(), 0.5);
                 Line3d line({
                     intersectRay.pos,
                     t > -inf ? (intersectRay.pos + intersectRay.dir*t) : Vector3(x, y, scene->getTerrain()->getElevation(x, y))
@@ -227,11 +242,22 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
         Vector3 w = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(x, y));
         intersectRay.pos = w;
     }
+
     if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_3)
     {
         intersecting = false;
     }
-    if(input.stateStart == InputType::MousePress && input.key == GLFW_MOUSE_BUTTON_1)
+
+    if(input.stateStart == InputType::MousePress && input.key == GLFW_MOUSE_BUTTON_1 && inputQueue.isKeyHeld(GLFW_KEY_LEFT_CONTROL))
+    {
+        auto x = real(2*mouseX)/xres - 1;
+        auto y = -(real(2*mouseY)/yres - 1);
+        auto e = getEntity(scene->getCamera()->getViewRay(x, y), entities);
+        if(e)
+            movingEntity = e;
+    }
+
+    if(input.stateStart == InputType::MousePress && input.key == GLFW_MOUSE_BUTTON_1 && !inputQueue.isKeyHeld(GLFW_KEY_LEFT_CONTROL))
     {
         selectState = Clicking;
         drawBoxc1.x = real(2*mouseX)/xres - 1;
@@ -250,6 +276,7 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
         }
         selectState = NotSelecting;
         setCursor(GLFW_ARROW_CURSOR);
+        movingEntity = nullptr;
 
     }
     if(input.stateStart == InputType::MousePosition)

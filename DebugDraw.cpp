@@ -121,6 +121,11 @@ int debugDraw(GLFWwindow* window, int xres, int yres)
             real radius = 0.25;
 
             auto [s, norm] = intersectCircleTrianglePath(r1.pos.to2(), radius, (r2.pos-r1.pos).to2().normalized(), p1, p2, p3);
+            auto p1 = r1.pos + (r2.pos-r1.pos).normalized()*s;
+            auto p2 = p1 + norm.to3()*0.5;
+            Line3d normalLine( { p1, p2 });
+            normalLine.setUp(&scene);
+            normalLine.draw();
 
 
             if(s > -inf && s < inf)

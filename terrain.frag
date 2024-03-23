@@ -31,6 +31,6 @@ void main()
     float col = min(line, 1.0);
     FragColor = FragColor - vec4(vec3(col), 1.0)*0.1;
     if(selected > 0.1)
-        FragColor *= vec4(1, 0.9, 0.9, 0) + vec4(0.2, 0, 0, 0);
+        FragColor = vec4(0.8, 0, 0, 0);
     
 }
