@@ -68,6 +68,7 @@ void Tank::setUp(Scene* scene)
     gun->setUp(scene);
     boundingBoxModel->setUp(scene);
     destinationLine.setUp(scene);
+    destinationLine.setColor(Vector3(0, 1, 0));
     destinationLine.setInFront(true);
 }
 

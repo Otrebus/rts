@@ -409,6 +409,8 @@ std::vector<Vector2> Terrain::findPath(Vector2 start, Vector2 destination)
                 break;
             node = P[x+y*width];
         }
+        if(result.size())
+            result.back() = start;
         outPath = straightenPath(result);
         //outPath = result;
         std::cout << "Constructed path in " << glfwGetTime() - time << std::endl;
@@ -677,7 +679,7 @@ bool Terrain::isVisible(Vector2 start, Vector2 end) const
             auto y = start.y + (dy/dx)*(x-start.x);
             int Y = int(y + 0.5f);
             int X = x;
-            if(!isAdmissible(x, y))
+            if(!isAdmissible(X, Y))
                 return false;
         }
     }
@@ -690,7 +692,7 @@ bool Terrain::isVisible(Vector2 start, Vector2 end) const
             auto x = start.x + (dx/dy)*(y-start.y);
             int X = int(x + 0.5f);
             int Y = y;
-            if(!isAdmissible(x, y))
+            if(!isAdmissible(X, Y))
                 return false;
         }
     }
@@ -702,8 +704,8 @@ std::vector<Vector2> Terrain::straightenPath(const std::vector<Vector2>& path) c
     std::vector<Vector2> result;
     for(int i = 0; i < path.size()-1; i++)
     {
-        int j = i+1;
-        while(j < path.size()-1 && isVisible(path[i], path[j]))
+        int j = i;
+        while(j < path.size()-1 && isVisible(path[i], path[j+1]))
             j++;
         result.push_back(path[i]);
         result.push_back(path[j]);

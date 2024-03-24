@@ -17,6 +17,7 @@ public:
     void setUp(Scene* scene);
     void draw();
     void tearDown();
+    void setColor(Vector3 color);
     void setVertices(const std::vector<Vector3>& vertices);
     void setInFront(bool); // TODO: dumb
 
@@ -30,6 +31,7 @@ private:
     bool inFront;
     static Shader* fragmentShader;
     static Shader* vertexShader;
+    Vector3 color;
 };
 
 

@@ -43,7 +43,7 @@ void checkError() {
 }
 
 
-int xres = 1000, yres = 600;
+int xres = 1920, yres = 1080;
 
 void sizeCallback(GLFWwindow* window, int width, int height)
 {

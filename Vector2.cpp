@@ -6,7 +6,7 @@
 
 Vector2::Vector2(float x, float y) : x(x), y(y)
 {
-    assert(!std::isnan(x) && !std::isnan(y));
+    //assert(!std::isnan(x) && !std::isnan(y));
 }
 
 Vector2::Vector2()

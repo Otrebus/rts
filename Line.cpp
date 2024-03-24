@@ -72,6 +72,8 @@ void Line3d::draw()
     if(inFront)
         glDisable(GL_DEPTH_TEST);
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)(&perspM.m_val));
+    GLuint kdLocation = glGetUniformLocation(program->getId(), "Kd");
+    glUniform3f(kdLocation, color.x, color.y, color.z);
     glBindVertexArray(VAO);
     glDrawArrays(GL_LINE_STRIP, 0, vertexData.size()/3);
     if(inFront && depthDestIsEnabled)
@@ -82,6 +84,11 @@ void Line3d::tearDown()
 {
     glDeleteBuffers(1, &VBO);
     glDeleteVertexArrays(1, &VAO);
+}
+
+void Line3d::setColor(Vector3 color)
+{
+    this->color = color;
 }
 
 Shader* Line3d::fragmentShader = nullptr;
