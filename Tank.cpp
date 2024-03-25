@@ -165,9 +165,10 @@ void Tank::turn(bool left)
 void Tank::update(real dt)
 {
     auto pos2 = pos + Vector3(velocity.x, velocity.y, 0)*dt;
-    auto t2 = (pos2 - pos).length();
-    auto [t, norm] = terrain->intersectCirclePathOcclusion(pos.to2(), pos2.to2(), 0.5);
 
+    // Collision detection, against the terrain
+    auto [t, norm] = terrain->intersectCirclePathOcclusion(pos.to2(), pos2.to2(), 0.5);
+    auto t2 = (pos2 - pos).length();
     if(t > -inf && t < t2 && dir.to2()*norm < 0)
     {
         assert(t >= 0);
@@ -176,6 +177,22 @@ void Tank::update(real dt)
     }
     else
         pos = pos2;
+
+    // Collision detection, against other units
+    for(auto entity : scene->getEntities())
+    {
+        if(entity != this)
+        {
+            auto pos1 = pos, pos2 = entity->getPosition();
+            if(auto d = (pos1 - pos2).length(); d < 1)
+            {
+                pos1 += (pos-pos2).normalized()*(1-d)/2;
+                pos2 += (pos2-pos).normalized()*(1-d)/2;
+            }
+            setPosition(pos1);
+            entity->setPosition(pos2);
+        }
+    }
 
     velocity = Vector2(dir.x, dir.y).normalized()*velocity.length();
     velocity += Vector2(dir.x, dir.y).normalized()*acceleration*dt;
@@ -203,7 +220,17 @@ void Tank::update(real dt)
         brake();
 }
 
+void boidCalc()
+{
+
+}
+
 Vector2 Tank::getVelocity() const
 {
     return velocity;
+}
+
+void Tank::setVelocity(Vector2 velocity)
+{
+    this->velocity = velocity;
 }

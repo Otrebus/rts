@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include "Entity.h"
 
 class Camera;
 class ShaderProgramManager;
@@ -35,4 +36,14 @@ void Scene::setTerrain(Terrain* terrain)
 Terrain* Scene::getTerrain() const
 {
     return terrain;
+}
+
+void Scene::setEntities(std::vector<Entity*> entities)
+{
+    this->entities = entities;
+}
+
+const std::vector<Entity*>& Scene::getEntities() const
+{
+    return entities;
 }

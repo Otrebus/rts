@@ -34,6 +34,8 @@ public:
 
     void setPosition(Vector3 pos);
     void setDirection(Vector3 dir, Vector3 up);
+
+    void setVelocity(Vector2 velocity);
     Vector2 getVelocity() const;
 
     void accelerate(Vector2 dir);
@@ -41,6 +43,7 @@ public:
     void turn(bool dir);
 
     void update(real dt);
+    void boidCalc();
 
     Model3d* body;
     Model3d* turret;

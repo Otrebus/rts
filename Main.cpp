@@ -158,10 +158,14 @@ int main()
     Terrain terrain("Heightmap.bmp", &scene);
     CameraControl cameraControl(&cam, &terrain);
 
-    Tank* tank = new Tank({ 70.5f, 180.5f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
+    Tank* tank = new Tank({ 70.5f, 180.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
+    tank->setPath( { (tank->getPosition() + Vector2(10, 0).to3()).to2() } );
+    Tank* tank2 = new Tank({ 78.5f, 180.1f, 3.07f }, { -1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
+    tank2->setPath( { (tank2->getPosition() + Vector2(-10, 0).to3()).to2() } );
     //Tank* tank = new Tank({ 130.5f, 150.5f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
 //    tank->setUp(&scene);
     entities.push_back(tank);
+    entities.push_back(tank2);
 
     //for(int x = 0; x < terrain.getWidth(); x++)
     //    for(int y = 0; y < 10; y++)
@@ -209,6 +213,8 @@ int main()
             entity->draw();
         }
 
+        scene.setEntities(entities);
+
         /*mesh.draw();
 
         mesh2.draw();*/
@@ -240,7 +246,8 @@ int main()
         //tank.setPosition(tank.pos + Vector3(.3236543, 1, 0).normalized()*dt);
         //tank.setDirection(Vector3(.3236543, 1, 0).normalized(), Vector3(0, 0, 1).normalized());
 
-        tank->plant(terrain);
+        for(auto entity : entities)
+            entity->plant(terrain);
 
         for(auto entity : entities)
             entity->update(dt);
