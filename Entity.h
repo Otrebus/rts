@@ -46,9 +46,13 @@ public:
     void setPath(std::vector<Vector2> path);
     const std::vector<Vector2>& getPath() const;
 
+    void setVelocity(Vector2 velocity);
+    Vector2 getVelocity() const;
+
     Vector3 dir, up, pos;
     Vector3 target;
     real width, height, depth;
+    Vector2 velocity;
 
     BoundingBoxModel* boundingBoxModel;
 

@@ -35,15 +35,15 @@ public:
     void setPosition(Vector3 pos);
     void setDirection(Vector3 dir, Vector3 up);
 
-    void setVelocity(Vector2 velocity);
-    Vector2 getVelocity() const;
-
     void accelerate(Vector2 dir);
     void brake();
     void turn(bool dir);
 
     void update(real dt);
-    void boidCalc();
+
+    Vector2 seek();
+    Vector2 evade();
+    Vector2 boidCalc();
 
     Model3d* body;
     Model3d* turret;
@@ -59,7 +59,6 @@ public:
     Terrain* terrain;
     real acceleration;
     real turnRate;
-    Vector2 velocity;
 
     Line3d destinationLine;
 };

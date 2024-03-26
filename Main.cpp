@@ -160,7 +160,7 @@ int main()
 
     Tank* tank = new Tank({ 70.5f, 180.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
     tank->setPath( { (tank->getPosition() + Vector2(10, 0).to3()).to2() } );
-    Tank* tank2 = new Tank({ 78.5f, 180.1f, 3.07f }, { -1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
+    Tank* tank2 = new Tank({ 85.5f, 180.1f, 3.07f }, { -1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
     tank2->setPath( { (tank2->getPosition() + Vector2(-10, 0).to3()).to2() } );
     //Tank* tank = new Tank({ 130.5f, 150.5f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
 //    tank->setUp(&scene);

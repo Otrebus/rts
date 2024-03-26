@@ -15,7 +15,7 @@
 #include "BoundingBoxModel.h"
 
 
-Entity::Entity(Vector3 pos, Vector3 dir, Vector3 up, real height, real width, real depth) : pos(pos), dir(dir), up(up)
+Entity::Entity(Vector3 pos, Vector3 dir, Vector3 up, real height, real width, real depth) : pos(pos), dir(dir), up(up), velocity({ 0, 0 })
 {
 }
 
@@ -147,4 +147,14 @@ void Entity::setPath(std::vector<Vector2> path)
 const std::vector<Vector2>& Entity::getPath() const
 {
     return path;
+}
+
+Vector2 Entity::getVelocity() const
+{
+    return velocity;
+}
+
+void Entity::setVelocity(Vector2 velocity)
+{
+    this->velocity = velocity;
 }

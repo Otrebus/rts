@@ -156,3 +156,13 @@ Vector3 Vector2::to3() const
 {
     return { x, y, 0 };
 }
+
+Vector2 operator*(float t, Vector2 v)
+{
+    return { t*v.x, t*v.y };
+}
+
+real Vector2::operator%(const Vector2& v) const
+{
+    return x*v.y - v.x*y;
+}

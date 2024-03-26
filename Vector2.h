@@ -34,6 +34,8 @@ public:
     Vector2 operator/(real) const;
     Vector2 operator*(real) const;
 
+    real operator%(const Vector2&) const;
+
     real& operator[](int);
     real operator[](int) const;
 
@@ -50,3 +52,4 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& s, const Vector2& v);
+Vector2 operator*(float, Vector2);

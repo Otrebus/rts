@@ -8,7 +8,7 @@ class Scene;
 class Vector3;
 
 // TODO: no need to get terrain since we have scene->getTerrain()
-Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) : Entity(pos, dir, up), turnRate(0), velocity({ 0, 0 }), acceleration(0), terrain(terrain)
+Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) : Entity(pos, dir, up), turnRate(0), acceleration(0), terrain(terrain)
 {
     body = new Model3d("tankbody.obj");
     turret = new Model3d("tankturret.obj");
@@ -128,7 +128,10 @@ void Tank::setDirection(Vector3 dir, Vector3 up)
 
 void Tank::accelerate(Vector2 accTarget)
 {
-    turn((this->dir%Vector3(accTarget.x, accTarget.y, 0.f)).z > 0);
+    if(!!accTarget && (this->dir*accTarget.to3()) < 0.99)
+        turn((this->dir%Vector3(accTarget.x, accTarget.y, 0.f)).z > 0);
+    else
+        turnRate = 0;
 
     auto linearAcc = Vector2((dir.normalized()*acceleration).x, (dir.normalized()*acceleration).y);
     auto turnAcc = Vector2(-dir.y, dir.x)*turnRate*maxSpeed;
@@ -173,6 +176,9 @@ void Tank::update(real dt)
     {
         assert(t >= 0);
         auto v2 = (pos2-pos).to2() - norm*((pos2-pos).to2()*norm);
+
+        // TODO: this can cause the tank to move through another triangle, so
+        //       what if we set the velocity in this direction instead?
         pos += v2.to3();
     }
     else
@@ -194,6 +200,8 @@ void Tank::update(real dt)
         }
     }
 
+    accelerate(boidCalc());
+
     velocity = Vector2(dir.x, dir.y).normalized()*velocity.length();
     velocity += Vector2(dir.x, dir.y).normalized()*acceleration*dt;
 
@@ -202,7 +210,10 @@ void Tank::update(real dt)
 
     auto newDir = Vector2(dir.x, dir.y).normalized().rotated(turnRate*dt);
     dir = Vector3(newDir.x, newDir.y, 0).normalized();
-    
+}
+
+Vector2 Tank::seek()
+{
     if(!path.empty())
     {
         auto target = path.back();
@@ -213,24 +224,36 @@ void Tank::update(real dt)
             auto v2 = (target - pos.to2()).normalized()*maxSpeed;
             auto v1 = velocity;
             auto v = Vector2(v2.x, v2.y) - v1;
-            accelerate(v);
+            return v;
         }
     }
+    else if(velocity.length() > 0.001)
+        return maxBreakAcc*(-dir.to2());
     else
-        brake();
+        return { 0, 0 };
 }
 
-void boidCalc()
+Vector2 Tank::evade()
 {
+    for(auto entity : scene->getEntities())
+    {
+        if(entity != this)
+        {
+            auto pos1 = pos, pos2 = entity->getPosition();
+            auto e = (pos2 - pos1).to2();
+            auto v1 = velocity, v2 = entity->getVelocity();
+            auto v = v1 - v2;
+            auto w = ((e*v)/v.length2())*v;
 
+            auto r = w - (pos2-pos1).to2();
+            if(e*v > 0 && r.length() < 1)
+                return v1%r > 1 ? std::min(w.length(), 3.f)*v1.perp() : -std::min(w.length(), 3.f)*v1.perp();
+        }
+    }
+    return { 0, 0 };
 }
 
-Vector2 Tank::getVelocity() const
+Vector2 Tank::boidCalc()
 {
-    return velocity;
-}
-
-void Tank::setVelocity(Vector2 velocity)
-{
-    this->velocity = velocity;
+    return evade() + seek();
 }
