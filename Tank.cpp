@@ -126,9 +126,10 @@ void Tank::setDirection(Vector3 dir, Vector3 up)
 }
 
 
-void Tank::accelerate(Vector2 accTarget)
+void Tank::accelerate(Vector2 movTarget)
 {
-    if(!!accTarget && (this->dir*accTarget.to3()) < 0.99)
+    auto accTarget = movTarget - velocity;
+    if(accTarget*velocity < 0.99 && accTarget.length() > 0.01)
         turn((this->dir%Vector3(accTarget.x, accTarget.y, 0.f)).z > 0);
     else
         turnRate = 0;
@@ -138,7 +139,8 @@ void Tank::accelerate(Vector2 accTarget)
 
     auto dir = Vector2(this->dir.x, this->dir.y);
 
-    auto projAcc = turnAcc.length()/(turnAcc.normalized()*accTarget.normalized());
+    auto projAcc = !turnAcc ? accTarget*linearAcc.normalized() : turnAcc.length()/(turnAcc.normalized()*accTarget.normalized());
+
     acceleration = std::max(-maxBreakAcc, std::min(maxForwardAcc, (accTarget.normalized()*projAcc)*dir));
 
     //auto acc = Vector2(-dir.y, dir.x)*turnRate*velocity.length() + linearAcc;
@@ -200,10 +202,18 @@ void Tank::update(real dt)
         }
     }
 
-    accelerate(boidCalc());
+    auto velocityTarget = boidCalc();
+
+    accelerate(velocityTarget);
 
     velocity = Vector2(dir.x, dir.y).normalized()*velocity.length();
+    auto velocity1 = velocity;
     velocity += Vector2(dir.x, dir.y).normalized()*acceleration*dt;
+    if(velocity1*velocity < 0 && !velocityTarget)
+    {
+        velocity = { 0, 0 };
+        acceleration = 0;
+    }
 
     if(velocity.length() > maxSpeed)
         velocity = velocity.normalized()*maxSpeed;
@@ -221,14 +231,14 @@ Vector2 Tank::seek()
         if(target.length() > 0.0001) {
             if((target - pos.to2()).length() < 0.5)
                 path.pop_back();
-            auto v2 = (target - pos.to2()).normalized()*maxSpeed;
-            auto v1 = velocity;
-            auto v = Vector2(v2.x, v2.y) - v1;
-            return v;
+            auto v2 = (target - pos.to2()).normalized();
+
+            auto speed = maxSpeed;
+            if(path.size() == 1)
+                speed = std::min(maxSpeed, (target - pos.to2()).length());
+            return v2*speed;
         }
     }
-    else if(velocity.length() > 0.001)
-        return maxBreakAcc*(-dir.to2());
     else
         return { 0, 0 };
 }
@@ -246,8 +256,11 @@ Vector2 Tank::evade()
             auto w = ((e*v)/v.length2())*v;
 
             auto r = w - (pos2-pos1).to2();
-            if(e*v > 0 && r.length() < 1)
+            // TODO: better deduction of time-to-collision (e/v)?
+            if(e*v > 0 && r.length() < 1 && e.length()/v.length() < 1) {
+                std::cout << "evading" << std::endl;
                 return v1%r > 1 ? std::min(w.length(), 3.f)*v1.perp() : -std::min(w.length(), 3.f)*v1.perp();
+            }
         }
     }
     return { 0, 0 };
