@@ -38,6 +38,7 @@ Vector2& Vector2::operator-=(const Vector2& v)
 
 Vector2 Vector2::operator/(float f) const
 {
+    assert(f);
     return Vector2(x / f, y / f);
 }
 
@@ -64,6 +65,7 @@ float Vector2::length() const
 void Vector2::normalize()
 {
     float l = length();
+    assert(l);
     x /= l;
     y /= l;
 }
@@ -71,6 +73,7 @@ void Vector2::normalize()
 Vector2 Vector2::normalized() const
 {
     float l = length();
+    assert(l);
     return Vector2(x / l, y / l);
 }
 

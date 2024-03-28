@@ -48,6 +48,7 @@ Vector3& Vector3::operator-=(const Vector3& v)
 
 Vector3 Vector3::operator/(real f) const
 {
+    assert(f);
     return Vector3(x/f, y/f, z/f);
 }
 
@@ -86,7 +87,7 @@ real Vector3::length() const
 void Vector3::normalize()
 {
     real l = length();
-
+    assert(l);
     x /= l;
     y /= l;
     z /= l;
@@ -96,6 +97,7 @@ void Vector3::normalize()
 Vector3 Vector3::normalized() const
 {
     real l = length();
+    assert(l);
     return { x/l, y/l, z/l };
 }
 
@@ -109,6 +111,7 @@ Vector3 Vector3::operator*(real t) const
 
 Vector3& Vector3::operator/=(real t)
 {
+    assert(t);
     x/= t;
     y/= t;
     z/= t;

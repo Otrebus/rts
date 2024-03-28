@@ -126,20 +126,34 @@ void Tank::setDirection(Vector3 dir, Vector3 up)
 }
 
 
-void Tank::accelerate(Vector2 movTarget)
+void Tank::accelerate(Vector2 velocityTarget)
 {
-    auto accTarget = movTarget - velocity;
-    if(accTarget*velocity < 0.99 && accTarget.length() > 0.01)
-        turn((this->dir%Vector3(accTarget.x, accTarget.y, 0.f)).z > 0);
+    auto accTarget = velocityTarget - velocity;
+    if(!accTarget)
+    {
+        turnRate = 0;
+        acceleration = 0;
+        return;
+    }
+
+    if(velocityTarget.length() > 0.01)
+        turn((this->dir%velocityTarget.to3()).z > 0);
     else
         turnRate = 0;
 
-    auto linearAcc = Vector2((dir.normalized()*acceleration).x, (dir.normalized()*acceleration).y);
     auto turnAcc = Vector2(-dir.y, dir.x)*turnRate*maxSpeed;
+
+    Line3d line({
+        pos,
+        pos + turnAcc.to3()
+    });
+    line.setUp(scene);
+    line.setInFront(true);
+    line.draw();
 
     auto dir = Vector2(this->dir.x, this->dir.y);
 
-    auto projAcc = !turnAcc ? accTarget*linearAcc.normalized() : turnAcc.length()/(turnAcc.normalized()*accTarget.normalized());
+    auto projAcc = !turnAcc ? std::abs(accTarget*dir.normalized()) : turnAcc.length()/(turnAcc.normalized()*accTarget.normalized());
 
     acceleration = std::max(-maxBreakAcc, std::min(maxForwardAcc, (accTarget.normalized()*projAcc)*dir));
 
@@ -196,7 +210,7 @@ void Tank::update(real dt)
             {
                 pos1 += (pos-pos2).normalized()*(1-d)/2;
                 pos2 += (pos2-pos).normalized()*(1-d)/2;
-            }
+            }   
             setPosition(pos1);
             entity->setPosition(pos2);
         }
@@ -219,7 +233,10 @@ void Tank::update(real dt)
         velocity = velocity.normalized()*maxSpeed;
 
     auto newDir = Vector2(dir.x, dir.y).normalized().rotated(turnRate*dt);
-    dir = Vector3(newDir.x, newDir.y, 0).normalized();
+    if((newDir%velocityTarget)*(dir.to2()%velocityTarget) < 0 && newDir*velocityTarget > 0)
+        dir = velocityTarget.normalized().to3();
+    else
+        dir = newDir.normalized().to3();
 }
 
 Vector2 Tank::seek()
@@ -229,13 +246,22 @@ Vector2 Tank::seek()
         auto target = path.back();
 
         if(target.length() > 0.0001) {
-            if((target - pos.to2()).length() < 0.5)
+            auto l = (target - pos.to2()).length();
+            if(l < 0.5)
                 path.pop_back();
+
+            // TODO: this could become NaN
+            if(!l)
+                return { 0, 0 };
             auto v2 = (target - pos.to2()).normalized();
 
             auto speed = maxSpeed;
             if(path.size() == 1)
+            {
+                if((target - pos.to2()).length() < 0.5)
+                    return { 0, 0 };
                 speed = std::min(maxSpeed, (target - pos.to2()).length());
+            }
             return v2*speed;
         }
     }
