@@ -14,6 +14,9 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) :
     turret = new Model3d("tankturret.obj");
     gun = new Model3d("tankbarrel.obj");
 
+    geoPos = pos.to2();
+    geoDir = dir.to2();
+
     BoundingBox bb;
 
     for(auto model : { body, turret, gun }) {
@@ -136,36 +139,27 @@ void Tank::accelerate(Vector2 velocityTarget)
         return;
     }
 
-    if(velocityTarget.length() > 0.01)
-        turn((this->dir%velocityTarget.to3()).z > 0);
+    if(velocityTarget.length() > 0.01 && velocityTarget.normalized()*geoDir < 0.999)
+    {
+        std::cout << velocityTarget.normalized() << " " << geoDir << " " << velocityTarget.normalized()*geoDir << std::endl;
+        turn(geoDir%velocityTarget > 0);
+    }
     else
         turnRate = 0;
 
     auto turnAcc = Vector2(-dir.y, dir.x)*turnRate*maxSpeed;
 
     Line3d line({
-        pos,
-        pos + turnAcc.to3()
+        geoPos.to3(),
+        geoPos.to3() + turnAcc.to3()
     });
     line.setUp(scene);
     line.setInFront(true);
     line.draw();
 
-    auto dir = Vector2(this->dir.x, this->dir.y);
+    auto projAcc = !turnAcc ? std::abs(accTarget*geoDir.normalized()) : turnAcc.length()/(turnAcc.normalized()*accTarget.normalized());
 
-    auto projAcc = !turnAcc ? std::abs(accTarget*dir.normalized()) : turnAcc.length()/(turnAcc.normalized()*accTarget.normalized());
-
-    acceleration = std::max(-maxBreakAcc, std::min(maxForwardAcc, (accTarget.normalized()*projAcc)*dir));
-
-    //auto acc = Vector2(-dir.y, dir.x)*turnRate*velocity.length() + linearAcc;
-
-    //auto ac = (Vector2(dir.x, dir.y).normalized()*(accTarget-acc));
-    //auto acceleration2 = std::max(-maxAcc, std::min(maxAcc, ac));
-    //
-    //if((dir.normalized()*acceleration2)*accTarget > (dir.normalized()*acceleration)*accTarget)
-    //    acceleration = acceleration2;
-
-    //std::cout << acceleration << std::endl;
+    acceleration = std::max(-maxBreakAcc, std::min(maxForwardAcc, (accTarget.normalized()*projAcc)*geoDir));
 }
 
 void Tank::brake()
@@ -183,36 +177,36 @@ void Tank::turn(bool left)
 
 void Tank::update(real dt)
 {
-    auto pos2 = pos + Vector3(velocity.x, velocity.y, 0)*dt;
+    auto pos2 = geoPos + velocity*dt;
 
     // Collision detection, against the terrain
-    auto [t, norm] = terrain->intersectCirclePathOcclusion(pos.to2(), pos2.to2(), 0.5);
-    auto t2 = (pos2 - pos).length();
-    if(t > -inf && t < t2 && dir.to2()*norm < 0)
+    auto [t, norm] = terrain->intersectCirclePathOcclusion(geoPos, pos2, 0.5);
+    auto t2 = (pos2 - geoPos).length();
+    if(t > -inf && t < t2 && geoDir*norm < 0)
     {
         assert(t >= 0);
-        auto v2 = (pos2-pos).to2() - norm*((pos2-pos).to2()*norm);
+        auto v2 = (pos2-geoPos) - norm*((pos2-geoPos)*norm);
 
         // TODO: this can cause the tank to move through another triangle, so
         //       what if we set the velocity in this direction instead?
-        pos += v2.to3();
+        geoPos += v2;
     }
     else
-        pos = pos2;
+        geoPos = pos2;
 
     // Collision detection, against other units
     for(auto entity : scene->getEntities())
     {
         if(entity != this)
         {
-            auto pos1 = pos, pos2 = entity->getPosition();
+            auto pos1 = geoPos, pos2 = entity->geoPos;
             if(auto d = (pos1 - pos2).length(); d < 1)
             {
-                pos1 += (pos-pos2).normalized()*(1-d)/2;
-                pos2 += (pos2-pos).normalized()*(1-d)/2;
+                pos1 += (geoPos-pos2).normalized()*(1-d)/2;
+                pos2 += (pos2-geoPos).normalized()*(1-d)/2;
             }   
-            setPosition(pos1);
-            entity->setPosition(pos2);
+            geoPos = pos1;
+            entity->geoPos = pos2;
         }
     }
 
@@ -220,9 +214,14 @@ void Tank::update(real dt)
 
     accelerate(velocityTarget);
 
-    velocity = Vector2(dir.x, dir.y).normalized()*velocity.length();
+    auto newDir = geoDir.normalized().rotated(turnRate*dt);
+    if((newDir%velocityTarget)*(geoDir%velocityTarget) < 0 && newDir*velocityTarget > 0)
+        newDir = velocityTarget.normalized();
+    geoDir = newDir;
+
+    velocity = Vector2(geoDir.x, geoDir.y).normalized()*velocity.length();
     auto velocity1 = velocity;
-    velocity += Vector2(dir.x, dir.y).normalized()*acceleration*dt;
+    velocity += Vector2(geoDir.x, geoDir.y).normalized()*acceleration*dt;
     if(velocity1*velocity < 0 && !velocityTarget)
     {
         velocity = { 0, 0 };
@@ -231,12 +230,6 @@ void Tank::update(real dt)
 
     if(velocity.length() > maxSpeed)
         velocity = velocity.normalized()*maxSpeed;
-
-    auto newDir = Vector2(dir.x, dir.y).normalized().rotated(turnRate*dt);
-    if((newDir%velocityTarget)*(dir.to2()%velocityTarget) < 0 && newDir*velocityTarget > 0)
-        dir = velocityTarget.normalized().to3();
-    else
-        dir = newDir.normalized().to3();
 }
 
 Vector2 Tank::seek()
@@ -246,21 +239,21 @@ Vector2 Tank::seek()
         auto target = path.back();
 
         if(target.length() > 0.0001) {
-            auto l = (target - pos.to2()).length();
+            auto l = (target - geoPos).length();
             if(l < 0.5)
                 path.pop_back();
 
             // TODO: this could become NaN
             if(!l)
                 return { 0, 0 };
-            auto v2 = (target - pos.to2()).normalized();
+            auto v2 = (target - geoPos).normalized();
 
             auto speed = maxSpeed;
             if(path.size() == 1)
             {
-                if((target - pos.to2()).length() < 0.5)
+                if((target - geoPos).length() < 0.5)
                     return { 0, 0 };
-                speed = std::min(maxSpeed, (target - pos.to2()).length());
+                speed = std::min(maxSpeed, (target - geoPos).length());
             }
             return v2*speed;
         }
@@ -275,13 +268,13 @@ Vector2 Tank::evade()
     {
         if(entity != this)
         {
-            auto pos1 = pos, pos2 = entity->getPosition();
-            auto e = (pos2 - pos1).to2();
+            auto pos1 = geoPos, pos2 = entity->geoPos;
+            auto e = (pos2 - pos1);
             auto v1 = velocity, v2 = entity->getVelocity();
             auto v = v1 - v2;
             auto w = ((e*v)/v.length2())*v;
 
-            auto r = w - (pos2-pos1).to2();
+            auto r = w - (pos2-pos1);
             // TODO: better deduction of time-to-collision (e/v)?
             if(e*v > 0 && r.length() < 1 && e.length()/v.length() < 1) {
                 std::cout << "evading" << std::endl;

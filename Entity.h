@@ -54,6 +54,8 @@ public:
     real width, height, depth;
     Vector2 velocity;
 
+    Vector2 geoPos, geoDir;
+
     BoundingBoxModel* boundingBoxModel;
 
     BoundingBox boundingBox;

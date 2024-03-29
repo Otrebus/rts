@@ -79,18 +79,22 @@ void Entity::updateUniforms()
 
 void Entity::plant(const Terrain& terrain)
 {
-    auto x = Vector3(dir.x, dir.y, 0).normalized();
+    /*auto x = Vector3(dir.x, dir.y, 0).normalized();
     auto y = Vector3(-dir.y, dir.x, 0).normalized();
-    auto z = Vector3(0, 0, 1);
+    auto z = Vector3(0, 0, 1);*/
+
+    auto x = Vector3(geoDir.x, geoDir.y, 0).normalized();
+    auto y = Vector3(-geoDir.y, geoDir.x, 0).normalized();
+    auto z = Vector3(0, 0, 1).normalized();
 
     auto height = (boundingBox.c2.z-boundingBox.c1.z)/2;
     auto width = (boundingBox.c2.x-boundingBox.c1.x)/2;
     auto depth = (boundingBox.c2.y-boundingBox.c1.y)/2;
 
-    auto a = pos + x*width + y*depth;
-    auto b = pos - x*width + y*depth;
-    auto c = pos - x*width - y*depth;
-    auto d = pos + x*width - y*depth;
+    auto a = geoPos.to3() + x*width + y*depth;
+    auto b = geoPos.to3() - x*width + y*depth;
+    auto c = geoPos.to3() - x*width - y*depth;
+    auto d = geoPos.to3() + x*width - y*depth;
 
     auto ah = terrain.getElevation(a.x, a.y);
     auto bh = terrain.getElevation(b.x, b.y);
@@ -103,7 +107,7 @@ void Entity::plant(const Terrain& terrain)
     Vector3 D = Vector3(d.x, d.y, dh);
 
     up = ((C-B)%(A-B)).normalized();
-    pos = Vector3(pos.x, pos.y, ((A+C)/2).z);
+    pos = Vector3(geoPos.x, geoPos.y, ((A+C)/2).z);
     auto l = Vector3(0, 0, 1)%x;
     dir = l%up;
     setPosition(pos);
