@@ -43,7 +43,7 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) :
     for(auto model : { body, turret, gun }) {
         for(auto& mesh : model->getMeshes()) {
             for(auto& v : ((Mesh3d*) mesh)->v) {
-                v.pos -= Vector3((bb.c2.x + bb.c1.x)/2, (bb.c2.y + bb.c1.y)/2, bb.c1.z);
+                v.pos -= Vector3((bb.c2.x + bb.c1.x)/2, (bb.c2.y + bb.c1.y)/2, (bb.c2.z-bb.c1.z)/2);
                 v.pos *= width/w;
             }
         }
@@ -53,8 +53,8 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) :
 
     height = h*ratio;
     depth = d*ratio;
-    boundingBoxModel = new BoundingBoxModel(pos, dir, up, width, height, depth);
-    boundingBox = BoundingBox(Vector3(0, 0, 0), Vector3(width, depth, height));
+    boundingBoxModel = new BoundingBoxModel(pos, dir, up, width, depth, height);
+    boundingBox = BoundingBox(Vector3(-width/2, -depth/2, -height/2), Vector3(width/2, depth/2, height/2));
 }
 
 
@@ -150,8 +150,8 @@ void Tank::accelerate(Vector2 velocityTarget)
     auto turnAcc = Vector2(-dir.y, dir.x)*turnRate*maxSpeed;
 
     Line3d line({
-        geoPos.to3(),
-        geoPos.to3() + turnAcc.to3()
+        pos,
+        pos + turnAcc.to3()
     });
     line.setUp(scene);
     line.setInFront(true);
@@ -202,8 +202,8 @@ void Tank::update(real dt)
             auto pos1 = geoPos, pos2 = entity->geoPos;
             if(auto d = (pos1 - pos2).length(); d < 1)
             {
-                pos1 += (geoPos-pos2).normalized()*(1-d)/2;
-                pos2 += (pos2-geoPos).normalized()*(1-d)/2;
+                pos1 += (geoPos-pos2).normalized()*(1-d)/2.f;
+                pos2 += (pos2-geoPos).normalized()*(1-d)/2.f;
             }   
             geoPos = pos1;
             entity->geoPos = pos2;

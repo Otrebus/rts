@@ -57,7 +57,7 @@ bool testNormals(const Polyhedra& a, const Polyhedra& b)
     {
         auto v1 = (v[f[i]] - v[f[i+1]]).normalized();
         auto v2 = (v[f[i+2]] - v[f[i]]).normalized();
-        if (testSides(a, b, { v[f[i+1]], (v1%v2).normalized() }))
+        if (auto k = v1%v2; k && testSides(a, b, { v[f[i+1]], (v1%v2).normalized() }))
             return false;
     }
     return true;
@@ -79,7 +79,7 @@ bool intersectsSAT(const Polyhedra& a, const Polyhedra& b)
             auto u = (a.vertices[a1]-a.vertices[a2]).normalized();
             auto v = (b.vertices[b1]-b.vertices[b2]).normalized();
             auto n = u%v;
-            if(testSides(a, b, { a.vertices[a1], n.normalized() }))
+            if(!!n && testSides(a, b, { a.vertices[a1], n.normalized() }))
                 return false;
         }
     }
@@ -131,7 +131,7 @@ bool intersectsFrustum(Vector3 pos, Vector3 v[4], Entity& entity, Scene* scene)
     };
 
     Polyhedra b = {
-        { pos, pos + v[0]*1e3, pos + v[1]*1e3, pos + v[2]*1e3, pos + v[3]*1e3 },
+        { pos, pos + v[0]*1.e3f, pos + v[1]*1.e3f, pos + v[2]*1.e3f, pos + v[3]*1.e3f },
         { { 0, 1 }, { 0, 2 }, { 0, 3 }, { 0, 4 }, { 1, 2 }, { 2, 3 }, { 3, 4 }, { 4, 1 } },
         { 0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 1  },
         { { 0, 3 }, { 3, 3 }, { 6, 3 }, { 9, 3 } }

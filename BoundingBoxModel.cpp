@@ -5,9 +5,9 @@
 #include "Math.h"
 
 
-BoundingBoxModel::BoundingBoxModel(Vector3 pos, Vector3 dir, Vector3 up, real width, real height, real depth)
+BoundingBoxModel::BoundingBoxModel(Vector3 pos, Vector3 dir, Vector3 up, real width, real depth, real height)
 {
-    real w = width, h = height, d = depth;
+    real w = width, d = depth, h = height;
     std::vector<Vector3> c = {
         { -w/2, -d/2, -h/2 }, // bottom-front-left
         {  w/2, -d/2, -h/2 }, // bottom-front-right

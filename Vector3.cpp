@@ -198,3 +198,8 @@ Vector2 Vector3::to2() const
 {
     return { x, y };
 }
+
+Vector3::operator bool() const
+{
+    return x || y || z;
+}

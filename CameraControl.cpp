@@ -6,7 +6,7 @@ CameraControl::CameraControl(Camera* cam, Terrain* terrain) :
 {
     //setAngle(0, 0);
     auto [p1, p2] = terrain->getBoundingBox();
-    terrainPos = (p1 + p2)/2;
+    terrainPos = (p1 + p2)/2.f;
     
     changeMode(FollowingReset);
 }
@@ -140,10 +140,10 @@ void CameraControl::setAngle(real theta, real phi) {
 
 void CameraControl::moveForward(real t) {
     if(cameraMode == Freelook)
-        cam->setPos(cam->getPos() + cam->getDir()*t*100);
+        cam->setPos(cam->getPos() + cam->getDir()*t*100.f);
     else
     {
-        terrainPos += Vector3(cam->getDir().x, cam->getDir().y, 0).normalized()*t*100;
+        terrainPos += Vector3(cam->getDir().x, cam->getDir().y, 0).normalized()*t*100.f;
         setPosFromTerrainPos();
     }
 }
@@ -152,10 +152,10 @@ void CameraControl::moveForward(real t) {
 void CameraControl::moveRight(real t) {
     if(cameraMode == Freelook)
     {
-        cam->setPos(cam->getPos() - cam->getUp()%cam->getDir()*t*100);
+        cam->setPos(cam->getPos() - cam->getUp()%cam->getDir()*t*100.f);
     }
     else {
-        terrainPos += (Vector3(cam->getDir().x, cam->getDir().y, 0)%Vector3(0, 0, 1)).normalized()*t*100;
+        terrainPos += (Vector3(cam->getDir().x, cam->getDir().y, 0)%Vector3(0, 0, 1)).normalized()*t*100.f;
         setPosFromTerrainPos();
     }
 }

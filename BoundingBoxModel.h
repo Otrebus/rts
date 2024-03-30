@@ -16,6 +16,6 @@ class BoundingBoxModel : public Model3d
 {
 
 public:
-    BoundingBoxModel(Vector3 pos, Vector3 dir, Vector3 up, real width, real height, real depth);
+    BoundingBoxModel(Vector3 pos, Vector3 dir, Vector3 up, real width, real depth, real height);
     ~BoundingBoxModel();
 };

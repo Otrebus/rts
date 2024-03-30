@@ -32,7 +32,7 @@ void Entity::drawBoundingBox()
 
 bool Entity::intersectBoundingBox(const Ray& ray)
 {
-    auto a = dir, b = up, c = dir%up, d = ray.dir, e = ray.pos-pos;
+    auto a = dir, b = up%dir, c = up, d = ray.dir, e = ray.pos-pos;
 
     auto det = a*(b%c);
     auto u2 = d*(b%c)/det;
@@ -107,7 +107,7 @@ void Entity::plant(const Terrain& terrain)
     Vector3 D = Vector3(d.x, d.y, dh);
 
     up = ((C-B)%(A-B)).normalized();
-    pos = Vector3(geoPos.x, geoPos.y, ((A+C)/2).z);
+    pos = Vector3(geoPos.x, geoPos.y, ((A+C)/2.f).z) + up*(height);
     auto l = Vector3(0, 0, 1)%x;
     dir = l%up;
     setPosition(pos);

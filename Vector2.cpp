@@ -169,3 +169,8 @@ real Vector2::operator%(const Vector2& v) const
 {
     return x*v.y - v.x*y;
 }
+
+Vector2::operator bool() const
+{
+    return x || y;
+}
