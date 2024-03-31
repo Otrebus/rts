@@ -203,7 +203,7 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
         auto py = -(real(2*mouseY)/yres - 1);
 
         auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
-        movingEntity->setPosition(pos);
+        movingEntity->setGeoPosition(pos.to2());
     }
 
     if(cameraControl->getMode() == Freelook)
@@ -276,6 +276,7 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
         }
         selectState = NotSelecting;
         setCursor(GLFW_ARROW_CURSOR);
+
         movingEntity = nullptr;
 
     }

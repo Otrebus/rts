@@ -17,12 +17,13 @@
 + Implement path finding
 + Figure out aspect ratio in debug mode
 + Unit picker/dropper
-- Unit collision detection
++ Unit collision detection
 - Boids:
   - Wall avoidance
-  - Obstacle avoidance
+  + Obstacle avoidance
   - Separation
-- Left-multiplication by scalar t*A
++ Left-multiplication by scalar t*A
+- Turn acceleration
 - Make a better point picker function (viewray (should be ray)/terrain intersect)
 - Change setUp and setup
 - Maybe t = inf is better to return when there's no intersection

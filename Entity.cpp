@@ -162,3 +162,13 @@ void Entity::setVelocity(Vector2 velocity)
 {
     this->velocity = velocity;
 }
+
+void Entity::setGeoPosition(Vector2 pos)
+{
+    geoPos = pos;
+}
+
+Vector2 Entity::getGeoPosition() const
+{
+    return geoPos;
+}

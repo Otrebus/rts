@@ -32,13 +32,15 @@ public:
     virtual void plant(const Terrain& terrain);
 
     virtual void setPosition(Vector3 pos);
+    Vector3 getPosition() const;
+    virtual void setGeoPosition(Vector2 pos);
+    Vector2 getGeoPosition() const;
     virtual void setDirection(Vector3 dir, Vector3 up);
 
     virtual void draw() = 0;
 
     virtual void update(real dt) = 0;
 
-    Vector3 getPosition() const;
 
     void setTarget(Vector3 pos);
     Vector3 getTarget() const;

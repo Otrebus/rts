@@ -141,7 +141,6 @@ void Tank::accelerate(Vector2 velocityTarget)
 
     if(velocityTarget.length() > 0.01 && velocityTarget.normalized()*geoDir < 0.999)
     {
-        std::cout << velocityTarget.normalized() << " " << geoDir << " " << velocityTarget.normalized()*geoDir << std::endl;
         turn(geoDir%velocityTarget > 0);
     }
     else
@@ -149,13 +148,13 @@ void Tank::accelerate(Vector2 velocityTarget)
 
     auto turnAcc = Vector2(-dir.y, dir.x)*turnRate*maxSpeed;
 
-    Line3d line({
-        pos,
-        pos + turnAcc.to3()
-    });
-    line.setUp(scene);
-    line.setInFront(true);
-    line.draw();
+    //Line3d line({
+    //    pos,
+    //    pos + turnAcc.to3()
+    //});
+    //line.setUp(scene);
+    //line.setInFront(true);
+    //line.draw();
 
     auto projAcc = !turnAcc ? std::abs(accTarget*geoDir.normalized()) : turnAcc.length()/(turnAcc.normalized()*accTarget.normalized());
 
@@ -179,20 +178,30 @@ void Tank::update(real dt)
 {
     auto pos2 = geoPos + velocity*dt;
 
+    Vector2 velocity2 = velocity;
+    bool hitWall = false;
+
     // Collision detection, against the terrain
     auto [t, norm] = terrain->intersectCirclePathOcclusion(geoPos, pos2, 0.5);
     auto t2 = (pos2 - geoPos).length();
     if(t > -inf && t < t2 && geoDir*norm < 0)
     {
         assert(t >= 0);
-        auto v2 = (pos2-geoPos) - norm*((pos2-geoPos)*norm);
+        
+        // A bit hacky, we do another pass to see if we hit anything perpendicularly to the normal as well
+        velocity2 = (velocity*norm.perp())*norm.perp();
+        std::cout << velocity << std::endl;
 
-        // TODO: this can cause the tank to move through another triangle, so
-        //       what if we set the velocity in this direction instead?
-        geoPos += v2;
+        auto pos2 = geoPos + velocity2*dt;
+
+        auto [t, norm] = terrain->intersectCirclePathOcclusion(geoPos, pos2, 0.5);
+        auto t2 = (pos2 - geoPos).length();
+        if(t > -inf && t < t2 && geoDir*norm < 0)
+            velocity2 = { 0, 0 };
     }
-    else
-        geoPos = pos2;
+    
+    pos2 = geoPos + velocity2*dt;
+    geoPos = pos2;
 
     // Collision detection, against other units
     for(auto entity : scene->getEntities())
@@ -219,13 +228,16 @@ void Tank::update(real dt)
         newDir = velocityTarget.normalized();
     geoDir = newDir;
 
-    velocity = Vector2(geoDir.x, geoDir.y).normalized()*velocity.length();
-    auto velocity1 = velocity;
-    velocity += Vector2(geoDir.x, geoDir.y).normalized()*acceleration*dt;
-    if(velocity1*velocity < 0 && !velocityTarget)
+    if(!hitWall)
     {
-        velocity = { 0, 0 };
-        acceleration = 0;
+        velocity = Vector2(geoDir.x, geoDir.y).normalized()*velocity.length();
+        auto velocity1 = velocity;
+        velocity += Vector2(geoDir.x, geoDir.y).normalized()*acceleration*dt;
+        if(velocity1*velocity < 0 && !velocityTarget)
+        {
+            velocity = { 0, 0 };
+            acceleration = 0;
+        }
     }
 
     if(velocity.length() > maxSpeed)
@@ -285,7 +297,31 @@ Vector2 Tank::evade()
     return { 0, 0 };
 }
 
+
+Vector2 Tank::avoid()
+{
+    auto pos2 = geoPos + velocity;
+
+    auto [t, norm] = terrain->intersectCirclePathOcclusion(geoPos, pos2, 0.5);
+    auto t2 = (pos2 - geoPos).length();
+    if(t > -inf && t < t2 && geoDir*norm < 0)
+    {
+        auto v = norm*(1/t);
+        Line3d line({
+            pos,
+            pos + v.to3()
+        });
+        line.setUp(scene);
+        line.setInFront(true);
+        line.draw();
+        return v;
+    }
+    return { 0, 0 };
+}
+
+
+
 Vector2 Tank::boidCalc()
 {
-    return evade() + seek();
+    return evade() + seek() + avoid();
 }

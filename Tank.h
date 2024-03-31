@@ -43,6 +43,7 @@ public:
 
     Vector2 seek();
     Vector2 evade();
+    Vector2 avoid();
     Vector2 boidCalc();
 
     Model3d* body;
