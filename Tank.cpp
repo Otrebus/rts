@@ -183,6 +183,15 @@ void Tank::update(real dt)
 
     // Collision detection, against the terrain
     auto [t, norm] = terrain->intersectCirclePathOcclusion(geoPos, pos2, 0.5);
+    if(!t)
+    {
+        std::cout << "boo";
+    //if(!t) // TODO: sometimes we find ourselves inside a triangle, what do we do then?
+    //       //       if we blindly go into the if below we will just get stuck. For now
+    //       //       we push ourselves slightly out of the triangle and hope this will
+    //       //       resolve things eventually, but this isn't really robust
+        geoPos += norm*0.01f;
+    }
     auto t2 = (pos2 - geoPos).length();
     if(t > -inf && t < t2 && geoDir*norm < 0)
     {
@@ -190,7 +199,6 @@ void Tank::update(real dt)
         
         // A bit hacky, we do another pass to see if we hit anything perpendicularly to the normal as well
         velocity2 = (velocity*norm.perp())*norm.perp();
-        std::cout << velocity << std::endl;
 
         auto pos2 = geoPos + velocity2*dt;
 
@@ -200,6 +208,7 @@ void Tank::update(real dt)
             velocity2 = { 0, 0 };
     }
     
+    // TODO: we should still close the distance here
     pos2 = geoPos + velocity2*dt;
     geoPos = pos2;
 
@@ -304,7 +313,7 @@ Vector2 Tank::avoid()
 
     auto [t, norm] = terrain->intersectCirclePathOcclusion(geoPos, pos2, 0.5);
     auto t2 = (pos2 - geoPos).length();
-    if(t > -inf && t < t2 && geoDir*norm < 0)
+    if(t > 0.05 && t < t2 && geoDir*norm < 0)
     {
         auto v = norm*(1/t);
         Line3d line({
@@ -320,8 +329,26 @@ Vector2 Tank::avoid()
 }
 
 
+Vector2 Tank::separate()
+{
+    Vector2 sum = { 0, 0 };
+    for(auto entity : scene->getEntities())
+    {
+        if(entity != this)
+        {
+            auto pos1 = geoPos, pos2 = entity->geoPos;
+            auto e = (pos2 - pos1);
+            if(e.length() < 1.5 && e.length() > 1.05)
+            {
+                sum += 1.0f/std::pow(1-e.length(), 5.0f)*e.normalized()/100.f;
+            }
+        }
+    }
+    return sum;
+}
+
 
 Vector2 Tank::boidCalc()
 {
-    return evade() + seek() + avoid();
+    return evade() + seek() + avoid() + separate();
 }

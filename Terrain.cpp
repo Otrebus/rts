@@ -548,22 +548,40 @@ std::pair<real, Vector2> intersectCircleTrianglePath(Vector2 pos, real radius, V
 
     // First check if we're closer than the radius of the circle to the triangle
     if(auto [t, q, s] = distPointLine(pos, p1, p2); t < radius && s > 0 && s < (p2-p1).length())
+    {
+        std::cout << "inside" << std::endl;
         return { 0, (p1-q).perp().normalized() };
+    }
 
     if(auto [t, q, s] = distPointLine(pos, p2, p3); t < radius && s > 0 && s < (p3-p2).length())
+    {
+        std::cout << "inside" << std::endl;
         return { 0, (p2-q).perp().normalized() };
+    }
 
     if(auto [t, q, s] = distPointLine(pos, p3, p1); t < radius && s > 0 && s < (p1-p3).length())
+    {
+        std::cout << "inside" << std::endl;
         return { 0, (p3-q).perp().normalized() };
+    }
 
     if(auto t = (pos - p1).length(); t < radius)
+    {
+        std::cout << "inside" << std::endl;
         return { 0, (pos - p1).normalized() };
+    }
 
     if(auto t = (pos - p2).length(); t < radius)
+    {
+        std::cout << "inside" << std::endl;
         return { 0, (pos - p2).normalized() };
+    }
 
     if(auto t = (pos - p3).length(); t < radius)
+    {
+        std::cout << "inside" << std::endl;
         return { 0, (pos - p3).normalized() };
+    }
 
     real minT = inf;
     Vector2 norm;
@@ -586,21 +604,33 @@ std::pair<real, Vector2> intersectCircleTrianglePath(Vector2 pos, real radius, V
     if(t > 0 && t < minT)
     {
         minT = t;
-        norm = (pos+dir*t-p1).normalized();
+        //norm = (pos+dir*t-p1).normalized();
+        if((pos-p1)*(pp1) > 0)
+            norm = pp1;
+        else
+            norm = pp2;
     }
 
     t = intersectRayCircle(pos, dir, p2, radius);
     if(t > 0 && t < minT)
     {
         minT = t;
-        norm = (pos+dir*t-p2).normalized();
+        //norm = (pos+dir*t-p2).normalized();
+        if((pos-p2)*(pp2) > 0)
+            norm = pp2;
+        else
+            norm = pp1;
     }
 
     t = intersectRayCircle(pos, dir, p3, radius);
     if(t > 0 && t < minT)
     {
         minT = t;
-        norm = (pos+dir*t-p3).normalized();
+        //norm = (pos+dir*t-p3).normalized();
+        if((pos-p3)*(pp3) > 0)
+            norm = pp3;
+        else
+            norm = pp2;
     }
 
     return { minT, norm };

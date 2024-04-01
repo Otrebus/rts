@@ -89,8 +89,8 @@ int main()
 
     glfwSetFramebufferSizeCallback(window, sizeCallback);
 
-    debugDraw(window, xres, yres);
-    return 0;
+    //debugDraw(window, xres, yres);
+    //return 0;
 
     auto model = Model3d("CornellBox-Original.obj");
 
@@ -158,24 +158,22 @@ int main()
     Terrain terrain("Heightmap.bmp", &scene);
     CameraControl cameraControl(&cam, &terrain);
 
-    Tank* tank = new Tank({ 70.5f, 180.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
-    tank->setPath( { (tank->getPosition() + Vector2(15, 0).to3()).to2() } );
+    //Tank* tank = new Tank({ 70.5f, 180.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
+    //tank->setPath( { (tank->getPosition() + Vector2(15, 0).to3()).to2() } );
     /*Tank* tank2 = new Tank({ 85.5f, 180.1f, 3.07f }, { -1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
     tank2->setPath( { (tank2->getPosition() + Vector2(-15, 0).to3()).to2() } );*/
     //Tank* tank = new Tank({ 130.5f, 150.5f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
 //    tank->setUp(&scene);
-    entities.push_back(tank);
+    //entities.push_back(tank);
     //entities.push_back(tank2);
 
-    //for(int x = 0; x < terrain.getWidth(); x++)
-    //    for(int y = 0; y < 10; y++)
-    //        for(int z = 0; z < 10; z++)
-    //            entities.push_back(new Entity({ real(x)+0.75f, real(y)+0.15f, real(z) }, { 1, 0, 0 }, { 0, 0, 1 }));
-
-    //for(int x = 0; x < terrain.getWidth(); x++)
-    //    for(int y = 0; y < terrain.getHeight(); y++)
-    //        if(terrain.isAdmissible(x, y))
-    //            entities.push_back(new Entity({ real(x), real(y), terrain.getElevation(x, y) }, { 1, 0, 0 }, { 0, 0, 1 }));
+    for(int y = 0; y < 5; y++)
+    {
+        for(int x = 0; x < 5; x++)
+        {
+            entities.push_back(new Tank({ 70.5f+x, 180.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain));
+        }
+    }
 
     for(auto& e : entities)
         e->setUp(&scene);
