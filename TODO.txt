@@ -19,9 +19,12 @@
 + Unit picker/dropper
 + Unit collision detection
 - Boids:
-  - Wall avoidance
+  + Wall avoidance
+  - Better wall avoidance (base on speed towards wall)
   + Obstacle avoidance
-  - Separation
+  + Separation
+- Multithreaded path finding
+- Scrollzoom towards pointer
 + Left-multiplication by scalar t*A
 - Turn acceleration
 - Make a better point picker function (viewray (should be ray)/terrain intersect)

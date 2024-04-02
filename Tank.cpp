@@ -55,6 +55,9 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) :
     depth = d*ratio;
     boundingBoxModel = new BoundingBoxModel(pos, dir, up, width, depth, height);
     boundingBox = BoundingBox(Vector3(-width/2, -depth/2, -height/2), Vector3(width/2, depth/2, height/2));
+
+
+    pathCalculationInterval = (500 + (rand() % 500))/1000.0f;
 }
 
 
@@ -251,6 +254,10 @@ void Tank::update(real dt)
 
     if(velocity.length() > maxSpeed)
         velocity = velocity.normalized()*maxSpeed;
+
+    if(glfwGetTime() - pathLastCalculated > pathCalculationInterval && path.size())
+        setPath(scene->getTerrain()->findPath(getPosition().to2(), path.front()));
+
 }
 
 Vector2 Tank::seek()
@@ -338,10 +345,10 @@ Vector2 Tank::separate()
         {
             auto pos1 = geoPos, pos2 = entity->geoPos;
             auto e = (pos2 - pos1);
-            if(e.length() < 1.5 && e.length() > 1.05)
-            {
-                sum += 1.0f/std::pow(1-e.length(), 5.0f)*e.normalized()/100.f;
-            }
+            auto l = std::max(1.15f, e.length());
+            if(l < 1.5)
+                sum += 1.0f/std::pow(1-l, 5.0f)*e.normalized()/100.f;
+            
         }
     }
     return sum;

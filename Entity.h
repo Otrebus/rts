@@ -41,7 +41,6 @@ public:
 
     virtual void update(real dt) = 0;
 
-
     void setTarget(Vector3 pos);
     Vector3 getTarget() const;
 
@@ -62,6 +61,8 @@ public:
 
     BoundingBox boundingBox;
 
+    real pathLastCalculated;
+    real pathCalculationInterval;
     bool selected;
     std::vector<Vector2> path;
 };

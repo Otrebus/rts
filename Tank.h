@@ -14,6 +14,7 @@
 #include "Model3d.h"
 #include "Math.h"
 #include "Line.h"
+#include <random>
 
 
 class Model3d;
@@ -55,7 +56,7 @@ public:
     const real maxTurnAcc = 4;
     const real maxSpeed = 2;
     const real maxForwardAcc = 0.7; // TODO: breakacc vs forwardacc
-    const real maxBreakAcc = 1.5;
+    const real maxBreakAcc = 15.5;
 
     Scene* scene;
     Terrain* terrain;
