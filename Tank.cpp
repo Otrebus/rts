@@ -134,8 +134,8 @@ void Tank::setDirection(Vector3 dir, Vector3 up)
 
 void Tank::accelerate(Vector2 velocityTarget)
 {
-    auto accTarget = velocityTarget - velocity;
-    if(!accTarget)
+    accelerationTarget = velocityTarget - velocity;
+    if(!accelerationTarget)
     {
         turnRate = 0;
         acceleration = 0;
@@ -143,13 +143,12 @@ void Tank::accelerate(Vector2 velocityTarget)
     }
 
     if(velocityTarget.length() > 0.01 && velocityTarget.normalized()*geoDir < 0.999)
-    {
         turn(geoDir%velocityTarget > 0);
-    }
-    else
+    else {
         turnRate = 0;
+    }
 
-    auto turnAcc = Vector2(-dir.y, dir.x)*turnRate*maxSpeed;
+    auto radialAcc = Vector2(-dir.y, dir.x)*turnRate*maxSpeed;
 
     //Line3d line({
     //    pos,
@@ -159,9 +158,9 @@ void Tank::accelerate(Vector2 velocityTarget)
     //line.setInFront(true);
     //line.draw();
 
-    auto projAcc = !turnAcc ? std::abs(accTarget*geoDir.normalized()) : turnAcc.length()/(turnAcc.normalized()*accTarget.normalized());
+    auto projAcc = !radialAcc ? std::abs(accelerationTarget*geoDir.normalized()) : radialAcc.length()/(radialAcc.normalized()*accelerationTarget.normalized());
 
-    acceleration = std::max(-maxBreakAcc, std::min(maxForwardAcc, (accTarget.normalized()*projAcc)*geoDir));
+    acceleration = std::max(-maxBreakAcc, std::min(maxForwardAcc, (accelerationTarget.normalized()*projAcc)*geoDir));
 }
 
 void Tank::brake()
@@ -172,7 +171,7 @@ void Tank::brake()
 
 void Tank::turn(bool left)
 {
-    turnRate = std::min(maxTurnRate, maxTurnAcc/velocity.length());
+    turnRate = std::min(maxTurnRate, maxRadialAcc/velocity.length());
     if(!left)
         turnRate = -turnRate;
 }
@@ -188,11 +187,10 @@ void Tank::update(real dt)
     auto [t, norm] = terrain->intersectCirclePathOcclusion(geoPos, pos2, 0.5);
     if(!t)
     {
-        std::cout << "boo";
-    //if(!t) // TODO: sometimes we find ourselves inside a triangle, what do we do then?
-    //       //       if we blindly go into the if below we will just get stuck. For now
-    //       //       we push ourselves slightly out of the triangle and hope this will
-    //       //       resolve things eventually, but this isn't really robust
+        // TODO: sometimes we find ourselves inside a triangle, what do we do then?
+        //       if we blindly go into the if below we will just get stuck. For now
+        //       we push ourselves slightly out of the triangle and hope this will
+        //       resolve things eventually, but this isn't really robust
         geoPos += norm*0.01f;
     }
     auto t2 = (pos2 - geoPos).length();
@@ -212,8 +210,7 @@ void Tank::update(real dt)
     }
     
     // TODO: we should still close the distance here
-    pos2 = geoPos + velocity2*dt;
-    geoPos = pos2;
+    auto posNext = geoPos + velocity2*dt;
 
     // Collision detection, against other units
     for(auto entity : scene->getEntities())
@@ -231,7 +228,9 @@ void Tank::update(real dt)
         }
     }
 
-    auto velocityTarget = boidCalc();
+    geoPos = posNext;
+
+    velocityTarget = boidCalc();
 
     accelerate(velocityTarget);
 
@@ -270,24 +269,28 @@ Vector2 Tank::seek()
             auto l = (target - geoPos).length();
             if(l < 0.5)
                 path.pop_back();
+            target = path.back();
 
             // TODO: this could become NaN
-            if(!l)
+            if(!l) {
                 return { 0, 0 };
+            }
             auto v2 = (target - geoPos).normalized();
 
             auto speed = maxSpeed;
             if(path.size() == 1)
             {
-                if((target - geoPos).length() < 0.5)
+                if((target - geoPos).length() < 0.5) {
                     return { 0, 0 };
+                }
                 speed = std::min(maxSpeed, (target - geoPos).length());
             }
             return v2*speed;
         }
     }
-    else
+    else {
         return { 0, 0 };
+    }
 }
 
 Vector2 Tank::evade()
@@ -305,7 +308,6 @@ Vector2 Tank::evade()
             auto r = w - (pos2-pos1);
             // TODO: better deduction of time-to-collision (e/v)?
             if(e*v > 0 && r.length() < 1 && e.length()/v.length() < 1) {
-                std::cout << "evading" << std::endl;
                 return v1%r > 1 ? std::min(w.length(), 3.f)*v1.perp() : -std::min(w.length(), 3.f)*v1.perp();
             }
         }
@@ -346,7 +348,9 @@ Vector2 Tank::separate()
             auto pos1 = geoPos, pos2 = entity->geoPos;
             auto e = (pos2 - pos1);
             auto l = std::max(1.15f, e.length());
-            if(l < 1.5)
+            // Ranking units by their pointer and only having lower-ranked units yield way seems
+            // to give a bit better result when many units try to get through a narrow gap
+            if(entity < this && l < 1.5)
                 sum += 1.0f/std::pow(1-l, 5.0f)*e.normalized()/100.f;
             
         }
@@ -357,5 +361,6 @@ Vector2 Tank::separate()
 
 Vector2 Tank::boidCalc()
 {
-    return evade() + seek() + avoid() + separate();
+    auto ret = evade() + seek() + avoid() + separate();
+    return ret;
 }

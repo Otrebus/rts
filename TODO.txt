@@ -20,10 +20,10 @@
 + Unit collision detection
 - Boids:
   + Wall avoidance
-  - Better wall avoidance (base on speed towards wall)
   + Obstacle avoidance
   + Separation
 - Multithreaded path finding
+- Fix and optimize intersectCirclePathOcclusion for longer searches
 - Scrollzoom towards pointer
 + Left-multiplication by scalar t*A
 - Turn acceleration

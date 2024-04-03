@@ -53,15 +53,20 @@ public:
     Model3d* gun;
 
     const real maxTurnRate = 1.2*pi/4;
-    const real maxTurnAcc = 4;
+    const real maxRadialAcc = 4;
+    const real maxTurnAcc = 2000;
+
     const real maxSpeed = 2;
     const real maxForwardAcc = 0.7; // TODO: breakacc vs forwardacc
-    const real maxBreakAcc = 15.5;
+    const real maxBreakAcc = 7;
 
     Scene* scene;
     Terrain* terrain;
     real acceleration;
     real turnRate;
+
+    Vector2 velocityTarget;
+    Vector2 accelerationTarget;
 
     Line3d destinationLine;
 };

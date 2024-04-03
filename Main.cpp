@@ -171,7 +171,8 @@ int main()
     {
         for(int x = 0; x < 5; x++)
         {
-            entities.push_back(new Tank({ 70.5f+x, 180.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain));
+            //entities.push_back(new Tank({ 70.5f+x, 180.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain));
+            entities.push_back(new Tank({ 155.5f+x, 90.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain));
         }
     }
 
