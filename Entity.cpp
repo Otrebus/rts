@@ -107,9 +107,8 @@ void Entity::plant(const Terrain& terrain)
     Vector3 D = Vector3(d.x, d.y, dh);
 
     up = ((C-B)%(A-B)).normalized();
-    pos = Vector3(geoPos.x, geoPos.y, ((A+C)/2.f).z) + up*(height);
-    auto l = Vector3(0, 0, 1)%x;
-    dir = l%up;
+    pos = Vector3(geoPos.x, geoPos.y, ((A+B+C+D)/4.f).z) + up*(height);
+    dir = y%up;
     setPosition(pos);
     setDirection(dir.normalized(), up.normalized());
 }

@@ -40,7 +40,6 @@ void InputQueue::addMousePosition(real time, real x, real y)
 
 void InputQueue::addScrollOffset(real time, real y)
 {
-    std::cout << "scroll is " << y << std::endl;
     queue.push({ time, QueuedInputType::Scroll, 0, 0, 0, y, this });
 }
 

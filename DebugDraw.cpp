@@ -137,7 +137,6 @@ int debugDraw(GLFWwindow* window, int xres, int yres)
         }
 
         glfwSwapBuffers(window);
-        //std::cout << 1/dt << std::endl;
     }
 
     glfwTerminate();

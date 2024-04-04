@@ -18,7 +18,7 @@
 + Figure out aspect ratio in debug mode
 + Unit picker/dropper
 + Unit collision detection
-- Boids:
++ Boids:
   + Wall avoidance
   + Obstacle avoidance
   + Separation
@@ -26,7 +26,6 @@
 - Fix and optimize intersectCirclePathOcclusion for longer searches
 - Scrollzoom towards pointer
 + Left-multiplication by scalar t*A
-- Turn acceleration
 - Make a better point picker function (viewray (should be ray)/terrain intersect)
 - Change setUp and setup
 - Maybe t = inf is better to return when there's no intersection

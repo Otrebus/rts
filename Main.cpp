@@ -314,7 +314,6 @@ int main()
             delete input;
         }
         glfwSwapBuffers(window);
-        //std::cout << 1/dt << std::endl;
         frames++;
     }
 

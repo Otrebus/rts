@@ -396,10 +396,10 @@ std::vector<Vector2> Terrain::findPath(Vector2 start, Vector2 destination)
         }
     };
 
-    std::vector<Vector2> outPath = {};
+    std::vector<Vector2> outPath;
     if(C[destX+destY*width] < inf)
     {
-        std::vector<Vector2> result;
+        std::vector<Vector2> result = { destination };
 
         for(std::pair<int, int> node = { destX, destY };;)
         {
