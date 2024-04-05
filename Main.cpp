@@ -19,14 +19,15 @@
 #include "Scene.h"
 #include <queue>
 #include "Terrain.h"
-#include <thread>
 #include "Line.h"
 #include "Ray.h"
 #include "Entity.h"
+#include "PathFinding.h"
 #include "ShaderProgramManager.h"
 #include "Main.h"
 #include "Math.h"
 #include "DebugDraw.h"
+#include <thread>
 
 void checkError() {
     GLenum error;
@@ -64,6 +65,19 @@ MessageCallback( GLenum source,
   fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
            ( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ),
             type, severity, message );
+}
+
+void print(std::string s)
+{
+    int j = 0;
+    while(true)
+    {
+        for(int i = 0; i < 1000000; i++)
+        {
+            j++;
+        }
+        std::cout << s << std::endl;
+    }
 }
 
 int main()
@@ -139,6 +153,7 @@ int main()
 
     //Entity entity({ 0.5, 0.5, 3.07 }, { 1, 0, 0 }, { 0, 0, 1 });
 
+    std::thread t(pathFindingThread);
 
     //model.setUp(&scene);
     //mesh.setUp(&scene);
@@ -250,6 +265,19 @@ int main()
 
         for(auto entity : entities)
             entity->update(dt);
+
+        for(auto result = popPathFindingResult(); result; result = popPathFindingResult())
+        {
+            for(auto e : entities)
+            {
+                if(e->getCurrentPathfindingRequest() == result)
+                {
+                    e->setCurrentPathfindingRequest(nullptr);
+                    e->setPath(result->path);
+                    delete result;
+                }
+            }
+        }
 
         //entities[0]->setPosition(Vector3(x, y, terrain.getElevation(x, y)));
 

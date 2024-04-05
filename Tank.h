@@ -58,9 +58,8 @@ public:
 
     const real maxSpeed = 2;
     const real maxForwardAcc = 0.7; // TODO: breakacc vs forwardacc
-    const real maxBreakAcc = 7;
+    const real maxBreakAcc = 3;
 
-    Scene* scene;
     Terrain* terrain;
     real acceleration;
     real turnRate;

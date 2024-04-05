@@ -109,6 +109,9 @@
     <ClCompile Include="DebugDraw.cpp">
       <Filter>Source files\System</Filter>
     </ClCompile>
+    <ClCompile Include="PathFinding.cpp">
+      <Filter>Source files\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -215,6 +218,9 @@
     </ClInclude>
     <ClInclude Include="DebugDraw.h">
       <Filter>Source files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="PathFinding.h">
+      <Filter>Source files\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

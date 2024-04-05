@@ -3,6 +3,7 @@
 #include "Utils.h"
 #include "BoundingBoxModel.h"
 #include "Terrain.h"
+#include "PathFinding.h"
 
 class Scene;
 class Vector3;
@@ -104,7 +105,7 @@ void Tank::draw()
     if(selected)
         boundingBoxModel->draw();
 
-    if(selected && target.length() > 0)
+    if(selected && path.size() > 0)
     {
         destinationLine.draw();
     }
@@ -254,8 +255,17 @@ void Tank::update(real dt)
     if(velocity.length() > maxSpeed)
         velocity = velocity.normalized()*maxSpeed;
 
-    if(glfwGetTime() - pathLastCalculated > pathCalculationInterval && path.size())
-        setPath(scene->getTerrain()->findPath(getPosition().to2(), path.front()));
+    if(!pathFindingRequest && glfwGetTime() - pathLastCalculated > pathCalculationInterval && path.size())
+    {
+        //setPath(scene->getTerrain()->findPath(getPosition().to2(), path.front()));
+        pathLastCalculated = glfwGetTime();
+        PathFindingRequest* request = new PathFindingRequest;
+        request->requester = this;
+        request->start = getPosition().to2();
+        request->dest = path.front();
+        setCurrentPathfindingRequest(request);
+        addPathFindingRequest(request);
+    }
 
 }
 
@@ -269,6 +279,8 @@ Vector2 Tank::seek()
             auto l = (target - geoPos).length();
             if(l < 0.5)
                 path.pop_back();
+            if(path.empty())
+                return { 0, 0 };
             target = path.back();
 
             // TODO: this could become NaN

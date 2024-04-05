@@ -5,6 +5,7 @@
 #include "Math.h"
 #include "Entity.h"
 #include "Ray.h"
+#include "PathFinding.h"
 
 
 UserInterface::UserInterface(GLFWwindow* window, Scene* scene, CameraControl* cameraControl) : scene(scene), cameraControl(cameraControl), cursor(nullptr), window(window)
@@ -301,9 +302,15 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
         {
             if(entity->selected)
             {
-                entity->setTarget(pos);
-                auto path = scene->getTerrain()->findPath(entity->getPosition().to2(), pos.to2());
-                entity->setPath(path);
+                //entity->setTarget(pos);
+                /*auto path = scene->getTerrain()->findPath(entity->getPosition().to2(), pos.to2());
+                entity->setPath(path);*/
+                PathFindingRequest* request = new PathFindingRequest;
+                request->requester = entity;
+                request->start = entity->getPosition().to2();
+                request->dest = pos.to2();
+                addPathFindingRequest(request);
+                entity->setCurrentPathfindingRequest(request);
             }
         }
     }

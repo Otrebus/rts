@@ -14,6 +14,7 @@
 class BoundingBoxModel;
 class Model3d;
 class Scene;
+class PathFindingRequest;
 
 class Entity 
 {
@@ -44,6 +45,9 @@ public:
     void setTarget(Vector3 pos);
     Vector3 getTarget() const;
 
+    PathFindingRequest* getCurrentPathfindingRequest() const;
+    void setCurrentPathfindingRequest(PathFindingRequest* request);
+
     void setPath(std::vector<Vector2> path);
     const std::vector<Vector2>& getPath() const;
 
@@ -51,7 +55,9 @@ public:
     Vector2 getVelocity() const;
 
     Vector3 dir, up, pos;
-    Vector3 target;
+    //Vector3 target;
+
+    // TODO: are these used? width seems to be zero
     real width, height, depth;
     Vector2 velocity;
 
@@ -61,6 +67,8 @@ public:
 
     BoundingBox boundingBox;
 
+    Scene* scene;
+    PathFindingRequest* pathFindingRequest;
     real pathLastCalculated;
     real pathCalculationInterval;
     bool selected;

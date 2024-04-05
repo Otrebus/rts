@@ -39,7 +39,6 @@ private:
 	bool isTriangleAdmissible(const Vector3& p1, const Vector3& p2, const Vector3& p3) const;
 	bool isTriangleAdmissible(int x1, int y1, int x2, int y2, int x3, int y3) const;
 	
-	bool inBounds(int x, int y) const;
 
 	TerrainMesh* terrainMesh;
 
@@ -48,9 +47,9 @@ private:
 
 
 	bool isVisible(Vector2 start, Vector2 end) const;
-	std::vector<Vector2> straightenPath(const std::vector<Vector2>& path) const;
 
 public:
+	std::vector<Vector2> straightenPath(const std::vector<Vector2>& path) const;
 	std::pair<real, Vector2> intersectRayOcclusion(Vector2 pos, Vector2 dir) const;
     std::pair<real, Vector2> intersectCirclePathOcclusion(Vector2 pos, Vector2 pos2, real radius) const;
 	void setUp();
@@ -65,6 +64,7 @@ public:
 	real getElevation(real x, real y) const;
 	real getWidth() const;
 	real getHeight() const;
+	bool inBounds(int x, int y) const;
 };
 
 const real cosMaxSlope = std::cos(35*pi/180);

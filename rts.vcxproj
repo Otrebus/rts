@@ -168,6 +168,7 @@
     <ClCompile Include="Mesh3d.cpp" />
     <ClCompile Include="Model3d.cpp" />
     <ClCompile Include="ObjReader.cpp" />
+    <ClCompile Include="PathFinding.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -205,6 +206,7 @@
     <ClInclude Include="Mesh3d.h" />
     <ClInclude Include="Model3d.h" />
     <ClInclude Include="ObjReader.h" />
+    <ClInclude Include="PathFinding.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />

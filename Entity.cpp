@@ -67,6 +67,7 @@ void Entity::setSelected(bool selected)
 
 void Entity::setUp(Scene* scene)
 {
+    this->scene = scene;
     boundingBoxModel->setUp(scene);
 }
 
@@ -106,6 +107,7 @@ void Entity::plant(const Terrain& terrain)
     Vector3 C = Vector3(c.x, c.y, ch);
     Vector3 D = Vector3(d.x, d.y, dh);
 
+    // TODO: the up vector shouldn't just e C, B and A vectors since the height of all 4 are averaged
     up = ((C-B)%(A-B)).normalized();
     pos = Vector3(geoPos.x, geoPos.y, ((A+B+C+D)/4.f).z) + up*(height);
     dir = y%up;
@@ -134,18 +136,19 @@ Vector3 Entity::getPosition() const
 
 void Entity::setTarget(Vector3 target)
 {
-    this->target = target;
+    //this->target = target;
 }
 
 Vector3 Entity::getTarget() const
 {
-    return target;
+    //return target;
+    // TODO: not really used
+    return { 0, 0, 0 };
 }
 
 void Entity::setPath(std::vector<Vector2> path)
 {
     this->path = path;
-    pathLastCalculated = glfwGetTime();
 }
 
 const std::vector<Vector2>& Entity::getPath() const
@@ -171,4 +174,14 @@ void Entity::setGeoPosition(Vector2 pos)
 Vector2 Entity::getGeoPosition() const
 {
     return geoPos;
+}
+
+PathFindingRequest* Entity::getCurrentPathfindingRequest() const
+{
+    return pathFindingRequest;
+}
+
+void Entity::setCurrentPathfindingRequest(PathFindingRequest* request)
+{
+    this->pathFindingRequest = request;
 }
