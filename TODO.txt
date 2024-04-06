@@ -22,7 +22,7 @@
   + Wall avoidance
   + Obstacle avoidance
   + Separation
-- Multithreaded path finding
++ Multithreaded path finding
 - Fix and optimize intersectCirclePathOcclusion for longer searches
 - Scrollzoom towards pointer
 + Left-multiplication by scalar t*A
@@ -35,7 +35,7 @@
 - Make sure derived classes have virtual destructors
 - Move boundingbox mesh construction out of Entity
 - Make inputqueue all static and remove getInstance
-- Breakacc vs forwardacc
++ Breakacc vs forwardacc
 - Review the two vertex shaders for lines, if we can unify them
 - Now that we have geometric normals we don't really need to create a new mesh for flat rendering
 - Fix flat terrain shading

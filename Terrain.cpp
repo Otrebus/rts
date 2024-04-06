@@ -178,18 +178,88 @@ void Terrain::calcAdmissiblePoints()
 
 Vector3 Terrain::intersect(const Ray& ray)
 {
+    //real t1 = glfwGetTime();
+    //real closestT = inf;
+    //int closestIndex = -1;
+    //for(int i = 0; i < triangleIndices.size(); i += 3)
+    //{
+    //    auto a = triangleIndices[i], b = triangleIndices[i+1], c = triangleIndices[i+2];
+    //    auto [t, u, v] = intersectTriangle(points[a], points[b], points[c], ray);
+    //    if(t > -inf && t < closestT)
+    //        closestIndex = i/3, closestT = t;
+    //}
+    //if(closestT < inf)
+    //    return ray.pos + ray.dir*closestT;
+    //return { inf, inf, inf };
+
     real t1 = glfwGetTime();
     real closestT = inf;
-    int closestIndex = -1;
-    for(int i = 0; i < triangleIndices.size(); i += 3)
+
+    auto p = ray.pos, d = ray.dir;
+
+    auto x0 = p.x - d.x*(p.y/d.y);
+    auto y0 = 0;
+    if(x0 < 0 || x0 > width-1)
     {
-        auto a = triangleIndices[i], b = triangleIndices[i+1], c = triangleIndices[i+2];
-        auto [t, u, v] = intersectTriangle(points[a], points[b], points[c], ray);
-        if(t > -inf && t < closestT)
-            closestIndex = i/3, closestT = t;
+        if(x0 < 0)
+        {
+            x0 = 0;
+            y0 = p.y - d.y*(p.x/d.x);
+        }
+        if(x0 > width-1)
+        {
+            x0 = width-1;
+            y0 = p.y - d.y*(width-1-p.x/d.x);
+        }
     }
+
+    real xm = x0, xM, ym, yM;
+
+    xM = int(xm+1);
+    xm = int(xm);
+
+    while(true)
+    {
+        if(xm < 0 || xM > width-1)
+            break;
+
+        ym = p.y + d.y*(xm - p.x)/d.x;
+        yM = p.y + d.y*(xM - p.x)/d.x;
+
+        int X = int(xm);
+        for(int Y = std::max(0.f, std::min(ym, yM)); Y < std::min(height-1, int(std::max(ym, yM)+1)); Y++)
+        {
+            auto p1 = getPoint(X, Y);
+            auto p2 = getPoint(X+1, Y);
+            auto p3 = getPoint(X+1, Y+1);
+            auto p4 = getPoint(X, Y+1);
+
+            auto [t, u, v] = intersectTriangle(p1, p2, p3, ray);
+            if(t > -inf && t < closestT)
+                closestT = t;
+            else
+            {
+                auto [t, u, v] = intersectTriangle(p1, p3, p4, ray);
+                if(t > -inf && t < closestT)
+                    closestT = t;
+            }
+        }
+        if(ray.dir.x*ray.dir.y > 0)
+        {
+            xm = xM++;
+        }
+        else
+        {
+            xM = xm--;
+        }
+    }
+
     if(closestT < inf)
         return ray.pos + ray.dir*closestT;
+    else {
+        __debugbreak();
+        intersect(ray);
+    }
     return { inf, inf, inf };
 }
 
