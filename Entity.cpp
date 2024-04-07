@@ -149,6 +149,7 @@ Vector3 Entity::getTarget() const
 void Entity::setPath(std::vector<Vector2> path)
 {
     this->path = path;
+    pathLastCalculated = glfwGetTime();
 }
 
 const std::vector<Vector2>& Entity::getPath() const

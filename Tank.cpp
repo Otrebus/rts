@@ -257,8 +257,6 @@ void Tank::update(real dt)
 
     if(!pathFindingRequest && glfwGetTime() - pathLastCalculated > pathCalculationInterval && path.size())
     {
-        //setPath(scene->getTerrain()->findPath(getPosition().to2(), path.front()));
-        pathLastCalculated = glfwGetTime();
         PathFindingRequest* request = new PathFindingRequest;
         request->requester = this;
         request->start = getPosition().to2();

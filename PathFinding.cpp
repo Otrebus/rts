@@ -53,13 +53,12 @@ void pathFindingThread()
 {
     while(true)
     {
-        std::cout << resultQueue.size() << " " << requestQueue.size() << std::endl;
         // This is busy-wait, maybe we can use something like a semamphore or something instead
         auto p = popPathFindingRequest();
         if(p)
         {
             auto t = p->requester->scene->getTerrain();
-            auto path = findPath(t, p->start, p->dest);
+            auto path = findPath(t, p->requester->geoPos, p->dest);
             p->path = path;
             addPathFindingResult(p);
         }

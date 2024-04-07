@@ -23,6 +23,7 @@
   + Obstacle avoidance
   + Separation
 + Multithreaded path finding
+- Degree suffix (that converts from degrees to radians?)
 - Fix and optimize intersectCirclePathOcclusion for longer searches
 - Scrollzoom towards pointer
 + Left-multiplication by scalar t*A

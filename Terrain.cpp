@@ -199,17 +199,17 @@ Vector3 Terrain::intersect(const Ray& ray)
 
     auto x0 = p.x - d.x*(p.y/d.y);
     auto y0 = 0;
-    if(x0 < 0 || x0 > width-1)
+    if(x0 < 0 || x0 > width-2)
     {
         if(x0 < 0)
         {
             x0 = 0;
             y0 = p.y - d.y*(p.x/d.x);
         }
-        if(x0 > width-1)
+        if(x0 > width-2)
         {
-            x0 = width-1;
-            y0 = p.y - d.y*(width-1-p.x/d.x);
+            x0 = width-2;
+            y0 = p.y - d.y*(width-2-p.x/d.x);
         }
     }
 
@@ -220,7 +220,7 @@ Vector3 Terrain::intersect(const Ray& ray)
 
     while(true)
     {
-        if(xm < 0 || xM > width-1)
+        if(xm < 0 || xm >= width-1)
             break;
 
         ym = p.y + d.y*(xm - p.x)/d.x;
@@ -696,8 +696,8 @@ std::pair<real, Vector2> intersectCircleTrianglePath(Vector2 pos, real radius, V
     if(t > 0 && t < minT)
     {
         minT = t;
-        /*norm = (pos+dir*t-p3).normalized();
-        if((pos-p3)*(pp3) > 0)
+        norm = (pos+dir*t-p3).normalized();
+        /*if((pos-p3)*(pp3) > 0)
             norm = pp3;
         else
             norm = pp2;*/
