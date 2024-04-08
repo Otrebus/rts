@@ -356,7 +356,7 @@ Vector2 Tank::separate()
         if(entity != this)
         {
             auto pos1 = geoPos, pos2 = entity->geoPos;
-            auto e = (pos2 - pos1);
+            auto e = (pos1 - pos2);
             auto l = std::max(1.15f, e.length());
             // Ranking units by their address and only having lower-ranked units yield way seems
             // to give a bit better result when many units try to get through a narrow gap
@@ -364,8 +364,8 @@ Vector2 Tank::separate()
             // TODO: Although if a unit is in the middle of a bunch of units and you try to move
             // it then units of a greater rank won't move aside and it can get stuck, so maybe
             // only apply rank-based precedence if both units have conflicting velocity targets
-            if(l < 1.15)
-                sum += std::min(1.0f/std::pow(1-l, 5.0f), maxSpeed/5)*e.normalized();
+            if(l < 1.5)
+                sum += std::min(1.0f/std::pow(l-1, 5.0f), maxSpeed)*e.normalized();
             
         }
     }
