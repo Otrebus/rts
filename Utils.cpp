@@ -5,6 +5,8 @@
 #include "Matrix4.h"
 #include "Vector3.h"
 #include "Utils.h"
+#include "Entity.h"
+#include "Math.h"
 
 
 std::tuple<int, int, int> vectorToRgb(const Vector3& color)
@@ -77,4 +79,25 @@ void writeBMP(std::vector<Vector3> v, int width, int height, std::string filenam
         for(int n = 0; n < pad; n++)
             file.put(0);
     }
+}
+
+
+real getArrivalRadius(Vector2 p, const std::vector<Entity*>& entities)
+{
+    real L = 0.5, R = 10.0;
+    while(R - L > 0.1)
+    {
+        auto M = (R+L)/2;
+        real sum = 0;
+        for(auto& entity : entities)
+        {
+            if(auto w = (entity->geoPos-p).length(); w < M)
+                sum += 1.5*1.5*pi;
+        }
+        if(sum < pi*M*M)
+            R = M;
+        else
+            L = M;
+    }
+    return L;
 }

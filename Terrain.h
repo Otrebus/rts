@@ -39,12 +39,10 @@ private:
 	bool isTriangleAdmissible(const Vector3& p1, const Vector3& p2, const Vector3& p3) const;
 	bool isTriangleAdmissible(int x1, int y1, int x2, int y2, int x3, int y3) const;
 	
-
 	TerrainMesh* terrainMesh;
 
 	TerrainMesh* createFlatMesh(std::string fileName);
 	TerrainMesh* createMesh(std::string fileName);
-
 
 	bool isVisible(Vector2 start, Vector2 end) const;
 

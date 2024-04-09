@@ -1,6 +1,7 @@
 #include "PathFinding.h"
 #include <thread>
 #include <chrono>
+#include "Main.h"
 
 
 using namespace std::literals::chrono_literals;
@@ -51,7 +52,7 @@ PathFindingRequest* popPathFindingResult()
 
 void pathFindingThread()
 {
-    while(true)
+    while(!quitting)
     {
         // This is busy-wait, maybe we can use something like a semamphore or something instead
         auto p = popPathFindingRequest();

@@ -29,6 +29,10 @@
 #include "DebugDraw.h"
 #include <thread>
 
+
+extern bool quitting = false;
+
+
 void checkError() {
     GLenum error;
     error = glGetError();
@@ -344,6 +348,9 @@ int main()
         glfwSwapBuffers(window);
         frames++;
     }
+
+    quitting = true;
+    t.join();
 
     for(auto& e : entities)
         delete e;

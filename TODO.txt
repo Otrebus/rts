@@ -23,7 +23,9 @@
   + Obstacle avoidance
   + Separation
 + Multithreaded path finding
+- Reduce jittering: make velocityTarget exponentially averaged?
 - Degree suffix (that converts from degrees to radians?)
+- General refactoring, like ctrl+f "stuff like this should be moved to a more specialized place"
 - Fix and optimize intersectCirclePathOcclusion for longer searches
 - Scrollzoom towards pointer
 + Left-multiplication by scalar t*A

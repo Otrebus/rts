@@ -4,6 +4,7 @@
 #include "BoundingBoxModel.h"
 #include "Terrain.h"
 #include "PathFinding.h"
+#include "Entity.h"
 
 class Scene;
 class Vector3;
@@ -136,7 +137,7 @@ void Tank::setDirection(Vector3 dir, Vector3 up)
 void Tank::accelerate(Vector2 velocityTarget)
 {
     accelerationTarget = velocityTarget - velocity;
-    if(!accelerationTarget)
+    if(accelerationTarget < 1e-6)
     {
         turnRate = 0;
         acceleration = 0;
@@ -275,7 +276,9 @@ Vector2 Tank::seek()
 
         if(target.length() > 0.0001) {
             auto l = (target - geoPos).length();
-            if(l < 0.5)
+            auto R = getArrivalRadius(target, scene->getEntities());
+
+            if(l < R)
                 path.pop_back();
             if(path.empty())
                 return { 0, 0 };
@@ -366,7 +369,6 @@ Vector2 Tank::separate()
             // only apply rank-based precedence if both units have conflicting velocity targets
             if(l < 1.5)
                 sum += std::min(1.0f/std::pow(l-1, 5.0f), maxSpeed)*e.normalized();
-            
         }
     }
     return sum;

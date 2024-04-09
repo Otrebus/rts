@@ -7,6 +7,8 @@
 
 class Matrix4;
 class Vector3;
+class Vector2;
+class Entity;
 
 using real = float;
 
@@ -17,6 +19,8 @@ void writeBMP(std::vector<Vector3> v, int width, int height, std::string filenam
 
 Vector3 rgbToVector(unsigned char r, unsigned char g, unsigned char b);
 std::tuple<int, int, int> vectorToRgb(const Vector3& color);
+
+real getArrivalRadius(Vector2 p, const std::vector<Entity*>& entities); // TODO: stuff like this should be moved to a more specialized place
 
 #pragma once
 
