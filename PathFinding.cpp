@@ -54,7 +54,7 @@ void pathFindingThread()
 {
     while(!quitting)
     {
-        // This is busy-wait, maybe we can use something like a semamphore or something instead
+        // This is busy-wait, maybe we can use something like a semaphore or something instead
         auto p = popPathFindingRequest();
         if(p)
         {

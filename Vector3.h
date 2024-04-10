@@ -54,3 +54,4 @@ public:
 class ostream;
 
 std::ostream& operator<<(std::ostream& s, const Vector3& v);
+Vector3 operator*(float, Vector3);

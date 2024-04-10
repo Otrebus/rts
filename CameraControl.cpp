@@ -1,6 +1,7 @@
 #include "CameraControl.h"
 #include "Input.h"
 
+
 CameraControl::CameraControl(Camera* cam, Terrain* terrain) :
     panningX(0), panningY(0), cam(cam), terrain(terrain), terrainDist(100)
 {
@@ -56,7 +57,7 @@ void CameraControl::changeMode(CameraMode cameraMode)
     }
 }
 
-
+    
 CameraMode CameraControl::getMode() const
 {
     return cameraMode;
@@ -74,13 +75,38 @@ void CameraControl::setTerrainPosFromPos()
     auto z = p1.z;
 
     auto camPos = cam->getPos(), camDir = cam->getDir();
-    terrainPos.x = (z - camPos.z + (camDir.z/camDir.x)*camPos.x)/(camDir.z/camDir.x);
-    terrainPos.y = (z - camPos.z + (camDir.z/camDir.y)*camPos.y)/(camDir.z/camDir.y);
+    
+    if(!camDir.x)
+        terrainPos.x = camPos.x;
+    else
+        terrainPos.x = (z - camPos.z + (camDir.z/camDir.x)*camPos.x)/(camDir.z/camDir.x);
+    if(!camDir.y)
+        terrainPos.x = camPos.y;
+    else
+        terrainPos.y = (z - camPos.z + (camDir.z/camDir.y)*camPos.y)/(camDir.z/camDir.y);
     
     auto dx = (terrainPos.x-camPos.x);
     auto dy = (terrainPos.y-camPos.y);
     auto dz = (terrainPos.z-camPos.z);
     terrainDist = std::sqrt(dx*dx + dy*dy + dz*dz);
+}
+
+void CameraControl::update(real dt)
+{
+    std::vector<MovementImpulse> v;
+    for(auto movementImpulse : movementImpulses)
+    {
+        auto time = glfwGetTime();
+        auto dDir = movementImpulse.getVal(time) - movementImpulse.getVal(time-dt);
+        if(!movementImpulse.isFinished(time))
+            v.push_back(movementImpulse);
+        std::cout << "ddir" << dDir << std::endl;
+        cam->setPos(cam->getPos() + dDir);
+        std::cout << cam->getPos() << std::endl;
+        setTerrainPosFromPos();
+    }
+    
+    movementImpulses = v;
 }
 
 void CameraControl::handleInput(const Input& input)
@@ -119,8 +145,12 @@ void CameraControl::handleInput(const Input& input)
     }
     else if(cameraMode != Freelook && input.stateStart == InputType::ScrollOffset)
     {
-        terrainDist += input.posY*(moveSlow ? -1 : -10);
-        setPosFromTerrainPos();
+        //terrainDist += input.posY*(moveSlow ? -1 : -10);
+        // TODO: if scalar left-multiplication is undefined, this becomes a real - investigate what sort of explicit conversion is going on there
+        auto dir = (input.posY)*(cam->getDir().normalized())*5.f;
+        std::cout << "dir is " << dir << std::endl;
+        movementImpulses.push_back(MovementImpulse(glfwGetTime(), 0.2f, dir));
+        //setPosFromTerrainPos();
     }
 }
 
@@ -151,9 +181,7 @@ void CameraControl::moveForward(real t) {
 
 void CameraControl::moveRight(real t) {
     if(cameraMode == Freelook)
-    {
         cam->setPos(cam->getPos() - cam->getUp()%cam->getDir()*t*100.f);
-    }
     else {
         terrainPos += (Vector3(cam->getDir().x, cam->getDir().y, 0)%Vector3(0, 0, 1)).normalized()*t*100.f;
         setPosFromTerrainPos();

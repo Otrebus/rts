@@ -345,6 +345,7 @@ int main()
             }
             delete input;
         }
+        cameraControl.update(dt);
         glfwSwapBuffers(window);
         frames++;
     }

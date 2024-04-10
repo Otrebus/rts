@@ -203,3 +203,8 @@ Vector3::operator bool() const
 {
     return x || y || z;
 }
+
+Vector3 operator*(float t, Vector3 v)
+{
+    return { t*v.x, t*v.y, t*v.z };
+}

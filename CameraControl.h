@@ -16,6 +16,31 @@ enum CameraMode
 };
 
 
+
+struct MovementImpulse
+{
+    MovementImpulse(real start, real duration, Vector3 dir) : start(start), duration(duration), dir(dir) { }
+
+    Vector3 dir;
+    real start, duration;
+    bool finished;
+
+    Vector3 getVal(real time)
+    {
+        auto t = (time-start)/duration;
+        if(t >= 1)
+            t = 1;
+        return (t*(t-2)+1)*dir;
+    }
+
+    bool isFinished(real time)
+    {
+        auto t = (time-start)/duration;
+        return t >= 1;
+    }
+};
+
+
 class CameraControl
 {
     real panningX, panningY;
@@ -32,6 +57,8 @@ class CameraControl
     Camera* cam;
     Terrain* terrain;
 
+    std::vector<MovementImpulse> movementImpulses;
+
     void setPosFromTerrainPos();
     void setTerrainPosFromPos();
 
@@ -44,6 +71,8 @@ public:
     void handleInput(const Input& input);
 
     Camera* getCamera();
+
+    void update(real dt);
 
     void setAngle(real theta, real phi);
     void moveForward(real t);
