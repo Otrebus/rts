@@ -43,7 +43,6 @@ struct MovementImpulse
 
 class CameraControl
 {
-    real panningX, panningY;
     real prevX = NAN, prevY = NAN; // TODO: make this a vector instead
     real terrainDist;
 

@@ -3,11 +3,12 @@
 
 
 CameraControl::CameraControl(Camera* cam, Terrain* terrain) :
-    panningX(0), panningY(0), cam(cam), terrain(terrain), terrainDist(100)
+    cam(cam), terrain(terrain), terrainDist(100)
 {
     //setAngle(0, 0);
     auto [p1, p2] = terrain->getBoundingBox();
     terrainPos = (p1 + p2)/2.f;
+    terrainPos.z = 0;
     
     changeMode(FollowingReset);
 }
@@ -72,18 +73,17 @@ void CameraControl::setPosFromTerrainPos()
 void CameraControl::setTerrainPosFromPos()
 {
     auto [p1, p2] = terrain->getBoundingBox();
-    auto z = p1.z;
 
     auto camPos = cam->getPos(), camDir = cam->getDir();
-    
+
     if(!camDir.x)
         terrainPos.x = camPos.x;
     else
-        terrainPos.x = (z - camPos.z + (camDir.z/camDir.x)*camPos.x)/(camDir.z/camDir.x);
+        terrainPos.x = ((camDir.z/camDir.x)*camPos.x - camPos.z)/(camDir.z/camDir.x);
     if(!camDir.y)
         terrainPos.x = camPos.y;
     else
-        terrainPos.y = (z - camPos.z + (camDir.z/camDir.y)*camPos.y)/(camDir.z/camDir.y);
+        terrainPos.y = ((camDir.z/camDir.y)*camPos.y - camPos.z)/(camDir.z/camDir.y);
     
     auto dx = (terrainPos.x-camPos.x);
     auto dy = (terrainPos.y-camPos.y);
@@ -100,9 +100,7 @@ void CameraControl::update(real dt)
         auto dDir = movementImpulse.getVal(time) - movementImpulse.getVal(time-dt);
         if(!movementImpulse.isFinished(time))
             v.push_back(movementImpulse);
-        std::cout << "ddir" << dDir << std::endl;
         cam->setPos(cam->getPos() + dDir);
-        std::cout << cam->getPos() << std::endl;
         setTerrainPosFromPos();
     }
     
@@ -147,8 +145,7 @@ void CameraControl::handleInput(const Input& input)
     {
         //terrainDist += input.posY*(moveSlow ? -1 : -10);
         // TODO: if scalar left-multiplication is undefined, this becomes a real - investigate what sort of explicit conversion is going on there
-        auto dir = (input.posY)*(cam->getDir().normalized())*5.f;
-        std::cout << "dir is " << dir << std::endl;
+        auto dir = -(input.posY)*(cam->getDir().normalized())*5.f;
         movementImpulses.push_back(MovementImpulse(glfwGetTime(), 0.2f, dir));
         //setPosFromTerrainPos();
     }
