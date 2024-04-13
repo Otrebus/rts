@@ -302,9 +302,6 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
         {
             if(entity->selected)
             {
-                //entity->setTarget(pos);
-                /*auto path = scene->getTerrain()->findPath(entity->getPosition().to2(), pos.to2());
-                entity->setPath(path);*/
                 PathFindingRequest* request = new PathFindingRequest;
                 request->requester = entity;
                 request->start = entity->getPosition().to2();

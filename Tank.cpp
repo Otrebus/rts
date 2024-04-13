@@ -308,6 +308,7 @@ Vector2 Tank::seek()
 
 Vector2 Tank::evade()
 {
+    Vector2 sum = { 0, 0 };
     for(auto entity : scene->getEntities())
     {
         if(entity != this)
@@ -321,11 +322,11 @@ Vector2 Tank::evade()
             auto r = w - (pos2-pos1);
             // TODO: better deduction of time-to-collision (e/v)?
             if(e*v > 0 && r.length() < 1 && e.length()/v.length() < 1) {
-                return v1%r > 1 ? std::min(w.length(), 3.f)*v1.perp() : -std::min(w.length(), 3.f)*v1.perp();
+                sum += (v1%r > 1 ? std::min(w.length(), 3.f)*v1.perp() : -std::min(w.length(), 3.f)*v1.perp());
             }
         }
     }
-    return { 0, 0 };
+    return sum;
 }
 
 

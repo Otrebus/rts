@@ -52,6 +52,7 @@ class CameraControl
 
     bool moveSlow;
     real theta, phi;
+    int xres, yres;
 
     Camera* cam;
     Terrain* terrain;
@@ -62,8 +63,9 @@ class CameraControl
     void setTerrainPosFromPos();
 
 public:
-    CameraControl(Camera* cam, Terrain* terrain);
+    CameraControl(Camera* cam, Terrain* terrain, int xres, int yres);
 
+    void setResolution(int xres, int yres);
     real getPhi();
     real getTheta();
 

@@ -175,7 +175,7 @@ int main()
     line4.setUp(&scene);
 
     Terrain terrain("Heightmap.bmp", &scene);
-    CameraControl cameraControl(&cam, &terrain);
+    CameraControl cameraControl(&cam, &terrain, xres, yres);
 
     //Tank* tank = new Tank({ 70.5f, 180.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
     //tank->setPath( { (tank->getPosition() + Vector2(15, 0).to3()).to2() } );
@@ -242,6 +242,7 @@ int main()
         
         //checkError();
         interface.setResolution(xres, yres);
+        cameraControl.setResolution(xres, yres);
         interface.draw();
 
         //line.draw();

@@ -1,9 +1,10 @@
 #include "CameraControl.h"
 #include "Input.h"
+#include "Ray.h"
 
 
-CameraControl::CameraControl(Camera* cam, Terrain* terrain) :
-    cam(cam), terrain(terrain), terrainDist(100)
+CameraControl::CameraControl(Camera* cam, Terrain* terrain, int xres, int yres) :
+    cam(cam), terrain(terrain), terrainDist(100), xres(xres), yres(yres)
 {
     //setAngle(0, 0);
     auto [p1, p2] = terrain->getBoundingBox();
@@ -134,18 +135,23 @@ void CameraControl::handleInput(const Input& input)
             changeMode(cameraMode);
         }
     }
-    else if(cameraMode == Freelook && input.stateStart == InputType::MousePosition)
+    else if(input.stateStart == InputType::MousePosition)
     {
-        if(!isnan(prevX))
+
+        if((cameraMode == Freelook) && !isnan(prevX))
             setAngle(getTheta() - (input.posX-prevX)/500.0, getPhi() - (input.posY-prevY)/500.0);
         prevX = input.posX;
         prevY = input.posY;
     }
     else if(cameraMode != Freelook && input.stateStart == InputType::ScrollOffset)
     {
+        auto x = real(2*prevX)/xres - 1;
+        auto y = -(real(2*prevY)/yres - 1);
+
+        auto zoomDir = cam->getViewRay(x, y);
         //terrainDist += input.posY*(moveSlow ? -1 : -10);
         // TODO: if scalar left-multiplication is undefined, this becomes a real - investigate what sort of explicit conversion is going on there
-        auto dir = -(input.posY)*(cam->getDir().normalized())*5.f;
+        auto dir = -(input.posY)*(zoomDir.dir.normalized())*(moveSlow ? 0.5f : 5.f);
         movementImpulses.push_back(MovementImpulse(glfwGetTime(), 0.2f, dir));
         //setPosFromTerrainPos();
     }
@@ -183,4 +189,10 @@ void CameraControl::moveRight(real t) {
         terrainPos += (Vector3(cam->getDir().x, cam->getDir().y, 0)%Vector3(0, 0, 1)).normalized()*t*100.f;
         setPosFromTerrainPos();
     }
+}
+
+void CameraControl::setResolution(int xres, int yres)
+{
+    this->xres = xres;
+    this->yres = yres;
 }
