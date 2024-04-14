@@ -26,7 +26,7 @@ public:
 
     const std::vector<Mesh*>& getMeshes() const;
 
-    void setUp(Scene* scene);
+    void init(Scene* scene);
     void tearDown(Scene* scene);
 
     void draw();

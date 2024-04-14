@@ -107,8 +107,8 @@ int main()
 
     glfwSetFramebufferSizeCallback(window, sizeCallback);
 
-    //debugDraw(window, xres, yres);
-    //return 0;
+    debugDraw(window, xres, yres);
+    return 0;
 
     auto model = Model3d("CornellBox-Original.obj");
 
@@ -127,7 +127,7 @@ int main()
 
     InputQueue::getInstance().initInput(window);
 
-    Camera cam({ 0, 0, 100 }, { 0, 1, -1 }, { 0, 0, 1 }, 59, real(xres)/float(yres));
+    PerspectiveCamera cam({ 0, 0, 100 }, { 0, 1, -1 }, { 0, 0, 1 }, 59, real(xres)/float(yres));
 
     real time = glfwGetTime();
 
@@ -159,20 +159,20 @@ int main()
 
     std::thread t(pathFindingThread);
 
-    //model.setUp(&scene);
-    //mesh.setUp(&scene);
-    //mesh2.setUp(&scene);
-    //line.setUp(&scene);
-    //entity.setUp(&scene);
+    //model.init(&scene);
+    //mesh.init(&scene);
+    //mesh2.init(&scene);
+    //line.init(&scene);
+    //entity.init(&scene);
 
     Line3d line1({ { 0, 0, 0 }, { 0, 1, 1 } });
     Line3d line2({ { 0, 0, 0 }, { 0, 1, 1 } });
     Line3d line3({ { 0, 0, 0 }, { 0, 1, 1 } });
     Line3d line4({ { 0, 0, 0 }, { 0, 1, 1 } });
-    line1.setUp(&scene);
-    line2.setUp(&scene);
-    line3.setUp(&scene);
-    line4.setUp(&scene);
+    line1.init(&scene);
+    line2.init(&scene);
+    line3.init(&scene);
+    line4.init(&scene);
 
     Terrain terrain("Heightmap.bmp", &scene);
     CameraControl cameraControl(&cam, &terrain, xres, yres);
@@ -182,7 +182,7 @@ int main()
     /*Tank* tank2 = new Tank({ 85.5f, 180.1f, 3.07f }, { -1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
     tank2->setPath( { (tank2->getPosition() + Vector2(-15, 0).to3()).to2() } );*/
     //Tank* tank = new Tank({ 130.5f, 150.5f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
-//    tank->setUp(&scene);
+//    tank->init(&scene);
     //entities.push_back(tank);
     //entities.push_back(tank2);
 
@@ -196,7 +196,7 @@ int main()
     }
 
     for(auto& e : entities)
-        e->setUp(&scene);
+        e->init(&scene);
 
     auto moveSlow = false;
 

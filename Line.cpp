@@ -24,7 +24,7 @@ Line3d::~Line3d()
     tearDown();
 }
 
-void Line3d::setUp(Scene* scene)
+void Line3d::init(Scene* scene)
 {
     this->scene = scene;
 
@@ -115,7 +115,7 @@ Line2d::~Line2d() {
     tearDown();
 }
 
-void Line2d::setUp(Scene* scene) {
+void Line2d::init(Scene* scene) {
     this->scene = scene;
 
     glGenVertexArrays(1, &VAO);

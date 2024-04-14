@@ -38,10 +38,10 @@ void Model3d::addMesh(Mesh& mesh)
 }
 
 
-void Model3d::setUp(Scene* scene)
+void Model3d::init(Scene* scene)
 {
     for(auto& mesh : meshes) {
-        mesh->setUp(scene);
+        mesh->init(scene);
     }
 }
 

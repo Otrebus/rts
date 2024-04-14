@@ -18,7 +18,7 @@ TerrainMesh::~TerrainMesh()
 {
 }
 
-void TerrainMesh::setUp(Scene* s)
+void TerrainMesh::init(Scene* s)
 {
     scene = s;
     glGenVertexArrays(1, &VAO);

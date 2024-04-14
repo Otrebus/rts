@@ -266,17 +266,17 @@ Vector3 Terrain::intersect(const Ray& ray)
 
 Terrain::Terrain(const std::string& fileName, Scene* scene) : fileName(fileName), scene(scene)
 {
-    setUp();
+    init();
     pickedTriangle = -1;
     scene->setTerrain(this);
 };
 
 
-void Terrain::setUp()
+void Terrain::init()
 {
     auto terrainMesh = drawMode == DrawMode::Flat ? createFlatMesh(fileName) : createMesh(fileName);
     terrainModel = Model3d(*terrainMesh);
-    terrainModel.setUp(scene);
+    terrainModel.init(scene);
 }
 
 
@@ -331,7 +331,7 @@ void Terrain::setDrawMode(DrawMode d)
     std::cout << "Setting drawmode " << drawMode << std::endl;
     if(drawMode == DrawMode::Flat || drawMode == DrawMode::Normal) {
         tearDown();
-        setUp();
+        init();
     }
 }
 

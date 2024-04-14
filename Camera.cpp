@@ -2,26 +2,35 @@
 #include "Input.h"
 #include "Ray.h"
 
-Camera::Camera(Vector3 pos, Vector3 dir, Vector3 up, real fov=90, real ar=1, bool debug) : pos(pos), dir(dir.normalized()), up(up), fov(fov), ar(ar), matrixCached(false), debug(debug)
+
+Camera::Camera(Vector3 pos, Vector3 dir, Vector3 up, real ar) : pos(pos), dir(dir.normalized()), up(up), ar(ar)
+{
+    matrixCached = false;
+}
+
+
+PerspectiveCamera::PerspectiveCamera(Vector3 pos, Vector3 dir, Vector3 up, real fov=90, real ar=1) : Camera(pos, dir.normalized(), up, ar), fov(fov)
 {
     setUp(up);
 }
+
+OrthogonalCamera::OrthogonalCamera(Vector3 pos, Vector3 dir, Vector3 up, real ar=1) : Camera(pos, dir.normalized(), up, ar)
+{
+    this->ar = ar;
+}
+
 
 void Camera::setUp(Vector3 up)
 {
     this->up = ((dir%up)%dir).normalized();
 }
 
-Matrix4 Camera::getMatrix()
+Matrix4 PerspectiveCamera::getMatrix()
 {
-    if(debug) {
-        return Matrix4(1, 0, 0, 0, 0, ar, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    }
-
     if(matrixCached)
         return viewMatrix;
     float pi = 3.141592653589793;
-    float a = std::tan(pi*fov/180/2);
+    float a = std::tan(deg(fov/2));
     float n = -0.01, f = -1000.0;
 
     Matrix4 trans(
@@ -54,11 +63,19 @@ Matrix4 Camera::getMatrix()
     return viewMatrix = persp*proj*trans;
 }
 
-Ray Camera::getViewRay(real x, real y) const
+Matrix4 OrthogonalCamera::getMatrix()
 {
-    if(debug)
-        return Ray(up*y/ar + (dir%up)*x, dir);
-    auto r = std::tan(pi*fov/180/2);
+    return Matrix4(1, 0, 0, 0, 0, ar, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+}
+
+Ray OrthogonalCamera::getViewRay(real x, real y) const
+{
+    return Ray(up*y/ar + (dir%up)*x, dir);
+}
+
+Ray PerspectiveCamera::getViewRay(real x, real y) const
+{
+    auto r = std::tan(deg(fov/2));
     auto d =  dir + up*y*r/ar + (dir%up).normalized()*x*r;
     auto p = pos;
     return Ray(p, d);
@@ -96,7 +113,7 @@ const real Camera::getAspectRatio() const
     return ar;
 }
 
-const real Camera::getFov() const
+const real PerspectiveCamera::getFov() const
 {
     return fov;
 }

@@ -227,7 +227,7 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
                     intersectRay.pos,
                     t > -inf ? (intersectRay.pos + intersectRay.dir*t) : Vector3(x, y, scene->getTerrain()->getElevation(x, y))
                 });
-                line.setUp(scene);
+                line.init(scene);
                 line.setInFront(true);
                 line.draw();
             }
@@ -331,7 +331,7 @@ void UserInterface::draw()
             { drawBoxc1.x, drawBoxc2.y, },
             { drawBoxc1.x, drawBoxc1.y, }
         });
-        line.setUp(scene);
+        line.init(scene);
         line.draw();
     }
 }

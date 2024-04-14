@@ -23,7 +23,7 @@ public:
     static Shader* vertexShader;
     static Shader* geometryShader;
 
-    void setUp(Scene* scene);
+    void init(Scene* scene);
     void tearDown(Scene* scene);
 
     Shader* getVertexShader() const;

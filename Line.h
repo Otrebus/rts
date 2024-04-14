@@ -14,7 +14,7 @@ public:
     Line3d(const std::vector<Vector3>& vertices);
     ~Line3d();
 
-    void setUp(Scene* scene);
+    void init(Scene* scene);
     void draw();
     void tearDown();
     void setColor(Vector3 color);
@@ -41,7 +41,7 @@ public:
     Line2d(const std::vector<Vector2>& vertices);
     ~Line2d();
 
-    void setUp(Scene* scene);
+    void init(Scene* scene);
     void draw();
     void tearDown();
 

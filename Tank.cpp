@@ -68,14 +68,14 @@ Tank::~Tank()
 }
 
 
-void Tank::setUp(Scene* scene)
+void Tank::init(Scene* scene)
 {
     this->scene = scene;
-    body->setUp(scene);
-    turret->setUp(scene);
-    gun->setUp(scene);
-    boundingBoxModel->setUp(scene);
-    destinationLine.setUp(scene);
+    body->init(scene);
+    turret->init(scene);
+    gun->init(scene);
+    boundingBoxModel->init(scene);
+    destinationLine.init(scene);
     destinationLine.setColor(Vector3(0, 1, 0));
     destinationLine.setInFront(true);
 }
@@ -343,7 +343,7 @@ Vector2 Tank::avoid()
             pos,
             pos + v.to3()
         });
-        line.setUp(scene);
+        line.init(scene);
         line.setInFront(true);
         line.draw();
         return v;

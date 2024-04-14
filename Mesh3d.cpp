@@ -26,7 +26,7 @@ Mesh3d::~Mesh3d()
 }
 
 
-void Mesh3d::setUp(Scene* s)
+void Mesh3d::init(Scene* s)
 {
     scene = s;
     glGenVertexArrays(1, &VAO);

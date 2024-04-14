@@ -44,7 +44,7 @@ int debugDraw(GLFWwindow* window, int xres, int yres)
 {
     InputQueue::getInstance().initInput(window);
 
-    Camera cam({ 0, 0, 1 }, { 0, 0, -1 }, { 0, 1, 0 }, 90, real(xres)/float(yres), true);
+    OrthogonalCamera cam({ 0, 0, 1 }, { 0, 0, -1 }, { 0, 1, 0 }, real(xres)/float(yres));
 
     real time = glfwGetTime();
 
@@ -94,7 +94,7 @@ int debugDraw(GLFWwindow* window, int xres, int yres)
         }
         
         Line3d tri({p1.to3(), p2.to3(), p3.to3(), p1.to3()});
-        tri.setUp(&scene);
+        tri.init(&scene);
         tri.draw();
 
         if(intersecting)
@@ -114,7 +114,7 @@ int debugDraw(GLFWwindow* window, int xres, int yres)
                 r1.pos,
                 r2.pos
             });
-            line.setUp(&scene);
+            line.init(&scene);
             line.draw();
 
             Vector2 pos(0, 0);
@@ -124,14 +124,14 @@ int debugDraw(GLFWwindow* window, int xres, int yres)
             auto p1 = r1.pos + (r2.pos-r1.pos).normalized()*s;
             auto p2 = p1 + norm.to3()*0.5f;
             Line3d normalLine( { p1, p2 });
-            normalLine.setUp(&scene);
+            normalLine.init(&scene);
             normalLine.draw();
 
 
             if(s > -inf && s < inf)
             {
                 auto circle = makeCircle(r1.pos.to2() + (r2.pos-r1.pos).to2().normalized()*s, radius);
-                circle.setUp(&scene);
+                circle.init(&scene);
                 circle.draw();
             }
         }

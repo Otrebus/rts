@@ -101,3 +101,8 @@ Vector3 calcNormal(Vector3 a, Vector3 b, Vector3 c)
 {
     return ((c-b)%(a-b)).normalized();
 }
+
+real deg(real rad)
+{
+    return pi*rad/180;
+}

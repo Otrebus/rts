@@ -12,8 +12,10 @@ class Ray;
 class Camera
 {
 public:
-    Camera(Vector3 pos, Vector3 dir, Vector3 up, real fov, real ar, bool debug=false);
-    Matrix4 getMatrix();
+    Camera();
+    Camera(Vector3 pos, Vector3 dir, Vector3 up, real ar);
+
+    virtual Matrix4 getMatrix() = 0;
     void setUp(Vector3 up);
 
     void setPos(const Vector3& pos);
@@ -22,16 +24,35 @@ public:
     const Vector3& getPos() const;
     const Vector3& getDir() const;
     const Vector3& getUp() const;
-    const real getFov() const;
     const real getAspectRatio() const;
 
-    Ray getViewRay(real x, real y) const;
+    virtual Ray getViewRay(real x, real y) const = 0;
 
-private:
+protected:
     Matrix4 viewMatrix;
     bool matrixCached;
-    bool debug;
 
     Vector3 pos, dir, up;
-    real fov, ar;
+    real ar;
+};
+
+
+class PerspectiveCamera : public Camera
+{
+public:
+    PerspectiveCamera(Vector3 pos, Vector3 dir, Vector3 up, real fov, real ar);
+    Ray getViewRay(real x, real y) const;
+    Matrix4 getMatrix();
+
+    const real getFov() const;
+
+    real fov;
+};
+
+class OrthogonalCamera : public Camera
+{
+public:
+    OrthogonalCamera(Vector3 pos, Vector3 dir, Vector3 up, real ar);
+    Ray getViewRay(real x, real y) const;
+    Matrix4 getMatrix();
 };

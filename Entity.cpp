@@ -65,10 +65,10 @@ void Entity::setSelected(bool selected)
 }
 
 
-void Entity::setUp(Scene* scene)
+void Entity::init(Scene* scene)
 {
     this->scene = scene;
-    boundingBoxModel->setUp(scene);
+    boundingBoxModel->init(scene);
 }
 
 

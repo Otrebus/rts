@@ -31,7 +31,7 @@ LineMesh3d::LineMesh3d(std::vector<Vector3> vertices, std::vector<std::pair<int,
 }
 
 
-void LineMesh3d::setUp(Scene* s)
+void LineMesh3d::init(Scene* s)
 {
     scene = s;
     glGenVertexArrays(1, &VAO);

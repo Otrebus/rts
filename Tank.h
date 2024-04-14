@@ -28,7 +28,7 @@ public:
     Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain);
     virtual ~Tank();
 
-    virtual void setUp(Scene* scene);
+    virtual void init(Scene* scene);
     virtual void updateUniforms();
 
     virtual void draw();

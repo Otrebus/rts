@@ -24,5 +24,5 @@ public:
 
     using Mesh3d::Mesh3d;
 
-    void setUp(Scene* scene);
+    void init(Scene* scene);
 };

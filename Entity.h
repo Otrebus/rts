@@ -25,7 +25,7 @@ public:
     void drawBoundingBox();
     bool intersectBoundingBox(const Ray& ray);
 
-    virtual void setUp(Scene* scene);
+    virtual void init(Scene* scene);
     virtual void updateUniforms();
 
     void setSelected(bool selected);

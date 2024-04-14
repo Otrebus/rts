@@ -22,7 +22,7 @@ public:
     Mesh3d();
     ~Mesh3d();
 
-    virtual void setUp(Scene* scene);
+    virtual void init(Scene* scene);
     virtual void tearDown(Scene* scene);
 
     virtual Shader* getVertexShader() const;
