@@ -1,0 +1,33 @@
+#include "SelectionDecalMaterial.h"
+#include "Vector3.h"
+#include "Shader.h"
+#include "Scene.h"
+
+
+SelectionDecalMaterial::SelectionDecalMaterial(Vector3 Kd) : Kd(Kd)
+{     
+    if(!fragmentShader)
+        fragmentShader = new Shader("selectionMaterial.frag", GL_FRAGMENT_SHADER);
+}
+
+
+SelectionDecalMaterial::~SelectionDecalMaterial()
+{
+}
+
+
+Shader* SelectionDecalMaterial::getShader()
+{
+    return fragmentShader;
+}
+
+void SelectionDecalMaterial::updateUniforms(Scene* scene)
+{
+    auto program = scene->getShaderProgram();
+    glUniform3fv(glGetUniformLocation(program->getId(), "camPos"), 1, (GLfloat*) &scene->getCamera()->getPos());
+    GLuint kdLocation = glGetUniformLocation(program->getId(), "Kd");
+    glUniform3f(kdLocation, Kd.x, Kd.y, Kd.z);
+}
+
+
+Shader* SelectionDecalMaterial::fragmentShader = nullptr;

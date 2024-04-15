@@ -28,25 +28,10 @@
 #include "Math.h"
 #include "DebugDraw.h"
 #include <thread>
+#include "Logger.h"
 
 
 extern bool quitting = false;
-
-
-void checkError() {
-    GLenum error;
-    error = glGetError();
-
-    if (error != GL_NO_ERROR)
-        std::cout << "Not working" << std::endl;
-    if (error == GL_INVALID_OPERATION)
-        std::cout << "Invalid operation" << std::endl;
-    if (error == GL_NO_ERROR)
-        std::cout << "No error" << std::endl;
-    if (error == GL_INVALID_VALUE)
-        std::cout << "No value" << std::endl;
-}
-
 
 int xres = 1920, yres = 1080;
 
@@ -71,18 +56,6 @@ MessageCallback( GLenum source,
             type, severity, message );
 }
 
-void print(std::string s)
-{
-    int j = 0;
-    while(true)
-    {
-        for(int i = 0; i < 1000000; i++)
-        {
-            j++;
-        }
-        std::cout << s << std::endl;
-    }
-}
 
 int main()
 {
@@ -122,8 +95,8 @@ int main()
 
     auto startTime = glfwGetTime();
 
-    //glEnable              ( GL_DEBUG_OUTPUT );
-    //glDebugMessageCallback( MessageCallback, 0 );
+    glEnable              ( GL_DEBUG_OUTPUT );
+    glDebugMessageCallback( MessageCallback, 0 );
 
     InputQueue::getInstance().initInput(window);
 

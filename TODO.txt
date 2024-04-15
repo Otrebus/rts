@@ -36,6 +36,7 @@
 - Maybe t = inf is better to return when there's no intersection
 + Make camera polymorphic instead of using debug=true
 - Make entity virtual base
+- Fix normals for intersectCircleTrianglePath when the circle is inside the triangle
 - Make sure derived classes have virtual destructors
 - Move boundingbox mesh construction out of Entity
 - Make inputqueue all static and remove getInstance

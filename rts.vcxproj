@@ -171,6 +171,7 @@
     <ClCompile Include="PathFinding.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SelectionDecalMaterial.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="ShaderProgramManager.cpp" />
@@ -209,6 +210,7 @@
     <ClInclude Include="PathFinding.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="SelectionDecalMaterial.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="ShaderProgramManager.h" />
@@ -227,6 +229,7 @@
     <None Include="geometryShader.geom" />
     <None Include="lambertian.frag" />
     <None Include="lineModel.vert" />
+    <None Include="selectionMaterial.frag" />
     <None Include="terrain.frag" />
     <None Include="terrain.vert" />
     <None Include="texture.frag" />

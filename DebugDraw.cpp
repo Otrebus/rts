@@ -24,10 +24,12 @@
 #include "Ray.h"
 #include "Entity.h"
 #include "ShaderProgramManager.h"
+#include "SelectionDecalMaterial.h"
 #include "Main.h"
 #include "Math.h"
 #include "Vector2.h"
 #include "Terrain.h"
+#include "Logger.h"
 
 
 Line3d makeCircle(Vector2 pos, real radius)
@@ -40,10 +42,9 @@ Line3d makeCircle(Vector2 pos, real radius)
 }
 
 
-int debugDraw(GLFWwindow* window, int xres, int yres)
+int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
 {
     InputQueue::getInstance().initInput(window);
-
     OrthogonalCamera cam({ 0, 0, 1 }, { 0, 0, -1 }, { 0, 1, 0 }, real(xres)/float(yres));
 
     real time = glfwGetTime();
@@ -141,4 +142,100 @@ int debugDraw(GLFWwindow* window, int xres, int yres)
 
     glfwTerminate();
     return 0;
+}
+
+
+//void updateDecalPositions(std::vector<Mesh3d>& decals) {
+//    for (auto& decal : decals) {
+//    }
+//}
+
+
+
+std::vector<Vertex3d> createQuadVertices() {
+    real x = ((rand()%2000) - 1000.0)/10000.0;
+    real y = ((rand()%2000) - 1000.0)/10000.0;
+    std::vector<Vertex3d> vs = {
+        {{-0.05, -0.05, 0.0}, {0.0, 0.0, 1.0}, {0.0, 0.0}},
+        {{ 0.05, -0.05, 0.0}, {0.0, 0.0, 1.0}, {1.0, 0.0}},
+        {{ 0.05,  0.05, 0.0}, {0.0, 0.0, 1.0}, {1.0, 1.0}},
+        {{-0.05,  0.05, 0.0}, {0.0, 0.0, 1.0}, {0.0, 1.0}}
+    };
+    for(auto& v : vs)
+        v.pos.x += x, v.pos.y += y;
+    return vs;
+}
+
+std::vector<int> quadIndices() {
+    return {0, 1, 2, 2, 3, 0};
+}
+
+
+int drawDecals(GLFWwindow* window, int xres, int yres)
+{
+    InputQueue::getInstance().initInput(window);
+    OrthogonalCamera cam({ 0, 0, 1 }, { 0, 0, -1 }, { 0, 1, 0 }, real(xres)/float(yres));
+
+    real time = glfwGetTime();
+
+    ShaderProgramManager shaderProgramManager;
+    Scene scene(&cam, &shaderProgramManager);
+
+    bool intersecting = false;
+    real startX, startY;
+    int mouseX, mouseY;
+    
+    Ray r1, r2;
+
+    std::vector<Model3d*> decals;
+    Vector3 decalColor(1.0f, 1.0f, 1.0f); // White color for simplicity
+    auto decalMaterial = new SelectionDecalMaterial(decalColor);
+    
+    for (int i = 0; i < 10; ++i) {
+        auto mesh = new Mesh3d(createQuadVertices(), quadIndices(), decalMaterial);
+        Model3d* decal = new Model3d(*mesh);
+        decal->init(&scene);
+        decals.push_back(decal);
+    }
+
+    while (!glfwWindowShouldClose(window)) {
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+            glfwSetWindowShouldClose(window, true);
+
+        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        auto prevTime = time;
+        time = glfwGetTime();
+        auto dt = time - prevTime;
+       
+        checkError();
+
+        int i = 0;
+        for(auto& decal : decals)
+        {
+            glPolygonOffset(0, i++);
+            decal->draw();
+        }
+        auto inputs = InputQueue::getInstance().handleInput(prevTime, time);
+        glfwPollEvents();
+        
+        for(auto input : inputs)
+        {
+            if(input->stateStart == MousePosition)
+                mouseX = input->posX, mouseY = input->posY;
+        }
+
+        glfwSwapBuffers(window);
+    }
+
+    glfwTerminate();
+    return 0;
+}
+
+
+int debugDraw(GLFWwindow* window, int xres, int yres)
+{
+    // return drawCircleTriangle(window, xres, yres);
+    return drawDecals(window, xres, yres);
 }

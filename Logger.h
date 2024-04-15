@@ -4,6 +4,8 @@
 
 #define LOG_FILENAME "debuglog"
 #define NOMINMAX
+#include <GL/gl3w.h>
+#include <GLFW/glfw3.h>
 
 #include <string>
 
@@ -21,3 +23,5 @@ private:
 };
 
 extern Logger logger;
+
+void checkError();

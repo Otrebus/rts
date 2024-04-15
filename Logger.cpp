@@ -2,6 +2,7 @@
 #define NOMINMAX
 #include <windows.h>
 #include <fstream>
+#include <iostream>
 
 
 Logger::Logger()
@@ -46,4 +47,18 @@ void Logger::file(const std::string& msg)
 
     file << timestamp << ":: " << msg << std::endl;
     file.close();
+}
+
+void checkError() {
+    GLenum error;
+    error = glGetError();
+
+    if (error != GL_NO_ERROR)
+        std::cout << "Not working" << std::endl;
+    if (error == GL_INVALID_OPERATION)
+        std::cout << "Invalid operation" << std::endl;
+    if (error == GL_NO_ERROR)
+        std::cout << "No error" << std::endl;
+    if (error == GL_INVALID_VALUE)
+        std::cout << "No value" << std::endl;
 }

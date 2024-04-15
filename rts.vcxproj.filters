@@ -112,6 +112,9 @@
     <ClCompile Include="PathFinding.cpp">
       <Filter>Source files\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="SelectionDecalMaterial.cpp">
+      <Filter>Source files\Materials</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -222,6 +225,9 @@
     <ClInclude Include="PathFinding.h">
       <Filter>Source files\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="SelectionDecalMaterial.h">
+      <Filter>Source files\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="lambertian.frag">
@@ -250,6 +256,9 @@
     </None>
     <None Include="lineModel.vert">
       <Filter>Shaders\Vertex shaders</Filter>
+    </None>
+    <None Include="selectionMaterial.frag">
+      <Filter>Shaders\Fragment shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
