@@ -11,6 +11,7 @@
 #include "Camera.h"
 #include "Matrix4.h"
 #include "UserInterface.h"
+#include "LambertianMaterial.h"
 #include "ObjReader.h"
 #include "Model3d.h"
 #include "TextureMaterial.h"
@@ -30,6 +31,7 @@
 #include "Vector2.h"
 #include "Terrain.h"
 #include "Logger.h"
+
 
 
 Line3d makeCircle(Vector2 pos, real radius)
@@ -178,6 +180,9 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
 
     real time = glfwGetTime();
 
+    glEnable              ( GL_DEBUG_OUTPUT );
+    glDebugMessageCallback( MessageCallback, 0 );
+
     ShaderProgramManager shaderProgramManager;
     Scene scene(&cam, &shaderProgramManager);
 
@@ -189,7 +194,7 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
 
     std::vector<Model3d*> decals;
     Vector3 decalColor(1.0f, 1.0f, 1.0f); // White color for simplicity
-    auto decalMaterial = new SelectionDecalMaterial(decalColor);
+    auto decalMaterial = new SelectionDecalMaterial();
     
     for (int i = 0; i < 10; ++i) {
         auto mesh = new Mesh3d(createQuadVertices(), quadIndices(), decalMaterial);
@@ -198,12 +203,29 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
         decals.push_back(decal);
     }
 
+
+    std::vector<Vertex3d> meshVertices = {
+        { -0.5f, -0.5f, 0, 0, 0, -1, 0, 0 },
+        { 0.5f, -0.5f, 0, 0, 0, -1, 1, 0, },
+        { 0.5f,  0.5f, 0, 0, 0, -1, 1, 1, },
+        { -0.5f, 0.5f, 0, 0, 0, -1, 0, 1, }
+    };
+    TextureMaterial texture("grass.bmp");
+    Mesh3d mesh(meshVertices, { 0, 1, 2, 2, 3, 0 }, &texture);
+    mesh.init(&scene);
+
+    glfwWindowHint(GLFW_SAMPLES, 4);
+    glEnable(GL_MULTISAMPLE); 
+
     while (!glfwWindowShouldClose(window)) {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
 
-        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+        mesh.updateUniforms();
+        mesh.draw();
 
         auto prevTime = time;
         time = glfwGetTime();
@@ -211,12 +233,40 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
        
         checkError();
 
+        SelectionDecalMaterial::radius = 0.15;
+        SelectionDecalMaterial::pass = 0;
         int i = 0;
+
+        glEnable(GL_BLEND);
+        glBlendFuncSeparate(GL_ZERO, GL_ONE, GL_ONE, GL_ONE);
+
+        glStencilFunc(GL_ALWAYS, 1, 0xFF);
+        glStencilMask(0xFF);
+        glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+
         for(auto& decal : decals)
         {
-            glPolygonOffset(0, i++);
+            decal->updateUniforms();
             decal->draw();
         }
+
+        //glDisable(GL_BLEND);
+        glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); 
+        glStencilMask(0x00);
+        //glBlendFunc(GL_ZERO, GL_ONE);
+        glBlendFuncSeparate(GL_ONE_MINUS_DST_ALPHA, GL_ONE, GL_ZERO, GL_ONE);
+
+        SelectionDecalMaterial::radius = 0.17;
+        SelectionDecalMaterial::pass = 1;
+        for(auto& decal : decals)
+        {
+            decal->updateUniforms();
+            decal->draw();
+        }
+
+        glDisable(GL_BLEND);
+
         auto inputs = InputQueue::getInstance().handleInput(prevTime, time);
         glfwPollEvents();
         

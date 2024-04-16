@@ -21,4 +21,7 @@ public:
     Vector3 Kd;
     static Shader* fragmentShader;
     static GLint kdLoc;
+
+    static real radius;
+    static int pass;
 };

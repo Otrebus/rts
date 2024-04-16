@@ -24,10 +24,11 @@ Shader* SelectionDecalMaterial::getShader()
 void SelectionDecalMaterial::updateUniforms(Scene* scene)
 {
     auto program = scene->getShaderProgram();
-    glUniform3fv(glGetUniformLocation(program->getId(), "camPos"), 1, (GLfloat*) &scene->getCamera()->getPos());
-    GLuint kdLocation = glGetUniformLocation(program->getId(), "Kd");
-    glUniform3f(kdLocation, Kd.x, Kd.y, Kd.z);
+    glUniform1i(glGetUniformLocation(program->getId(), "pass"), pass);
+    glUniform1f(glGetUniformLocation(program->getId(), "radius"), radius);
 }
 
 
 Shader* SelectionDecalMaterial::fragmentShader = nullptr;
+real SelectionDecalMaterial::radius = 0;
+int SelectionDecalMaterial::pass = 0;
