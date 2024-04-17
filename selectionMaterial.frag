@@ -17,7 +17,7 @@ void main()
     {
         vec2 t = texCoord;
         if((t.x-0.5)*(t.x-0.5) + (t.y-0.5)*(t.y-0.5) < radius) {
-            FragColor = vec4(0, 0, 0, 1);
+            FragColor = vec4(1, 0, 0, 0);
         }
         else
             discard;
@@ -30,7 +30,7 @@ void main()
 
         //float alpha = 1.0 - smoothstep(radius - smoothness, radius + smoothness, dist);
 
-        //FragColor = vec4(alpha, alpha, 0, alpha);
+        //FragColor = vec4(alpha, alpha, 0, 1);
     }
     else
     {
@@ -44,10 +44,10 @@ void main()
 
         //FragColor = vec4(alpha, 0, 0, alpha);
                 vec2 t = texCoord;
-        if((t.x-0.5)*(t.x-0.5) + (t.y-0.5)*(t.y-0.5) < radius) {
-            FragColor = vec4(1, 0, 0, 1.0f);
-        }
-        else
-            discard;
+        //if((t.x-0.5)*(t.x-0.5) + (t.y-0.5)*(t.y-0.5) < radius) {
+        //    FragColor = vec4(1, 0, 0, 1.0f);
+        //}
+        //else
+        //    discard;
     }
 }

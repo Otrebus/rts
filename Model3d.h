@@ -15,6 +15,8 @@ class Model3d
     std::vector<Mesh*> meshes;
     std::vector<Material*> materials;
 
+    Vector3 position;
+
 public:
     Model3d(std::string filename);
     Model3d(Mesh& mesh);
@@ -35,5 +37,7 @@ public:
     void updateUniforms();
 
     void setPosition(Vector3 pos);
+    Vector3 getPosition() const;
+
     void setDirection(Vector3 dir, Vector3 up);
 };

@@ -155,16 +155,13 @@ int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
 
 
 std::vector<Vertex3d> createQuadVertices() {
-    real x = ((rand()%2000) - 1000.0)/10000.0;
-    real y = ((rand()%2000) - 1000.0)/10000.0;
     std::vector<Vertex3d> vs = {
         {{-0.05, -0.05, 0.0}, {0.0, 0.0, 1.0}, {0.0, 0.0}},
         {{ 0.05, -0.05, 0.0}, {0.0, 0.0, 1.0}, {1.0, 0.0}},
         {{ 0.05,  0.05, 0.0}, {0.0, 0.0, 1.0}, {1.0, 1.0}},
         {{-0.05,  0.05, 0.0}, {0.0, 0.0, 1.0}, {0.0, 1.0}}
     };
-    for(auto& v : vs)
-        v.pos.x += x, v.pos.y += y;
+
     return vs;
 }
 
@@ -195,20 +192,32 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
     std::vector<Model3d*> decals;
     Vector3 decalColor(1.0f, 1.0f, 1.0f); // White color for simplicity
     auto decalMaterial = new SelectionDecalMaterial();
+
+    Vector3 position[10], velocity[10];
     
     for (int i = 0; i < 10; ++i) {
         auto mesh = new Mesh3d(createQuadVertices(), quadIndices(), decalMaterial);
         Model3d* decal = new Model3d(*mesh);
         decal->init(&scene);
         decals.push_back(decal);
+        
+
+        real x = ((rand()%2000) - 1000.0)/10000.0;
+        real y = ((rand()%2000) - 1000.0)/10000.0;
+
+        position[i] = { x, y, 0 };
+
+        real vx = ((rand()%2000) - 1000.0)/10000.0;
+        real vy = ((rand()%2000) - 1000.0)/10000.0;
+
+        velocity[i] = { vx, vy, 0 };
     }
 
-
     std::vector<Vertex3d> meshVertices = {
-        { -0.5f, -0.5f, 0, 0, 0, -1, 0, 0 },
-        { 0.5f, -0.5f, 0, 0, 0, -1, 1, 0, },
-        { 0.5f,  0.5f, 0, 0, 0, -1, 1, 1, },
-        { -0.5f, 0.5f, 0, 0, 0, -1, 0, 1, }
+        { -0.5f, -0.5f, 0.01, 0, 0, -1, 0, 0 },
+        { 0.5f, -0.5f, 0.0, 0, 0, -1, 1, 0, },
+        { 0.5f,  0.5f, 0.0, 0, 0, -1, 1, 1, },
+        { -0.5f, 0.5f, 0.0, 0, 0, -1, 0, 1, }
     };
     TextureMaterial texture("grass.bmp");
     Mesh3d mesh(meshVertices, { 0, 1, 2, 2, 3, 0 }, &texture);
@@ -216,13 +225,17 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
 
     glfwWindowHint(GLFW_SAMPLES, 4);
     glEnable(GL_MULTISAMPLE); 
+    glfwWindowHint(GLFW_DEPTH_BITS, 24);
+    
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
 
     while (!glfwWindowShouldClose(window)) {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
 
         glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         mesh.updateUniforms();
         mesh.draw();
@@ -235,36 +248,72 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
 
         SelectionDecalMaterial::radius = 0.15;
         SelectionDecalMaterial::pass = 0;
-        int i = 0;
+        int i = 1;
 
         glEnable(GL_BLEND);
-        glBlendFuncSeparate(GL_ZERO, GL_ONE, GL_ONE, GL_ONE);
-
-        glStencilFunc(GL_ALWAYS, 1, 0xFF);
-        glStencilMask(0xFF);
-        glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+        glEnable(GL_POLYGON_OFFSET_FILL);
+        glBlendFuncSeparate(GL_ZERO, GL_ONE, GL_ONE, GL_ZERO);
 
         for(auto& decal : decals)
         {
+            glPolygonOffset(-1.0, -1.0*++i);
             decal->updateUniforms();
             decal->draw();
         }
 
+
+        //glPolygonOffset(0, 0);
         //glDisable(GL_BLEND);
-        glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+        /*glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
         glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); 
-        glStencilMask(0x00);
+        glStencilMask(0x00);*/
         //glBlendFunc(GL_ZERO, GL_ONE);
-        glBlendFuncSeparate(GL_ONE_MINUS_DST_ALPHA, GL_ONE, GL_ZERO, GL_ONE);
+        //glBlendFuncSeparate(GL_ONE_MINUS_DST_ALPHA, GL_ONE, GL_ZERO, GL_ONE);
+        
+        glEnable( GL_SAMPLE_SHADING ) ;
+        glMinSampleShading(1.0);
+
+        glBlendFunc( GL_SRC_ALPHA_SATURATE, GL_ONE ) ;
+        glBlendFuncSeparate(GL_ONE, GL_ZERO, GL_ZERO, GL_ONE);
+        i = 0;
 
         SelectionDecalMaterial::radius = 0.17;
-        SelectionDecalMaterial::pass = 1;
+        SelectionDecalMaterial::pass = 0;
         for(auto& decal : decals)
         {
+            glPolygonOffset(-1.0, -1.0);
             decal->updateUniforms();
             decal->draw();
         }
 
+        for(int i = 0; i < 10; i++)
+        {
+            if(position[i].y > 0.2) {
+                position[i].y = 0.2;
+                velocity[i].y = -velocity[i].y;
+            }
+            if(position[i].y < -0.2)
+            {
+                position[i].y = -0.2;
+                velocity[i].y = -velocity[i].y;
+            }
+            if(position[i].x > 0.2)
+            {
+                position[i].x = 0.2;
+                velocity[i].x = -velocity[i].x;
+            }
+            if(position[i].x < -0.2)
+            {
+                position[i].x = -0.2;
+                velocity[i].x = -velocity[i].x;
+            }
+
+            position[i] += dt*velocity[i];
+            decals[i]->setPosition(position[i]);
+        }
+
+        glDisable(GL_POLYGON_OFFSET_FILL);
+        
         glDisable(GL_BLEND);
 
         auto inputs = InputQueue::getInstance().handleInput(prevTime, time);

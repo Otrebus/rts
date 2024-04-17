@@ -87,3 +87,9 @@ const std::vector<Mesh*>& Model3d::getMeshes() const
 {
     return meshes;
 }
+
+
+Vector3 Model3d::getPosition() const
+{
+    return position;
+}
