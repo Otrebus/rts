@@ -58,6 +58,7 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) :
     boundingBoxModel = new BoundingBoxModel(pos, dir, up, width, depth, height);
     boundingBox = BoundingBox(Vector3(-width/2, -depth/2, -height/2), Vector3(width/2, depth/2, height/2));
 
+    selectionMarkerModel = new SelectionMarkerModel(this);
 
     pathCalculationInterval = (500 + (rand() % 500))/1000.0f;
 }
@@ -78,6 +79,7 @@ void Tank::init(Scene* scene)
     destinationLine.init(scene);
     destinationLine.setColor(Vector3(0, 1, 0));
     destinationLine.setInFront(true);
+    selectionMarkerModel->init(scene);
 }
 
 
@@ -87,6 +89,7 @@ void Tank::updateUniforms()
     turret->updateUniforms();
     gun->updateUniforms();
     boundingBoxModel->updateUniforms();
+    selectionMarkerModel->updateUniforms();
 }
 
 
@@ -103,8 +106,12 @@ void Tank::draw()
     body->draw();
     turret->draw();
     gun->draw();
+    /*if(selected)
+        boundingBoxModel->draw();*/
+
+    selectionMarkerModel->update();
     if(selected)
-        boundingBoxModel->draw();
+        selectionMarkerModel->draw();
 
     if(selected && path.size() > 0)
     {

@@ -25,7 +25,7 @@ public:
     Scene* scene;
 
     virtual void init(Scene* scene) = 0;
-    virtual void tearDown(Scene* scene) = 0;
+    virtual void tearDown() = 0;
 
     virtual Shader* getVertexShader() const = 0;
     virtual Shader* getGeometryShader() const = 0;

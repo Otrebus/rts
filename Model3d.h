@@ -12,27 +12,28 @@
 
 class Model3d
 {
-    std::vector<Mesh*> meshes;
+protected:
+    std::vector<Mesh3d*> meshes;
     std::vector<Material*> materials;
 
     Vector3 position;
 
 public:
     Model3d(std::string filename);
-    Model3d(Mesh& mesh);
+    Model3d(Mesh3d& mesh);
     Model3d();
     ~Model3d();
 
     std::map<std::string, Material*> readMaterialFile(const std::string& matfilestr);
     void readFromFile(const std::string& file);
 
-    const std::vector<Mesh*>& getMeshes() const;
+    const std::vector<Mesh3d*>& getMeshes() const;
 
     void init(Scene* scene);
     void tearDown(Scene* scene);
 
     void draw();
-    void addMesh(Mesh& mesh);
+    void addMesh(Mesh3d& mesh);
 
     void updateUniforms();
 

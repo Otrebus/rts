@@ -66,8 +66,8 @@ int main()
 
     glfwSetFramebufferSizeCallback(window, sizeCallback);
 
-    debugDraw(window, xres, yres);
-    return 0;
+    /*debugDraw(window, xres, yres);
+    return 0;*/
 
     auto model = Model3d("CornellBox-Original.obj");
 

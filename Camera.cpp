@@ -31,7 +31,7 @@ Matrix4 PerspectiveCamera::getMatrix()
         return viewMatrix;
     float pi = 3.141592653589793;
     float a = std::tan(deg(fov/2));
-    float n = -0.01, f = -1000.0;
+    float n = -0.3, f = -500.0;
 
     Matrix4 trans(
         1, 0, 0, -pos.x,

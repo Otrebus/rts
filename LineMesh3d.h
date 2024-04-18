@@ -11,7 +11,7 @@
 #include "Mesh3d.h"
 #include "Mesh.h"
 
-class LineMesh3d : public Mesh
+class LineMesh3d : public Mesh3d
 {
 public:
     ~LineMesh3d();

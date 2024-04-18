@@ -68,22 +68,16 @@ void Entity::setSelected(bool selected)
 void Entity::init(Scene* scene)
 {
     this->scene = scene;
-    boundingBoxModel->init(scene);
 }
 
 
 void Entity::updateUniforms()
 {
-    boundingBoxModel->updateUniforms();
 }
 
 
 void Entity::plant(const Terrain& terrain)
 {
-    /*auto x = Vector3(dir.x, dir.y, 0).normalized();
-    auto y = Vector3(-dir.y, dir.x, 0).normalized();
-    auto z = Vector3(0, 0, 1);*/
-
     auto x = Vector3(geoDir.x, geoDir.y, 0).normalized();
     auto y = Vector3(-geoDir.y, geoDir.x, 0).normalized();
     auto z = Vector3(0, 0, 1).normalized();
@@ -107,7 +101,7 @@ void Entity::plant(const Terrain& terrain)
     Vector3 C = Vector3(c.x, c.y, ch);
     Vector3 D = Vector3(d.x, d.y, dh);
 
-    // TODO: the up vector shouldn't just e C, B and A vectors since the height of all 4 are averaged
+    // TODO: the up vector shouldn't just be C, B and A vectors since the height of all 4 are averaged
     up = ((C-B)%(A-B)).normalized();
     pos = Vector3(geoPos.x, geoPos.y, ((A+B+C+D)/4.f).z) + up*(height);
     dir = y%up;

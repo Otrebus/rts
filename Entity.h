@@ -10,6 +10,7 @@
 #include "BoundingBox.h"
 #include "Mesh3d.h"
 #include "LineMesh3d.h"
+#include "SelectionMarkerModel.h"
 
 class BoundingBoxModel;
 class Model3d;
@@ -64,8 +65,9 @@ public:
     Vector2 geoPos, geoDir;
 
     BoundingBoxModel* boundingBoxModel;
-
     BoundingBox boundingBox;
+
+    SelectionMarkerModel* selectionMarkerModel;
 
     Scene* scene;
     PathFindingRequest* pathFindingRequest;

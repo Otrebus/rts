@@ -14,7 +14,7 @@ Model3d::Model3d(std::string filename)
 }
 
 
-Model3d::Model3d(Mesh& mesh)
+Model3d::Model3d(Mesh3d& mesh)
 {
     addMesh(mesh);
 }
@@ -32,7 +32,7 @@ Model3d::~Model3d()
 }
 
 
-void Model3d::addMesh(Mesh& mesh)
+void Model3d::addMesh(Mesh3d& mesh)
 {
     meshes.push_back(&mesh);
 }
@@ -49,7 +49,7 @@ void Model3d::init(Scene* scene)
 void Model3d::tearDown(Scene* scene)
 {
     for(auto& mesh : meshes)
-        mesh->tearDown(scene);
+        mesh->tearDown();
 }
 
 
@@ -83,7 +83,7 @@ void Model3d::setDirection(Vector3 dir, Vector3 up)
 }
 
 
-const std::vector<Mesh*>& Model3d::getMeshes() const
+const std::vector<Mesh3d*>& Model3d::getMeshes() const
 {
     return meshes;
 }

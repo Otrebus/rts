@@ -50,3 +50,4 @@
 - Work out memory leaks
 - Work out ownership of resources
 - Unify keyinput and mouseinput in inputqueue
+- BoundingBoxmodel creates mesh etc in constructor, unlike the others who do it in init, fix?
