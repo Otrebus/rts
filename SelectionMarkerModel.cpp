@@ -28,7 +28,7 @@ std::pair<std::vector<Vertex3d>, std::vector<int>> SelectionMarkerModel::calcVer
         {
             auto pos = scene->getTerrain()->getPoint(x, y);
             pos.z += 0.01;
-            vs.push_back( { pos.x, pos.y, pos.z, 0, 0, 1, 0, 0 });
+            vs.push_back( { pos.x, pos.y, pos.z, 0, 0, 1, x-real(xc), x-real(yc)});
         }
     }
 

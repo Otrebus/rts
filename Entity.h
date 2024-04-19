@@ -10,8 +10,8 @@
 #include "BoundingBox.h"
 #include "Mesh3d.h"
 #include "LineMesh3d.h"
-#include "SelectionMarkerModel.h"
 
+class SelectionMarkerMesh;
 class BoundingBoxModel;
 class Model3d;
 class Scene;
@@ -28,6 +28,8 @@ public:
 
     virtual void init(Scene* scene);
     virtual void updateUniforms();
+
+    void drawSelectionDecal(int pass);
 
     void setSelected(bool selected);
 
@@ -67,7 +69,7 @@ public:
     BoundingBoxModel* boundingBoxModel;
     BoundingBox boundingBox;
 
-    SelectionMarkerModel* selectionMarkerModel;
+    SelectionMarkerMesh* selectionMarkerMesh;
 
     Scene* scene;
     PathFindingRequest* pathFindingRequest;

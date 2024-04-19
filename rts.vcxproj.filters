@@ -118,6 +118,9 @@
     <ClCompile Include="SelectionMarkerModel.cpp">
       <Filter>Source files\Models</Filter>
     </ClCompile>
+    <ClCompile Include="SelectionMarkerMesh.cpp">
+      <Filter>Source files\Models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -232,6 +235,9 @@
       <Filter>Source files\Materials</Filter>
     </ClInclude>
     <ClInclude Include="SelectionMarkerModel.h">
+      <Filter>Source files\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectionMarkerMesh.h">
       <Filter>Source files\Models</Filter>
     </ClInclude>
   </ItemGroup>

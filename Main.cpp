@@ -66,8 +66,8 @@ int main()
 
     glfwSetFramebufferSizeCallback(window, sizeCallback);
 
-    /*debugDraw(window, xres, yres);
-    return 0;*/
+    //debugDraw(window, xres, yres);
+    //return 0;
 
     auto model = Model3d("CornellBox-Original.obj");
 
@@ -173,7 +173,7 @@ int main()
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
 
-        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+        glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
        
         //entity.updateUniforms();
@@ -185,6 +185,19 @@ int main()
         }*/
         
         terrain.draw();
+        int i = 0;
+        for(auto& entity : entities)
+        {
+            glPolygonOffset(-1.0, -1.0*++i);
+            entity->drawSelectionDecal(0);
+        }
+
+        glPolygonOffset(-1.0, -1.0);
+        for(auto& entity : entities)
+        {
+            entity->drawSelectionDecal(1);
+        }
+
         for(auto& entity : entities)
         {
             entity->draw();

@@ -16,8 +16,8 @@ void main()
     if(pass == 0)
     {
         vec2 t = texCoord;
-        if((t.x-0.5)*(t.x-0.5) + (t.y-0.5)*(t.y-0.5) < radius) {
-            FragColor = vec4(1, 0, 0, 0);
+        if(t.x*t.x + t.y*t.y < radius*radius) {
+            FragColor = vec4(0.2, 0.7, 0.1, 0);
         }
         else
             discard;

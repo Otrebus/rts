@@ -172,6 +172,7 @@
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SelectionDecalMaterial.cpp" />
+    <ClCompile Include="SelectionMarkerMesh.cpp" />
     <ClCompile Include="SelectionMarkerModel.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
@@ -212,6 +213,7 @@
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SelectionDecalMaterial.h" />
+    <ClInclude Include="SelectionMarkerMesh.h" />
     <ClInclude Include="SelectionMarkerModel.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderProgram.h" />

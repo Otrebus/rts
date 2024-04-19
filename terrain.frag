@@ -23,13 +23,13 @@ void main()
 
     color = clamp(color, 0.0, 1.0);
 
-    FragColor = vec4(color, 1.0f);
+    FragColor = vec4(color, 0);
 
     vec2 p = texCoord;
     vec2 grid = abs(fract(p-0.5)-0.5)/fwidth(p);
     float line = min(grid.x, grid.y);
     float col = min(line, 1.0);
-    FragColor = FragColor - vec4(vec3(col), 1.0)*0.1;
+    FragColor = FragColor - vec4(vec3(col), 0)*0.1;
     if(selected > 0.1)
         FragColor = vec4(0.8, 0, 0, 0);
     

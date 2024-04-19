@@ -5,6 +5,7 @@
 #include "Terrain.h"
 #include "PathFinding.h"
 #include "Entity.h"
+#include "SelectionMarkerMesh.h"
 
 class Scene;
 class Vector3;
@@ -58,7 +59,7 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) :
     boundingBoxModel = new BoundingBoxModel(pos, dir, up, width, depth, height);
     boundingBox = BoundingBox(Vector3(-width/2, -depth/2, -height/2), Vector3(width/2, depth/2, height/2));
 
-    selectionMarkerModel = new SelectionMarkerModel(this);
+    selectionMarkerMesh = new SelectionMarkerMesh(this);
 
     pathCalculationInterval = (500 + (rand() % 500))/1000.0f;
 }
@@ -77,9 +78,9 @@ void Tank::init(Scene* scene)
     gun->init(scene);
     boundingBoxModel->init(scene);
     destinationLine.init(scene);
-    destinationLine.setColor(Vector3(0, 1, 0));
+    destinationLine.setColor(Vector3(0.2, 0.7, 0.1));
     destinationLine.setInFront(true);
-    selectionMarkerModel->init(scene);
+    selectionMarkerMesh->init(scene);
 }
 
 
@@ -89,7 +90,7 @@ void Tank::updateUniforms()
     turret->updateUniforms();
     gun->updateUniforms();
     boundingBoxModel->updateUniforms();
-    selectionMarkerModel->updateUniforms();
+    selectionMarkerMesh->updateUniforms();
 }
 
 
@@ -109,9 +110,6 @@ void Tank::draw()
     /*if(selected)
         boundingBoxModel->draw();*/
 
-    selectionMarkerModel->update();
-    if(selected)
-        selectionMarkerModel->draw();
 
     if(selected && path.size() > 0)
     {

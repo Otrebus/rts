@@ -13,6 +13,7 @@
 #include <vector>
 #include <array>
 #include "BoundingBoxModel.h"
+#include "SelectionMarkerMesh.h"
 
 
 Entity::Entity(Vector3 pos, Vector3 dir, Vector3 up, real height, real width, real depth) : pos(pos), dir(dir), up(up), velocity({ 0, 0 })
@@ -28,6 +29,16 @@ Entity::~Entity()
 void Entity::drawBoundingBox()
 {
     boundingBoxModel->draw();
+}
+
+void Entity::drawSelectionDecal(int pass)
+{
+    if(selected)
+    {
+        selectionMarkerMesh->pass = pass;
+        selectionMarkerMesh->draw();
+    }
+    selectionMarkerMesh->update();
 }
 
 bool Entity::intersectBoundingBox(const Ray& ray)
@@ -68,11 +79,18 @@ void Entity::setSelected(bool selected)
 void Entity::init(Scene* scene)
 {
     this->scene = scene;
+    selectionMarkerMesh->init(scene);
 }
 
 
 void Entity::updateUniforms()
 {
+}
+
+
+void drawSelectionDecal(int pass)
+{
+
 }
 
 
