@@ -101,3 +101,9 @@ real getArrivalRadius(Vector2 p, const std::vector<Entity*>& entities)
     }
     return L;
 }
+
+
+Vector2 mouseCoordToScreenCoord(int xres, int yres, int mouseX, int mouseY)
+{
+    return { real(2*mouseX)/xres - 1,  -(real(2*mouseY)/yres - 1) };
+}

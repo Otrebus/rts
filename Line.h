@@ -8,7 +8,30 @@
 #include "Scene.h"
 #include "ShaderProgram.h"
 
-class Line3d {
+
+class Line
+{
+public:
+    Line();
+    Line(const std::vector<Vector3>& vertices);
+    void setColor(Vector3 color);
+
+protected:
+    GLuint VAO, VBO;
+
+    static Shader* fragmentShader;
+    static Shader* vertexShader;
+    Vector3 color;
+
+    std::vector<float> vertexData;
+    Scene* scene;
+
+    ShaderProgram* program;
+};
+
+
+class Line3d : public Line
+{
 public:
     Line3d();
     Line3d(const std::vector<Vector3>& vertices);
@@ -17,25 +40,16 @@ public:
     void init(Scene* scene);
     void draw();
     void tearDown();
-    void setColor(Vector3 color);
     void setVertices(const std::vector<Vector3>& vertices);
     void setInFront(bool); // TODO: dumb
 
 private:
-    GLuint VAO, VBO;
-    std::vector<float> vertexData;
-    Scene* scene;
-
-    ShaderProgram* program;
-
     bool inFront;
-    static Shader* fragmentShader;
-    static Shader* vertexShader;
-    Vector3 color;
 };
 
 
-class Line2d {
+class Line2d : public Line
+{
 public:
     Line2d();
     Line2d(const std::vector<Vector2>& vertices);
@@ -44,15 +58,4 @@ public:
     void init(Scene* scene);
     void draw();
     void tearDown();
-
-private:
-    GLuint VAO, VBO;
-    std::vector<float> vertexData;
-    Scene* scene;
-
-    Vector3 color;
-    ShaderProgram* program;
-
-    static Shader* fragmentShader;
-    static Shader* vertexShader;
 };

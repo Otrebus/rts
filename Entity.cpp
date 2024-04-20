@@ -198,3 +198,8 @@ void Entity::setCurrentPathfindingRequest(PathFindingRequest* request)
 {
     this->pathFindingRequest = request;
 }
+
+void Entity::setPreSelected(bool preSelected)
+{
+    this->preSelected = preSelected;
+}

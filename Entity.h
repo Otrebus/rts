@@ -32,6 +32,7 @@ public:
     void drawSelectionDecal(int pass);
 
     void setSelected(bool selected);
+    void setPreSelected(bool preSelected);
 
     virtual void plant(const Terrain& terrain);
 
@@ -76,5 +77,6 @@ public:
     real pathLastCalculated;
     real pathCalculationInterval;
     bool selected;
+    bool preSelected;
     std::vector<Vector2> path;
 };

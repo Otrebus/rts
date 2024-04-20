@@ -28,6 +28,7 @@
 - Reduce jittering: make velocityTarget exponentially averaged?
 + Degree suffix (that converts from degrees to radians?)
 - General refactoring, like ctrl+f "stuff like this should be moved to a more specialized place"
+- Fix terrain picking: "TODO: this is hit if ray.dir == 0"
 - Fix and optimize intersectCirclePathOcclusion for longer searches
 + Scrollzoom towards pointer
 + Left-multiplication by scalar t*A

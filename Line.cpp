@@ -3,9 +3,15 @@
 #include "Math.h"
 
 
-Line3d::Line3d() : VAO(0), VBO(0) {}
+Line::Line() : VAO(0), VBO(0)
+{
+    if(!fragmentShader)
+        fragmentShader = new Shader("line.frag", GL_FRAGMENT_SHADER);
+    if(!vertexShader)
+        vertexShader = new Shader("line.vert", GL_VERTEX_SHADER);
+}
 
-Line3d::Line3d(const std::vector<Vector3>& vertices) : VAO(0), VBO(0)
+Line::Line(const std::vector<Vector3>& vertices)
 {
     for (const auto& vertex : vertices)
     {
@@ -13,11 +19,13 @@ Line3d::Line3d(const std::vector<Vector3>& vertices) : VAO(0), VBO(0)
         vertexData.push_back(vertex.y);
         vertexData.push_back(vertex.z);
     }
-    if(!fragmentShader)
-        fragmentShader = new Shader("line.frag", GL_FRAGMENT_SHADER);
-    if(!vertexShader)
-        vertexShader = new Shader("line.vert", GL_VERTEX_SHADER);
 }
+
+
+Line3d::Line3d()
+{
+}
+
 
 Line3d::~Line3d()
 {
@@ -63,7 +71,6 @@ void Line3d::draw()
     auto program = s->getProgram(fragmentShader, vertexShader);
     scene->setShaderProgram(program);
     program->use();
-    //program->use();
 
     auto perspM = scene->getCamera()->getMatrix();
 
@@ -86,21 +93,13 @@ void Line3d::tearDown()
     glDeleteVertexArrays(1, &VAO);
 }
 
-void Line3d::setColor(Vector3 color)
+void Line::setColor(Vector3 color)
 {
     this->color = color;
 }
 
-Shader* Line3d::fragmentShader = nullptr;
-Shader* Line3d::vertexShader = nullptr;
-
-
-// Todo: solve this more elegantly with some base class or something
-
-
-Line2d::Line2d() : VAO(0), VBO(0), color({0.85, 0, 0}) {}
-
-Line2d::Line2d(const std::vector<Vector2>& vertices) : VAO(0), VBO(0),color({0.85, 0, 0}) {
+Line2d::Line2d(const std::vector<Vector2>& vertices)
+{
         for (const auto& vertex : vertices) {
             vertexData.push_back(vertex.x);
             vertexData.push_back(vertex.y);
@@ -109,6 +108,10 @@ Line2d::Line2d(const std::vector<Vector2>& vertices) : VAO(0), VBO(0),color({0.8
         fragmentShader = new Shader("line.frag", GL_FRAGMENT_SHADER);
     if(!vertexShader)
         vertexShader = new Shader("line.vert", GL_VERTEX_SHADER);
+}
+
+Line3d::Line3d(const std::vector<Vector3>& vertices) : Line(vertices)
+{
 }
 
 Line2d::~Line2d() {
@@ -147,5 +150,5 @@ void Line2d::tearDown() {
     glDeleteVertexArrays(1, &VAO);
 }
 
-Shader* Line2d::fragmentShader = nullptr;
-Shader* Line2d::vertexShader = nullptr;
+Shader* Line::fragmentShader = nullptr;
+Shader* Line::vertexShader = nullptr;

@@ -85,8 +85,7 @@ int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
             if(input->stateStart == InputType::MousePress && input->key == GLFW_MOUSE_BUTTON_1)
             {
                 intersecting = true;
-                startX = real(2*mouseX)/xres - 1;
-                startY = -(real(2*mouseY)/yres - 1);
+                auto [startX, startY] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
                 r1 = cam.getViewRay(startX, startY);
             }
             if(input->stateEnd == InputType::MouseRelease && input->key == GLFW_MOUSE_BUTTON_1)
@@ -102,9 +101,7 @@ int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
 
         if(intersecting)
         {
-            auto x = real(2*mouseX)/xres - 1; // TODO: we're doing this transformation everywhere
-            auto y = -(real(2*mouseY)/yres - 1);
-
+            auto [x, y] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
             r2 = cam.getViewRay(x, y);
 
             /*Vector3 a(real(startX), real(startY), 0);

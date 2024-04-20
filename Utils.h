@@ -33,6 +33,8 @@ class Vector3d;
 std::vector<std::string> split(const std::string& s, char delim);
 std::string lower(const std::string& s);
 
+Vector2 mouseCoordToScreenCoord(int xres, int yres, int mouseX, int mouseY);
+
 template<typename T> T sgn(T s)
 {
     return s > 0 ? 1 : s < 0 ? -1 : 0;

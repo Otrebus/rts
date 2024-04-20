@@ -200,59 +200,18 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
 
     if(movingEntity)
     {
-        auto px = real(2*mouseX)/xres - 1;
-        auto py = -(real(2*mouseY)/yres - 1);
+        auto [x, y] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
 
-        auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
+        auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(x, y));
         movingEntity->setGeoPosition(pos.to2());
     }
 
     if(cameraControl->getMode() == Freelook)
         return;
 
-    if(intersecting)
-    {
-        auto x = real(2*mouseX)/xres - 1;
-        auto y = -(real(2*mouseY)/yres - 1);
-        
-        auto ray = scene->getCamera()->getViewRay(x, y);
-        Vector3 w = scene->getTerrain()->intersect(ray);
-        intersectRay.dir = Vector3(w.x-intersectRay.pos.x, w.y-intersectRay.pos.y, 0).normalized();
-
-        if(intersectRay.dir == intersectRay.dir)
-        {
-            auto [t, v] = scene->getTerrain()->intersectCirclePathOcclusion(intersectRay.pos.to2(), intersectRay.pos.to2() + intersectRay.dir.to2(), 0.5);
-            if(t > -inf && t < inf) {
-                Line3d line({
-                    intersectRay.pos,
-                    t > -inf ? (intersectRay.pos + intersectRay.dir*t) : Vector3(x, y, scene->getTerrain()->getElevation(x, y))
-                });
-                line.init(scene);
-                line.setInFront(true);
-                line.draw();
-            }
-        }
-    }
-
-    if(input.stateStart == InputType::MousePress && input.key == GLFW_MOUSE_BUTTON_3)
-    {
-        intersecting = true;
-        auto x = real(2*mouseX)/xres - 1;
-        auto y = -(real(2*mouseY)/yres - 1);
-        
-        Vector3 w = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(x, y));
-        intersectRay.pos = w;
-    }
-
-    if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_3)
-    {
-        intersecting = false;
-    }
-
     if(input.stateStart == InputType::MousePress && input.key == GLFW_MOUSE_BUTTON_1 && inputQueue.isKeyHeld(GLFW_KEY_LEFT_CONTROL))
     {
-        auto x = real(2*mouseX)/xres - 1;
-        auto y = -(real(2*mouseY)/yres - 1);
+        auto [x, y] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
         auto e = getEntity(scene->getCamera()->getViewRay(x, y), entities);
         if(e)
             movingEntity = e;
@@ -261,8 +220,7 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
     if(input.stateStart == InputType::MousePress && input.key == GLFW_MOUSE_BUTTON_1 && !inputQueue.isKeyHeld(GLFW_KEY_LEFT_CONTROL))
     {
         selectState = Clicking;
-        drawBoxc1.x = real(2*mouseX)/xres - 1;
-        drawBoxc1.y = -(real(2*mouseY)/yres - 1);
+        drawBoxc1 = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
         drawBoxc2 = drawBoxc1;
         setCursor(GLFW_CROSSHAIR_CURSOR);
     }
@@ -279,23 +237,20 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
         setCursor(GLFW_ARROW_CURSOR);
 
         movingEntity = nullptr;
-
     }
     if(input.stateStart == InputType::MousePosition)
     {
         mouseX = input.posX;
         mouseY = input.posY;
 
-        drawBoxc2.x = real(2*mouseX)/xres - 1;
-        drawBoxc2.y = -(real(2*mouseY)/yres - 1);
+        drawBoxc2 = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
 
         if(selectState == Clicking && (drawBoxc1-drawBoxc2).length() > 0.02)
             selectState = DrawingBox;
     }
     else if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_2)
     {
-        auto px = real(2*mouseX)/xres - 1;
-        auto py = -(real(2*mouseY)/yres - 1);
+        auto [px, py] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
 
         auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
         for(auto entity : entities)
@@ -331,6 +286,7 @@ void UserInterface::draw()
             { drawBoxc1.x, drawBoxc2.y, },
             { drawBoxc1.x, drawBoxc1.y, }
         });
+        line.setColor(Vector3(0.2, 0.7, 0.1));
         line.init(scene);
         line.draw();
     }
