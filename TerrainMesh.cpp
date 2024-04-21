@@ -2,6 +2,7 @@
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
 #include "Matrix4.h"
+#include "TerrainMaterial.h"
 
 TerrainMesh::TerrainMesh(std::vector<MeshVertex3d> vertices, std::vector<int> triangles, Material* material)
 {
@@ -48,6 +49,11 @@ void TerrainMesh::init(Scene* s)
 Shader* TerrainMesh::getVertexShader() const
 {
     return terrainVertexShader;
+}
+
+void TerrainMesh::setFlat(bool flatness)
+{
+    ((TerrainMaterial*) material)->setFlat(flatness);
 }
 
 Shader* TerrainMesh::terrainVertexShader = nullptr;

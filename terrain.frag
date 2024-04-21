@@ -8,11 +8,13 @@ in vec2 texCoord;
 out vec4 FragColor;
 in float selected;
 
+uniform bool flatShaded = false;
+
 void main()
 {
-    vec3 n = N_s;
+    vec3 n = flatShaded ? N_g : N_s;
     if (dot(normalize(tocam), N_g) < 0)
-        n = -N_s; // Make sure the normal is oriented correctly
+        n = -n; // Make sure the normal is oriented correctly
 
     vec3 lightDir = vec3(0.5f, -0.3f, -0.4f);
     lightDir = normalize(lightDir);
@@ -30,7 +32,6 @@ void main()
     float line = min(grid.x, grid.y);
     float col = min(line, 1.0);
     FragColor = FragColor - vec4(vec3(col), 0)*0.1;
-    if(selected > 0.1)
+    if(flatShaded && selected == 1)
         FragColor = vec4(0.8, 0, 0, 0);
-    
 }

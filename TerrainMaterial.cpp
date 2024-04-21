@@ -25,7 +25,13 @@ Shader* TerrainMaterial::getShader()
 void TerrainMaterial::updateUniforms(Scene* scene)
 {
     glUniform3fv(glGetUniformLocation(scene->getShaderProgram()->getId(), "camPos"), 1, (GLfloat*) &scene->getCamera()->getPos());
+    glUniform1i(glGetUniformLocation(scene->getShaderProgram()->getId(), "flatShaded"), isFlat);
 }
 
+
+void TerrainMaterial::setFlat(bool flat)
+{
+    isFlat = flat;
+}
 
 Shader* TerrainMaterial::fragmentShader = nullptr;

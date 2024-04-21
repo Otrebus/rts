@@ -49,14 +49,18 @@ TerrainMesh* Terrain::createMesh(std::string fileName)
             int c = width*(y+1) + x+1;
             int d = width*(y+1) + x;
             triangleIndices.insert(triangleIndices.end(), { a, c, d, a, b, c });
+            if(!isTriangleAdmissible(points[a], points[b], points[c]))
+                vertices[a].selected = vertices[b].selected = vertices[c].selected = true;
+            if(!isTriangleAdmissible(points[a], points[c], points[d]))
+                vertices[a].selected = vertices[c].selected = vertices[d].selected = true;
         }
     }
 
     this->width = width;
     this->height = height;
 
-    admissiblePoints = new bool[width*height*2];
-    std::fill(admissiblePoints, admissiblePoints + width*height*2, true);
+    admissiblePoints = new bool[width*height];
+    std::fill(admissiblePoints, admissiblePoints + width*height, true);
     calcAdmissiblePoints();
     
     if(terrainMesh)
@@ -163,7 +167,8 @@ void Terrain::calcAdmissiblePoints()
             {
                 admissiblePoints[width*y+x] = false;
                 admissiblePoints[width*y+x+1] = false;
-                admissiblePoints[width*(y+1)+x+1] = false;                
+                admissiblePoints[width*(y+1)+x+1] = false;
+
             }
             if(!isTriangleAdmissible(x, y, x+1, y+1, x, y+1))
             {
@@ -223,8 +228,17 @@ Vector3 Terrain::intersect(const Ray& ray)
         if(xm < 0 || xm >= width-1)
             break;
 
-        ym = p.y + d.y*(xm - p.x)/d.x;
-        yM = p.y + d.y*(xM - p.x)/d.x;
+        if(d.x != 0)
+        {
+            ym = p.y + d.y*(xm - p.x)/d.x;
+            yM = p.y + d.y*(xM - p.x)/d.x;
+        }
+        else
+        {
+            ym = 0;
+            yM = height;
+        }
+
 
         int X = int(xm);
         for(int Y = std::max(0.f, std::min(ym, yM)); Y < std::min(height-1, int(std::max(ym, yM)+1)); Y++)
@@ -245,19 +259,15 @@ Vector3 Terrain::intersect(const Ray& ray)
             }
         }
         if(ray.dir.x*ray.dir.y > 0)
-        {
             xm = xM++;
-        }
         else
-        {
             xM = xm--;
-        }
     }
 
     if(closestT < inf)
         return ray.pos + ray.dir*closestT;
-    else {
-        // TODO: this is hit if ray.dir == 0
+    else
+    {
         __debugbreak();
         intersect(ray);
     }
@@ -275,7 +285,7 @@ Terrain::Terrain(const std::string& fileName, Scene* scene) : fileName(fileName)
 
 void Terrain::init()
 {
-    auto terrainMesh = drawMode == DrawMode::Flat ? createFlatMesh(fileName) : createMesh(fileName);
+    auto terrainMesh = createMesh(fileName);
     terrainModel = Model3d(*terrainMesh);
     terrainModel.init(scene);
 }
@@ -291,6 +301,7 @@ void Terrain::draw()
 {
     if(drawMode == DrawMode::Wireframe)
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    ((TerrainMesh*) (terrainModel.getMeshes()[0]))->setFlat(drawMode == DrawMode::Flat);
     terrainModel.updateUniforms();
     terrainModel.draw();
     if(drawMode != DrawMode::Normal)

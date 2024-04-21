@@ -25,10 +25,9 @@
 + Multithreaded path finding
 - Add terrain/unit visualisations of all sorts (lines, arrows, dots, etc)
 - Debug console
-- Reduce jittering: make velocityTarget exponentially averaged?
 + Degree suffix (that converts from degrees to radians?)
 - General refactoring, like ctrl+f "stuff like this should be moved to a more specialized place"
-- Fix terrain picking: "TODO: this is hit if ray.dir == 0"
++ Fix terrain picking: "TODO: this is hit if ray.dir == 0"
 - Fix and optimize intersectCirclePathOcclusion for longer searches
 + Scrollzoom towards pointer
 + Left-multiplication by scalar t*A
@@ -36,13 +35,14 @@
 + Change setUp and setup
 - Maybe t = inf is better to return when there's no intersection
 + Make camera polymorphic instead of using debug=true
+- Reduce jittering: make velocityTarget exponentially averaged?
 - Make entity virtual base
 - Fix normals for intersectCircleTrianglePath when the circle is inside the triangle
 - Make sure derived classes have virtual destructors
 - Move boundingbox mesh construction out of Entity
 - Make inputqueue all static and remove getInstance
 + Breakacc vs forwardacc
-- Review the two vertex shaders for lines, if we can unify them
++ Review the two vertex shaders for lines, if we can unify them
 - Now that we have geometric normals we don't really need to create a new mesh for flat rendering
 - Fix flat terrain shading
 - Remove the selecttriangle stuff, not needed anymore

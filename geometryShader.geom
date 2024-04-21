@@ -26,7 +26,7 @@ void main() {
         texCoord = TexCoord[i];
         N_g = geometricNormal;
         tocam = toCam[i];
-        selected = sel[i];
+        selected = (sel[i] == 1 && sel[(i+1)%3] == 1 && sel[(i+2)%3] == 1) ? 1 : 0;
 
         EmitVertex();
     }

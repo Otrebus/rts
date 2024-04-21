@@ -373,8 +373,8 @@ Vector2 Tank::separate()
             // TODO: Although if a unit is in the middle of a bunch of units and you try to move
             // it then units of a greater rank won't move aside and it can get stuck, so maybe
             // only apply rank-based precedence if both units have conflicting velocity targets
-            if(l < 1.5)
-                sum += std::min(1.0f/std::pow(l-1, 5.0f), maxSpeed)*e.normalized();
+            if(l < 1.35)
+                sum += std::min(1.0f/std::pow(l-1, 3.0f), maxSpeed)*e.normalized();
         }
     }
     return sum;

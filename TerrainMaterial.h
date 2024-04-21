@@ -18,4 +18,7 @@ public:
     void use();
 
     static Shader* fragmentShader;
+
+    bool isFlat;
+    void setFlat(bool flatness);
 };
