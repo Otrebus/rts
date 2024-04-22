@@ -253,16 +253,19 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
         auto [px, py] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
 
         auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
-        for(auto entity : entities)
+        if(scene->getTerrain()->isTriangleAdmissible(pos.to2()))
         {
-            if(entity->selected)
+            for(auto entity : entities)
             {
-                PathFindingRequest* request = new PathFindingRequest;
-                request->requester = entity;
-                request->start = entity->getPosition().to2();
-                request->dest = pos.to2();
-                addPathFindingRequest(request);
-                entity->setCurrentPathfindingRequest(request);
+                if(entity->selected)
+                {
+                    PathFindingRequest* request = new PathFindingRequest;
+                    request->requester = entity;
+                    request->start = entity->getPosition().to2();
+                    request->dest = pos.to2();
+                    addPathFindingRequest(request);
+                    entity->setCurrentPathfindingRequest(request);
+                }
             }
         }
     }

@@ -38,6 +38,7 @@ TerrainMesh* Terrain::createMesh(std::string fileName)
             real l = std::sqrt(dx*dx+dy*dy+1);
             points.push_back(Vector3(X, Y, H(x, y) + 3.0));
             vertices[width*y+x] = MeshVertex3d(X, Y, H(x, y) + 3.0, -dx/l, -dy/l, 1.0/l, x, y);
+            vertices[width*y+x].selected = false;
         }
     }
     for(int y = 0; y < height-1; y++)
@@ -100,6 +101,7 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
             real l = std::sqrt(dx*dx+dy*dy+1);
             points.push_back(Vector3(X, Y, H(x, y) + 3.0));
             vertices[width*y+x] = MeshVertex3d(X, Y, H(x, y) + 3.0, -dx/l, -dy/l, 1.0/l, x, y);
+            vertices[width*y+x].selected = false;
         }
     }
     
@@ -285,6 +287,7 @@ Terrain::Terrain(const std::string& fileName, Scene* scene) : fileName(fileName)
 
 void Terrain::init()
 {
+    //auto terrainMesh = drawMode == DrawMode::Flat ? createFlatMesh(fileName) : createMesh(fileName);
     auto terrainMesh = createMesh(fileName);
     terrainModel = Model3d(*terrainMesh);
     terrainModel.init(scene);
@@ -427,81 +430,6 @@ std::pair<int, int> Terrain::getClosestAdmissible(Vector2 v) const
 }
 
 
-std::vector<Vector2> Terrain::findPath(Vector2 start, Vector2 destination)
-{
-    auto time = glfwGetTime();
-
-    std::vector<bool> V(width*height, false);
-    std::vector<real> C(width*height, inf);
-    std::vector<std::pair<int, int>> P(width*height);
-
-    std::set<std::pair<real, std::pair<int, int>>> Q;
-
-    auto [startX, startY] = getClosestAdmissible(start);
-    auto [destX, destY] = getClosestAdmissible(destination);
-
-    int startIndex = startY*width + startX;
-    int endIndex = destY*width + destX;
-    C[startIndex] = 0;
-
-    Q.insert({ 0.f, { startX, startY } });
-    while(!Q.empty())
-    {
-        auto it = Q.begin();
-        auto [prio, node] = *it;
-        auto [x, y] = node;
-        Q.erase(it);
-        auto i = x + y*width;
-        V[i] = true;
-        if(i == endIndex)
-            break;
-
-        for(int dx = -1; dx <= 1; dx++)
-        {
-            for(int dy = -1; dy <= 1; dy++)
-            {
-                int j = (y+dy)*width + x+dx;
-                if((dx || dy) && inBounds(x+dx, y+dy) && !V[j] && isAdmissible(x+dx, y+dy))
-                {
-                    int hx = (destY-(y+dy));
-                    int hy = (destX-(x+dx));
-                    real h = std::sqrt(hx*hx + hy*hy);
-                    if(auto c2 = C[i] + std::sqrt(real(dx*dx+dy*dy)); c2 < C[j])
-                    {
-                        P[(y+dy)*width+x+dx] = { x, y };
-                        Q.erase({ C[j]+h, { x+dx, y+dy } });
-                        Q.insert({ c2 + h, { x+dx, y+dy } });
-                        C[j] = c2;
-                    }
-                }
-            }
-        }
-    };
-
-    std::vector<Vector2> outPath;
-    if(C[destX+destY*width] < inf)
-    {
-        std::vector<Vector2> result = { destination };
-
-        for(std::pair<int, int> node = { destX, destY };;)
-        {
-            auto [x, y] = node;
-            result.push_back({ real(x), real(y) });
-            if(x == startX && y == startY)
-                break;
-            node = P[x+y*width];
-        }
-        if(result.size())
-            result.back() = start;
-        outPath = straightenPath(result);
-        //outPath = result;
-        std::cout << "Constructed path in " << glfwGetTime() - time << std::endl;
-    }
-
-    return outPath;
-}
-
-
 bool Terrain::isTriangleAdmissible(const Vector3& p1, const Vector3& p2, const Vector3& p3) const
 {
     auto cosSlope = std::abs((((p2-p1)%(p3-p1)).normalized()).z);
@@ -618,6 +546,15 @@ std::tuple<real, Vector2, real> distPointLine(Vector2 p, Vector2 p1, Vector2 p2)
     auto e = (p2-p1).normalized();
     auto s = (p-p1)*e;
     return { (p - (p1 + e*s)).length(), p1 + e*s, s };
+}
+
+
+bool Terrain::isTriangleAdmissible(Vector2 p) const
+{
+    int x = p.x, y = p.y;
+    if(p.x-x > p.y-y)
+        return isTriangleAdmissible(x, y, x+1, y, x+1, y+1);
+    return isTriangleAdmissible(x, y, x+1, y+1, x, y+1);
 }
 
 

@@ -38,7 +38,7 @@ private:
 	void calcAdmissiblePoints();
 	bool isTriangleAdmissible(const Vector3& p1, const Vector3& p2, const Vector3& p3) const;
 	bool isTriangleAdmissible(int x1, int y1, int x2, int y2, int x3, int y3) const;
-	
+
 	TerrainMesh* terrainMesh;
 
 	TerrainMesh* createFlatMesh(std::string fileName);
@@ -47,6 +47,7 @@ private:
 	bool isVisible(Vector2 start, Vector2 end) const;
 
 public:
+	bool isTriangleAdmissible(Vector2 p) const;
 	std::vector<Vector2> straightenPath(const std::vector<Vector2>& path) const;
 	std::pair<real, Vector2> intersectRayOcclusion(Vector2 pos, Vector2 dir) const;
     std::pair<real, Vector2> intersectCirclePathOcclusion(Vector2 pos, Vector2 pos2, real radius) const;
@@ -58,7 +59,6 @@ public:
 	Vector3 intersect(const Ray& ray);
 	DrawMode getDrawMode() const;
 	std::pair<Vector3, Vector3> getBoundingBox() const;
-	std::vector<Vector2> findPath(Vector2 start, Vector2 destination);
 	real getElevation(real x, real y) const;
 	real getWidth() const;
 	real getHeight() const;

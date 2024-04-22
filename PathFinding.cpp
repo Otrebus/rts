@@ -79,7 +79,9 @@ std::vector<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinati
 
     std::set<std::pair<real, std::pair<int, int>>> Q;
 
+    std::cout << "input: " << start << std::endl;
     auto [startX, startY] = terrain->getClosestAdmissible(start);
+    std::cout << "output: " << startX << " " << startY << std::endl;
     auto [destX, destY] = terrain->getClosestAdmissible(destination);
 
     int startIndex = startY*width + startX;
