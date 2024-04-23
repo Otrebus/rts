@@ -158,7 +158,8 @@ void CameraControl::handleInput(const Input& input)
 }
 
 
-void CameraControl::setAngle(real theta, real phi) {
+void CameraControl::setAngle(real theta, real phi)
+{
     Vector3 f(0, 1, 0), r(1, 0, 0);
 
     this->theta = theta;
@@ -171,7 +172,8 @@ void CameraControl::setAngle(real theta, real phi) {
 }
 
 
-void CameraControl::moveForward(real t) {
+void CameraControl::moveForward(real t)
+{
     if(cameraMode == Freelook)
         cam->setPos(cam->getPos() + cam->getDir()*t*100.f);
     else
@@ -182,7 +184,8 @@ void CameraControl::moveForward(real t) {
 }
 
 
-void CameraControl::moveRight(real t) {
+void CameraControl::moveRight(real t)
+{
     if(cameraMode == Freelook)
         cam->setPos(cam->getPos() - cam->getUp()%cam->getDir()*t*100.f);
     else {

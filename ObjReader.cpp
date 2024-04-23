@@ -719,10 +719,10 @@ void Model3d::readFromFile(const std::string& file)
 
     auto getOrMakeVertex = [&smoothingVertices, &positions, &normals, &textureCoords] (int group, int position, int normal, int tex)
     {
-        for(auto v : smoothingVertices[group][position]) {
+        for(auto v : smoothingVertices[group][position])
             if((v->texture == (tex ? textureCoords[tex-1] : Vector2(0, 0))) && v->normal == (normal ? normals[normal-1] : Vector3(0, 0, 0)))
                 return v;
-        }
+
         auto v = new ObjVertex(positions[position-1], normal ? normals[normal-1] : Vector3(0, 0, 0), tex ? textureCoords[tex-1] : Vector2(0, 0));
         smoothingVertices[group][position].push_back(v);
         return v;
@@ -758,8 +758,10 @@ void Model3d::readFromFile(const std::string& file)
                 delete t;
             }
 
-            if(indices.size()) {
-                for(auto& p : smoothingVertices[i]) {
+            if(indices.size())
+            {
+                for(auto& p : smoothingVertices[i])
+                {
                     for(auto& v : p.second)
                         delete v;
                     p.second.clear();

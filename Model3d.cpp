@@ -40,9 +40,8 @@ void Model3d::addMesh(Mesh3d& mesh)
 
 void Model3d::init(Scene* scene)
 {
-    for(auto& mesh : meshes) {
+    for(auto& mesh : meshes)
         mesh->init(scene);
-    }
 }
 
 
@@ -55,7 +54,8 @@ void Model3d::tearDown(Scene* scene)
 
 void Model3d::draw()
 {
-    for(auto& mesh : meshes) {
+    for(auto& mesh : meshes)
+    {
         mesh->updateUniforms();
         mesh->draw();
     }

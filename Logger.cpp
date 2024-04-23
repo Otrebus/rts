@@ -49,7 +49,8 @@ void Logger::file(const std::string& msg)
     file.close();
 }
 
-void checkError() {
+void checkError()
+{
     GLenum error;
     error = glGetError();
 

@@ -26,12 +26,13 @@ class Tank : public Entity
 {
 public:
     Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain);
-    virtual ~Tank();
+    ~Tank();
 
-    virtual void init(Scene* scene);
-    virtual void updateUniforms();
+    void init(Scene* scene);
+    void updateUniforms();
 
-    virtual void draw();
+    void drawTurret();
+    void draw();
 
     void setPosition(Vector3 pos);
     void setDirection(Vector3 dir, Vector3 up);
@@ -66,6 +67,9 @@ public:
 
     Vector2 velocityTarget;
     Vector2 accelerationTarget;
+
+    Vector3 turretDir; // Relative to forward/up of the tank
+    Vector3 gunPos;
 
     Line3d destinationLine;
 };

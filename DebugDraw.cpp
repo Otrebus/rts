@@ -64,7 +64,8 @@ int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
 
     Vector2 p1(0.3, -0.3), p2(0, 0.3), p3(-0.3, 0);
 
-    while (!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(window))
+    {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
 
@@ -143,15 +144,8 @@ int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
     return 0;
 }
 
-
-//void updateDecalPositions(std::vector<Mesh3d>& decals) {
-//    for (auto& decal : decals) {
-//    }
-//}
-
-
-
-std::vector<Vertex3d> createQuadVertices() {
+std::vector<Vertex3d> createQuadVertices()
+{
     std::vector<Vertex3d> vs = {
         {{-0.15, -0.15, 0.0}, {0.0, 0.0, 1.0}, {-0.5, -0.5}},
         {{ 0.15, -0.15, 0.0}, {0.0, 0.0, 1.0}, {0.5, -0.5}},
@@ -192,7 +186,8 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
 
     Vector3 position[10], velocity[10];
     
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 10; ++i)
+    {
         auto mesh = new Mesh3d(createQuadVertices(), quadIndices(), decalMaterial);
         Model3d* decal = new Model3d(*mesh);
         decal->init(&scene);
@@ -227,7 +222,8 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    while (!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(window))
+    {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
 
@@ -285,7 +281,8 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
 
         for(int i = 0; i < 10; i++)
         {
-            if(position[i].y > 0.2) {
+            if(position[i].y > 0.2)
+            {
                 position[i].y = 0.2;
                 velocity[i].y = -velocity[i].y;
             }

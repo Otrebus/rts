@@ -281,7 +281,8 @@ void UserInterface::setResolution(int xres, int yres)
 
 void UserInterface::draw()
 {
-    if(selectState == DrawingBox) {
+    if(selectState == DrawingBox)
+    {
         Line2d line({
             { drawBoxc1.x, drawBoxc1.y, },
             { drawBoxc2.x, drawBoxc1.y, },

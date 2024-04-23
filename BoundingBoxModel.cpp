@@ -31,7 +31,8 @@ BoundingBoxModel::BoundingBoxModel(Vector3 pos, Vector3 dir, Vector3 up, real wi
     std::vector<int> triangles;
     std::vector<Vertex3d> vertices;
 
-    for(auto ci : cornerIndices) {
+    for(auto ci : cornerIndices)
+    {
         int t1[3] = { 0, 1, 2 }, t2[3] = { 0, 2, 3 };
 
         int j = vertices.size();

@@ -58,9 +58,8 @@ bool Entity::intersectBoundingBox(const Ray& ray)
     auto ray2 = Ray(Vector3(u, v, w), Vector3(u2, v2, w2));
 
     real tnear, tfar;
-    if(boundingBox.intersect(ray2, tnear, tfar)) {
+    if(boundingBox.intersect(ray2, tnear, tfar))
         return true;
-    }
     return false;
 }
 

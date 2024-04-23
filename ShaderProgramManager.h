@@ -20,7 +20,8 @@ class hash_tuple {
 
 public:
     template<class Tuple>
-    size_t operator()(const Tuple& tuple) const {
+    size_t operator()(const Tuple& tuple) const
+    {
         return std::hash<uintmax_t>()(
             std::apply([](const auto& ... xs) { return (component(xs), ..., 0); }, tuple));
     }

@@ -15,8 +15,10 @@ out vec3 N_s;
 out vec3 tocam;
 out float selected;
 
-void main() {
-    for (int i = 0; i < 3; ++i) {
+void main()
+{
+    for (int i = 0; i < 3; ++i)
+    {
         gl_Position = gl_in[i].gl_Position;
 
         vec3 edge1 = VertexPosition[1] - VertexPosition[0];

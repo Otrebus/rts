@@ -17,14 +17,25 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) :
     turret = new Model3d("tankturret.obj");
     gun = new Model3d("tankbarrel.obj");
 
+    turretDir = Vector3(1, 1, 1).normalized();
+    gunPos = Vector3(0, -0.08, 0.23);
+
     geoPos = pos.to2();
     geoDir = dir.to2();
 
+    real gunMinX = 0;
+    for(auto& mesh : gun->getMeshes())
+        for(auto& v : ((Mesh3d*) mesh)->v)
+            gunMinX = std::min(v.pos.x, gunMinX);
+
     BoundingBox bb;
 
-    for(auto model : { body, turret, gun }) {
-        for(auto& mesh : model->getMeshes()) {
-            for(auto& v : ((Mesh3d*) mesh)->v) {
+    for(auto model : { body, turret, gun })
+    {
+        for(auto& mesh : model->getMeshes())
+        {
+            for(auto& v : ((Mesh3d*) mesh)->v)
+            {
                 v.pos = Vector3(v.pos.z, v.pos.x, v.pos.y);
                 v.normal = Vector3(v.normal.z, v.normal.x, v.normal.y);
                 bb.c1.x = std::min(bb.c1.x, v.pos.x);
@@ -43,9 +54,12 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) :
 
     auto ratio = width/w;
 
-    for(auto model : { body, turret, gun }) {
-        for(auto& mesh : model->getMeshes()) {
-            for(auto& v : ((Mesh3d*) mesh)->v) {
+    for(auto model : { body, turret, gun })
+    {
+        for(auto& mesh : model->getMeshes())
+        {
+            for(auto& v : ((Mesh3d*) mesh)->v)
+            {
                 v.pos -= Vector3((bb.c2.x + bb.c1.x)/2, (bb.c2.y + bb.c1.y)/2, (bb.c2.z-bb.c1.z)/2);
                 v.pos *= width/w;
             }
@@ -53,6 +67,10 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) :
         model->setPosition(pos);
         model->setDirection(dir, up);
     }
+
+    for(auto& mesh : gun->getMeshes())
+        for(auto& v : ((Mesh3d*) mesh)->v)
+            v.pos.x += gunMinX;
 
     height = h*ratio;
     depth = d*ratio;
@@ -94,6 +112,23 @@ void Tank::updateUniforms()
 }
 
 
+void Tank::drawTurret()
+{
+    turret->setPosition(pos);
+
+    Vector3 turAbsDir = dir*turretDir.y + (dir%up).normalized()*turretDir.x;
+    Vector3 turAbsUp = up;
+    turret->setDirection(turAbsDir, turAbsUp);
+ 
+    auto gunDir = dir*turretDir.y + up*turretDir.z + (dir%up).normalized()*turretDir.x;
+    gun->setDirection(gunDir, (gunDir%(turAbsDir%up)).normalized());
+    gun->setPosition(pos + turAbsDir*gunPos.y + (turAbsDir%up).normalized()*gunPos.x + gunPos.z*turAbsUp);
+
+    turret->draw();
+    gun->draw();
+}
+
+
 void Tank::draw()
 {
     //destinationLine.setVertices( { pos, target });
@@ -105,11 +140,8 @@ void Tank::draw()
     destinationLine.setVertices(P);
 
     body->draw();
-    turret->draw();
-    gun->draw();
-    /*if(selected)
-        boundingBoxModel->draw();*/
-
+    
+    drawTurret();
 
     if(selected && path.size() > 0)
     {
@@ -122,8 +154,6 @@ void Tank::setPosition(Vector3 pos)
 {
     this->pos = pos;
     body->setPosition(pos);
-    turret->setPosition(pos);
-    gun->setPosition(pos);
     boundingBoxModel->setPosition(pos);
 }
 
@@ -133,8 +163,6 @@ void Tank::setDirection(Vector3 dir, Vector3 up)
     this->dir = dir;
     this->up = up;
     body->setDirection(dir, up);
-    turret->setDirection(dir, up);
-    gun->setDirection(dir, up);
     boundingBoxModel->setDirection(dir, up);
 }
 
@@ -279,7 +307,8 @@ Vector2 Tank::seek()
     {
         auto target = path.back();
 
-        if(target.length() > 0.0001) {
+        if(target.length() > 0.0001)
+        {
             auto l = (target - geoPos).length();
             auto R = getArrivalRadius(target, scene->getEntities());
 
@@ -290,17 +319,15 @@ Vector2 Tank::seek()
             target = path.back();
 
             // TODO: this could become NaN
-            if(!l) {
+            if(!l)
                 return { 0, 0 };
-            }
             auto v2 = (target - geoPos).normalized();
 
             auto speed = maxSpeed;
             if(path.size() == 1)
             {
-                if((target - geoPos).length() < 0.5) {
+                if((target - geoPos).length() < 0.5)
                     return { 0, 0 };
-                }
                 speed = std::min(maxSpeed, (target - geoPos).length());
             }
             return v2*speed;
@@ -326,9 +353,8 @@ Vector2 Tank::evade()
 
             auto r = w - (pos2-pos1);
             // TODO: better deduction of time-to-collision (e/v)?
-            if(e*v > 0 && r.length() < 1 && e.length()/v.length() < 1) {
+            if(e*v > 0 && r.length() < 1 && e.length()/v.length() < 1)
                 sum += (v1%r > 1 ? std::min(w.length(), 3.f)*v1.perp() : -std::min(w.length(), 3.f)*v1.perp());
-            }
         }
     }
     return sum;

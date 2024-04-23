@@ -45,7 +45,8 @@ void sizeCallback(GLFWwindow* window, int width, int height)
 
 int main()
 {
-    if (!glfwInit()) {
+    if (!glfwInit())
+    {
         printf("failed to initialize GLFW.\n");
         return -1;
     }
@@ -168,7 +169,8 @@ int main()
     int frames = 0;
     real frameTime = 0;
 
-    while (!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(window))
+    {
 
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);

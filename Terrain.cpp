@@ -19,7 +19,8 @@ TerrainMesh* Terrain::createMesh(std::string fileName)
     points.clear();
     triangleIndices.clear();
 
-    auto H = [&colors, &width, &height] (int x, int y) {
+    auto H = [&colors, &width, &height] (int x, int y)
+    {
         return colors[width*3*(height-y-1)+x*3]/255.0*width/15;
     };
 
@@ -82,7 +83,8 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
     const int nVertices = width*height;
     std::vector<MeshVertex3d> vertices(nVertices);
 
-    auto H = [&colors, &width, &height] (int x, int y) {
+    auto H = [&colors, &width, &height] (int x, int y)
+    {
         return colors[width*3*(height-y-1)+x*3]/255.0*width/15;
     };
 
@@ -130,7 +132,8 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
                 if(!isTriangleAdmissible(points[a], points[b], points[c]))
                     vertices2.back().selected = true;
             }
-            for(auto i : { a, c, d } ) {
+            for(auto i : { a, c, d } )
+            {
                 triangleIndices2.push_back(vertices2.size());
                 triangleIndices.push_back(i);
                 vertices2.push_back(vertices[i]);
@@ -344,7 +347,8 @@ void Terrain::setDrawMode(DrawMode d)
 {
     drawMode = d;
     std::cout << "Setting drawmode " << drawMode << std::endl;
-    if(drawMode == DrawMode::Flat || drawMode == DrawMode::Normal) {
+    if(drawMode == DrawMode::Flat || drawMode == DrawMode::Normal)
+    {
         tearDown();
         init();
     }
