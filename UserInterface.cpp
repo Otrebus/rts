@@ -14,6 +14,7 @@ UserInterface::UserInterface(GLFWwindow* window, Scene* scene, CameraControl* ca
     drawBoxc2 = { 0, 0 };
     selectState = NotSelecting;
     intersecting = false;
+    selectingAdditional = false;
 }
 
 
@@ -77,6 +78,7 @@ bool intersectsSAT(const Polyhedra& a, const Polyhedra& b)
     {
         for(auto [b1, b2] : b.edges)
         {
+            // TODO: these vectors before normalization can be 0
             auto u = (a.vertices[a1]-a.vertices[a2]).normalized();
             auto v = (b.vertices[b1]-b.vertices[b2]).normalized();
             auto n = u%v;
@@ -142,7 +144,7 @@ bool intersectsFrustum(Vector3 pos, Vector3 v[4], Entity& entity, Scene* scene)
 }
 
 
-void UserInterface::selectEntities(std::vector<Entity*> entities)
+void UserInterface::selectEntities(std::vector<Entity*> entities, bool pre)
 {
     auto time = glfwGetTime();
     auto camera = scene->getCamera();
@@ -163,10 +165,16 @@ void UserInterface::selectEntities(std::vector<Entity*> entities)
 
     for(auto e : entities)
     {
-        if(intersectsFrustum(camera->getPos(), v, *e, scene))
-            e->setSelected(true); // TODO: clean
+        if(!pre)
+        {
+            if(intersectsFrustum(camera->getPos(), v, *e, scene))
+                e->setSelected(true); // TODO: clean
+        }
         else
-            e->setSelected(false);
+        {
+            if(intersectsFrustum(camera->getPos(), v, *e, scene))
+                e->setPreSelected(true); // TODO: clean
+        }
     }
     std::cout << (glfwGetTime() - time) << std::endl;
 }
@@ -179,18 +187,32 @@ Entity* UserInterface::getEntity(const Ray& ray, const std::vector<Entity*>& ent
     return nullptr;
 }
 
-void UserInterface::selectEntity(const Ray& ray, const std::vector<Entity*>& entities)
+void UserInterface::selectEntity(const Ray& ray, const std::vector<Entity*>& entities, bool pre)
 {
     auto time = glfwGetTime();
     auto camera = scene->getCamera();
     
-    for(auto e : entities)
+    if(!pre)
     {
-        if(e->intersectBoundingBox(ray))
-            e->setSelected(true);
-        else
-            e->setSelected(false);
+        for(auto e : entities)
+        {
+            if(e->intersectBoundingBox(ray))
+                e->setSelected(true);
+            else
+                e->setSelected(false);
+        }
     }
+    else
+    {
+        for(auto e : entities)
+        {
+            if(e->intersectBoundingBox(ray))
+                e->setPreSelected(true);
+            else
+                e->setPreSelected(false);
+        }
+    }
+
     std::cout << (glfwGetTime() - time) << std::endl;
 }
 
@@ -209,6 +231,13 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
     if(cameraControl->getMode() == Freelook)
         return;
 
+    if(input.key == GLFW_KEY_LEFT_SHIFT)
+    {
+        selectingAdditional = (input.stateStart == InputType::KeyPress || input.stateStart == InputType::KeyHold);
+        if(input.stateEnd == InputType::KeyRelease)
+            selectingAdditional = false;
+    }
+
     if(input.stateStart == InputType::MousePress && input.key == GLFW_MOUSE_BUTTON_1 && inputQueue.isKeyHeld(GLFW_KEY_LEFT_CONTROL))
     {
         auto [x, y] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
@@ -224,14 +253,31 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
         drawBoxc2 = drawBoxc1;
         setCursor(GLFW_CROSSHAIR_CURSOR);
     }
-    if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_1)
+    if(selectState == DrawingBox)
     {
         if(selectState == DrawingBox)
-            selectEntities(entities);
+            selectEntities(entities, true);
+    }
+    else if(selectState == NotSelecting)
+    {
+        auto [x, y] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
+        selectEntity(scene->getCamera()->getViewRay(x, y), entities, true);
+    }
+    if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_1)
+    {
+        for(auto& entity : entities)
+        {
+            entity->setPreSelected(false);
+            if(!selectingAdditional)
+                entity->setSelected(false);
+        }
+
+        if(selectState == DrawingBox)
+            selectEntities(entities, false);
         else if(selectState == Clicking)
         {
             auto c1 = drawBoxc1;
-            selectEntity(scene->getCamera()->getViewRay(c1.x, c1.y), entities);
+            selectEntity(scene->getCamera()->getViewRay(c1.x, c1.y), entities, false);
         }
         selectState = NotSelecting;
         setCursor(GLFW_ARROW_CURSOR);

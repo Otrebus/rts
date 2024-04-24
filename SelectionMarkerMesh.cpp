@@ -39,7 +39,7 @@ void SelectionMarkerMesh::draw()
         glBlendFunc( GL_SRC_ALPHA_SATURATE, GL_ONE ) ;
         glBlendFuncSeparate(GL_ONE, GL_ZERO, GL_ZERO, GL_ONE);
 
-        SelectionDecalMaterial::radius = 1;
+        SelectionDecalMaterial::radius = pre ? 0.95 : 1;
         SelectionDecalMaterial::pass = 0;
     }
     updateUniforms();
@@ -104,4 +104,9 @@ void SelectionMarkerMesh::update()
     v = vs;
     tearDown();
     init(scene);
+}
+
+void SelectionMarkerMesh::setSelectionType(bool pre)
+{
+    this->pre = pre;
 }

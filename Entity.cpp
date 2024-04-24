@@ -33,10 +33,11 @@ void Entity::drawBoundingBox()
 
 void Entity::drawSelectionDecal(int pass)
 {
-    if(selected)
+    if(selected || preSelected)
     {
         selectionMarkerMesh->pass = pass;
         selectionMarkerMesh->draw();
+        selectionMarkerMesh->setSelectionType(preSelected && !selected);
     }
     selectionMarkerMesh->update();
 }
@@ -67,11 +68,11 @@ bool Entity::intersectBoundingBox(const Ray& ray)
 void Entity::setSelected(bool selected)
 {
     this->selected = selected;
-    auto meshes = boundingBoxModel->getMeshes();
+    /*auto meshes = boundingBoxModel->getMeshes();
     auto& kd = ((LambertianMaterial*) meshes[0]->getMaterial())->Kd;
     kd = selected ? Vector3(0.8, 0, 0) : Vector3(0, 0.8, 0);
     auto& kd2 = ((LineMaterial*) meshes[1]->getMaterial())->Kd;
-    kd2 = selected ? Vector3(0.8, 0, 0) : Vector3(0, 0.8, 0);
+    kd2 = selected ? Vector3(0.8, 0, 0) : Vector3(0, 0.8, 0);*/
 }
 
 

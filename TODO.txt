@@ -23,6 +23,8 @@
   + Obstacle avoidance
   + Separation
 + Multithreaded path finding
+- "TODO: these vectors before normalization can be 0"
+- Combine Preselected/selected, and selectionstate in userinterface - into bitfields maybe
 - Add terrain/unit visualisations of all sorts (lines, arrows, dots, etc)
 - Debug console
 + Degree suffix (that converts from degrees to radians?)

@@ -25,8 +25,8 @@ public:
     void handleInput(const Input& input, const std::vector<Entity*>& entities);
     void setResolution(int xres, int yres);
 
-    void selectEntities(std::vector<Entity*> entities);
-    void selectEntity(const Ray& ray, const std::vector<Entity*>& entities);
+    void selectEntities(std::vector<Entity*> entities, bool pre);
+    void selectEntity(const Ray& ray, const std::vector<Entity*>& entities, bool pre);
 
     Entity* getEntity(const Ray& ray, const std::vector<Entity*>& entities) const;
 
@@ -40,6 +40,7 @@ public:
     Vector2 drawBoxc1, drawBoxc2;
     Scene* scene;
 
+    bool selectingAdditional;
     bool intersecting;
     Entity* movingEntity;
 
