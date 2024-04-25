@@ -78,9 +78,8 @@ bool intersectsSAT(const Polyhedra& a, const Polyhedra& b)
     {
         for(auto [b1, b2] : b.edges)
         {
-            // TODO: these vectors before normalization can be 0
-            auto u = (a.vertices[a1]-a.vertices[a2]).normalized();
-            auto v = (b.vertices[b1]-b.vertices[b2]).normalized();
+            auto u = a.vertices[a1]-a.vertices[a2];
+            auto v = b.vertices[b1]-b.vertices[b2];
             auto n = u%v;
             if(!!n && testSides(a, b, { a.vertices[a1], n.normalized() }))
                 return false;
@@ -198,8 +197,6 @@ void UserInterface::selectEntity(const Ray& ray, const std::vector<Entity*>& ent
         {
             if(e->intersectBoundingBox(ray))
                 e->setSelected(true);
-            else
-                e->setSelected(false);
         }
     }
     else
@@ -255,6 +252,8 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
     }
     if(selectState == DrawingBox)
     {
+        for(auto& entity : entities)
+            entity->setPreSelected(false);
         if(selectState == DrawingBox)
             selectEntities(entities, true);
     }
