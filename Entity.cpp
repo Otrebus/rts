@@ -35,11 +35,11 @@ void Entity::drawSelectionDecal(int pass)
 {
     if(selected || preSelected)
     {
+        selectionMarkerMesh->update();
         selectionMarkerMesh->pass = pass;
         selectionMarkerMesh->draw();
         selectionMarkerMesh->setSelectionType(preSelected && !selected);
     }
-    selectionMarkerMesh->update();
 }
 
 bool Entity::intersectBoundingBox(const Ray& ray)

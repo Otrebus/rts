@@ -175,7 +175,6 @@ void UserInterface::selectEntities(std::vector<Entity*> entities, bool pre)
                 e->setPreSelected(true); // TODO: clean
         }
     }
-    std::cout << (glfwGetTime() - time) << std::endl;
 }
 
 Entity* UserInterface::getEntity(const Ray& ray, const std::vector<Entity*>& entities) const
@@ -209,8 +208,6 @@ void UserInterface::selectEntity(const Ray& ray, const std::vector<Entity*>& ent
                 e->setPreSelected(false);
         }
     }
-
-    std::cout << (glfwGetTime() - time) << std::endl;
 }
 
 void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& entities)

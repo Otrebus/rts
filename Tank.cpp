@@ -145,6 +145,11 @@ void Tank::draw()
 
     if(selected && path.size() > 0)
     {
+        auto [x, y] = scene->getTerrain()->getClosestAdmissible(geoPos);
+        auto z = scene->getTerrain()->getElevation(x, y);
+        BoundingBoxModel model(Vector3(x, y, z), dir, up, 0.2, 0.2, 0.2);
+        model.init(scene);
+        model.draw();
         destinationLine.draw();
     }
 }
@@ -310,7 +315,8 @@ Vector2 Tank::seek()
         if(target.length() > 0.0001)
         {
             auto l = (target - geoPos).length();
-            auto R = getArrivalRadius(target, scene->getEntities());
+
+            auto R = path.size() < 2 ? getArrivalRadius(target, scene->getEntities()) : 0.5;
 
             if(l < R)
                 path.pop_back();

@@ -79,14 +79,14 @@ std::vector<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinati
 
     std::set<std::pair<real, std::pair<int, int>>> Q;
 
-    std::cout << "input: " << start << std::endl;
     auto [startX, startY] = terrain->getClosestAdmissible(start);
-    std::cout << "output: " << startX << " " << startY << std::endl;
     auto [destX, destY] = terrain->getClosestAdmissible(destination);
 
     int startIndex = startY*width + startX;
     int endIndex = destY*width + destX;
     C[startIndex] = 0;
+
+    auto dist = [] (int x, int y) { return real(std::sqrt(real(x*x + y*y))); };
 
     Q.insert({ 0.f, { startX, startY } });
     while(!Q.empty())
@@ -95,10 +95,12 @@ std::vector<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinati
         auto [prio, node] = *it;
         auto [x, y] = node;
         Q.erase(it);
-        auto i = x + y*width;
+        auto i = y*width + x;
         V[i] = true;
         if(i == endIndex)
             break;
+
+        real h_i = dist(destX-x, destY-y);
 
         for(int dx = -1; dx <= 1; dx++)
         {
@@ -107,15 +109,15 @@ std::vector<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinati
                 int j = (y+dy)*width + x+dx;
                 if((dx || dy) && terrain->inBounds(x+dx, y+dy) && !V[j] && terrain->isAdmissible(x+dx, y+dy))
                 {
-                    int hx = (destY-(y+dy));
-                    int hy = (destX-(x+dx));
-                    real h = std::sqrt(hx*hx + hy*hy);
-                    if(auto c2 = C[i] + std::sqrt(real(dx*dx+dy*dy)); c2 < C[j])
+                    real h_j = dist(destX-(x+dx), destY-(y+dy));
+                    real hl = dist(dx, dy);
+                    if(auto c2 = C[i] + hl; c2 < C[j])
                     {
-                        P[(y+dy)*width+x+dx] = { x, y };
-                        Q.erase({ C[j]+h, { x+dx, y+dy } });
-                        Q.insert({ c2 + h, { x+dx, y+dy } });
+                        P[j] = { x, y };
+                        auto it = Q.find({ C[j]+h_j, { x+dx, y+dy } });
+                        Q.erase({ C[j]+h_j, { x+dx, y+dy } });
                         C[j] = c2;
+                        Q.insert({ C[j]+h_j, { x+dx, y+dy } });
                     }
                 }
             }
@@ -139,7 +141,7 @@ std::vector<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinati
             result.back() = start;
         outPath = terrain->straightenPath(result);
         //outPath = result;
-        std::cout << "Constructed path in " << glfwGetTime() - time << std::endl;
+        //std::cout << "Constructed path in " << glfwGetTime() - time << std::endl;
     }
 
     return outPath;
