@@ -17,8 +17,10 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) :
     turret = new Model3d("tankturret.obj");
     gun = new Model3d("tankbarrel.obj");
 
-    turretDir = Vector3(1, 1, 1).normalized();
-    gunPos = Vector3(0, -0.08, 0.23);
+    turretDir = Vector3(1, 1, 0).normalized();
+
+    turretTarget = Vector3(-1, 0, 0).normalized();
+    gunPos = Vector3(0, 0.1, 0.23);
 
     geoPos = pos.to2();
     geoDir = dir.to2();
@@ -51,7 +53,6 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) :
     auto w = (bb.c2.x - bb.c1.x);
     auto d = (bb.c2.y - bb.c1.y);
     auto h = (bb.c2.z - bb.c1.z);
-
     auto ratio = width/w;
 
     for(auto model : { body, turret, gun })
@@ -60,6 +61,7 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) :
         {
             for(auto& v : ((Mesh3d*) mesh)->v)
             {
+                // TODO: z is - ?
                 v.pos -= Vector3((bb.c2.x + bb.c1.x)/2, (bb.c2.y + bb.c1.y)/2, (bb.c2.z-bb.c1.z)/2);
                 v.pos *= width/w;
             }
@@ -71,6 +73,28 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) :
     for(auto& mesh : gun->getMeshes())
         for(auto& v : ((Mesh3d*) mesh)->v)
             v.pos.x += gunMinX;
+
+    BoundingBox bbt;
+    for(auto& mesh : turret->getMeshes())
+    {
+        for(auto& v : ((Mesh3d*) mesh)->v)
+        {
+            bbt.c1.x = std::min(bbt.c1.x, v.pos.x);
+            bbt.c1.y = std::min(bbt.c1.y, v.pos.y);
+            bbt.c1.z = std::min(bbt.c1.z, v.pos.z);
+            bbt.c2.x = std::max(bbt.c2.x, v.pos.x);
+            bbt.c2.y = std::max(bbt.c2.y, v.pos.y);
+            bbt.c2.z = std::max(bbt.c2.z, v.pos.z);
+        }
+    }
+
+    auto wt = (bbt.c2.x - bbt.c1.x);
+    auto dt = (bbt.c2.y - bbt.c1.y);
+    auto ht = (bbt.c2.z - bbt.c1.z);
+
+    for(auto& mesh : turret->getMeshes())
+        for(auto& v : ((Mesh3d*) mesh)->v)
+            v.pos -= Vector3((bbt.c1.x+bbt.c2.x)/2, (bbt.c1.y+bbt.c2.y)/2, 0);
 
     height = h*ratio;
     depth = d*ratio;
@@ -126,6 +150,27 @@ void Tank::drawTurret()
 
     turret->draw();
     gun->draw();
+}
+
+
+void Tank::updateTurret(real dt)
+{
+    auto localTurretTarget = rebaseOrtho(turretTarget, dir%up, dir, up);
+
+    auto u = turretDir.to2(), v = localTurretTarget.to2();
+
+    if(std::acos(u*v) < dt*turretYawRate)
+        u = v;
+    else
+        u = u.rotated((u%v > 0 ? 1 : -1)*dt*turretYawRate);
+
+    localTurretTarget.z = std::max(std::asin(-0.1f), localTurretTarget.z);
+    if(std::abs(std::asin(turretDir.z) - std::asin(localTurretTarget.z)) < dt*turretPitchRate)
+        turretDir.z = localTurretTarget.z;
+    else
+        turretDir.z = std::sin(std::asin(turretDir.z)+dt*turretPitchRate*sgn(localTurretTarget.z-turretDir.z));
+
+    turretDir = Vector3(u.x, u.y, turretDir.z);
 }
 
 
@@ -218,6 +263,8 @@ void Tank::turn(bool left)
 
 void Tank::update(real dt)
 {
+    updateTurret(dt);
+
     auto pos2 = geoPos + velocity*dt;
 
     Vector2 velocity2 = velocity;
@@ -417,4 +464,10 @@ Vector2 Tank::boidCalc()
 {
     auto ret = evade() + seek() + avoid() + separate();
     return ret;
+}
+
+
+void Tank::setTurretTarget(Vector3 target)
+{
+    turretTarget = target;
 }

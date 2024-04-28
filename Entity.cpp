@@ -44,19 +44,8 @@ void Entity::drawSelectionDecal(int pass)
 
 bool Entity::intersectBoundingBox(const Ray& ray)
 {
-    auto a = dir, b = up%dir, c = up, d = ray.dir, e = ray.pos-pos;
-
-    auto det = a*(b%c);
-    auto u2 = d*(b%c)/det;
-    auto v2 = a*(d%c)/det;
-    auto w2 = a*(b%d)/det;
-
-    auto det2 = a*(b%c);
-    auto u = e*(b%c)/det2;
-    auto v = a*(e%c)/det2;
-    auto w = a*(b%e)/det2;
-
-    auto ray2 = Ray(Vector3(u, v, w), Vector3(u2, v2, w2));
+    auto a = dir, b = dir%up, c = up;
+    auto ray2 = Ray(rebaseOrtho(ray.pos-pos, a, b, c), rebaseOrtho(ray.dir, a, b, c));
 
     real tnear, tfar;
     if(boundingBox.intersect(ray2, tnear, tfar))
@@ -68,11 +57,6 @@ bool Entity::intersectBoundingBox(const Ray& ray)
 void Entity::setSelected(bool selected)
 {
     this->selected = selected;
-    /*auto meshes = boundingBoxModel->getMeshes();
-    auto& kd = ((LambertianMaterial*) meshes[0]->getMaterial())->Kd;
-    kd = selected ? Vector3(0.8, 0, 0) : Vector3(0, 0.8, 0);
-    auto& kd2 = ((LineMaterial*) meshes[1]->getMaterial())->Kd;
-    kd2 = selected ? Vector3(0.8, 0, 0) : Vector3(0, 0.8, 0);*/
 }
 
 

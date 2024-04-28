@@ -322,7 +322,7 @@ int main()
             delete input;
         }
         avgFps = ((9*avgFps + 1/dt))/10;
-        std::cout << avgFps << std::endl;
+        //std::cout << avgFps << std::endl;
         cameraControl.update(dt);
         glfwSwapBuffers(window);
         frames++;

@@ -37,10 +37,13 @@ public:
     void setPosition(Vector3 pos);
     void setDirection(Vector3 dir, Vector3 up);
 
+    void setTurretTarget(Vector3 target);
+
     void accelerate(Vector2 dir);
     void brake();
     void turn(bool dir);
 
+    void updateTurret(real dt);
     void update(real dt);
 
     Vector2 seek();
@@ -61,6 +64,9 @@ public:
     const real maxForwardAcc = 0.7; // TODO: breakacc vs forwardacc
     const real maxBreakAcc = 3;
 
+    const real turretYawRate = pi/4;
+    const real turretPitchRate = 0.25*pi/4;
+
     Terrain* terrain;
     real acceleration;
     real turnRate;
@@ -68,7 +74,9 @@ public:
     Vector2 velocityTarget;
     Vector2 accelerationTarget;
 
+    Vector3 turretTarget; // Absolute direction
     Vector3 turretDir; // Relative to forward/up of the tank
+    Vector3 turretPos;
     Vector3 gunPos;
 
     Line3d destinationLine;

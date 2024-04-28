@@ -114,7 +114,6 @@ std::vector<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinati
                     if(auto c2 = C[i] + hl; c2 < C[j])
                     {
                         P[j] = { x, y };
-                        auto it = Q.find({ C[j]+h_j, { x+dx, y+dy } });
                         Q.erase({ C[j]+h_j, { x+dx, y+dy } });
                         C[j] = c2;
                         Q.insert({ C[j]+h_j, { x+dx, y+dy } });
@@ -141,7 +140,7 @@ std::vector<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinati
             result.back() = start;
         outPath = terrain->straightenPath(result);
         //outPath = result;
-        //std::cout << "Constructed path in " << glfwGetTime() - time << std::endl;
+        std::cout << "Constructed path in " << glfwGetTime() - time << std::endl;
     }
 
     return outPath;

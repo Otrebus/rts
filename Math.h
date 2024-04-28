@@ -21,6 +21,7 @@ extern const real eps;
 real resToScreenX(real x, int xres);
 real resToScreenY(real y, int yres);
 Vector3 calcNormal(Vector3 a, Vector3 b, Vector3 c);
+Vector3 rebaseOrtho(const Vector3& v, const Vector3& a, const Vector3& b, const Vector3& c);
 
 constexpr long double operator"" _deg(long double deg)
 {

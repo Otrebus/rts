@@ -24,6 +24,8 @@
   + Separation
 + Multithreaded path finding
 - "TODO: these vectors before normalization can be 0"
++ "TODO: is b in the right direction?"
+- "TODO: z is - ?"
 - Optimize selection markers
 - Units move through terrain at low fps
 - Combine Preselected/selected, and selectionstate in userinterface - into bitfields maybe
