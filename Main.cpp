@@ -113,7 +113,7 @@ int main()
 
     Line3d line({ { 0, 0, 0 }, { 0, 1, 1 } });
 
-    std::vector<Entity*> entities;
+    std::vector<Unit*> units;
 
     //Entity entity({ 0.5, 0.5, 3.07 }, { 1, 0, 0 }, { 0, 0, 1 });
 
@@ -151,11 +151,11 @@ int main()
         for(int x = 0; x < 5; x++)
         {
             //entities.push_back(new Tank({ 70.5f+x, 180.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain));
-            entities.push_back(new Tank({ 155.5f+x, 90.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain));
+            units.push_back(new Tank({ 155.5f+x, 90.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain));
         }
     }
 
-    for(auto& e : entities)
+    for(auto& e : units)
         e->init(&scene);
 
     auto moveSlow = false;
@@ -181,7 +181,7 @@ int main()
        
         //entity.updateUniforms();
         //entity.drawBoundingBox();
-        /*for(auto& entity : entities)
+        /*for(auto& unit : units)
         {
             entity->updateUniforms();
             entity->drawBoundingBox();
@@ -189,24 +189,27 @@ int main()
         
         terrain.draw();
         int i = 0;
-        for(auto& entity : entities)
+        for(auto& unit : units)
         {
             glPolygonOffset(-1.0, -1.0*++i);
-            entity->drawSelectionDecal(0);
+            unit->drawSelectionDecal(0);
         }
 
         glPolygonOffset(-1.0, -1.0);
-        for(auto& entity : entities)
+        for(auto& unit : units)
         {
-            entity->drawSelectionDecal(1);
+            unit->drawSelectionDecal(1);
         }
 
-        for(auto& entity : entities)
+        for(auto& unit : units)
         {
+            unit->draw();
+        }
+
+        scene.setUnits(units);
+
+        for(auto& entity : scene.getEntities())
             entity->draw();
-        }
-
-        scene.setEntities(entities);
 
         /*mesh.draw();
 
@@ -240,15 +243,18 @@ int main()
         //tank.setPosition(tank.pos + Vector3(.3236543, 1, 0).normalized()*dt);
         //tank.setDirection(Vector3(.3236543, 1, 0).normalized(), Vector3(0, 0, 1).normalized());
 
-        for(auto entity : entities)
-            entity->plant(terrain);
+        for(auto unit : units)
+            unit->plant(terrain);
 
-        for(auto entity : entities)
+        for(auto unit : units)
+            unit->update(dt);
+
+        for(auto& entity : scene.getEntities())
             entity->update(dt);
 
         for(auto result = popPathFindingResult(); result; result = popPathFindingResult())
         {
-            for(auto e : entities)
+            for(auto e : units)
             {
                 if(e->getCurrentPathfindingRequest() == result)
                 {
@@ -275,7 +281,7 @@ int main()
         {
             if(isCameraInput(input))
                 cameraControl.handleInput(*input);
-            interface.handleInput(*input, entities);
+            interface.handleInput(*input, units);
 
             if(input->stateStart == MousePosition)
                 mouseX = input->posX, mouseY = input->posY;
@@ -331,8 +337,8 @@ int main()
     quitting = true;
     t.join();
 
-    for(auto& e : entities)
-        delete e;
+    for(auto& u : units)
+        delete u;
 
     /*model.tearDown(&scene);
     mesh.tearDown(&scene);

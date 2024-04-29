@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "Entity.h"
+#include "Unit.h"
 
 class Camera;
 class ShaderProgramManager;
@@ -38,6 +39,16 @@ Terrain* Scene::getTerrain() const
     return terrain;
 }
 
+void Scene::setUnits(std::vector<Unit*> units)
+{
+    this->units = units;
+}
+
+const std::vector<Unit*>& Scene::getUnits() const
+{
+    return units;
+}
+
 void Scene::setEntities(std::vector<Entity*> entities)
 {
     this->entities = entities;
@@ -46,4 +57,9 @@ void Scene::setEntities(std::vector<Entity*> entities)
 const std::vector<Entity*>& Scene::getEntities() const
 {
     return entities;
+}
+
+void Scene::addEntity(Entity* entity)
+{
+    entities.push_back(entity);
 }

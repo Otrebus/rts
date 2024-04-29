@@ -12,7 +12,7 @@
 #include "Tank.h"
 
 
-class scene;
+class Scene;
 
 
 class SelectionMarkerMesh : public Mesh3d

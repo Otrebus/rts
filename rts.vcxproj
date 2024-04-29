@@ -169,6 +169,7 @@
     <ClCompile Include="Model3d.cpp" />
     <ClCompile Include="ObjReader.cpp" />
     <ClCompile Include="PathFinding.cpp" />
+    <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SelectionDecalMaterial.cpp" />
@@ -182,6 +183,7 @@
     <ClCompile Include="TerrainMaterial.cpp" />
     <ClCompile Include="TerrainMesh.cpp" />
     <ClCompile Include="TextureMaterial.cpp" />
+    <ClCompile Include="Unit.cpp" />
     <ClCompile Include="UserInterface.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Vector2.cpp" />
@@ -210,6 +212,7 @@
     <ClInclude Include="Model3d.h" />
     <ClInclude Include="ObjReader.h" />
     <ClInclude Include="PathFinding.h" />
+    <ClInclude Include="Projectile.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SelectionDecalMaterial.h" />
@@ -223,6 +226,7 @@
     <ClInclude Include="TerrainMaterial.h" />
     <ClInclude Include="TerrainMesh.h" />
     <ClInclude Include="TextureMaterial.h" />
+    <ClInclude Include="Unit.h" />
     <ClInclude Include="UserInterface.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Vector2.h" />

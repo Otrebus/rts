@@ -17,7 +17,7 @@ class Model3d;
 class Scene;
 class PathFindingRequest;
 
-class Entity 
+class Entity
 {
 public:
     Entity(Vector3 pos, Vector3 dir, Vector3 up, real width = 0.3, real height = 0.3, real depth = 0.3);
@@ -28,11 +28,6 @@ public:
 
     virtual void init(Scene* scene);
     virtual void updateUniforms();
-
-    void drawSelectionDecal(int pass);
-
-    void setSelected(bool selected);
-    void setPreSelected(bool preSelected);
 
     virtual void plant(const Terrain& terrain);
 
@@ -46,37 +41,22 @@ public:
 
     virtual void update(real dt) = 0;
 
-    void setTarget(Vector3 pos);
-    Vector3 getTarget() const;
+    void setVelocity(Vector3 velocity);
+    Vector3 getVelocity() const;
 
-    PathFindingRequest* getCurrentPathfindingRequest() const;
-    void setCurrentPathfindingRequest(PathFindingRequest* request);
-
-    void setPath(std::vector<Vector2> path);
-    const std::vector<Vector2>& getPath() const;
-
-    void setVelocity(Vector2 velocity);
-    Vector2 getVelocity() const;
+    Vector2 getGeoVelocity() const;
 
     Vector3 dir, up, pos;
+    Vector3 velocity;
     //Vector3 target;
 
     // TODO: are these used? width seems to be zero
     real width, height, depth;
-    Vector2 velocity;
 
-    Vector2 geoPos, geoDir;
+    Vector2 geoPos, geoDir, geoVelocity;
 
     BoundingBoxModel* boundingBoxModel;
     BoundingBox boundingBox;
 
-    SelectionMarkerMesh* selectionMarkerMesh;
-
     Scene* scene;
-    PathFindingRequest* pathFindingRequest;
-    real pathLastCalculated;
-    real pathCalculationInterval;
-    bool selected;
-    bool preSelected;
-    std::vector<Vector2> path;
 };

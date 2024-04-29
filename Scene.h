@@ -5,7 +5,8 @@
 #include "ShaderProgramManager.h"
 #include "ShaderProgram.h"
 
-class Entity;
+class Unit;
+
 
 class Scene
 {
@@ -18,10 +19,15 @@ public:
     void setTerrain(Terrain* terrain);
     Terrain* getTerrain() const;
 
+    void setUnits(std::vector<Unit*> units);
+    const std::vector<Unit*>& getUnits() const;
+
     void setEntities(std::vector<Entity*> entities);
     const std::vector<Entity*>& getEntities() const;
 
+    void addEntity(Entity* entity);
 private:
+    std::vector<Unit*> units;
     std::vector<Entity*> entities;
     Terrain* terrain;
     Camera* camera;

@@ -14,6 +14,7 @@
 #include "Model3d.h"
 #include "Math.h"
 #include "Line.h"
+#include "Unit.h"
 #include <random>
 
 
@@ -22,7 +23,7 @@ class Scene;
 class BoundingBoxModel;
 
 
-class Tank : public Entity
+class Tank : public Unit
 {
 public:
     Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain);
@@ -37,7 +38,7 @@ public:
     void setPosition(Vector3 pos);
     void setDirection(Vector3 dir, Vector3 up);
 
-    void setTurretTarget(Vector3 target);
+    void setTurretAbsoluteTarget(Vector3 target);
 
     void accelerate(Vector2 dir);
     void brake();
@@ -45,6 +46,8 @@ public:
 
     void updateTurret(real dt);
     void update(real dt);
+
+    void shoot();
 
     Vector2 seek();
     Vector2 evade();
@@ -74,10 +77,12 @@ public:
     Vector2 velocityTarget;
     Vector2 accelerationTarget;
 
-    Vector3 turretTarget; // Absolute direction
+    Vector3 turretTarget; // Relative direction
     Vector3 turretDir; // Relative to forward/up of the tank
     Vector3 turretPos;
     Vector3 gunPos;
+
+    real gunLength;
 
     Line3d destinationLine;
 };

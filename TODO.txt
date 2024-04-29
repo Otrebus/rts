@@ -28,6 +28,11 @@
 - "TODO: z is - ?"
 - Optimize selection markers
 - Units move through terrain at low fps
+- Better heap for path finding (find min prio etc)
+- Tank turret position etc should be constants and calculated once
+- Models should be instantiated from a single source
+- Reorganize project a bit
+- Gun vibrates ever so slightly
 - Combine Preselected/selected, and selectionstate in userinterface - into bitfields maybe
 - Add terrain/unit visualisations of all sorts (lines, arrows, dots, etc)
 - Move intersectRayOcclusion etc out of Terrain
@@ -38,8 +43,10 @@
 - Fix and optimize intersectCirclePathOcclusion for longer searches
 + Scrollzoom towards pointer
 + Left-multiplication by scalar t*A
+- Guns spin when resizing window (?!)
 - Make a better point picker function (viewray (should be ray)/terrain intersect)
 + Change setUp and setup
+- Projectile::draw updates uniform and then draws, check if this is done everwhere and if we need updateuniform separate
 - Maybe t = inf is better to return when there's no intersection
 + Make camera polymorphic instead of using debug=true
 - Reduce jittering: make velocityTarget exponentially averaged?
@@ -59,3 +66,17 @@
 - Work out ownership of resources
 - Unify keyinput and mouseinput in inputqueue
 - BoundingBoxmodel creates mesh etc in constructor, unlike the others who do it in init, fix?
+- Shooting:
+  - Target direction of gun should be relative
+  - Set absolute gun direction
+  - Shooting spawns a projectile
+  - Add projectile to list of stuff (entities list?)
+  - Projectile update
+  - Terrain intersection
+  - Shooting effects?
+    - Gun recoil
+    - Light, smoke, particles
+- Friendly/Enemy units
+  - Make enemy units unselectable etc
+  - Make friendly units react to enemy units (shoot, pursue?)
+  - Target prediction

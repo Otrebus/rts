@@ -10,6 +10,7 @@ class Scene;
 class Entity;
 class Ray;
 class CameraControl;
+class Unit;
 
 enum SelectState {
     NotSelecting, Clicking, DrawingBox
@@ -22,13 +23,13 @@ public:
 
     void draw();
 
-    void handleInput(const Input& input, const std::vector<Entity*>& entities);
+    void handleInput(const Input& input, const std::vector<Unit*>& units);
     void setResolution(int xres, int yres);
 
-    void selectEntities(std::vector<Entity*> entities, bool pre);
-    void selectEntity(const Ray& ray, const std::vector<Entity*>& entities, bool pre);
+    void selectUnits(std::vector<Unit*> units, bool pre);
+    void selectUnit(const Ray& ray, const std::vector<Unit*>& units, bool pre);
 
-    Entity* getEntity(const Ray& ray, const std::vector<Entity*>& entities) const;
+    Unit* getUnit(const Ray& ray, const std::vector<Unit*>& units) const;
 
     void setCursor(int shape);
 
@@ -42,7 +43,7 @@ public:
 
     bool selectingAdditional;
     bool intersecting;
-    Entity* movingEntity;
+    Unit* movingUnit;
 
     Ray intersectRay;
     GLFWcursor* cursor;

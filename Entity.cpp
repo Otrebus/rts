@@ -16,7 +16,7 @@
 #include "SelectionMarkerMesh.h"
 
 
-Entity::Entity(Vector3 pos, Vector3 dir, Vector3 up, real height, real width, real depth) : pos(pos), dir(dir), up(up), velocity({ 0, 0 })
+Entity::Entity(Vector3 pos, Vector3 dir, Vector3 up, real height, real width, real depth) : pos(pos), dir(dir), up(up), velocity({ 0, 0, 0 })
 {
 }
 
@@ -31,16 +31,6 @@ void Entity::drawBoundingBox()
     boundingBoxModel->draw();
 }
 
-void Entity::drawSelectionDecal(int pass)
-{
-    if(selected || preSelected)
-    {
-        selectionMarkerMesh->update();
-        selectionMarkerMesh->pass = pass;
-        selectionMarkerMesh->draw();
-        selectionMarkerMesh->setSelectionType(preSelected && !selected);
-    }
-}
 
 bool Entity::intersectBoundingBox(const Ray& ray)
 {
@@ -54,16 +44,9 @@ bool Entity::intersectBoundingBox(const Ray& ray)
 }
 
 
-void Entity::setSelected(bool selected)
-{
-    this->selected = selected;
-}
-
-
 void Entity::init(Scene* scene)
 {
     this->scene = scene;
-    selectionMarkerMesh->init(scene);
 }
 
 
@@ -130,35 +113,12 @@ Vector3 Entity::getPosition() const
     return pos;
 }
 
-void Entity::setTarget(Vector3 target)
-{
-    //this->target = target;
-}
-
-Vector3 Entity::getTarget() const
-{
-    //return target;
-    // TODO: not really used
-    return { 0, 0, 0 };
-}
-
-void Entity::setPath(std::vector<Vector2> path)
-{
-    this->path = path;
-    pathLastCalculated = glfwGetTime();
-}
-
-const std::vector<Vector2>& Entity::getPath() const
-{
-    return path;
-}
-
-Vector2 Entity::getVelocity() const
+Vector3 Entity::getVelocity() const
 {
     return velocity;
 }
 
-void Entity::setVelocity(Vector2 velocity)
+void Entity::setVelocity(Vector3 velocity)
 {
     this->velocity = velocity;
 }
@@ -173,17 +133,7 @@ Vector2 Entity::getGeoPosition() const
     return geoPos;
 }
 
-PathFindingRequest* Entity::getCurrentPathfindingRequest() const
+Vector2 Entity::getGeoVelocity() const
 {
-    return pathFindingRequest;
-}
-
-void Entity::setCurrentPathfindingRequest(PathFindingRequest* request)
-{
-    this->pathFindingRequest = request;
-}
-
-void Entity::setPreSelected(bool preSelected)
-{
-    this->preSelected = preSelected;
+    return geoVelocity;
 }

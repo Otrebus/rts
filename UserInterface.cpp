@@ -6,6 +6,8 @@
 #include "Entity.h"
 #include "Ray.h"
 #include "PathFinding.h"
+#include "Unit.h"
+#include "Tank.h"
 
 
 UserInterface::UserInterface(GLFWwindow* window, Scene* scene, CameraControl* cameraControl) : scene(scene), cameraControl(cameraControl), cursor(nullptr), window(window)
@@ -143,7 +145,7 @@ bool intersectsFrustum(Vector3 pos, Vector3 v[4], Entity& entity, Scene* scene)
 }
 
 
-void UserInterface::selectEntities(std::vector<Entity*> entities, bool pre)
+void UserInterface::selectUnits(std::vector<Unit*> units, bool pre)
 {
     auto time = glfwGetTime();
     auto camera = scene->getCamera();
@@ -162,64 +164,64 @@ void UserInterface::selectEntities(std::vector<Entity*> entities, bool pre)
         camera->getViewRay(br.x, br.y).dir
     };
 
-    for(auto e : entities)
+    for(auto u : units)
     {
         if(!pre)
         {
-            if(intersectsFrustum(camera->getPos(), v, *e, scene))
-                e->setSelected(true); // TODO: clean
+            if(intersectsFrustum(camera->getPos(), v, *u, scene))
+                u->setSelected(true); // TODO: clean
         }
         else
         {
-            if(intersectsFrustum(camera->getPos(), v, *e, scene))
-                e->setPreSelected(true); // TODO: clean
+            if(intersectsFrustum(camera->getPos(), v, *u, scene))
+                u->setPreSelected(true); // TODO: clean
         }
     }
 }
 
-Entity* UserInterface::getEntity(const Ray& ray, const std::vector<Entity*>& entities) const
+Unit* UserInterface::getUnit(const Ray& ray, const std::vector<Unit*>& units) const
 {
-    for(auto e : entities)
-        if(e->intersectBoundingBox(ray))
-            return e;
+    for(auto u : units)
+        if(u->intersectBoundingBox(ray))
+            return u;
     return nullptr;
 }
 
-void UserInterface::selectEntity(const Ray& ray, const std::vector<Entity*>& entities, bool pre)
+void UserInterface::selectUnit(const Ray& ray, const std::vector<Unit*>& units, bool pre)
 {
     auto time = glfwGetTime();
     auto camera = scene->getCamera();
     
     if(!pre)
     {
-        for(auto e : entities)
+        for(auto u : units)
         {
-            if(e->intersectBoundingBox(ray))
-                e->setSelected(true);
+            if(u->intersectBoundingBox(ray))
+                u->setSelected(true);
         }
     }
     else
     {
-        for(auto e : entities)
+        for(auto u : units)
         {
-            if(e->intersectBoundingBox(ray))
-                e->setPreSelected(true);
+            if(u->intersectBoundingBox(ray))
+                u->setPreSelected(true);
             else
-                e->setPreSelected(false);
+                u->setPreSelected(false);
         }
     }
 }
 
-void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& entities)
+void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& units)
 {
     auto& inputQueue = InputQueue::getInstance();
 
-    if(movingEntity)
+    if(movingUnit)
     {
         auto [x, y] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
 
         auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(x, y));
-        movingEntity->setGeoPosition(pos.to2());
+        movingUnit->setGeoPosition(pos.to2());
     }
 
     if(cameraControl->getMode() == Freelook)
@@ -235,9 +237,9 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
     if(input.stateStart == InputType::MousePress && input.key == GLFW_MOUSE_BUTTON_1 && inputQueue.isKeyHeld(GLFW_KEY_LEFT_CONTROL))
     {
         auto [x, y] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
-        auto e = getEntity(scene->getCamera()->getViewRay(x, y), entities);
+        auto e = getUnit(scene->getCamera()->getViewRay(x, y), units);
         if(e)
-            movingEntity = e;
+            movingUnit = e;
     }
 
     if(input.stateStart == InputType::MousePress && input.key == GLFW_MOUSE_BUTTON_1 && !inputQueue.isKeyHeld(GLFW_KEY_LEFT_CONTROL))
@@ -249,36 +251,36 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
     }
     if(selectState == DrawingBox)
     {
-        for(auto& entity : entities)
+        for(auto& entity : units)
             entity->setPreSelected(false);
         if(selectState == DrawingBox)
-            selectEntities(entities, true);
+            selectUnits(units, true);
     }
     else if(selectState == NotSelecting)
     {
         auto [x, y] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
-        selectEntity(scene->getCamera()->getViewRay(x, y), entities, true);
+        selectUnit(scene->getCamera()->getViewRay(x, y), units, true);
     }
     if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_1)
     {
-        for(auto& entity : entities)
+        for(auto& unit : units)
         {
-            entity->setPreSelected(false);
+            unit->setPreSelected(false);
             if(!selectingAdditional)
-                entity->setSelected(false);
+                unit->setSelected(false);
         }
 
         if(selectState == DrawingBox)
-            selectEntities(entities, false);
+            selectUnits(units, false);
         else if(selectState == Clicking)
         {
             auto c1 = drawBoxc1;
-            selectEntity(scene->getCamera()->getViewRay(c1.x, c1.y), entities, false);
+            selectUnit(scene->getCamera()->getViewRay(c1.x, c1.y), units, false);
         }
         selectState = NotSelecting;
         setCursor(GLFW_ARROW_CURSOR);
 
-        movingEntity = nullptr;
+        movingUnit = nullptr;
     }
     if(input.stateStart == InputType::MousePosition)
     {
@@ -297,17 +299,28 @@ void UserInterface::handleInput(const Input& input, const std::vector<Entity*>& 
         auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
         if(scene->getTerrain()->isTriangleAdmissible(pos.to2()))
         {
-            for(auto entity : entities)
+            for(auto unit : units)
             {
-                if(entity->selected)
+                if(unit->isSelected())
                 {
                     PathFindingRequest* request = new PathFindingRequest;
-                    request->requester = entity;
-                    request->start = entity->getPosition().to2();
+                    request->requester = unit;
+                    request->start = unit->getPosition().to2();
                     request->dest = pos.to2();
                     addPathFindingRequest(request);
-                    entity->setCurrentPathfindingRequest(request);
+                    unit->setCurrentPathfindingRequest(request);
                 }
+            }
+        }
+    }
+
+    if(input.stateEnd == InputType::KeyRelease && input.key == GLFW_KEY_K)
+    {
+        for(auto unit : units)
+        {
+            if(unit->isSelected())
+            {
+                ((Tank*) unit)->shoot();
             }
         }
     }

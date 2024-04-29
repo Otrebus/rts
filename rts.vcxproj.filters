@@ -121,6 +121,12 @@
     <ClCompile Include="SelectionMarkerMesh.cpp">
       <Filter>Source files\Models</Filter>
     </ClCompile>
+    <ClCompile Include="Unit.cpp">
+      <Filter>Source files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Projectile.cpp">
+      <Filter>Source files\Models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -238,6 +244,12 @@
       <Filter>Source files\Models</Filter>
     </ClInclude>
     <ClInclude Include="SelectionMarkerMesh.h">
+      <Filter>Source files\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Unit.h">
+      <Filter>Source files\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Projectile.h">
       <Filter>Source files\Models</Filter>
     </ClInclude>
   </ItemGroup>
