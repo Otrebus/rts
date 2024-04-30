@@ -271,11 +271,7 @@ Vector3 Terrain::intersect(const Ray& ray)
 
     if(closestT < inf)
         return ray.pos + ray.dir*closestT;
-    else
-    {
-        __debugbreak();
-        intersect(ray);
-    }
+
     return { inf, inf, inf };
 }
 

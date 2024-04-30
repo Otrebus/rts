@@ -51,15 +51,29 @@ const std::vector<Unit*>& Scene::getUnits() const
 
 void Scene::setEntities(std::vector<Entity*> entities)
 {
-    this->entities = entities;
+    this->entities = std::unordered_set(entities.begin(), entities.end());
 }
 
-const std::vector<Entity*>& Scene::getEntities() const
+const std::unordered_set<Entity*>& Scene::getEntities() const
 {
     return entities;
 }
 
 void Scene::addEntity(Entity* entity)
 {
-    entities.push_back(entity);
+    entities.insert(entity);
+}
+
+void Scene::removeEntity(Entity* entity)
+{
+    deadEntities.insert(entity);
+}
+
+void Scene::updateEntities()
+{
+    std::unordered_set<Entity*> newEntities;
+    for(auto e : entities)
+        if(!deadEntities.contains(e))
+            newEntities.insert(e);
+    entities = newEntities;
 }

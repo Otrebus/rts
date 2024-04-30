@@ -252,6 +252,10 @@ int main()
         for(auto& entity : scene.getEntities())
             entity->update(dt);
 
+        scene.updateEntities();
+
+        std::cout << scene.getEntities().size() << std::endl;
+
         for(auto result = popPathFindingResult(); result; result = popPathFindingResult())
         {
             for(auto e : units)

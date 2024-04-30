@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "ShaderProgramManager.h"
 #include "ShaderProgram.h"
+#include <unordered_set>
 
 class Unit;
 
@@ -23,12 +24,17 @@ public:
     const std::vector<Unit*>& getUnits() const;
 
     void setEntities(std::vector<Entity*> entities);
-    const std::vector<Entity*>& getEntities() const;
+    const std::unordered_set<Entity*>& getEntities() const;
 
     void addEntity(Entity* entity);
+    void removeEntity(Entity* entity);
+    void updateEntities();
 private:
     std::vector<Unit*> units;
-    std::vector<Entity*> entities;
+    
+    std::unordered_set<Entity*> entities;
+    std::unordered_set<Entity*> deadEntities;
+
     Terrain* terrain;
     Camera* camera;
     ShaderProgramManager* shaderProgramManager;
