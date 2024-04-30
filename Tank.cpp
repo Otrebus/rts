@@ -156,9 +156,9 @@ void Tank::drawTurret()
 
 void Tank::updateTurret(real dt)
 {
-    auto u = turretDir.to2(), v = turretTarget.to2();
+    auto u = turretDir.to2().normalized(), v = turretTarget.to2().normalized();
 
-    if(std::acos(u*v) < dt*turretYawRate)
+    if(std::abs(std::acos(u*v)) < dt*turretYawRate)
         u = v;
     else
         u = u.rotated((u%v > 0 ? 1 : -1)*dt*turretYawRate);
@@ -190,11 +190,6 @@ void Tank::draw()
 
     if(selected && path.size() > 0)
     {
-        auto [x, y] = scene->getTerrain()->getClosestAdmissible(geoPos);
-        auto z = scene->getTerrain()->getElevation(x, y);
-        BoundingBoxModel model(Vector3(x, y, z), dir, up, 0.2, 0.2, 0.2);
-        model.init(scene);
-        model.draw();
         destinationLine.draw();
     }
 }
@@ -422,8 +417,8 @@ Vector2 Tank::evade()
 
             auto r = w - (pos2-pos1);
             // TODO: better deduction of time-to-collision (e/v)?
-            if(e*v > 0 && r.length() < 1 && e.length()/v.length() < 1)
-                sum += (v1%r > 1 ? std::min(w.length(), 3.f)*v1.perp() : -std::min(w.length(), 3.f)*v1.perp());
+            if(e*v > 0 && r.length() < 1 && e.length()/v.length() < 2)
+                sum += (v1%r > 1 ? std::min(w.length(), 3.f)*e.normalized().perp() : -std::min(w.length(), 3.f)*e.normalized().perp());
         }
     }
     return sum;

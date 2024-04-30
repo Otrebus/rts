@@ -148,6 +148,7 @@
     <ClCompile Include="CameraControl.cpp" />
     <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="GeometryUtils.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="LambertianMaterial.cpp" />
     <None Include="line.frag">
@@ -197,6 +198,7 @@
     <ClInclude Include="CameraControl.h" />
     <ClInclude Include="DebugDraw.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="GeometryUtils.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="LambertianMaterial.h" />
     <ClInclude Include="Line.h" />

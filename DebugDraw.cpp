@@ -31,6 +31,7 @@
 #include "Vector2.h"
 #include "Terrain.h"
 #include "Logger.h"
+#include "GeometryUtils.h"
 
 
 

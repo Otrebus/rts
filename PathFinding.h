@@ -6,6 +6,7 @@
 #include "Entity.h"
 #include "Utils.h"
 #include "TerrainMesh.h"
+#include "Unit.h"
 #include "Model3d.h"
 #include "Vector3.h"
 #include "TerrainMaterial.h"
