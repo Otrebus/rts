@@ -189,20 +189,6 @@ void Terrain::calcAdmissiblePoints()
 
 Vector3 Terrain::intersect(const Ray& ray)
 {
-    //real t1 = glfwGetTime();
-    //real closestT = inf;
-    //int closestIndex = -1;
-    //for(int i = 0; i < triangleIndices.size(); i += 3)
-    //{
-    //    auto a = triangleIndices[i], b = triangleIndices[i+1], c = triangleIndices[i+2];
-    //    auto [t, u, v] = intersectTriangle(points[a], points[b], points[c], ray);
-    //    if(t > -inf && t < closestT)
-    //        closestIndex = i/3, closestT = t;
-    //}
-    //if(closestT < inf)
-    //    return ray.pos + ray.dir*closestT;
-    //return { inf, inf, inf };
-
     real t1 = glfwGetTime();
     real closestT = inf;
 
@@ -287,7 +273,6 @@ Terrain::Terrain(const std::string& fileName, Scene* scene) : fileName(fileName)
 
 void Terrain::init()
 {
-    //auto terrainMesh = drawMode == DrawMode::Flat ? createFlatMesh(fileName) : createMesh(fileName);
     auto terrainMesh = createMesh(fileName);
     terrainModel = Model3d(*terrainMesh);
     terrainModel.init(scene);
@@ -334,7 +319,6 @@ real Terrain::getElevation(real x, real y) const
         a = p1, b = p3, c = p4;
 
     auto v1 = c-a, v2 = b-a, w = Vector3(x, y, 0), A = Vector3(0, 0, -1);
-
 
     real z = v1*(v2%-(w-a))/(v1*(v2%-A));
     return z;
