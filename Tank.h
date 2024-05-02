@@ -85,4 +85,5 @@ public:
     real gunLength;
 
     Line3d destinationLine;
+    Line3d enemyLine;
 };

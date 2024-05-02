@@ -83,3 +83,25 @@ bool Unit::isSelected() const
 {
     return selected;
 }
+
+bool Unit::isEnemy() const
+{
+    return enemy;
+}
+
+void Unit::setEnemy(bool enemy)
+{
+    this->enemy = enemy;
+}
+
+
+void Unit::setEnemyTarget(Unit* enemy)
+{
+    this->enemyTarget = enemy;
+}
+
+
+Unit* Unit::getEnemyTarget() const
+{
+    return enemyTarget;
+}

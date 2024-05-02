@@ -166,15 +166,18 @@ void UserInterface::selectUnits(std::vector<Unit*> units, bool pre)
 
     for(auto u : units)
     {
-        if(!pre)
+        if(!u->isEnemy())
         {
-            if(intersectsFrustum(camera->getPos(), v, *u, scene))
-                u->setSelected(true); // TODO: clean
-        }
-        else
-        {
-            if(intersectsFrustum(camera->getPos(), v, *u, scene))
-                u->setPreSelected(true); // TODO: clean
+            if(!pre)
+            {
+                if(intersectsFrustum(camera->getPos(), v, *u, scene))
+                    u->setSelected(true); // TODO: clean
+            }
+            else
+            {
+                if(intersectsFrustum(camera->getPos(), v, *u, scene))
+                    u->setPreSelected(true); // TODO: clean
+            }
         }
     }
 }
@@ -196,7 +199,7 @@ void UserInterface::selectUnit(const Ray& ray, const std::vector<Unit*>& units, 
     {
         for(auto u : units)
         {
-            if(u->intersectBoundingBox(ray))
+            if(!u->isEnemy() && u->intersectBoundingBox(ray))
                 u->setSelected(true);
         }
     }
@@ -204,7 +207,7 @@ void UserInterface::selectUnit(const Ray& ray, const std::vector<Unit*>& units, 
     {
         for(auto u : units)
         {
-            if(u->intersectBoundingBox(ray))
+            if(!u->isEnemy() && u->intersectBoundingBox(ray))
                 u->setPreSelected(true);
             else
                 u->setPreSelected(false);
@@ -265,9 +268,12 @@ void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
     {
         for(auto& unit : units)
         {
-            unit->setPreSelected(false);
-            if(!selectingAdditional)
-                unit->setSelected(false);
+            if(!unit->isEnemy())
+            {
+                unit->setPreSelected(false);
+                if(!selectingAdditional)
+                    unit->setSelected(false);
+            }
         }
 
         if(selectState == DrawingBox)
@@ -294,21 +300,43 @@ void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
     }
     else if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_2)
     {
-        auto [px, py] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
-
-        auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
-        if(scene->getTerrain()->isTriangleAdmissible(pos.to2()))
+        bool found = false;
+        auto [x, y] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
+        auto ray = scene->getCamera()->getViewRay(x, y);
+        for(auto u : units)
         {
-            for(auto unit : units)
+            // TODO: this is not the closest enemy necessarily
+            if(u->intersectBoundingBox(ray) && u->isEnemy())
             {
-                if(unit->isSelected())
+                for(auto b : units)
                 {
-                    PathFindingRequest* request = new PathFindingRequest;
-                    request->requester = unit;
-                    request->start = unit->getPosition().to2();
-                    request->dest = pos.to2();
-                    addPathFindingRequest(request);
-                    unit->setCurrentPathfindingRequest(request);
+                    if(b->isSelected())
+                    {
+                        found = true;
+                        b->setEnemyTarget(u);
+                    }
+                }
+            }
+        }
+
+        if(!found)
+        {
+            auto [px, py] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
+
+            auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
+            if(scene->getTerrain()->isTriangleAdmissible(pos.to2()))
+            {
+                for(auto unit : units)
+                {
+                    if(unit->isSelected())
+                    {
+                        PathFindingRequest* request = new PathFindingRequest;
+                        request->requester = unit;
+                        request->start = unit->getPosition().to2();
+                        request->dest = pos.to2();
+                        addPathFindingRequest(request);
+                        unit->setCurrentPathfindingRequest(request);
+                    }
                 }
             }
         }

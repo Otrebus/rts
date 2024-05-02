@@ -40,6 +40,12 @@ public:
     void setSelected(bool selected);
     void setPreSelected(bool preSelected);
 
+    void setEnemy(bool enemy);
+    bool isEnemy() const;
+
+    void setEnemyTarget(Unit* enemy);
+    Unit* getEnemyTarget() const;
+
 protected:
     PathFindingRequest* pathFindingRequest;
     real pathLastCalculated;
@@ -48,4 +54,7 @@ protected:
     bool preSelected;
     std::vector<Vector2> path;
     SelectionMarkerMesh* selectionMarkerMesh;
+
+    bool enemy;
+    Unit* enemyTarget;
 };

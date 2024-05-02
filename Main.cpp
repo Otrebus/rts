@@ -146,12 +146,22 @@ int main()
     //entities.push_back(tank);
     //entities.push_back(tank2);
 
-    for(int y = 0; y < 5; y++)
+    for(int y = 0; y < 2; y++)
     {
-        for(int x = 0; x < 5; x++)
+        for(int x = 0; x < 3; x++)
         {
             //entities.push_back(new Tank({ 70.5f+x, 180.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain));
             units.push_back(new Tank({ 155.5f+x, 90.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain));
+        }
+    }
+
+    for(int y = 0; y < 2; y++)
+    {
+        for(int x = 0; x < 3; x++)
+        {
+            //entities.push_back(new Tank({ 70.5f+x, 180.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain));
+            units.push_back(new Tank({ 170.5f+x, 90.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain));
+            units.back()->setEnemy(true);
         }
     }
 

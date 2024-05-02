@@ -123,6 +123,11 @@ void Tank::init(Scene* scene)
     destinationLine.init(scene);
     destinationLine.setColor(Vector3(0.2, 0.7, 0.1));
     destinationLine.setInFront(true);
+
+    enemyLine.init(scene);
+    enemyLine.setColor(Vector3(0.2, 0.7, 0.1));
+    enemyLine.setInFront(true);
+
     selectionMarkerMesh->init(scene);
 }
 
@@ -191,6 +196,16 @@ void Tank::draw()
     if(selected && path.size() > 0)
     {
         destinationLine.draw();
+    }
+    if(enemyTarget)
+    {
+        std::vector<Vector3> P;
+        for(auto p : { Vector2(pos.x, pos.y), Vector2(enemyTarget->pos.x, enemyTarget->pos.y) } )
+            P.push_back( { p.x, p.y, terrain->getElevation(p.x, p.y) });
+
+        enemyLine.setVertices(P);
+        enemyLine.setColor(Vector3(1.0f, 0.0f, 0.0f));
+        enemyLine.draw();
     }
 }
 
@@ -434,13 +449,6 @@ Vector2 Tank::avoid()
     if(t > 0.05 && t < t2 && geoDir*norm < 0)
     {
         auto v = norm*(1/t);
-        Line3d line({
-            pos,
-            pos + v.to3()
-        });
-        line.init(scene);
-        line.setInFront(true);
-        line.draw();
         return v;
     }
     return { 0, 0 };
@@ -482,3 +490,4 @@ void Tank::setTurretAbsoluteTarget(Vector3 target)
 {
     turretTarget = rebaseOrtho(target, dir%up, dir, up);
 }
+
