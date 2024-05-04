@@ -1,5 +1,6 @@
 #include "GeometryUtils.h"
 #include "Ray.h"
+#include "Unit.h"
 
 
 real intersectRayCircle(Vector2 pos, Vector2 dir, Vector2 c, real radius)
@@ -154,4 +155,25 @@ std::tuple<double, double, double> intersectTriangle(const Vector3& v0, const Ve
     t = E1*P/det;
 
     return { t <= 0 ? -inf : t, u, v };
+}
+
+
+real getArrivalRadius(Vector2 p, const std::vector<Unit*>& units)
+{
+    real L = 0.5, R = 10.0;
+    while(R - L > 0.1)
+    {
+        auto M = (R+L)/2;
+        real sum = 0;
+        for(auto& unit : units)
+        {
+            if(auto w = (unit->geoPos-p).length(); w < M)
+                sum += 1.5*1.5*pi;
+        }
+        if(sum < pi*M*M)
+            R = M;
+        else
+            L = M;
+    }
+    return L;
 }

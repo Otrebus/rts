@@ -55,12 +55,6 @@ void Entity::updateUniforms()
 }
 
 
-void drawSelectionDecal(int pass)
-{
-
-}
-
-
 void Entity::plant(const Terrain& terrain)
 {
     auto x = Vector3(geoDir.x, geoDir.y, 0).normalized();

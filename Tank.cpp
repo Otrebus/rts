@@ -7,6 +7,7 @@
 #include "Entity.h"
 #include "SelectionMarkerMesh.h"
 #include "Projectile.h"
+#include "GeometryUtils.h"
 
 class Scene;
 class Vector3;
@@ -290,6 +291,8 @@ void Tank::turn(bool left)
 void Tank::update(real dt)
 {
     updateTurret(dt);
+    if(enemyTarget)
+        setTurretAbsoluteTarget(enemyTarget->pos - pos);
 
     auto pos2 = geoPos + geoVelocity*dt;
 
@@ -488,6 +491,6 @@ Vector2 Tank::boidCalc()
 
 void Tank::setTurretAbsoluteTarget(Vector3 target)
 {
+    target.normalize();
     turretTarget = rebaseOrtho(target, dir%up, dir, up);
 }
-

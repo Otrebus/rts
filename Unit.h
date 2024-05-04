@@ -11,6 +11,7 @@
 #include "BoundingBox.h"
 #include "Mesh3d.h"
 #include "LineMesh3d.h"
+#include "Entity.h"
 
 class SelectionMarkerMesh;
 class BoundingBoxModel;

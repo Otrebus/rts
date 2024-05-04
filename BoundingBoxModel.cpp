@@ -61,7 +61,6 @@ BoundingBoxModel::BoundingBoxModel(Vector3 pos, Vector3 dir, Vector3 up, real wi
     setDirection(dir, up);
 }
 
-
 BoundingBoxModel::~BoundingBoxModel()
 {
 }

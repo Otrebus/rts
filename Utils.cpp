@@ -83,27 +83,6 @@ void writeBMP(std::vector<Vector3> v, int width, int height, std::string filenam
 }
 
 
-real getArrivalRadius(Vector2 p, const std::vector<Unit*>& units)
-{
-    real L = 0.5, R = 10.0;
-    while(R - L > 0.1)
-    {
-        auto M = (R+L)/2;
-        real sum = 0;
-        for(auto& unit : units)
-        {
-            if(auto w = (unit->geoPos-p).length(); w < M)
-                sum += 1.5*1.5*pi;
-        }
-        if(sum < pi*M*M)
-            R = M;
-        else
-            L = M;
-    }
-    return L;
-}
-
-
 Vector2 mouseCoordToScreenCoord(int xres, int yres, int mouseX, int mouseY)
 {
     return { real(2*mouseX)/xres - 1,  -(real(2*mouseY)/yres - 1) };
