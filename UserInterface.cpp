@@ -166,7 +166,7 @@ void UserInterface::selectUnits(std::vector<Unit*> units, bool pre)
 
     for(auto u : units)
     {
-        if(!u->isEnemy())
+        if(true)//if(!u->isEnemy())
         {
             if(!pre)
             {

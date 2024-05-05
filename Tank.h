@@ -49,6 +49,8 @@ public:
 
     void shoot();
 
+    void setBallisticTarget();
+
     Vector2 seek();
     Vector2 evade();
     Vector2 avoid();
@@ -69,6 +71,8 @@ public:
 
     const real turretYawRate = pi/4;
     const real turretPitchRate = 0.25*pi/4;
+
+    const real bulletSpeed = 5.0;
 
     Terrain* terrain;
     real acceleration;

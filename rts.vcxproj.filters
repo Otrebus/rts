@@ -130,6 +130,10 @@
     <ClCompile Include="ShaderProgramManager.cpp">
       <Filter>Source files\Materials</Filter>
     </ClCompile>
+    <ClCompile Include="Polysolver.cpp">
+      <Filter>Source files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Quartic.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -258,6 +262,10 @@
     <ClInclude Include="ShaderProgramManager.h">
       <Filter>Source files\Materials</Filter>
     </ClInclude>
+    <ClInclude Include="Polysolver.h">
+      <Filter>Source files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Quartic.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="lambertian.frag">

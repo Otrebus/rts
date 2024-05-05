@@ -8,6 +8,7 @@
 #include "SelectionMarkerMesh.h"
 #include "Projectile.h"
 #include "GeometryUtils.h"
+#include "Polysolver.h"
 
 class Scene;
 class Vector3;
@@ -147,7 +148,7 @@ void Tank::drawTurret()
 {
     turret->setPosition(pos + turretPos);
 
-    Vector3 turAbsDir = dir*turretDir.y + (dir%up).normalized()*turretDir.x;
+    Vector3 turAbsDir = (dir*turretDir.y + (dir%up).normalized()*turretDir.x).normalized();
     Vector3 turAbsUp = up;
     turret->setDirection(turAbsDir, turAbsUp);
  
@@ -169,14 +170,18 @@ void Tank::updateTurret(real dt)
     else
         u = u.rotated((u%v > 0 ? 1 : -1)*dt*turretYawRate);
 
-    auto z = turretTarget.z;
-    z = std::max(std::asin(-0.1f), z);
-    if(std::abs(std::asin(turretDir.z) - std::asin(z)) < dt*turretPitchRate)
-        turretDir.z = z;
-    else
-        turretDir.z = std::sin(std::asin(turretDir.z)+dt*turretPitchRate*sgn(z-turretDir.z));
+    auto targetTheta = std::max(std::asin(-0.1f), std::asin(turretTarget.z));
+    auto turretTheta = std::asin(turretDir.z);
+    real theta;
 
-    turretDir = Vector3(u.x, u.y, turretDir.z);
+    if(std::abs(targetTheta - turretTheta) < dt*turretPitchRate)
+        theta = targetTheta;
+    else
+        theta = turretTheta+dt*turretPitchRate*sgn(targetTheta-turretTheta);
+
+    auto x = std::cos(theta), y = std::sin(theta);
+
+    turretDir = Vector3(x*u.x, x*u.y, y);
 }
 
 
@@ -221,7 +226,7 @@ void Tank::shoot()
     auto position = pos + turretPos + turAbsDir*gunPos.y + (turAbsDir%up).normalized()*gunPos.x + gunPos.z*turAbsUp + gunDir.normalized()*gunLength;
 
     auto p = new Projectile(position, direction, turAbsUp);
-    p->setVelocity(direction.normalized()*2.f);
+    p->setVelocity(direction.normalized()*bulletSpeed + velocity);
     p->init(scene);
     scene->addEntity(p);
 }
@@ -288,11 +293,41 @@ void Tank::turn(bool left)
         turnRate = -turnRate;
 }
 
+void Tank::setBallisticTarget()
+{
+    // TODO: this is repeated elsewhere
+    Vector3 turAbsDir = (dir*turretDir.y + (dir%up).normalized()*turretDir.x).normalized();
+    Vector3 turAbsUp = up;
+    auto gunDir = dir*turretDir.y + up*turretDir.z + (dir%up).normalized()*turretDir.x;
+    auto position = pos + turretPos + turAbsDir*gunPos.y + (turAbsDir%up).normalized()*gunPos.x + gunPos.z*turAbsUp + gunDir.normalized()*gunLength;
+    auto g = Vector3(0, 0, -1);
+    auto v = enemyTarget->velocity - velocity;
+    auto p = enemyTarget->pos - position;
+
+    ld t4 = g*g/4;
+    ld t3 = v*g;
+    ld t2 = p*g + v*v - bulletSpeed*bulletSpeed;
+    ld t1 = 2.0f*p*v;
+    ld c = p*p;
+
+    auto ts = findPolynomialRoots( { t4, t3, t2, t1, c } );
+
+    std::reverse(ts.begin(), ts.end());
+    auto it = std::find_if(ts.begin(), ts.end(), [] (auto x) { return x > 0; });
+    if(it == ts.end())
+        return;
+    auto t = real(*it);
+
+    setTurretAbsoluteTarget(p + v*t - g*t*t/2.f);
+}
+
 void Tank::update(real dt)
 {
+    auto prePos = pos;
     updateTurret(dt);
     if(enemyTarget)
-        setTurretAbsoluteTarget(enemyTarget->pos - pos);
+        setBallisticTarget();
+        //setTurretAbsoluteTarget(enemyTarget->pos - pos);
 
     auto pos2 = geoPos + geoVelocity*dt;
 
@@ -380,6 +415,8 @@ void Tank::update(real dt)
         addPathFindingRequest(request);
     }
 
+    plant(*scene->getTerrain());
+    velocity = (pos-prePos)/dt;
 }
 
 Vector2 Tank::seek()
@@ -491,6 +528,8 @@ Vector2 Tank::boidCalc()
 
 void Tank::setTurretAbsoluteTarget(Vector3 target)
 {
+    if(!target.to2())
+        __debugbreak();
     target.normalize();
     turretTarget = rebaseOrtho(target, dir%up, dir, up);
 }
