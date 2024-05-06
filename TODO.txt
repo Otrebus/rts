@@ -25,6 +25,7 @@
 + Multithreaded path finding
 - "TODO: these vectors before normalization can be 0"
 + "TODO: is b in the right direction?"
+- Selectionmaterial shader doesn't use half of the stuff in it
 - "TODO: z is - ?"
 - Optimize selection markers
 - Units move through terrain at low fps
@@ -46,7 +47,7 @@
 + Guns spin when resizing window (?!)
 - Make a better point picker function (viewray (should be ray)/terrain intersect)
 + Change setUp and setup
-- Projectile::draw updates uniform and then draws, check if this is done everwhere and if we need updateuniform separate
+- Projectile::draw updates uniform and then draws, check if this is done everwhere and if we need updateuniform separate, in fact look into if we can reform uniforms/materials altogether
 - Maybe t = inf is better to return when there's no intersection
 + Make camera polymorphic instead of using debug=true
 - Reduce jittering: make velocityTarget exponentially averaged?

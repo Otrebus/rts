@@ -133,7 +133,6 @@
     <ClCompile Include="Polysolver.cpp">
       <Filter>Source files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Quartic.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -265,7 +264,6 @@
     <ClInclude Include="Polysolver.h">
       <Filter>Source files\Math</Filter>
     </ClInclude>
-    <ClInclude Include="Quartic.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="lambertian.frag">

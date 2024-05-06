@@ -88,7 +88,7 @@ void Projectile::setDirection(Vector3 dir, Vector3 up)
 
 void Projectile::update(real dt)
 {
-    velocity += Vector3( { 0, 0, -1 } )*dt;
+    velocity += Vector3( { 0, 0, -gravity } )*dt;
 
     // TOOD: conceivably this could miss the intersection, figure out if we want to
     //       do this in a robust fashion or if we just add some epsilon
@@ -96,6 +96,7 @@ void Projectile::update(real dt)
     if(v2.length() < inf && (v2-pos).length() < dt*velocity.length())
         scene->removeEntity(this);
 
+    // TODO: this sort of integration isn't quite correct, doesn't take into account changing velocity over the timestep etc
     setDirection(velocity.normalized(), ((velocity%up%velocity).normalized()));
     setPosition(pos + velocity*dt);
 }

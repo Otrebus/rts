@@ -172,7 +172,6 @@
     <ClCompile Include="PathFinding.cpp" />
     <ClCompile Include="Polysolver.cpp" />
     <ClCompile Include="Projectile.cpp" />
-    <ClCompile Include="Quartic.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SelectionDecalMaterial.cpp" />
@@ -218,7 +217,6 @@
     <ClInclude Include="PathFinding.h" />
     <ClInclude Include="Polysolver.h" />
     <ClInclude Include="Projectile.h" />
-    <ClInclude Include="Quartic.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SelectionDecalMaterial.h" />

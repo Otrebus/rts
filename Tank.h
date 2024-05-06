@@ -39,6 +39,7 @@ public:
     void setDirection(Vector3 dir, Vector3 up);
 
     void setTurretAbsoluteTarget(Vector3 target);
+    bool canTurretAbsoluteTarget(Vector3 target);
 
     void accelerate(Vector2 dir);
     void brake();
@@ -71,6 +72,9 @@ public:
 
     const real turretYawRate = pi/4;
     const real turretPitchRate = 0.25*pi/4;
+
+    const real minTurretPitch = -10_deg;
+    const real maxTurretPitch = 90_deg; // Exaggerated for now
 
     const real bulletSpeed = 5.0;
 

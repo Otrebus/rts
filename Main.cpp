@@ -213,13 +213,17 @@ int main()
 
         for(auto& unit : units)
         {
+            unit->updateUniforms();
             unit->draw();
         }
 
         scene.setUnits(units);
 
         for(auto& entity : scene.getEntities())
+        {
+            entity->updateUniforms();
             entity->draw();
+        }
 
         /*mesh.draw();
 
@@ -263,8 +267,6 @@ int main()
             entity->update(dt);
 
         scene.updateEntities();
-
-        std::cout << scene.getEntities().size() << std::endl;
 
         for(auto result = popPathFindingResult(); result; result = popPathFindingResult())
         {

@@ -57,6 +57,7 @@ const Matrix4 identityMatrix(
 );
 const real pi = std::acos(-1);
 const real eps = 1e-6;
+const real gravity = 1; // TODO: put in another file eventually, not a math constant
 
 
 real resToScreenX(real x, int xres)

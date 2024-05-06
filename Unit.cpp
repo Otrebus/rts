@@ -8,6 +8,7 @@
 #include "Ray.h"
 #include "Terrain.h"
 #include "LambertianMaterial.h"
+#include "SelectionDecalMaterial.h"
 #include "LineMaterial.h"
 #include <vector>
 #include <array>
@@ -63,6 +64,9 @@ void Unit::drawSelectionDecal(int pass)
     {
         selectionMarkerMesh->update();
         selectionMarkerMesh->pass = pass;
+        if(isEnemy())
+            ((SelectionDecalMaterial*) (selectionMarkerMesh->getMaterial()))->Kd = Vector3(0.8, 0, 0);
+        selectionMarkerMesh->updateUniforms();
         selectionMarkerMesh->draw();
         selectionMarkerMesh->setSelectionType(preSelected && !selected);
     }

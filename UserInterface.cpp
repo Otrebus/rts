@@ -199,7 +199,7 @@ void UserInterface::selectUnit(const Ray& ray, const std::vector<Unit*>& units, 
     {
         for(auto u : units)
         {
-            if(!u->isEnemy() && u->intersectBoundingBox(ray))
+            if(/*!u->isEnemy() && */u->intersectBoundingBox(ray))
                 u->setSelected(true);
         }
     }
@@ -207,7 +207,7 @@ void UserInterface::selectUnit(const Ray& ray, const std::vector<Unit*>& units, 
     {
         for(auto u : units)
         {
-            if(!u->isEnemy() && u->intersectBoundingBox(ray))
+            if(/*!u->isEnemy() && */u->intersectBoundingBox(ray))
                 u->setPreSelected(true);
             else
                 u->setPreSelected(false);
@@ -268,7 +268,7 @@ void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
     {
         for(auto& unit : units)
         {
-            if(!unit->isEnemy())
+            if(/*!unit->isEnemy()*/true)
             {
                 unit->setPreSelected(false);
                 if(!selectingAdditional)

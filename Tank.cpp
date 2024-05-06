@@ -5,6 +5,7 @@
 #include "Terrain.h"
 #include "PathFinding.h"
 #include "Entity.h"
+#include "SelectionDecalMaterial.h"
 #include "SelectionMarkerMesh.h"
 #include "Projectile.h"
 #include "GeometryUtils.h"
@@ -160,7 +161,6 @@ void Tank::drawTurret()
     gun->draw();
 }
 
-
 void Tank::updateTurret(real dt)
 {
     auto u = turretDir.to2().normalized(), v = turretTarget.to2().normalized();
@@ -183,7 +183,6 @@ void Tank::updateTurret(real dt)
 
     turretDir = Vector3(x*u.x, x*u.y, y);
 }
-
 
 void Tank::draw()
 {
@@ -300,25 +299,33 @@ void Tank::setBallisticTarget()
     Vector3 turAbsUp = up;
     auto gunDir = dir*turretDir.y + up*turretDir.z + (dir%up).normalized()*turretDir.x;
     auto position = pos + turretPos + turAbsDir*gunPos.y + (turAbsDir%up).normalized()*gunPos.x + gunPos.z*turAbsUp + gunDir.normalized()*gunLength;
-    auto g = Vector3(0, 0, -1);
+
+    auto g = Vector3(0, 0, -gravity);
     auto v = enemyTarget->velocity - velocity;
     auto p = enemyTarget->pos - position;
 
     ld t4 = g*g/4;
-    ld t3 = v*g;
-    ld t2 = p*g + v*v - bulletSpeed*bulletSpeed;
+    ld t3 = -v*g;
+    ld t2 = -p*g + v*v - bulletSpeed*bulletSpeed;
     ld t1 = 2.0f*p*v;
     ld c = p*p;
 
+    auto pre = glfwGetTime();
     auto ts = findPolynomialRoots( { t4, t3, t2, t1, c } );
+    std::cout << (glfwGetTime() - pre) << std::endl;
 
-    std::reverse(ts.begin(), ts.end());
-    auto it = std::find_if(ts.begin(), ts.end(), [] (auto x) { return x > 0; });
-    if(it == ts.end())
-        return;
-    auto t = real(*it);
-
-    setTurretAbsoluteTarget(p + v*t - g*t*t/2.f);
+    for(real t : ts)
+    {
+        if(t > 0)
+        {
+            auto target = p + v*t - g*t*t/2.f;
+            if(canTurretAbsoluteTarget(target))
+            {
+                setTurretAbsoluteTarget(target);
+                return;
+            }
+        }
+    }
 }
 
 void Tank::update(real dt)
@@ -528,8 +535,19 @@ Vector2 Tank::boidCalc()
 
 void Tank::setTurretAbsoluteTarget(Vector3 target)
 {
-    if(!target.to2())
-        __debugbreak();
+    assert(target.to2());
     target.normalize();
     turretTarget = rebaseOrtho(target, dir%up, dir, up);
+}
+
+
+bool Tank::canTurretAbsoluteTarget(Vector3 target)
+{
+    assert(target.to2());
+    target.normalize();
+    turretTarget = rebaseOrtho(target, dir%up, dir, up);
+
+    if(turretTarget.z < std::asin(minTurretPitch) || turretTarget.z > std::asin(maxTurretPitch))
+        return false;
+    return true;
 }

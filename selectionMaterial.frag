@@ -1,5 +1,6 @@
 #version 450 core
 
+uniform vec3 Kd;
 uniform float radius;
 uniform int pass;
 
@@ -17,7 +18,7 @@ void main()
     {
         vec2 t = texCoord;
         if(t.x*t.x + t.y*t.y < radius*radius)
-            FragColor = vec4(0.2, 0.7, 0.1, 0);
+            FragColor = vec4(Kd, 0);
         else
             discard;
 
