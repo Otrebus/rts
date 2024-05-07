@@ -14,6 +14,79 @@ std::queue<PathFindingRequest*> requestQueue;
 std::queue<PathFindingRequest*> resultQueue;
 
 
+PriorityQueue::PriorityQueue(int size)
+{
+    int k = 1 << int(1 + std::log2(size+1.01));
+    A.resize(k);
+    P.resize(size+1);
+    A[0] = { 0, 0 };
+    n = 0;
+}
+
+PriorityQueue::~PriorityQueue()
+{
+}
+
+int PriorityQueue::size()
+{
+    return n;
+}
+
+bool PriorityQueue::empty()
+{
+    return !n;
+}
+
+void PriorityQueue::heapify(int key)
+{
+    for(int p = P[key]; p && A[p/2].first > A[p].first; p /= 2)
+    {
+        std::swap(P[A[p].second], P[A[p/2].second]);
+        std::swap(A[p], A[p/2]);
+    }
+}
+
+void PriorityQueue::insert(int key, real priority)
+{
+    A[++n] = { priority, key };
+    P[key] = n;
+    heapify(key);
+}
+
+void PriorityQueue::decreaseKey(int key, real priority)
+{
+    if(P[key])
+    {
+        int p = P[key];
+        A[p].first = priority;
+        heapify(key);
+    }
+    else
+        insert(key, priority);
+}
+
+int PriorityQueue::pop()
+{
+    int key = A[1].second, k = 1;
+    std::swap(P[key], P[A[n].second]);
+    std::swap(A[k], A[n]);
+
+    while(k*2 <= n-1)
+    {
+        int s = (k*2 + 1 <= n-1 && A[k*2+1].first < A[k*2].first) ? k*2+1 : k*2;
+        if(A[s].first >= A[k].first)
+            break;
+
+        std::swap(P[A[s].second], P[A[k].second]);
+        std::swap(A[k], A[s]);
+        k = s;
+    }
+
+    P[key] = 0;
+    n--;
+    return key;
+}
+
 void addPathFindingRequest(PathFindingRequest* request)
 {
     std::lock_guard<std::mutex> guard(requestMutex);
@@ -77,7 +150,8 @@ std::vector<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinati
     std::vector<real> C(width*height, inf);
     std::vector<std::pair<int, int>> P(width*height);
 
-    std::set<std::pair<real, std::pair<int, int>>> Q;
+    //std::set<std::pair<real, std::pair<int, int>>> Q;
+    PriorityQueue Q(width*height);
 
     auto [startX, startY] = terrain->getClosestAdmissible(start);
     auto [destX, destY] = terrain->getClosestAdmissible(destination);
@@ -88,14 +162,14 @@ std::vector<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinati
 
     auto dist = [] (int x, int y) { return real(std::sqrt(real(x*x + y*y))); };
 
-    Q.insert({ 0.f, { startX, startY } });
+    Q.insert(startY*width+startX, 0);
+
+    int n = 1;
     while(!Q.empty())
     {
-        auto it = Q.begin();
-        auto [prio, node] = *it;
-        auto [x, y] = node;
-        Q.erase(it);
-        auto i = y*width + x;
+        n++;
+        auto i = Q.pop();
+        int y = i/width, x = i%width;
         V[i] = true;
         if(i == endIndex)
             break;
@@ -113,15 +187,15 @@ std::vector<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinati
                     real hl = dist(dx, dy);
                     if(auto c2 = C[i] + hl; c2 < C[j])
                     {
-                        P[j] = { x, y };
-                        Q.erase({ C[j]+h_j, { x+dx, y+dy } });
                         C[j] = c2;
-                        Q.insert({ C[j]+h_j, { x+dx, y+dy } });
+                        Q.decreaseKey(j, C[j] + h_j);
+                        P[j] = { x, y };
                     }
                 }
             }
         }
     };
+    std::cout << n << std::endl;
 
     std::vector<Vector2> outPath;
     if(C[destX+destY*width] < inf)

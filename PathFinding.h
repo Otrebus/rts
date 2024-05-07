@@ -30,6 +30,25 @@ public:
     std::vector<Vector2> path;
 };
 
+class PriorityQueue
+{
+    //std::pair<real, int>* A;
+    std::vector<std::pair<real, int>> A;
+    std::vector<int> P;
+    //int* P;
+    int n;
+    void heapify(int pos);
+
+public:
+    PriorityQueue(int size);
+    ~PriorityQueue();
+
+    int size();
+    void insert(int key, real priority);
+    void decreaseKey(int key, real priority);
+    int pop();
+    bool empty();
+};
 
 void addPathFindingRequest(PathFindingRequest*);
 void addPathFindingResult(PathFindingRequest*);

@@ -625,12 +625,12 @@ std::vector<Vector2> Terrain::straightenPath(const std::vector<Vector2>& path) c
     return result;
 }
 
-real Terrain::getHeight() const
+int Terrain::getHeight() const
 {
     return height;
 }
 
-real Terrain::getWidth() const
+int Terrain::getWidth() const
 {
     return width;
 }
