@@ -39,51 +39,52 @@ bool PriorityQueue::empty()
 
 void PriorityQueue::heapify(int key)
 {
-    for(int p = P[key]; p && A[p/2].first > A[p].first; p /= 2)
+    for(int p = P[key]; p && A[p/2].prio > A[p].prio; p /= 2)
     {
-        std::swap(P[A[p].second], P[A[p/2].second]);
+        std::swap(P[A[p].key], P[A[p/2].key]);
         std::swap(A[p], A[p/2]);
     }
 }
 
-void PriorityQueue::insert(int key, real priority)
+void PriorityQueue::insert(int key, real prio)
 {
-    A[++n] = { priority, key };
+    A[++n] = { prio, key };
     P[key] = n;
     heapify(key);
 }
 
-void PriorityQueue::decreaseKey(int key, real priority)
+void PriorityQueue::decreaseKey(int key, real prio)
 {
     if(P[key])
     {
         int p = P[key];
-        A[p].first = priority;
+        A[p].prio = prio;
         heapify(key);
     }
     else
-        insert(key, priority);
+        insert(key, prio);
 }
 
 int PriorityQueue::pop()
 {
-    int key = A[1].second, k = 1;
-    std::swap(P[key], P[A[n].second]);
+    int key = A[1].key, k = 1;
+    std::swap(P[key], P[A[n].key]);
     std::swap(A[k], A[n]);
-
-    while(k*2 <= n-1)
+    
+    n--;
+    while(k*2 <= n)
     {
-        int s = (k*2 + 1 <= n-1 && A[k*2+1].first < A[k*2].first) ? k*2+1 : k*2;
-        if(A[s].first >= A[k].first)
+        int R = k*2 + 1, L = k*2;
+        int s = (R <= n && A[R].prio < A[L].prio) ? R : L;
+        if(A[s].prio >= A[k].prio)
             break;
 
-        std::swap(P[A[s].second], P[A[k].second]);
+        std::swap(P[A[s].key], P[A[k].key]);
         std::swap(A[k], A[s]);
         k = s;
     }
 
     P[key] = 0;
-    n--;
     return key;
 }
 
@@ -150,7 +151,6 @@ std::vector<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinati
     std::vector<real> C(width*height, inf);
     std::vector<std::pair<int, int>> P(width*height);
 
-    //std::set<std::pair<real, std::pair<int, int>>> Q;
     PriorityQueue Q(width*height);
 
     auto [startX, startY] = terrain->getClosestAdmissible(start);
@@ -184,8 +184,8 @@ std::vector<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinati
                 if((dx || dy) && terrain->inBounds(x+dx, y+dy) && !V[j] && terrain->isAdmissible(x+dx, y+dy))
                 {
                     real h_j = dist(destX-(x+dx), destY-(y+dy));
-                    real hl = dist(dx, dy);
-                    if(auto c2 = C[i] + hl; c2 < C[j])
+                    real d = dist(dx, dy);
+                    if(auto c2 = C[i] + d; c2 < C[j])
                     {
                         C[j] = c2;
                         Q.decreaseKey(j, C[j] + h_j);

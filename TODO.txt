@@ -23,13 +23,13 @@
   + Obstacle avoidance
   + Separation
 + Multithreaded path finding
-- "TODO: these vectors before normalization can be 0"
++ "TODO: these vectors before normalization can be 0"
 + "TODO: is b in the right direction?"
-- Selectionmaterial shader doesn't use half of the stuff in it
-- "TODO: z is - ?"
-- Optimize selection markers
 - Units move through terrain at low fps
-- Better heap for path finding (find min prio etc)
+- Selectionmaterial shader doesn't use half of the stuff in it
+- Optimize selection markers
+- "TODO: z is - ?"
++ Better heap for path finding (find min prio etc)
 - Tank turret position etc should be constants and calculated once
 - Models should be instantiated from a single source
 - Reorganize project a bit
@@ -39,7 +39,7 @@
 + Move intersectRayOcclusion etc out of Terrain
 - Debug console
 + Degree suffix (that converts from degrees to radians?)
-- General refactoring, like ctrl+f "stuff like this should be moved to a more specialized place"
++ General refactoring, like ctrl+f "stuff like this should be moved to a more specialized place"
 + Fix terrain picking: "TODO: this is hit if ray.dir == 0"
 - Fix and optimize intersectCirclePathOcclusion for longer searches
 + Scrollzoom towards pointer

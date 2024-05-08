@@ -32,8 +32,13 @@ public:
 
 class PriorityQueue
 {
+    struct PriorityQueueEntry
+    {
+        real prio;
+        int key;
+    };
     //std::pair<real, int>* A;
-    std::vector<std::pair<real, int>> A;
+    std::vector<PriorityQueueEntry> A;
     std::vector<int> P;
     //int* P;
     int n;
