@@ -25,8 +25,24 @@
 + Multithreaded path finding
 + "TODO: these vectors before normalization can be 0"
 + "TODO: is b in the right direction?"
+- Check if checking for release input checks that release can be both startStart and stateEnd, check
+- Movement types/targets, attack types
+- Shooting:
+  + Target direction of gun should be relative
+  + Set absolute gun direction
+  + Shooting spawns a projectile
+  + Add projectile to list of stuff (entities list?)
+  + Projectile update
+  + Terrain intersection
+  - Shooting effects?
+    - Gun recoil
+    - Light, smoke, particles
+- Friendly/Enemy units
+  - Make enemy units unselectable etc
+  - Make friendly units react to enemy units (shoot, pursue?)
 - Units move through terrain at low fps
 - Selectionmaterial shader doesn't use half of the stuff in it
+- Paths are expressed backwards
 - Optimize selection markers
 - "TODO: z is - ?"
 + Better heap for path finding (find min prio etc)
@@ -67,17 +83,3 @@
 - Work out ownership of resources
 - Unify keyinput and mouseinput in inputqueue
 - BoundingBoxmodel creates mesh etc in constructor, unlike the others who do it in init, fix?
-- Shooting:
-  + Target direction of gun should be relative
-  + Set absolute gun direction
-  + Shooting spawns a projectile
-  + Add projectile to list of stuff (entities list?)
-  + Projectile update
-  + Terrain intersection
-  - Shooting effects?
-    - Gun recoil
-    - Light, smoke, particles
-- Friendly/Enemy units
-  - Make enemy units unselectable etc
-  - Make friendly units react to enemy units (shoot, pursue?)
-  - Target prediction

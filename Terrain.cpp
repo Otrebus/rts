@@ -612,15 +612,15 @@ bool Terrain::isVisible(Vector2 start, Vector2 end) const
 
 std::vector<Vector2> Terrain::straightenPath(const std::vector<Vector2>& path) const
 {
-    std::vector<Vector2> result;
-    for(int i = 0; i < path.size()-1; i++)
+    std::vector<Vector2> result = { path[0] };
+    for(int i = 0; i < path.size();)
     {
         int j = i;
-        while(j < path.size()-1 && isVisible(path[i], path[j+1]))
-            j++;
-        result.push_back(path[i]);
+        for(int k = i+1; k < path.size(); k++)
+            if(isVisible(result.back(), path[k]))
+                j = k;
         result.push_back(path[j]);
-        i = j;
+        i = std::max(j, i+1);
     }
     return result;
 }

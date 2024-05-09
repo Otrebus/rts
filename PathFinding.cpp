@@ -212,6 +212,7 @@ std::vector<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinati
         }
         if(result.size())
             result.back() = start;
+
         outPath = terrain->straightenPath(result);
         //outPath = result;
         std::cout << "Constructed path in " << glfwGetTime() - time << std::endl;

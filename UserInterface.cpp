@@ -5,7 +5,9 @@
 #include "Math.h"
 #include "Entity.h"
 #include "Ray.h"
+#include <ranges>
 #include "PathFinding.h"
+#include <numeric>
 #include "Unit.h"
 #include "Tank.h"
 
@@ -142,6 +144,17 @@ bool intersectsFrustum(Vector3 pos, Vector3 v[4], Entity& entity, Scene* scene)
     };
 
     return intersectsSAT(a, b);
+}
+
+
+void addUnitPathfindingRequest(Unit* unit, Vector3 pos)
+{
+    PathFindingRequest* request = new PathFindingRequest;
+    request->requester = unit;
+    request->start = unit->getPosition().to2();
+    request->dest = pos.to2();
+    addPathFindingRequest(request);
+    unit->setCurrentPathfindingRequest(request);
 }
 
 
@@ -300,46 +313,112 @@ void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
     }
     else if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_2)
     {
-        bool found = false;
-        auto [x, y] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
-        auto ray = scene->getCamera()->getViewRay(x, y);
-        for(auto u : units)
+        std::cout << "drawtarget size is " << drawTarget.size() << std::endl;
+        if(drawTarget.size() < 3)
         {
-            // TODO: this is not the closest enemy necessarily
-            if(u->intersectBoundingBox(ray) && u->isEnemy())
+            bool found = false;
+            auto [x, y] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
+            auto ray = scene->getCamera()->getViewRay(x, y);
+            for(auto u : units)
             {
-                for(auto b : units)
+                // TODO: this is not the closest enemy necessarily
+                if(u->intersectBoundingBox(ray) && u->isEnemy())
                 {
-                    if(b->isSelected())
+                    for(auto b : units)
                     {
-                        found = true;
-                        b->setEnemyTarget(u);
+                        if(b->isSelected())
+                        {
+                            found = true;
+                            b->setEnemyTarget(u);
+                        }
+                    }
+                }
+            }
+
+            if(!found)
+            {
+                auto [px, py] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
+
+                auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
+                if(scene->getTerrain()->isTriangleAdmissible(pos.to2()))
+                {
+                    for(auto unit : units)
+                    {
+                        if(unit->isSelected())
+                        {
+                            addUnitPathfindingRequest(unit, pos);
+                        }
                     }
                 }
             }
         }
+    }
 
-        if(!found)
+    else if((input.stateStart == InputType::MousePress || input.stateStart == InputType::MouseHold) && input.key == GLFW_MOUSE_BUTTON_2)
+    {
+        bool anySelected = std::ranges::any_of(units, [] (auto unit) { return unit->isSelected(); });
+        if(anySelected)
         {
-            auto [px, py] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
+            auto [x, y] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
+            auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(x, y));
+            if(drawTarget.empty() || (drawTarget.back() - pos).length() > 0.1)
+                drawTarget.push_back(pos);
+        }
+    }
 
-            auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
-            if(scene->getTerrain()->isTriangleAdmissible(pos.to2()))
+    if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_2)
+    {
+        std::vector<Unit*> selectedUnits;
+        for(auto unit : units)
+            if(unit->isSelected())
+                selectedUnits.push_back(unit);
+
+        real length = 0;
+        for(int i = 0; i < drawTarget.size()-1; i++)
+            length += (drawTarget[i+1]-drawTarget[i]).length();
+
+        auto k = length/(selectedUnits.size()+1);
+        int end = selectedUnits.size();
+
+        std::vector<Vector3> points;
+        if(selectedUnits.size() > 1)
+        {
+            end = selectedUnits.size()-2;
+            k = length/(selectedUnits.size()-1);
+            points.insert(points.end(), drawTarget.front(), drawTarget.back());
+        }
+
+        real L = 0;
+        for(int i = 0; i < drawTarget.size()-1; i++)
+        {
+            auto l = (drawTarget[i+1]-drawTarget[i]).length();
+            L += l;
+            while(L >= k)
             {
-                for(auto unit : units)
-                {
-                    if(unit->isSelected())
-                    {
-                        PathFindingRequest* request = new PathFindingRequest;
-                        request->requester = unit;
-                        request->start = unit->getPosition().to2();
-                        request->dest = pos.to2();
-                        addPathFindingRequest(request);
-                        unit->setCurrentPathfindingRequest(request);
-                    }
-                }
+                auto p = drawTarget[i] + (drawTarget[i+1]-drawTarget[i])*((L-k)/l);
+                L -= k;
+                points.push_back(p);
             }
         }
+
+        std::vector<bool> P(selectedUnits.size(), false);
+        for(auto u : selectedUnits)
+        {
+            real min = inf;
+            int mini = 0;
+            for(int i = 0; i < points.size(); i++)
+            {
+                if(auto d = (points[i] - u->getPosition()).length(); !P[i] && d < min)
+                {
+                    min = d;
+                    mini = i;
+                }
+            }
+            addUnitPathfindingRequest(u, points[mini]);
+            P[mini] = true;
+        }
+
+        drawTarget.clear();
     }
 
     if(input.stateEnd == InputType::KeyRelease && input.key == GLFW_KEY_K)
@@ -374,6 +453,14 @@ void UserInterface::draw()
             { drawBoxc1.x, drawBoxc1.y, }
         });
         line.setColor(Vector3(0.2, 0.7, 0.1));
+        line.init(scene);
+        line.draw();
+    }
+    if(!drawTarget.empty())
+    {
+        Line3d line(drawTarget);
+        line.setColor(Vector3(0.2, 0.7, 0.1));
+        line.setInFront(true);
         line.init(scene);
         line.draw();
     }

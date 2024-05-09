@@ -16,6 +16,10 @@ enum SelectState {
     NotSelecting, Clicking, DrawingBox
 };
 
+enum CommandState {
+    NotCommanding, Moving, Attacking
+};
+
 class UserInterface
 {
 public:
@@ -38,12 +42,15 @@ public:
     int xres, yres;
     int mouseX, mouseY;
     enum SelectState selectState;
+    enum CommandState commandState;
     Vector2 drawBoxc1, drawBoxc2;
     Scene* scene;
 
     bool selectingAdditional;
     bool intersecting;
     Unit* movingUnit;
+
+    std::vector<Vector3> drawTarget;
 
     Ray intersectRay;
     GLFWcursor* cursor;
