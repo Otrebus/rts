@@ -366,56 +366,61 @@ void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
         }
     }
 
-    if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_2)
+    if((input.stateEnd == InputType::MouseRelease || input.stateStart == InputType::MouseRelease) && input.key == GLFW_MOUSE_BUTTON_2)
     {
-        std::vector<Unit*> selectedUnits;
-        for(auto unit : units)
-            if(unit->isSelected())
-                selectedUnits.push_back(unit);
-
-        real length = 0;
-        for(int i = 0; i < drawTarget.size()-1; i++)
-            length += (drawTarget[i+1]-drawTarget[i]).length();
-
-        auto k = length/(selectedUnits.size()+1);
-        int end = selectedUnits.size();
-
-        std::vector<Vector3> points;
-        if(selectedUnits.size() > 1)
+        if(drawTarget.size() > 1)
         {
-            end = selectedUnits.size()-2;
-            k = length/(selectedUnits.size()-1);
-            points.insert(points.end(), drawTarget.front(), drawTarget.back());
-        }
+            // Calculate the points where we are to place units 
+            std::vector<Unit*> selectedUnits;
+            for(auto unit : units)
+                if(unit->isSelected())
+                    selectedUnits.push_back(unit);
 
-        real L = 0;
-        for(int i = 0; i < drawTarget.size()-1; i++)
-        {
-            auto l = (drawTarget[i+1]-drawTarget[i]).length();
-            L += l;
-            while(L >= k)
+            real length = 0;
+            for(int i = 0; i < drawTarget.size()-1; i++)
+                length += (drawTarget[i+1]-drawTarget[i]).length();
+
+            auto k = length/(selectedUnits.size()+1);
+            int end = selectedUnits.size();
+
+            std::vector<Vector3> points;
+            if(selectedUnits.size() > 1)
             {
-                auto p = drawTarget[i] + (drawTarget[i+1]-drawTarget[i])*((L-k)/l);
-                L -= k;
-                points.push_back(p);
+                end = selectedUnits.size()-2;
+                k = length/(selectedUnits.size()-1);
+                points.insert(points.end(), drawTarget.front(), drawTarget.back());
             }
-        }
 
-        std::vector<bool> P(selectedUnits.size(), false);
-        for(auto u : selectedUnits)
-        {
-            real min = inf;
-            int mini = 0;
-            for(int i = 0; i < points.size(); i++)
+            real L = 0;
+            for(int i = 0; i < drawTarget.size()-1; i++)
             {
-                if(auto d = (points[i] - u->getPosition()).length(); !P[i] && d < min)
+                auto l = (drawTarget[i+1]-drawTarget[i]).length();
+                L += l;
+                while(L >= k)
                 {
-                    min = d;
-                    mini = i;
+                    auto p = drawTarget[i] + (drawTarget[i+1]-drawTarget[i])*((L-k)/l);
+                    L -= k;
+                    points.push_back(p);
                 }
             }
-            addUnitPathfindingRequest(u, points[mini]);
-            P[mini] = true;
+
+            // Match units to the points (to minimize the total length we'd need the Hungarian algorithm)
+            std::vector<bool> P(points.size(), false);
+            for(auto u : selectedUnits)
+            {
+                real min = inf;
+                int mini = 0;
+                for(int i = 0; i < points.size(); i++)
+                {
+                    if(auto d = (points[i] - u->getPosition()).length(); !P[i] && d < min)
+                    {
+                        min = d;
+                        mini = i;
+                    }
+                }
+                addUnitPathfindingRequest(u, points[mini]);
+                P[mini] = true;
+            }
         }
 
         drawTarget.clear();

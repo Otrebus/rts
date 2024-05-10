@@ -78,6 +78,10 @@ public:
 
     const real bulletSpeed = 5.0;
 
+    const real fireInterval = 1.0;
+
+    real lastFired;
+
     Terrain* terrain;
     real acceleration;
     real turnRate;

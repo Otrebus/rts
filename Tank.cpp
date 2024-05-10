@@ -32,6 +32,8 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) :
 
     BoundingBox bb;
 
+    lastFired = -inf;
+
     for(auto model : { body, turret, gun })
     {
         for(auto& mesh : model->getMeshes())
@@ -202,7 +204,7 @@ void Tank::draw()
     {
         destinationLine.draw();
     }
-    if(enemyTarget)
+    /*if(enemyTarget)
     {
         std::vector<Vector3> P;
         for(auto p : { Vector2(pos.x, pos.y), Vector2(enemyTarget->pos.x, enemyTarget->pos.y) } )
@@ -211,7 +213,7 @@ void Tank::draw()
         enemyLine.setVertices(P);
         enemyLine.setColor(Vector3(1.0f, 0.0f, 0.0f));
         enemyLine.draw();
-    }
+    }*/
 }
 
 
@@ -324,6 +326,17 @@ void Tank::setBallisticTarget()
                 setTurretAbsoluteTarget(target);
                 return;
             }
+            else
+            {
+                enemyTarget = nullptr;
+                turretTarget = Vector3(0, 1, 0);
+            }
+        }
+        else
+        {
+            // TODO: maybe cooldown a bit after losing distance etc
+            enemyTarget = nullptr;
+            turretTarget = Vector3(0, 1, 0);
         }
     }
 }
@@ -332,9 +345,32 @@ void Tank::update(real dt)
 {
     auto prePos = pos;
     updateTurret(dt);
+
+    Unit* closestEnemy = nullptr;
+    real closestD = inf;
+    for(auto unit : scene->getUnits())
+    {
+        if(unit->isEnemy() != enemy)
+        {
+            if(auto d = (unit->getPosition() - pos).length(); d < closestD)
+            {
+                closestD = d;
+                closestEnemy = unit;
+            }
+        }
+    }
+    if(!enemyTarget || closestEnemy && (closestEnemy->getPosition()-enemyTarget->getPosition()).length() < closestD*0.95)
+        enemyTarget = closestEnemy;
+
     if(enemyTarget)
         setBallisticTarget();
-        //setTurretAbsoluteTarget(enemyTarget->pos - pos);
+
+    if(glfwGetTime() - lastFired > fireInterval)
+    {
+        lastFired = glfwGetTime();
+        if((turretTarget*turretDir) > 0.99)
+            shoot();
+    }
 
     auto pos2 = geoPos + geoVelocity*dt;
 
@@ -371,18 +407,18 @@ void Tank::update(real dt)
     auto posNext = geoPos + velocity2*dt;
 
     // Collision detection, against other units
-    for(auto entity : scene->getUnits())
+    for(auto unit : scene->getUnits())
     {
-        if(entity != this)
+        if(unit != this)
         {
-            auto pos1 = geoPos, pos2 = entity->geoPos;
+            auto pos1 = geoPos, pos2 = unit->geoPos;
             if(auto d = (pos1 - pos2).length(); d < 1)
             {
                 pos1 += (geoPos-pos2).normalized()*(1-d)/2.f;
                 pos2 += (pos2-geoPos).normalized()*(1-d)/2.f;
             }   
             geoPos = pos1;
-            entity->geoPos = pos2;
+            unit->geoPos = pos2;
         }
     }
 
