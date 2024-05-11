@@ -150,7 +150,7 @@ bool intersectsFrustum(Vector3 pos, Vector3 v[4], Entity& entity, Scene* scene)
 void addUnitPathfindingRequest(Unit* unit, Vector3 pos)
 {
     PathFindingRequest* request = new PathFindingRequest;
-    request->requester = unit;
+    request->requester = unit->shared_from_this();
     request->start = unit->getPosition().to2();
     request->dest = pos.to2();
     addPathFindingRequest(request);

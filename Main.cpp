@@ -57,10 +57,9 @@ int main()
     glfwWindowHint(GLFW_DEPTH_BITS, 24);
      
     auto window = glfwCreateWindow(xres, yres, "PolRts", nullptr, nullptr);
-    glfwSetWindowAspectRatio(window, xres, yres);
     if (!window)
         return -1;
-
+    glfwSetWindowAspectRatio(window, xres, yres);
     glfwMakeContextCurrent(window);
     if (gl3wInit())
         return -1;
@@ -70,10 +69,8 @@ int main()
     //debugDraw(window, xres, yres);
     //return 0;
 
-    auto model = Model3d("CornellBox-Original.obj");
-
-    TextureMaterial texture("wall.bmp");
-    TextureMaterial texture2("grass.bmp");
+    /*glEnable              ( GL_DEBUG_OUTPUT );
+    glDebugMessageCallback( MessageCallback, 0 );*/
 
     int success;
     char infoLog[512];
@@ -82,90 +79,40 @@ int main()
 
     auto startTime = glfwGetTime();
 
-    /*glEnable              ( GL_DEBUG_OUTPUT );
-    glDebugMessageCallback( MessageCallback, 0 );*/
-
     InputQueue::getInstance().initInput(window);
 
     PerspectiveCamera cam({ 0, 0, 100 }, { 0, 1, -1 }, { 0, 0, 1 }, 59, real(xres)/float(yres));
 
     real time = glfwGetTime();
 
-    std::vector<Vertex3d> meshVertices = {
-        { -0.5f, 0.5f, 0.5f, 0, 0, 1, 0, 0 },
-        { 0.5f, 0.5f, 0.5f, 0, 0, 1, 1, 0, },
-        { 0.5f,  1.5f, 0.5f, 0, 0, 1, 1, 1, },
-        { -0.5f, 1.5f, 0.5f, 0, 0, 1, 0, 1, }
-    };
-
-    std::vector<Vertex3d> meshVertices2 = {
-        { 0.5f, 0.5f, 0.5f, 0, 0, 1, 0, 0 },
-        { 1.5f, 0.5f, 0.5f, 0, 0, 1, 1, 0, },
-        { 1.5f,  1.5f, 0.5f, 0, 0, 1, 1, 1, },
-        { 0.5f, 1.5f, 0.5f, 0, 0, 1, 0, 1, }
-    };
-
     ShaderProgramManager shaderProgramManager;
 
     Scene scene(&cam, &shaderProgramManager);
-    Mesh3d mesh(meshVertices, { 0, 1, 2, 2, 3, 0 }, &texture);
-    Mesh3d mesh2(meshVertices2, { 0, 1, 2, 2, 3, 0 }, &texture2);
-
-    Line3d line({ { 0, 0, 0 }, { 0, 1, 1 } });
-
-    std::vector<Unit*> units;
-
-    //Entity entity({ 0.5, 0.5, 3.07 }, { 1, 0, 0 }, { 0, 0, 1 });
 
     std::thread t(pathFindingThread);
 
-    //model.init(&scene);
-    //mesh.init(&scene);
-    //mesh2.init(&scene);
-    //line.init(&scene);
-    //entity.init(&scene);
-
-    Line3d line1({ { 0, 0, 0 }, { 0, 1, 1 } });
-    Line3d line2({ { 0, 0, 0 }, { 0, 1, 1 } });
-    Line3d line3({ { 0, 0, 0 }, { 0, 1, 1 } });
-    Line3d line4({ { 0, 0, 0 }, { 0, 1, 1 } });
-    line1.init(&scene);
-    line2.init(&scene);
-    line3.init(&scene);
-    line4.init(&scene);
-
     Terrain terrain("Heightmap.bmp", &scene);
     CameraControl cameraControl(&cam, &terrain, xres, yres);
-
-    //Tank* tank = new Tank({ 70.5f, 180.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
-    //tank->setPath( { (tank->getPosition() + Vector2(15, 0).to3()).to2() } );
-    /*Tank* tank2 = new Tank({ 85.5f, 180.1f, 3.07f }, { -1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
-    tank2->setPath( { (tank2->getPosition() + Vector2(-15, 0).to3()).to2() } );*/
-    //Tank* tank = new Tank({ 130.5f, 150.5f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
-//    tank->init(&scene);
-    //entities.push_back(tank);
-    //entities.push_back(tank2);
 
     for(int y = 0; y < 5; y++)
     {
         for(int x = 0; x < 5; x++)
         {
-            //entities.push_back(new Tank({ 70.5f+x, 180.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain));
-            units.push_back(new Tank({ 155.5f+x, 90.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain));
+            scene.addUnit(new Tank({ 155.5f+x, 85.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain));
         }
     }
 
-    for(int y = 0; y < 1; y++)
+    for(int y = 0; y < 5; y++)
     {
-        for(int x = 0; x < 1; x++)
+        for(int x = 0; x < 5; x++)
         {
-            //entities.push_back(new Tank({ 70.5f+x, 180.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain));
-            units.push_back(new Tank({ 170.5f+x, 90.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain));
-            units.back()->setEnemy(true);
+            auto enemy = new Tank({ 170.5f+x, 85.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
+            enemy->setEnemy(true);
+            scene.addUnit(enemy);
         }
     }
 
-    for(auto& e : units)
+    for(auto& e : scene.getUnits())
         e->init(&scene);
 
     auto moveSlow = false;
@@ -182,42 +129,31 @@ int main()
 
     while (!glfwWindowShouldClose(window))
     {
-
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
 
         glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-       
-        //entity.updateUniforms();
-        //entity.drawBoundingBox();
-        /*for(auto& unit : units)
-        {
-            entity->updateUniforms();
-            entity->drawBoundingBox();
-        }*/
         
         terrain.draw();
         int i = 0;
-        for(auto& unit : units)
+        for(auto& unit : scene.getUnits())
         {
             glPolygonOffset(-1.0, -1.0*++i);
             unit->drawSelectionDecal(0);
         }
 
         glPolygonOffset(-1.0, -1.0);
-        for(auto& unit : units)
+        for(auto& unit : scene.getUnits())
         {
             unit->drawSelectionDecal(1);
         }
 
-        for(auto& unit : units)
+        for(auto& unit : scene.getUnits())
         {
             unit->updateUniforms();
             unit->draw();
         }
-
-        scene.setUnits(units);
 
         for(auto& entity : scene.getEntities())
         {
@@ -225,27 +161,10 @@ int main()
             entity->draw();
         }
 
-        /*mesh.draw();
-
-        mesh2.draw();*/
-
-        //model.draw();
-
-        
         //checkError();
         interface.setResolution(xres, yres);
         cameraControl.setResolution(xres, yres);
         interface.draw();
-
-        //line.draw();
-
-        //for(int i = 0; i < 1000000000; i++) {
-        //    if(i % 100000000 == 0)
-        //        glfwPollEvents();
-        //}
-        //for(int i = 0; i < 100000; i++)
-        //    if(i % 10000 == 0)
-        //glfwPollEvents();
 
         auto prevTime = time;
         time = glfwGetTime();
@@ -254,13 +173,7 @@ int main()
         auto inputs = InputQueue::getInstance().handleInput(prevTime, time);
         glfwPollEvents();
         
-        //tank.setPosition(tank.pos + Vector3(.3236543, 1, 0).normalized()*dt);
-        //tank.setDirection(Vector3(.3236543, 1, 0).normalized(), Vector3(0, 0, 1).normalized());
-
-        //for(auto unit : units)
-        //    unit->plant(terrain);
-
-        for(auto unit : units)
+        for(auto& unit : scene.getUnits())
             unit->update(dt);
 
         for(auto& entity : scene.getEntities())
@@ -270,18 +183,16 @@ int main()
 
         for(auto result = popPathFindingResult(); result; result = popPathFindingResult())
         {
-            for(auto e : units)
+            for(auto& unit : scene.getUnits())
             {
-                if(e->getCurrentPathfindingRequest() == result)
+                if(unit->getCurrentPathfindingRequest() == result)
                 {
-                    e->setCurrentPathfindingRequest(nullptr);
-                    e->setPath(result->path);
-                    delete result;
+                    unit->setCurrentPathfindingRequest(nullptr);
+                    unit->setPath(result->path);
                 }
             }
+            delete result;
         }
-
-        //entities[0]->setPosition(Vector3(x, y, terrain.getElevation(x, y)));
 
         auto isCameraInput = [] (Input* input)
         {
@@ -297,7 +208,7 @@ int main()
         {
             if(isCameraInput(input))
                 cameraControl.handleInput(*input);
-            interface.handleInput(*input, units);
+            interface.handleInput(*input, scene.getUnits());
 
             if(input->stateStart == MousePosition)
                 mouseX = input->posX, mouseY = input->posY;
@@ -348,17 +259,15 @@ int main()
         cameraControl.update(dt);
         glfwSwapBuffers(window);
         frames++;
+
+        scene.clearUnits();
     }
 
     quitting = true;
     t.join();
 
-    for(auto& u : units)
-        delete u;
-
-    /*model.tearDown(&scene);
-    mesh.tearDown(&scene);
-    mesh2.tearDown(&scene);*/
+    //for(auto& u : scene.getUnits())
+    //    delete u;
 
     glfwTerminate();
     return 0;

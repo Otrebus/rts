@@ -41,12 +41,44 @@ Terrain* Scene::getTerrain() const
 
 void Scene::setUnits(std::vector<Unit*> units)
 {
-    this->units = units;
+    std::vector<std::shared_ptr<Unit>> ptrs;
+    for(auto unit : units)
+        ptrs.push_back(std::shared_ptr<Unit>(unit));
+    this->units = ptrs;
 }
 
-const std::vector<Unit*>& Scene::getUnits() const
+void Scene::addUnit(Unit* unit)
 {
-    return units;
+    this->units.push_back(std::shared_ptr<Unit>(unit));
+}
+
+std::vector<Unit*> Scene::getUnits() const
+{
+    std::vector<Unit*> U;
+    for(auto& u : units)
+        U.push_back(u.get());
+    return U;
+}
+
+void Scene::removeUnit(Unit* unit)
+{
+    unit->setDead();
+    deadUnits.insert(unit->shared_from_this());
+}
+
+void Scene::clearUnits()
+{
+    std::vector<std::shared_ptr<Unit>> newUnits;
+    for(auto unit : units)
+    {
+        /*if(deadUnits.contains(unit))
+            delete unit;
+        else*/
+        if(!deadUnits.contains(unit))
+            newUnits.push_back(unit->shared_from_this());
+    }
+    deadUnits.clear();
+    units = newUnits;
 }
 
 void Scene::setEntities(std::vector<Entity*> entities)

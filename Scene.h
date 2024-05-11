@@ -5,6 +5,7 @@
 #include "ShaderProgramManager.h"
 #include "ShaderProgram.h"
 #include <unordered_set>
+#include <memory>
 
 class Unit;
 
@@ -20,8 +21,11 @@ public:
     void setTerrain(Terrain* terrain);
     Terrain* getTerrain() const;
 
+    void addUnit(Unit* unit);
     void setUnits(std::vector<Unit*> units);
-    const std::vector<Unit*>& getUnits() const;
+    std::vector<Unit*> getUnits() const;
+    void removeUnit(Unit* unit);
+    void clearUnits();
 
     void setEntities(std::vector<Entity*> entities);
     const std::unordered_set<Entity*>& getEntities() const;
@@ -30,7 +34,8 @@ public:
     void removeEntity(Entity* entity);
     void updateEntities();
 private:
-    std::vector<Unit*> units;
+    std::vector<std::shared_ptr<Unit>> units;
+    std::unordered_set<std::shared_ptr<Unit>> deadUnits;
     
     std::unordered_set<Entity*> entities;
     std::unordered_set<Entity*> deadEntities;

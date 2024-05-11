@@ -43,5 +43,5 @@ bool BoundingBox::intersect(const Ray& ray, real& tnear, real& tfar) const
                 return false;
         }  
     }
-    return true;
+    return tnear > 0;
 }

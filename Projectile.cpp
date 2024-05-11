@@ -16,7 +16,7 @@
 #include "Projectile.h"
 
 
-Projectile::Projectile(Vector3 pos, Vector3 dir, Vector3 up) : Entity(pos, dir, up)
+Projectile::Projectile(Vector3 pos, Vector3 dir, Vector3 up, Entity* owner = nullptr) : Entity(pos, dir, up), owner(owner)
 {
     depth = height = 0.02;
     width = 0.10;
@@ -95,6 +95,17 @@ void Projectile::update(real dt)
     auto v2 = scene->getTerrain()->intersect(Ray(pos, velocity.normalized()));
     if(v2.length() < inf && (v2-pos).length() < dt*velocity.length())
         scene->removeEntity(this);
+
+    for(auto unit : scene->getUnits())
+    {
+        if(unit->intersectBoundingBox(pos, pos+dt*velocity) && unit != owner)
+        {
+            unit->health -= 20;
+            if(unit->health < 0)
+                scene->removeUnit(unit);
+        }
+        
+    }
 
     // TODO: this sort of integration isn't quite correct, doesn't take into account changing velocity over the timestep etc
     setDirection(velocity.normalized(), ((velocity%up%velocity).normalized()));

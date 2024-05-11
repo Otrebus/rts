@@ -53,6 +53,7 @@
 - Combine Preselected/selected, and selectionstate in userinterface - into bitfields maybe
 - Add terrain/unit visualisations of all sorts (lines, arrows, dots, etc)
 + Move intersectRayOcclusion etc out of Terrain
+- Text output like fps counter
 - Debug console
 + Degree suffix (that converts from degrees to radians?)
 + General refactoring, like ctrl+f "stuff like this should be moved to a more specialized place"

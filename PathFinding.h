@@ -22,7 +22,7 @@
 class PathFindingRequest
 {
 public:
-    Entity* requester;
+    std::shared_ptr<Unit> requester;
 
     Vector2 start;
     Vector2 dest;

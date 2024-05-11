@@ -226,7 +226,7 @@ void Tank::shoot()
     auto direction = gunDir;
     auto position = pos + turretPos + turAbsDir*gunPos.y + (turAbsDir%up).normalized()*gunPos.x + gunPos.z*turAbsUp + gunDir.normalized()*gunLength;
 
-    auto p = new Projectile(position, direction, turAbsUp);
+    auto p = new Projectile(position, direction, turAbsUp, this);
     p->setVelocity(direction.normalized()*bulletSpeed + velocity);
     p->init(scene);
     scene->addEntity(p);
@@ -294,7 +294,7 @@ void Tank::turn(bool left)
         turnRate = -turnRate;
 }
 
-void Tank::setBallisticTarget()
+bool Tank::setBallisticTarget(Unit* enemyTarget)
 {
     // TODO: this is repeated elsewhere
     Vector3 turAbsDir = (dir*turretDir.y + (dir%up).normalized()*turretDir.x).normalized();
@@ -312,9 +312,7 @@ void Tank::setBallisticTarget()
     ld t1 = 2.0f*p*v;
     ld c = p*p;
 
-    auto pre = glfwGetTime();
     auto ts = findPolynomialRoots( { t4, t3, t2, t1, c } );
-    std::cout << (glfwGetTime() - pre) << std::endl;
 
     for(real t : ts)
     {
@@ -324,21 +322,12 @@ void Tank::setBallisticTarget()
             if(canTurretAbsoluteTarget(target))
             {
                 setTurretAbsoluteTarget(target);
-                return;
+                return true;
             }
-            else
-            {
-                enemyTarget = nullptr;
-                turretTarget = Vector3(0, 1, 0);
-            }
-        }
-        else
-        {
-            // TODO: maybe cooldown a bit after losing distance etc
-            enemyTarget = nullptr;
-            turretTarget = Vector3(0, 1, 0);
         }
     }
+    
+    return false;
 }
 
 void Tank::update(real dt)
@@ -362,10 +351,13 @@ void Tank::update(real dt)
     if(!enemyTarget || closestEnemy && (closestEnemy->getPosition()-enemyTarget->getPosition()).length() < closestD*0.95)
         enemyTarget = closestEnemy;
 
-    if(enemyTarget)
-        setBallisticTarget();
+    if(enemyTarget && !setBallisticTarget(enemyTarget))
+    {
+        enemyTarget = nullptr;
+        turretTarget = Vector3(0, 1, 0);
+    }
 
-    if(glfwGetTime() - lastFired > fireInterval)
+    if(enemyTarget && glfwGetTime() - lastFired > fireInterval)
     {
         lastFired = glfwGetTime();
         if((turretTarget*turretDir) > 0.99)
@@ -451,7 +443,7 @@ void Tank::update(real dt)
     if(!pathFindingRequest && glfwGetTime() - pathLastCalculated > pathCalculationInterval && path.size())
     {
         PathFindingRequest* request = new PathFindingRequest;
-        request->requester = this;
+        request->requester = shared_from_this();
         request->start = getPosition().to2();
         request->dest = path.front();
         setCurrentPathfindingRequest(request);

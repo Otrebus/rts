@@ -50,7 +50,7 @@ public:
 
     void shoot();
 
-    void setBallisticTarget();
+    bool setBallisticTarget(Unit* enemyTarget);
 
     Vector2 seek();
     Vector2 evade();

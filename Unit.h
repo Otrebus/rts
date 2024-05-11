@@ -19,10 +19,11 @@ class Model3d;
 class Scene;
 class PathFindingRequest;
 
-class Unit : public Entity
+class Unit : public Entity, public std::enable_shared_from_this<Unit>
 {
 public:
 	Unit(Vector3 pos, Vector3 dir, Vector3 up);
+    ~Unit();
 
     void setTarget(Vector3 pos);
     Vector3 getTarget() const;
@@ -46,6 +47,8 @@ public:
 
     void setEnemyTarget(Unit* enemy);
     Unit* getEnemyTarget() const;
+
+    real health = 100;
 
 protected:
     PathFindingRequest* pathFindingRequest;

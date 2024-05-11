@@ -25,6 +25,7 @@ public:
 
     void drawBoundingBox();
     bool intersectBoundingBox(const Ray& ray);
+    bool intersectBoundingBox(Vector3 p1, Vector3 p2);
 
     virtual void init(Scene* scene);
     virtual void updateUniforms();
@@ -41,6 +42,8 @@ public:
 
     virtual void update(real dt) = 0;
 
+    void setDead();
+
     void setVelocity(Vector3 velocity);
     Vector3 getVelocity() const;
 
@@ -48,7 +51,6 @@ public:
 
     Vector3 dir, up, pos;
     Vector3 velocity;
-    //Vector3 target;
 
     // TODO: are these used? width seems to be zero
     real width, height, depth;
@@ -59,4 +61,6 @@ public:
     BoundingBox boundingBox;
 
     Scene* scene;
+
+    bool dead;
 };

@@ -118,6 +118,8 @@ PathFindingRequest* popPathFindingResult()
     std::lock_guard<std::mutex> guard(resultMutex);
     if(resultQueue.empty())
         return nullptr;
+
+    std::cout << "popping" << std::endl;
     auto request = resultQueue.front();
     resultQueue.pop();
     return request;
@@ -132,8 +134,8 @@ void pathFindingThread()
         auto p = popPathFindingRequest();
         if(p)
         {
-            auto t = p->requester->scene->getTerrain();
-            auto path = findPath(t, p->requester->geoPos, p->dest);
+            auto t = (p->requester.get())->scene->getTerrain();
+            auto path = findPath(t, (p->requester.get())->geoPos, p->dest);
             p->path = path;
             addPathFindingResult(p);
         }
@@ -145,7 +147,7 @@ std::vector<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinati
 {
     auto width = terrain->getWidth(), height = terrain->getHeight();
 
-    auto time = glfwGetTime();
+    //auto time = glfwGetTime();
 
     std::vector<bool> V(width*height, false);
     std::vector<real> C(width*height, inf);
@@ -195,7 +197,6 @@ std::vector<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinati
             }
         }
     };
-    std::cout << n << std::endl;
 
     std::vector<Vector2> outPath;
     if(C[destX+destY*width] < inf)
@@ -215,7 +216,7 @@ std::vector<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinati
 
         outPath = terrain->straightenPath(result);
         //outPath = result;
-        std::cout << "Constructed path in " << glfwGetTime() - time << std::endl;
+        //std::cout << "Constructed path in " << glfwGetTime() - time << std::endl;
     }
 
     return outPath;

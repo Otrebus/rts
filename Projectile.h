@@ -21,7 +21,7 @@ class PathFindingRequest;
 class Projectile : public Entity
 {
 public:
-	Projectile(Vector3 pos, Vector3 dir, Vector3 up);
+	Projectile(Vector3 pos, Vector3 dir, Vector3 up, Entity* owner);
 	void draw();
 
 	void setPosition(Vector3 pos);
@@ -32,4 +32,5 @@ public:
 
 protected:
 	Model3d* projectileModel;
+	Entity* owner;
 };

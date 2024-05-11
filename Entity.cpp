@@ -44,6 +44,21 @@ bool Entity::intersectBoundingBox(const Ray& ray)
 }
 
 
+bool Entity::intersectBoundingBox(Vector3 p1, Vector3 p2)
+{
+    auto a = dir, b = dir%up, c = up;
+    Ray ray = Ray(p1, (p2-p1).normalized());
+    auto ray2 = Ray(rebaseOrtho(ray.pos-pos, a, b, c), rebaseOrtho(ray.dir, a, b, c));
+
+    real tnear, tfar;
+    if(boundingBox.intersect(ray2, tnear, tfar))
+    {
+        return tnear < (p2-p1).length();
+    }
+    return false;
+}
+
+
 void Entity::init(Scene* scene)
 {
     this->scene = scene;
@@ -100,6 +115,11 @@ void Entity::setDirection(Vector3 dir, Vector3 up)
     boundingBoxModel->setDirection(dir, up);
     this->dir = dir;
     this->up = up;
+}
+
+void Entity::setDead()
+{
+    dead = true;
 }
 
 Vector3 Entity::getPosition() const
