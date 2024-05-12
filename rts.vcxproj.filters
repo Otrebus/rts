@@ -133,6 +133,9 @@
     <ClCompile Include="Polysolver.cpp">
       <Filter>Source files\Math</Filter>
     </ClCompile>
+    <ClCompile Include="ProjectileMaterial.cpp">
+      <Filter>Source files\Materials</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -264,6 +267,9 @@
     <ClInclude Include="Polysolver.h">
       <Filter>Source files\Math</Filter>
     </ClInclude>
+    <ClInclude Include="ProjectileMaterial.h">
+      <Filter>Source files\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="lambertian.frag">
@@ -294,6 +300,9 @@
       <Filter>Shaders\Vertex shaders</Filter>
     </None>
     <None Include="selectionMaterial.frag">
+      <Filter>Shaders\Fragment shaders</Filter>
+    </None>
+    <None Include="projectileMaterial.frag">
       <Filter>Shaders\Fragment shaders</Filter>
     </None>
   </ItemGroup>

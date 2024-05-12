@@ -7,7 +7,7 @@
 #include "Line.h"
 #include "Ray.h"
 #include "Terrain.h"
-#include "LambertianMaterial.h"
+#include "ProjectileMaterial.h"
 #include "LineMaterial.h"
 #include <vector>
 #include <array>
@@ -18,7 +18,7 @@
 
 Projectile::Projectile(Vector3 pos, Vector3 dir, Vector3 up, Entity* owner = nullptr) : Entity(pos, dir, up), owner(owner)
 {
-    depth = height = 0.02;
+    depth = height = 0.03;
     width = 0.10;
 	real w = width, d = depth, h = height;
     std::vector<Vector3> c = {
@@ -55,7 +55,7 @@ Projectile::Projectile(Vector3 pos, Vector3 dir, Vector3 up, Entity* owner = nul
         triangles.insert(triangles.end(), { j, j+2, j+3 } );
     }
 
-    auto material = new LambertianMaterial({ 0, 0.0, 0.0 });
+    auto material = new ProjectileMaterial({ 1.0, 1.0, 0.0 });
 
     auto projectileMesh = new Mesh3d(vertices, triangles, material);
     projectileModel = new Model3d(*projectileMesh);
@@ -98,13 +98,16 @@ void Projectile::update(real dt)
 
     for(auto unit : scene->getUnits())
     {
-        if(unit->intersectBoundingBox(pos, pos+dt*velocity) && unit != owner)
+        if(unit->intersectBoundingBox(pos, pos+dt*velocity))
         {
-            unit->health -= 20;
-            if(unit->health < 0)
-                scene->removeUnit(unit);
+            if(unit != owner)
+            {
+                unit->health -= 20;
+                if(unit->health < 0)
+                    scene->removeUnit(unit);
+            }
+            scene->removeEntity(this);
         }
-        
     }
 
     // TODO: this sort of integration isn't quite correct, doesn't take into account changing velocity over the timestep etc

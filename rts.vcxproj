@@ -172,6 +172,7 @@
     <ClCompile Include="PathFinding.cpp" />
     <ClCompile Include="Polysolver.cpp" />
     <ClCompile Include="Projectile.cpp" />
+    <ClCompile Include="ProjectileMaterial.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SelectionDecalMaterial.cpp" />
@@ -217,6 +218,7 @@
     <ClInclude Include="PathFinding.h" />
     <ClInclude Include="Polysolver.h" />
     <ClInclude Include="Projectile.h" />
+    <ClInclude Include="ProjectileMaterial.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SelectionDecalMaterial.h" />
@@ -241,6 +243,7 @@
     <None Include="geometryShader.geom" />
     <None Include="lambertian.frag" />
     <None Include="lineModel.vert" />
+    <None Include="projectileMaterial.frag" />
     <None Include="selectionMaterial.frag" />
     <None Include="terrain.frag" />
     <None Include="terrain.vert" />

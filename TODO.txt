@@ -26,8 +26,9 @@
 + "TODO: these vectors before normalization can be 0"
 + "TODO: is b in the right direction?"
 - Check if checking for release input checks that release can be both startStart and stateEnd, check
-- Movement types/targets, attack types
-- Shooting:
++ Movement painting
+- Attack movement type
+* Shooting:
   + Target direction of gun should be relative
   + Set absolute gun direction
   + Shooting spawns a projectile
@@ -37,9 +38,9 @@
   - Shooting effects?
     - Gun recoil
     - Light, smoke, particles
-- Friendly/Enemy units
-  - Make enemy units unselectable etc
-  - Make friendly units react to enemy units (shoot, pursue?)
++ Friendly/Enemy units
+  + Make enemy units unselectable etc
+  + Make friendly units react to enemy units (shoot, pursue?)
 - Units move through terrain at low fps
 - Selectionmaterial shader doesn't use half of the stuff in it
 - Paths are expressed backwards
