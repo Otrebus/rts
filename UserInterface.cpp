@@ -370,7 +370,7 @@ void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
     {
         if(drawTarget.size() > 1)
         {
-            // Calculate the points where we are to place units 
+            // Calculate the points where we are to place destination points
             std::vector<Unit*> selectedUnits;
             for(auto unit : units)
                 if(unit->isSelected())
@@ -380,15 +380,12 @@ void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
             for(int i = 0; i < drawTarget.size()-1; i++)
                 length += (drawTarget[i+1]-drawTarget[i]).length();
 
-            auto k = length/(selectedUnits.size()+1);
-            int end = selectedUnits.size();
-
+            auto k = length/2;
             std::vector<Vector3> points;
             if(selectedUnits.size() > 1)
             {
-                end = selectedUnits.size()-2;
                 k = length/(selectedUnits.size()-1);
-                points.insert(points.end(), drawTarget.front(), drawTarget.back());
+                points.insert(points.end(), { drawTarget.front(), drawTarget.back() } );
             }
 
             real L = 0;
@@ -406,6 +403,16 @@ void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
 
             // Match units to the points (to minimize the total length we'd need the Hungarian algorithm)
             std::vector<bool> P(points.size(), false);
+
+            struct Assignment
+            {
+                Unit* unit;
+                int point;
+                real d;
+            };
+
+            std::vector<Assignment> v;
+
             for(auto u : selectedUnits)
             {
                 real min = inf;
@@ -418,9 +425,32 @@ void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
                         mini = i;
                     }
                 }
-                addUnitPathfindingRequest(u, points[mini]);
+                
+                v.push_back(Assignment { u, mini, min });
                 P[mini] = true;
             }
+
+            real sumD = 0;
+            for(auto& a : v)
+                sumD += a.d;
+
+            std::default_random_engine generator;
+            std::uniform_int_distribution<int> dist(0, v.size()-1);
+            for(int i = 0; i < 10000; i++)
+            {
+                int a = dist(generator), b = dist(generator);
+                real newda = (v[b].unit->getPosition() - points[v[a].point]).length();
+                real newdb = (v[a].unit->getPosition() - points[v[b].point]).length();
+                if(auto newd = sumD - (v[a].d + v[b].d) + newda + newdb; newd < sumD)
+                {
+                    sumD = newd;
+                    std::swap(v[a].unit, v[b].unit);
+                    v[a].d = newda;
+                    v[b].d = newdb;
+                }
+            }
+            for(auto assignment : v)
+                addUnitPathfindingRequest(assignment.unit, points[assignment.point]);
         }
 
         drawTarget.clear();

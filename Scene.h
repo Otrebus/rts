@@ -6,6 +6,7 @@
 #include "ShaderProgram.h"
 #include <unordered_set>
 #include <memory>
+#include "PointLight.h"
 
 class Unit;
 
@@ -33,12 +34,19 @@ public:
     void addEntity(Entity* entity);
     void removeEntity(Entity* entity);
     void updateEntities();
+
+    void addLight(PointLight* entity);
+    void removeLight(PointLight* entity);
+    void updateLights();
 private:
     std::vector<std::shared_ptr<Unit>> units;
     std::unordered_set<std::shared_ptr<Unit>> deadUnits;
     
     std::unordered_set<Entity*> entities;
     std::unordered_set<Entity*> deadEntities;
+
+    std::unordered_set<PointLight*> lights;
+    std::unordered_set<PointLight*> deadLights;
 
     Terrain* terrain;
     Camera* camera;

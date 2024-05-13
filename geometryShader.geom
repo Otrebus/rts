@@ -7,6 +7,7 @@ in vec2 TexCoord[3];
 in vec3 VertexPosition[3];
 in vec3 normal[3];
 in vec3 toCam[3];
+in vec3 pos[3];
 in float sel[3];
 
 out vec2 texCoord;
@@ -14,6 +15,7 @@ out vec3 N_g;
 out vec3 N_s;
 out vec3 tocam;
 out float selected;
+out vec3 position;
 
 void main()
 {
@@ -29,6 +31,7 @@ void main()
         N_g = geometricNormal;
         tocam = toCam[i];
         selected = sel[i];
+        position = VertexPosition[i];
 
         EmitVertex();
     }

@@ -109,3 +109,22 @@ void Scene::updateEntities()
             newEntities.insert(e);
     entities = newEntities;
 }
+
+void Scene::addLight(PointLight* light)
+{
+    lights.insert(light);
+}
+
+void Scene::removeLight(PointLight* light)
+{
+    deadLights.insert(light);
+}
+
+void Scene::updateLights()
+{
+    std::unordered_set<PointLight*> newLights;
+    for(auto e : lights)
+        if(!deadLights.contains(e))
+            newLights.insert(e);
+    lights = newLights;
+}

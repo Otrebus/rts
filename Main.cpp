@@ -136,18 +136,6 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         terrain.draw();
-        int i = 0;
-        for(auto& unit : scene.getUnits())
-        {
-            glPolygonOffset(-1.0, -1.0*++i);
-            unit->drawSelectionDecal(0);
-        }
-
-        glPolygonOffset(-1.0, -1.0);
-        for(auto& unit : scene.getUnits())
-        {
-            unit->drawSelectionDecal(1);
-        }
 
         for(auto& unit : scene.getUnits())
         {
@@ -159,6 +147,19 @@ int main()
         {
             entity->updateUniforms();
             entity->draw();
+        }
+
+        int i = 0;
+        for(auto& unit : scene.getUnits())
+        {
+            glPolygonOffset(-1.0, -1.0*++i);
+            unit->drawSelectionDecal(0);
+        }
+
+        glPolygonOffset(-1.0, -1.0);
+        for(auto& unit : scene.getUnits())
+        {
+            unit->drawSelectionDecal(1);
         }
 
         //checkError();

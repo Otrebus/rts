@@ -170,6 +170,7 @@
     <ClCompile Include="Model3d.cpp" />
     <ClCompile Include="ObjReader.cpp" />
     <ClCompile Include="PathFinding.cpp" />
+    <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Polysolver.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="ProjectileMaterial.cpp" />
@@ -216,6 +217,7 @@
     <ClInclude Include="Model3d.h" />
     <ClInclude Include="ObjReader.h" />
     <ClInclude Include="PathFinding.h" />
+    <ClInclude Include="PointLight.h" />
     <ClInclude Include="Polysolver.h" />
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="ProjectileMaterial.h" />

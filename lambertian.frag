@@ -5,6 +5,7 @@ uniform vec3 Kd;
 in vec3 N_s;
 in vec3 N_g; // Updated to use the geometric normal
 in vec3 tocam; // Updated to use the toCam vector
+in vec3 position;
 
 out vec4 FragColor;
 
