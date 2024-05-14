@@ -1,5 +1,13 @@
 #version 450 core
 
+struct PointLight {    
+    vec3 position;
+    vec3 color;
+};  
+
+uniform PointLight pointLights[100];
+uniform int nLights;
+
 uniform vec3 Kd;
 
 in vec3 N_s;

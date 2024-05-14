@@ -115,7 +115,7 @@ int main()
 
 
     PointLight* p = new PointLight();
-    p->setPos({ 170.5f, 85.15f, 3.07f });
+    p->setPos({ 170.5f, 85.15f, scene.getTerrain()->getElevation(170.5, 85.15) + 1.0f });
     p->setColor({ 1, 0, 0 });
     scene.addLight(p);
 
@@ -278,10 +278,13 @@ int main()
             int i = 0;
             for(auto light : scene.getLights())
             {
-                glUniform3fv(glGetUniformLocation(program->getId(), std::format("pointLights[{}].color", i).c_str()), 3, (GLfloat*) &(light->getColor()));
-                glUniform3fv(glGetUniformLocation(program->getId(), std::format("pointLights[{}].position", i).c_str()), 3, (GLfloat*) &(light->getPos()));
+                auto loc = glGetUniformLocation(program->getId(), std::format("pointLights[{}].color", i).c_str());
+                glUniform3fv(loc, 1, (GLfloat*) &(light->getColor()));
+                loc = glGetUniformLocation(program->getId(), std::format("pointLights[{}].position", i).c_str());
+                glUniform3fv(loc, 1, (GLfloat*) &(light->getPos()));
+
             }
-            glUniform1i(glGetUniformLocation(program->getId(), std::format("numLights", i).c_str()), scene.getLights().size());
+            glUniform1i(glGetUniformLocation(program->getId(), std::format("nLights", i).c_str()), scene.getLights().size());
         }
     }
 

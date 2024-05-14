@@ -1,4 +1,13 @@
 #version 330 core
+
+struct PointLight {    
+    vec3 position;
+    vec3 color;
+};  
+
+uniform PointLight pointLights[100];
+uniform int nLights;
+
 out vec4 FragColor;
 uniform vec3 Kd;
 

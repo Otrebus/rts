@@ -1,8 +1,17 @@
 #version 450 core
 
+struct PointLight {    
+    vec3 position;
+    vec3 color;
+};  
+
+uniform PointLight pointLights[100];
+uniform int nLights;
+
 in vec3 N_s;
 in vec3 N_g; // Updated to use the geometric normal
 in vec3 tocam; // Updated to use the toCam vector
+in vec3 position;
 
 in vec2 texCoord;
 out vec4 FragColor;
@@ -34,4 +43,10 @@ void main()
     FragColor = FragColor - vec4(vec3(col), 0)*0.1;
     if(flatShaded && selected == 1)
         FragColor = vec4(0.8, 0, 0, 0);
+
+    for(int i = 0; i < nLights; i++)
+    {
+        float d = distance(pointLights[i].position, position);
+  	    FragColor += vec4(pointLights[i].color, 1)/(d*d);
+    }
 }
