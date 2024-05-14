@@ -1,5 +1,13 @@
 #version 450 core
 
+struct PointLight {    
+    vec3 position;
+    vec3 color;
+};  
+
+uniform PointLight pointLights[100];
+uniform int nLights;
+
 uniform vec3 Kd;
 
 in vec3 N_s;
@@ -23,6 +31,12 @@ void main()
     vec3 color = Kd * lambertian + ambient;
 
     color = clamp(color, 0.0, 1.0);
+
+    for(int i = 0; i < nLights; i++)
+    {
+        float d = distance(pointLights[i].position, position);
+  	    FragColor += vec4(pointLights[i].color, 1)/(d*d);
+    }
 
     FragColor = vec4(color, 0.0);
 }

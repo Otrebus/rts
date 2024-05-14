@@ -18,7 +18,7 @@ public:
     void setPos(const Vector3& pos);
     const Vector3& getPos() const;
 
-    const Vector3 getColor() const;
+    const Vector3& getColor() const;
     void setColor(const Vector3&);
     
 

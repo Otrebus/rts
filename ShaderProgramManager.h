@@ -37,6 +37,7 @@ public:
 
     ShaderProgram* getProgram(Shader* fragmentShader, Shader* geometryShader, Shader* vertexShader);
     ShaderProgram* getProgram(Shader* fragmentShader, Shader* vertexShader);
+    std::vector<ShaderProgram*> getPrograms() const;
 
     unsigned int getId();
     void use();

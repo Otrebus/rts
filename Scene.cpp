@@ -128,3 +128,8 @@ void Scene::updateLights()
             newLights.insert(e);
     lights = newLights;
 }
+
+const std::unordered_set<PointLight*>& Scene::getLights() const
+{
+    return lights;
+}

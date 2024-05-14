@@ -37,6 +37,7 @@ public:
 
     void addLight(PointLight* entity);
     void removeLight(PointLight* entity);
+    const std::unordered_set<PointLight*>& getLights() const;
     void updateLights();
 private:
     std::vector<std::shared_ptr<Unit>> units;

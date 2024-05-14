@@ -29,6 +29,7 @@
 #include "DebugDraw.h"
 #include <thread>
 #include "Logger.h"
+#include <format>
 
 
 extern bool quitting = false;
@@ -111,6 +112,12 @@ int main()
             scene.addUnit(enemy);
         }
     }
+
+
+    PointLight* p = new PointLight();
+    p->setPos({ 170.5f, 85.15f, 3.07f });
+    p->setColor({ 1, 0, 0 });
+    scene.addLight(p);
 
     for(auto& e : scene.getUnits())
         e->init(&scene);
@@ -262,6 +269,20 @@ int main()
         frames++;
 
         scene.clearUnits();
+        scene.updateLights();
+        for(auto program : scene.getShaderProgramManager()->getPrograms())
+        {
+            scene.setShaderProgram(program);
+            program->use();
+
+            int i = 0;
+            for(auto light : scene.getLights())
+            {
+                glUniform3fv(glGetUniformLocation(program->getId(), std::format("pointLights[{}].color", i).c_str()), 3, (GLfloat*) &(light->getColor()));
+                glUniform3fv(glGetUniformLocation(program->getId(), std::format("pointLights[{}].position", i).c_str()), 3, (GLfloat*) &(light->getPos()));
+            }
+            glUniform1i(glGetUniformLocation(program->getId(), std::format("numLights", i).c_str()), scene.getLights().size());
+        }
     }
 
     quitting = true;

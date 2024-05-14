@@ -20,7 +20,7 @@ const Vector3& PointLight::getPos() const
 }
 
 
-const Vector3 PointLight::getColor() const
+const Vector3& PointLight::getColor() const
 {
     return color;
 }

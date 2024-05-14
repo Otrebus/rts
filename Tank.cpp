@@ -201,19 +201,7 @@ void Tank::draw()
     drawTurret();
 
     if(selected && path.size() > 0)
-    {
         destinationLine.draw();
-    }
-    /*if(enemyTarget)
-    {
-        std::vector<Vector3> P;
-        for(auto p : { Vector2(pos.x, pos.y), Vector2(enemyTarget->pos.x, enemyTarget->pos.y) } )
-            P.push_back( { p.x, p.y, terrain->getElevation(p.x, p.y) });
-
-        enemyLine.setVertices(P);
-        enemyLine.setColor(Vector3(1.0f, 0.0f, 0.0f));
-        enemyLine.draw();
-    }*/
 }
 
 

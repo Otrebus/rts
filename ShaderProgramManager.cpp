@@ -48,3 +48,11 @@ ShaderProgram* ShaderProgramManager::getProgram(Shader* fragmentShader, Shader* 
     programMap.push_back({ key, shaderProgram });
     return shaderProgram;
 }
+
+std::vector<ShaderProgram*> ShaderProgramManager::getPrograms() const
+{
+    std::vector<ShaderProgram*> out;
+    for(auto p : programMap)
+        out.push_back(p.second);
+    return out;
+}
