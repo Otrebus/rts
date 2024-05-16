@@ -114,10 +114,10 @@ int main()
     }
 
 
-    PointLight* p = new PointLight();
-    p->setPos({ 170.5f, 85.15f, scene.getTerrain()->getElevation(170.5, 85.15) + 1.0f });
-    p->setColor({ 1, 0, 0 });
-    scene.addLight(p);
+    //PointLight* p = new PointLight();
+    //p->setPos({ 170.5f, 85.15f, scene.getTerrain()->getElevation(170.5, 85.15) + 1.0f });
+    //p->setColor({ 1, 0, 0 });
+    //scene.addLight(p);
 
     for(auto& e : scene.getUnits())
         e->init(&scene);
@@ -186,6 +186,16 @@ int main()
 
         for(auto& entity : scene.getEntities())
             entity->update(dt);
+
+        // TODO: this should be done in some update function or something
+        for(auto& light : scene.getLights())
+        {
+            real t = glfwGetTime() - light->getStart();
+            light->setColor(Vector3(0.2, 0.2, 0.12)*std::exp(-20.f*t));
+            light->setPos(light->getPos() + light->getVelocity()*dt);
+            if(t > 0.6)
+                scene.removeLight(light);
+        }
 
         scene.updateEntities();
 
@@ -282,7 +292,7 @@ int main()
                 glUniform3fv(loc, 1, (GLfloat*) &(light->getColor()));
                 loc = glGetUniformLocation(program->getId(), std::format("pointLights[{}].position", i).c_str());
                 glUniform3fv(loc, 1, (GLfloat*) &(light->getPos()));
-
+                i++;
             }
             glUniform1i(glGetUniformLocation(program->getId(), std::format("nLights", i).c_str()), scene.getLights().size());
         }

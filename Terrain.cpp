@@ -1,15 +1,7 @@
 #include "Terrain.h"
-#include "Utils.h"
-#include "TerrainMesh.h"
-#include "Model3d.h"
-#include "Vector3.h"
 #include "TerrainMaterial.h"
-#include "Math.h"
-#include <array>
+#include "TerrainMesh.h"
 #include "Ray.h"
-#include <set>
-#include <algorithm>
-#include "Math.h"
 #include "GeometryUtils.h"
 
 

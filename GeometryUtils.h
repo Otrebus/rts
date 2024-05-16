@@ -1,5 +1,5 @@
 #pragma once
-#include "Model3d.h"
+
 #include "Math.h"
 
 class Unit;

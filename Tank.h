@@ -1,26 +1,15 @@
 #pragma once
 
 #define NOMINMAX
-#include "Vector3.h"
-#include <vector>
-#include <GL/gl3w.h>
-#include <GLFW/glfw3.h>
-#include "Scene.h"
-#include "ShaderProgram.h"
-#include "BoundingBox.h"
-#include "Mesh3d.h"
-#include "LineMesh3d.h"
-#include "Entity.h"
-#include "Model3d.h"
+#include "Unit.h"
 #include "Math.h"
 #include "Line.h"
-#include "Unit.h"
-#include <random>
 
 
 class Model3d;
 class Scene;
 class BoundingBoxModel;
+class Line3d;
 
 
 class Tank : public Unit
@@ -78,7 +67,7 @@ public:
 
     const real bulletSpeed = 5.0;
 
-    const real fireInterval = 1.0;
+    const real fireInterval = 2.5;
 
     real lastFired;
 

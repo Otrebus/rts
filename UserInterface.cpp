@@ -7,6 +7,7 @@
 #include "Ray.h"
 #include <ranges>
 #include "PathFinding.h"
+#include <random>
 #include <numeric>
 #include "Unit.h"
 #include "Tank.h"

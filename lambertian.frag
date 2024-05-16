@@ -38,7 +38,7 @@ void main()
         lightDir = normalize(pointLights[i].position-position);
         lambertian = max(dot(n, lightDir), 0.0);
         float d = distance(pointLights[i].position, position);
-  	    FragColor += lambertian*vec4(pointLights[i].color, 1)/(d*d);
+  	    FragColor += lambertian*vec4(pointLights[i].color, 1)/(0.1+d*d);
     }
 
 }

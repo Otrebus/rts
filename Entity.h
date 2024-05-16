@@ -1,21 +1,21 @@
 #pragma once
 
 #define NOMINMAX
+#include "Utils.h"
 #include "Vector3.h"
-#include <vector>
-#include <GL/gl3w.h>
-#include <GLFW/glfw3.h>
-#include "Scene.h"
-#include "ShaderProgram.h"
+#include "Vector2.h"
 #include "BoundingBox.h"
-#include "Mesh3d.h"
-#include "LineMesh3d.h"
 
 class SelectionMarkerMesh;
+class BoundingBox;
 class BoundingBoxModel;
 class Model3d;
 class Scene;
 class PathFindingRequest;
+class Ray;
+class Vector3;
+class Vector2;
+class Terrain;
 
 class Entity
 {

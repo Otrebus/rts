@@ -3,6 +3,8 @@
 #define NOMINMAX
 #include "Model3d.h"
 #include "Math.h"
+#include "Utils.h"
+#include "Vector2.h"
 
 class Ray;
 class Scene;

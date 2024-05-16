@@ -1,6 +1,7 @@
 #include "Tank.h"
 #include "Model3d.h"
 #include "Utils.h"
+#include "Math.h"
 #include "BoundingBoxModel.h"
 #include "Terrain.h"
 #include "PathFinding.h"
@@ -11,8 +12,6 @@
 #include "GeometryUtils.h"
 #include "Polysolver.h"
 
-class Scene;
-class Vector3;
 
 // TODO: no need to get terrain since we have scene->getTerrain()
 Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) : Unit(pos, dir, up), turnRate(0), acceleration(0), terrain(terrain)
@@ -347,9 +346,21 @@ void Tank::update(real dt)
 
     if(enemyTarget && glfwGetTime() - lastFired > fireInterval)
     {
-        lastFired = glfwGetTime();
         if((turretTarget*turretDir) > 0.99)
+        {
+            lastFired = glfwGetTime();
             shoot();
+            auto light = new PointLight(glfwGetTime());
+
+            // TODO: this is repeated elsewhere
+            Vector3 turAbsDir = (dir*turretDir.y + (dir%up).normalized()*turretDir.x).normalized();
+            Vector3 turAbsUp = up;
+            auto gunDir = dir*turretDir.y + up*turretDir.z + (dir%up).normalized()*turretDir.x;
+            auto position = pos + turretPos + turAbsDir*gunPos.y + (turAbsDir%up).normalized()*gunPos.x + gunPos.z*turAbsUp + gunDir.normalized()*gunLength;
+            light->setPos(position);
+            light->setVelocity(this->velocity);
+            scene->addLight(light);
+        }
     }
 
     auto pos2 = geoPos + geoVelocity*dt;
