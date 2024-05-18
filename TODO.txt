@@ -22,6 +22,7 @@
   + Wall avoidance
   + Obstacle avoidance
   + Separation
+  - Fix oscillation (reduce jittering: make velocityTarget exponentially averaged?)
 + Multithreaded path finding
 + "TODO: these vectors before normalization can be 0"
 + "TODO: is b in the right direction?"
@@ -57,6 +58,7 @@
 + Move intersectRayOcclusion etc out of Terrain
 - Text output like fps counter
 - Debug console
++ Turrets are offset when the tank is on a slope
 + Degree suffix (that converts from degrees to radians?)
 + General refactoring, like ctrl+f "stuff like this should be moved to a more specialized place"
 + Fix terrain picking: "TODO: this is hit if ray.dir == 0"
@@ -69,7 +71,6 @@
 - Projectile::draw updates uniform and then draws, check if this is done everwhere and if we need updateuniform separate, in fact look into if we can reform uniforms/materials altogether
 - Maybe t = inf is better to return when there's no intersection
 + Make camera polymorphic instead of using debug=true
-- Reduce jittering: make velocityTarget exponentially averaged?
 - Make entity virtual base
 - Fix normals for intersectCircleTrianglePath when the circle is inside the triangle
 - Make sure derived classes have virtual destructors

@@ -148,7 +148,8 @@ void Tank::updateUniforms()
 
 void Tank::drawTurret()
 {
-    turret->setPosition(pos + turretPos);
+    auto turPos = (dir*turretPos.y + (dir%up).normalized()*turretPos.x + up*turretPos.z);
+    turret->setPosition(pos + turPos);
 
     Vector3 turAbsDir = (dir*turretDir.y + (dir%up).normalized()*turretDir.x).normalized();
     Vector3 turAbsUp = up;
@@ -156,7 +157,7 @@ void Tank::drawTurret()
  
     auto gunDir = dir*turretDir.y + up*turretDir.z + (dir%up).normalized()*turretDir.x;
     gun->setDirection(gunDir, (gunDir%(turAbsDir%up)).normalized());
-    gun->setPosition(pos + turretPos + turAbsDir*gunPos.y + (turAbsDir%up).normalized()*gunPos.x + gunPos.z*turAbsUp);
+    gun->setPosition(pos + turPos + turAbsDir*gunPos.y + (turAbsDir%up).normalized()*gunPos.x + gunPos.z*turAbsUp);
 
     turret->draw();
     gun->draw();
@@ -206,12 +207,13 @@ void Tank::draw()
 
 void Tank::shoot()
 {
+    auto turPos = (dir*turretPos.y + (dir%up).normalized()*turretPos.x + up*turretPos.z);
     Vector3 turAbsDir = (dir*turretDir.y + (dir%up).normalized()*turretDir.x).normalized();
     Vector3 turAbsUp = up.normalized();
 
     auto gunDir = dir*turretDir.y + up*turretDir.z + (dir%up).normalized()*turretDir.x;
     auto direction = gunDir;
-    auto position = pos + turretPos + turAbsDir*gunPos.y + (turAbsDir%up).normalized()*gunPos.x + gunPos.z*turAbsUp + gunDir.normalized()*gunLength;
+    auto position = pos + turPos + turAbsDir*gunPos.y + (turAbsDir%up).normalized()*gunPos.x + gunPos.z*turAbsUp + gunDir.normalized()*gunLength;
 
     auto p = new Projectile(position, direction, turAbsUp, this);
     p->setVelocity(direction.normalized()*bulletSpeed + velocity);
@@ -283,11 +285,12 @@ void Tank::turn(bool left)
 
 bool Tank::setBallisticTarget(Unit* enemyTarget)
 {
+    auto turPos = (dir*turretPos.y + (dir%up).normalized()*turretPos.x + up*turretPos.z);
     // TODO: this is repeated elsewhere
     Vector3 turAbsDir = (dir*turretDir.y + (dir%up).normalized()*turretDir.x).normalized();
     Vector3 turAbsUp = up;
     auto gunDir = dir*turretDir.y + up*turretDir.z + (dir%up).normalized()*turretDir.x;
-    auto position = pos + turretPos + turAbsDir*gunPos.y + (turAbsDir%up).normalized()*gunPos.x + gunPos.z*turAbsUp + gunDir.normalized()*gunLength;
+    auto position = pos + turPos + turAbsDir*gunPos.y + (turAbsDir%up).normalized()*gunPos.x + gunPos.z*turAbsUp + gunDir.normalized()*gunLength;
 
     auto g = Vector3(0, 0, -gravity);
     auto v = enemyTarget->velocity - velocity;
