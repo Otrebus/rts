@@ -139,6 +139,9 @@
     <ClCompile Include="PointLight.cpp">
       <Filter>Source files\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>Source files\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -276,6 +279,9 @@
     <ClInclude Include="PointLight.h">
       <Filter>Source files\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>Source files\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="lambertian.frag">
@@ -309,6 +315,15 @@
       <Filter>Shaders\Fragment shaders</Filter>
     </None>
     <None Include="projectileMaterial.frag">
+      <Filter>Shaders\Fragment shaders</Filter>
+    </None>
+    <None Include="particle.vert">
+      <Filter>Shaders\Vertex shaders</Filter>
+    </None>
+    <None Include="particle.geom">
+      <Filter>Shaders\Geometry shaders</Filter>
+    </None>
+    <None Include="particle.frag">
       <Filter>Shaders\Fragment shaders</Filter>
     </None>
   </ItemGroup>

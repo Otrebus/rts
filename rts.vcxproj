@@ -169,6 +169,7 @@
     <ClCompile Include="Mesh3d.cpp" />
     <ClCompile Include="Model3d.cpp" />
     <ClCompile Include="ObjReader.cpp" />
+    <ClCompile Include="Particle.cpp" />
     <ClCompile Include="PathFinding.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Polysolver.cpp" />
@@ -216,6 +217,7 @@
     <ClInclude Include="Mesh3d.h" />
     <ClInclude Include="Model3d.h" />
     <ClInclude Include="ObjReader.h" />
+    <ClInclude Include="Particle.h" />
     <ClInclude Include="PathFinding.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="Polysolver.h" />
@@ -245,6 +247,9 @@
     <None Include="geometryShader.geom" />
     <None Include="lambertian.frag" />
     <None Include="lineModel.vert" />
+    <None Include="particle.frag" />
+    <None Include="particle.geom" />
+    <None Include="particle.vert" />
     <None Include="projectileMaterial.frag" />
     <None Include="selectionMaterial.frag" />
     <None Include="terrain.frag" />
