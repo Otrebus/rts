@@ -95,6 +95,24 @@ int main()
     Terrain terrain("Heightmap.bmp", &scene);
     CameraControl cameraControl(&cam, &terrain, xres, yres);
 
+    GLuint VAO, VBO, EBO;
+
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex3d)*v.size(), v.data(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(4*sizeof(float)));
+    glEnableVertexAttribArray(2);
+
     for(int y = 0; y < 5; y++)
     {
         for(int x = 0; x < 5; x++)
@@ -112,7 +130,6 @@ int main()
             scene.addUnit(enemy);
         }
     }
-
 
     //PointLight* p = new PointLight();
     //p->setPos({ 170.5f, 85.15f, scene.getTerrain()->getElevation(170.5, 85.15) + 1.0f });
@@ -296,6 +313,13 @@ int main()
             }
             glUniform1i(glGetUniformLocation(program->getId(), std::format("nLights", i).c_str()), scene.getLights().size());
         }
+
+        std::vector<Particle*> P;
+        for(auto particle : scene.getParticles())
+        {
+            P.push_back(particle);
+        }
+        glDrawArrays(GL_POINTS, ...);
     }
 
     quitting = true;

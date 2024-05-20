@@ -83,17 +83,17 @@ void Scene::clearUnits()
 
 void Scene::setEntities(std::vector<Entity*> entities)
 {
-    this->entities = std::unordered_set(entities.begin(), entities.end());
+    this->entities = std::vector(entities.begin(), entities.end());
 }
 
-const std::unordered_set<Entity*>& Scene::getEntities() const
+const std::vector<Entity*>& Scene::getEntities() const
 {
     return entities;
 }
 
 void Scene::addEntity(Entity* entity)
 {
-    entities.insert(entity);
+    entities.push_back(entity);
 }
 
 void Scene::removeEntity(Entity* entity)
@@ -103,16 +103,16 @@ void Scene::removeEntity(Entity* entity)
 
 void Scene::updateEntities()
 {
-    std::unordered_set<Entity*> newEntities;
+    std::vector<Entity*> newEntities;
     for(auto e : entities)
         if(!deadEntities.contains(e))
-            newEntities.insert(e);
+            newEntities.push_back(e);
     entities = newEntities;
 }
 
 void Scene::addLight(PointLight* light)
 {
-    lights.insert(light);
+    lights.push_back(light);
 }
 
 void Scene::removeLight(PointLight* light)
@@ -122,14 +122,24 @@ void Scene::removeLight(PointLight* light)
 
 void Scene::updateLights()
 {
-    std::unordered_set<PointLight*> newLights;
+    std::vector<PointLight*> newLights;
     for(auto e : lights)
         if(!deadLights.contains(e))
-            newLights.insert(e);
+            newLights.push_back(e);
     lights = newLights;
 }
 
-const std::unordered_set<PointLight*>& Scene::getLights() const
+const std::vector<PointLight*>& Scene::getLights() const
 {
     return lights;
+}
+
+void Scene::addParticle(Particle* particle)
+{
+    particles.push_back(particle);
+}
+
+const std::vector<Particle*>& Scene::getParticles() const
+{
+    return particles;
 }

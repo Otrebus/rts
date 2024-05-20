@@ -3,7 +3,7 @@
 layout (triangles) in;
 layout (triangle_strip, max_vertices = 3) out;
 
-in vec2 TexCoord[3];
+//in vec2 TexCoord[3];
 in vec3 VertexPosition[3];
 in vec3 normal[3];
 in vec3 toCam[3];
@@ -27,7 +27,7 @@ void main()
         vec3 edge2 = VertexPosition[2] - VertexPosition[0];
         vec3 geometricNormal = normalize(cross(edge1, edge2));
         N_s = normal[i];
-        texCoord = TexCoord[i];
+        //texCoord = TexCoord[i];
         N_g = geometricNormal;
         tocam = toCam[i];
         selected = sel[i];

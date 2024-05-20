@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include <memory>
 #include "PointLight.h"
+#include "Particle.h"
 
 class Unit;
 
@@ -29,7 +30,7 @@ public:
     void clearUnits();
 
     void setEntities(std::vector<Entity*> entities);
-    const std::unordered_set<Entity*>& getEntities() const;
+    const std::vector<Entity*>& getEntities() const;
 
     void addEntity(Entity* entity);
     void removeEntity(Entity* entity);
@@ -37,17 +38,21 @@ public:
 
     void addLight(PointLight* entity);
     void removeLight(PointLight* entity);
-    const std::unordered_set<PointLight*>& getLights() const;
+    const std::vector<PointLight*>& getLights() const;
     void updateLights();
+
+    void addParticle(Particle* particle);
 private:
     std::vector<std::shared_ptr<Unit>> units;
     std::unordered_set<std::shared_ptr<Unit>> deadUnits;
     
-    std::unordered_set<Entity*> entities;
+    std::vector<Entity*> entities;
     std::unordered_set<Entity*> deadEntities;
 
-    std::unordered_set<PointLight*> lights;
+    std::vector<PointLight*> lights;
     std::unordered_set<PointLight*> deadLights;
+
+    std::vector<Particle*> particles;
 
     Terrain* terrain;
     Camera* camera;
