@@ -95,23 +95,18 @@ int main()
     Terrain terrain("Heightmap.bmp", &scene);
     CameraControl cameraControl(&cam, &terrain, xres, yres);
 
-    GLuint VAO, VBO, EBO;
+    //GLuint particleVAO, particleVBO;
+    //glGenVertexArrays(1, &particleVAO);
+    //glGenBuffers(1, &particleVBO);
 
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    //glBindVertexArray(particleVAO);
+    //glBindBuffer(GL_ARRAY_BUFFER, particleVBO);
 
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex3d)*v.size(), v.data(), GL_STATIC_DRAW);
+    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, pos));
+    //glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(4*sizeof(float)));
-    glEnableVertexAttribArray(2);
+    //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, color));
+    //glEnableVertexAttribArray(1);
 
     for(int y = 0; y < 5; y++)
     {
@@ -314,12 +309,17 @@ int main()
             glUniform1i(glGetUniformLocation(program->getId(), std::format("nLights", i).c_str()), scene.getLights().size());
         }
 
-        std::vector<Particle*> P;
+        /*std::vector<Particle*> P;
         for(auto particle : scene.getParticles())
         {
             P.push_back(particle);
-        }
-        glDrawArrays(GL_POINTS, ...);
+        }*/
+
+        //glBindBuffer(GL_ARRAY_BUFFER, particleVBO);
+        //glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Particle)*P.size(), P.data());
+
+        //glBindVertexArray(particleVAO);
+        //glDrawArrays(GL_POINTS, 0, P.size());
     }
 
     quitting = true;

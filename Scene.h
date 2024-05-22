@@ -42,6 +42,7 @@ public:
     void updateLights();
 
     void addParticle(Particle* particle);
+    const std::vector<Particle*>& getParticles() const;
 private:
     std::vector<std::shared_ptr<Unit>> units;
     std::unordered_set<std::shared_ptr<Unit>> deadUnits;

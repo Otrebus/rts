@@ -28,7 +28,7 @@ public:
     
     void update();
 
-protected:
+// protected:
     Vector3 velocity;
     Vector3 pos;
     Vector3 color;
