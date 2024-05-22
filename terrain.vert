@@ -11,8 +11,6 @@ out vec3 normal;
 out vec3 toCam;
 out float sel;
 
-uniform mat4 modelViewMatrix;
-uniform mat4 normalMatrix;
 uniform mat4 projectionMatrix;
 uniform vec3 camPos;
 

@@ -18,6 +18,8 @@ public:
 
     static Shader* terrainVertexShader;
 
+    void updateUniforms();
+
     Shader* getVertexShader() const;
 
     std::vector<MeshVertex3d> v;

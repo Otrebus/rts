@@ -46,6 +46,22 @@ void TerrainMesh::init(Scene* s)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*triangles.size(), triangles.data(), GL_STATIC_DRAW);
 }
 
+void TerrainMesh::updateUniforms()
+{
+    auto s = scene->getShaderProgramManager();
+    auto program = s->getProgram(this->material->getShader(), getGeometryShader(), getVertexShader());
+    scene->setShaderProgram(program);
+
+    program->use();
+
+    auto perspM = scene->getCamera()->getMatrix();
+    auto matrix = getTransformationMatrix();
+
+    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "projectionMatrix"), 1, GL_TRUE, (float*)perspM.m_val);
+
+    this->material->updateUniforms(scene);
+}
+
 Shader* TerrainMesh::getVertexShader() const
 {
     return terrainVertexShader;

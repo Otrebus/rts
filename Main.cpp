@@ -95,18 +95,32 @@ int main()
     Terrain terrain("Heightmap.bmp", &scene);
     CameraControl cameraControl(&cam, &terrain, xres, yres);
 
-    //GLuint particleVAO, particleVBO;
-    //glGenVertexArrays(1, &particleVAO);
-    //glGenBuffers(1, &particleVBO);
+    struct Particle2
+    {
+        Vector3 pos;
+        real size;
+        Vector3 color;
+    };
 
-    //glBindVertexArray(particleVAO);
-    //glBindBuffer(GL_ARRAY_BUFFER, particleVBO);
+    GLuint particleVAO, particleVBO;
+    glGenVertexArrays(1, &particleVAO);
+    glGenBuffers(1, &particleVBO);
 
-    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, pos));
-    //glEnableVertexAttribArray(0);
+    glBindVertexArray(particleVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, particleVBO);
 
-    //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, color));
-    //glEnableVertexAttribArray(1);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle2), 0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(Particle2), (void*)(3*sizeof(real)));
+    glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Particle2), (void*)(4*sizeof(real)));
+    glEnableVertexAttribArray(2);
+
+    auto particleFragmentShader = new Shader("particle.frag", GL_FRAGMENT_SHADER);
+    auto particleGeometryShader = new Shader("particle.geom", GL_GEOMETRY_SHADER);
+    auto particleVertexShader = new Shader("particle.vert", GL_VERTEX_SHADER);
 
     for(int y = 0; y < 5; y++)
     {
@@ -126,6 +140,9 @@ int main()
         }
     }
 
+    for(int i = 0; i < 50; i++)
+        scene.addParticle(new Particle(glfwGetTime(), Vector3(170.5, 85.15, 3.07f+i*0.1f), Vector3(1, 0, 0) ));
+
     //PointLight* p = new PointLight();
     //p->setPos({ 170.5f, 85.15f, scene.getTerrain()->getElevation(170.5, 85.15) + 1.0f });
     //p->setColor({ 1, 0, 0 });
@@ -138,7 +155,7 @@ int main()
 
     int mouseX, mouseY;
 
-    //checkError();
+    checkError();
 
     UserInterface interface(window, &scene, &cameraControl);
 
@@ -181,7 +198,6 @@ int main()
             unit->drawSelectionDecal(1);
         }
 
-        //checkError();
         interface.setResolution(xres, yres);
         cameraControl.setResolution(xres, yres);
         interface.draw();
@@ -284,6 +300,27 @@ int main()
             }
             delete input;
         }
+
+
+        std::vector<Particle2> P;
+        for(auto particle : scene.getParticles())
+        {
+            P.push_back( { particle->pos, 1.0f, particle->color } );
+        }
+
+        glBindBuffer(GL_ARRAY_BUFFER, particleVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(Particle2)*P.size(), P.data(), GL_STATIC_DRAW);
+
+        glBindVertexArray(particleVAO);
+
+        auto s = scene.getShaderProgramManager();
+        auto program = s->getProgram(particleFragmentShader, particleGeometryShader, particleVertexShader);
+        scene.setShaderProgram(program);
+        program->use();
+
+        glDrawArrays(GL_POINTS, 0, P.size());
+        glBindVertexArray(0);
+
         avgFps = ((9*avgFps + 1/dt))/10;
         //std::cout << avgFps << std::endl;
         cameraControl.update(dt);
@@ -309,17 +346,6 @@ int main()
             glUniform1i(glGetUniformLocation(program->getId(), std::format("nLights", i).c_str()), scene.getLights().size());
         }
 
-        /*std::vector<Particle*> P;
-        for(auto particle : scene.getParticles())
-        {
-            P.push_back(particle);
-        }*/
-
-        //glBindBuffer(GL_ARRAY_BUFFER, particleVBO);
-        //glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Particle)*P.size(), P.data());
-
-        //glBindVertexArray(particleVAO);
-        //glDrawArrays(GL_POINTS, 0, P.size());
     }
 
     quitting = true;

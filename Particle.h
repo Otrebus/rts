@@ -13,7 +13,7 @@ class Ray;
 class Particle
 {
 public:
-    Particle(real start);
+    Particle(real start, const Vector3& pos, const Vector3& color);
 
     void setPos(const Vector3& pos);
     const Vector3& getPos() const;

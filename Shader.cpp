@@ -31,7 +31,7 @@ Shader::Shader(std::string filename, unsigned int type)
     if(!success)
     {
         glGetShaderInfoLog(id, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+        std::cout << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
     }
 }
 

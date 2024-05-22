@@ -3,9 +3,8 @@
 #include "Ray.h"
 
 
-Particle::Particle(real start)
+Particle::Particle(real start, const Vector3& pos, const Vector3& color) : start(start), pos(pos), color(color)
 {
-    this->start = start;
 }
 
 

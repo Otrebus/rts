@@ -29,5 +29,5 @@ public:
     virtual Shader* getGeometryShader() const;
 
     void draw();
-    void updateUniforms();
+    virtual void updateUniforms();
 };
