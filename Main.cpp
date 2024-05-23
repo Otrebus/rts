@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "Shader.h"
+#include <random>
 #include "ShaderProgram.h"
 #include "Utils.h"
 #include "Camera.h"
@@ -46,6 +47,9 @@ void sizeCallback(GLFWwindow* window, int width, int height)
 
 int main()
 {
+    std::default_random_engine generator;
+    std::uniform_real_distribution<real> dist(0, 1.0f);
+
     if (!glfwInit())
     {
         printf("failed to initialize GLFW.\n");
@@ -141,7 +145,7 @@ int main()
     }
 
     for(int i = 0; i < 50; i++)
-        scene.addParticle(new Particle(glfwGetTime(), Vector3(170.5, 85.15, 3.07f+i*0.1f), Vector3(1, 0, 0) ));
+        scene.addParticle(new Particle(glfwGetTime(), Vector3(170.5, 85.15, 3.07f+i*0.1f), Vector3(dist(generator), dist(generator), dist(generator)) ));
 
     //PointLight* p = new PointLight();
     //p->setPos({ 170.5f, 85.15f, scene.getTerrain()->getElevation(170.5, 85.15) + 1.0f });
@@ -317,6 +321,12 @@ int main()
         auto program = s->getProgram(particleFragmentShader, particleGeometryShader, particleVertexShader);
         scene.setShaderProgram(program);
         program->use();
+
+        auto perspM = scene.getCamera()->getMatrix();
+
+        glUniformMatrix4fv(glGetUniformLocation(program->getId(), "projectionMatrix"), 1, GL_TRUE, (float*)perspM.m_val);
+        glUniform3fv(glGetUniformLocation(program->getId(), "camPos"), 1, (float*)(&scene.getCamera()->getPos()));
+        glUniform3fv(glGetUniformLocation(program->getId(), "camUp"), 1, (float*)(&scene.getCamera()->getUp()));
 
         glDrawArrays(GL_POINTS, 0, P.size());
         glBindVertexArray(0);
