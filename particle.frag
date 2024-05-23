@@ -10,7 +10,7 @@ void main()
     float radius = 0.5;
     vec2 t = texCoord;
     if((t.x-0.5)*(t.x-0.5) + (t.y-0.5)*(t.y-0.5) > radius*radius)
-        discard;
+        fragColor = vec4(color, 0.0);
     else
         fragColor = vec4(color, 1.0);
 }

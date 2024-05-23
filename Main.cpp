@@ -305,7 +305,6 @@ int main()
             delete input;
         }
 
-
         std::vector<Particle2> P;
         for(auto particle : scene.getParticles())
         {
@@ -328,6 +327,8 @@ int main()
         glUniform3fv(glGetUniformLocation(program->getId(), "camPos"), 1, (float*)(&scene.getCamera()->getPos()));
         glUniform3fv(glGetUniformLocation(program->getId(), "camUp"), 1, (float*)(&scene.getCamera()->getUp()));
 
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable( GL_BLEND );
         glDrawArrays(GL_POINTS, 0, P.size());
         glBindVertexArray(0);
 
