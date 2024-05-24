@@ -310,6 +310,7 @@ int main()
         {
             P.push_back( { particle->pos, 1.0f, particle->color } );
         }
+        std::sort(P.begin(), P.end(), [&scene] (const auto p1, const auto& p2) { return (p1.pos-scene.getCamera()->getPos()).length2() > (p2.pos-scene.getCamera()->getPos()).length2(); });
 
         glBindBuffer(GL_ARRAY_BUFFER, particleVBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(Particle2)*P.size(), P.data(), GL_STATIC_DRAW);
@@ -327,10 +328,13 @@ int main()
         glUniform3fv(glGetUniformLocation(program->getId(), "camPos"), 1, (float*)(&scene.getCamera()->getPos()));
         glUniform3fv(glGetUniformLocation(program->getId(), "camUp"), 1, (float*)(&scene.getCamera()->getUp()));
 
+        glDepthMask (GL_FALSE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glEnable( GL_BLEND );
+        glEnable(GL_BLEND);
         glDrawArrays(GL_POINTS, 0, P.size());
+        glDisable(GL_BLEND);
         glBindVertexArray(0);
+        glDepthMask (GL_TRUE);
 
         avgFps = ((9*avgFps + 1/dt))/10;
         //std::cout << avgFps << std::endl;
