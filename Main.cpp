@@ -144,8 +144,8 @@ int main()
         }
     }
 
-    for(int i = 0; i < 50; i++)
-        scene.addParticle(new Particle(glfwGetTime(), Vector3(170.5, 85.15, 3.07f+i*0.1f), Vector3(dist(generator), dist(generator), dist(generator)) ));
+    /*for(int i = 0; i < 50; i++)
+        scene.addParticle(new Particle(glfwGetTime(), Vector3(170.5, 85.15, 3.07f+i*0.1f), Vector3(dist(generator), dist(generator), dist(generator)) ));*/
 
     //PointLight* p = new PointLight();
     //p->setPos({ 170.5f, 85.15f, scene.getTerrain()->getElevation(170.5, 85.15) + 1.0f });
@@ -305,10 +305,12 @@ int main()
             delete input;
         }
 
-        std::vector<Particle2> P;
+        std::vector<SerializedParticle> P;
         for(auto particle : scene.getParticles())
         {
-            P.push_back( { particle->pos, 1.0f, particle->color } );
+            particle->update(dt);
+            if(particle->isAlive(time))
+                P.push_back(particle->serialize());
         }
         std::sort(P.begin(), P.end(), [&scene] (const auto p1, const auto& p2) { return (p1.pos-scene.getCamera()->getPos()).length2() > (p2.pos-scene.getCamera()->getPos()).length2(); });
 

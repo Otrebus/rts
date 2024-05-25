@@ -11,6 +11,7 @@
 #include "Projectile.h"
 #include "GeometryUtils.h"
 #include "Polysolver.h"
+#include "Particle.h"
 
 
 // TODO: no need to get terrain since we have scene->getTerrain()
@@ -219,6 +220,12 @@ void Tank::shoot()
     p->setVelocity(direction.normalized()*bulletSpeed + velocity);
     p->init(scene);
     scene->addEntity(p);
+
+    for(int i = 0; i < 100; i++)
+    {
+        auto gp = new GunFireParticle(lastFired, position, direction);
+        scene->addParticle(gp);
+    }
 }
 
 

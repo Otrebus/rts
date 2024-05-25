@@ -140,7 +140,7 @@
       <Filter>Source files\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Particle.cpp">
-      <Filter>Source files\Scene</Filter>
+      <Filter>Source files\Models</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -280,7 +280,7 @@
       <Filter>Source files\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Particle.h">
-      <Filter>Source files\Scene</Filter>
+      <Filter>Source files\Models</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
