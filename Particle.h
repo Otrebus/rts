@@ -33,18 +33,20 @@ private:
 };
 
 
+#pragma pack(push, 1)
 struct SerializedParticle
 {
     Vector3 pos;
     real size;
-    Vector3 color;
+    Vector4 color;
 };
+#pragma pack(pop)
 
 
 class Particle
 {
 public:
-    Particle(real start, const Vector3& pos, const Vector3& color);
+    Particle(const Vector3& pos, const Vector3& color);
 
     void setPos(const Vector3& pos);
     const Vector3& getPos() const;
@@ -58,28 +60,30 @@ public:
     real getStart();
     
     virtual void update(real time) = 0;
-    virtual bool isAlive(real time) = 0;
-    virtual bool isVisible(real time) = 0;
+    virtual bool isAlive() = 0;
+    virtual bool isVisible() = 0;
     virtual SerializedParticle serialize() = 0;
 
 protected:
     float getRandomFloat(float min, float max);
     int getRandomInt(int min, int max);
 
+    Vector3 initialVelocity;
     Vector3 velocity;
     Vector3 pos;
     Vector3 color;
     real start;
+    real time;
 };
 
 
 class GunFireParticle : public Particle
 {
 public:
-    GunFireParticle(real time, Vector3 initialPos, Vector3 initialDir);
+    GunFireParticle(Vector3 initialPos, Vector3 initialDir, Vector3 initialVelocity);
 
     void update(real time);
-    bool isAlive(real time);
-    bool isVisible(real time);
+    bool isAlive();
+    bool isVisible();
     SerializedParticle serialize();
 };

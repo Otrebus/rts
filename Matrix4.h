@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Vector3.h"
+#include "Vector4.h"
 #include <assert.h>
 #include "Utils.h"
 
@@ -16,6 +17,7 @@ public:
     ~Matrix4();
 
     Vector3 operator *(const Vector3&) const;
+    Vector4 operator *(const Vector4&) const;
     Matrix4 operator *(const Matrix4& v) const;
     Matrix4 operator *(real f) const;
     Matrix4 operator /(real f) const;

@@ -223,7 +223,7 @@ void Tank::shoot()
 
     for(int i = 0; i < 100; i++)
     {
-        auto gp = new GunFireParticle(lastFired, position, direction);
+        auto gp = new GunFireParticle(position, direction, velocity);
         scene->addParticle(gp);
     }
 }

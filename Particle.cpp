@@ -4,7 +4,7 @@
 #include <random>
 
 
-Particle::Particle(real start, const Vector3& pos, const Vector3& color) : start(start), pos(pos), color(color)
+Particle::Particle(const Vector3& pos, const Vector3& color) : pos(pos), color(color), time(0)
 {
 }
 
@@ -48,32 +48,38 @@ real Particle::getStart()
     return start;
 }
 
-GunFireParticle::GunFireParticle(real time, Vector3 initialPos, Vector3 initialDir) : Particle(time, initialPos, initialDir)
+GunFireParticle::GunFireParticle(Vector3 initialPos, Vector3 initialDir, Vector3 initialVelocity) : Particle(initialPos, initialDir)
 {
-    velocity = initialDir + Vector3(getRandomFloat(-1.0f, 1.0f), getRandomFloat(-1.0f, 1.0f), getRandomFloat(-1.0f, 1.0f));
+    auto right = (initialDir%Vector3(0, 0, 1)).normalized();
+    auto up = initialDir%right;
+    auto theta = getRandomFloat(0, 2*pi);
+    start = getRandomFloat(0, 0.1);
+    this->initialVelocity = initialVelocity;
+    velocity = initialVelocity + 5.f*(initialDir*getRandomFloat(0.8, 1.0f) + getRandomFloat(0, 0.1)*(right*std::cos(theta) + up*std::cos(theta)));
 }
 
 void GunFireParticle::update(real dt)
 {
-    // Example update method that uses the random generator
-    pos += velocity * dt;
-    // Introduce some random change in velocity
-    velocity += Vector3(getRandomFloat(-0.1f, 0.1f), getRandomFloat(-0.1f, 0.1f), getRandomFloat(-0.1f, 0.1f));
+    time += dt;
+    if(time > start)
+        pos += velocity*dt;
+    else
+        pos += initialVelocity*dt;
 }
 
-bool GunFireParticle::isAlive(real time)
+bool GunFireParticle::isAlive()
 {
-    return time - start < 1.0;
+    return time < 0.2;
 }
 
-bool GunFireParticle::isVisible(real time)
+bool GunFireParticle::isVisible()
 {
-    return true;
+    return time > start;
 }
 
 SerializedParticle GunFireParticle::serialize()
 {
-    return SerializedParticle(pos, 0.01, Vector3(1.0, 1.0, 0));
+    return SerializedParticle(pos, 0.01+time*0.15, Vector4(1.0-(time-start)*1.5, 1.0-(time-start)*1.5, (time-start)*1.5, 1-(time-start)*5));
 }
 
 float Particle::getRandomFloat(float min, float max) {

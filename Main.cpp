@@ -99,13 +99,6 @@ int main()
     Terrain terrain("Heightmap.bmp", &scene);
     CameraControl cameraControl(&cam, &terrain, xres, yres);
 
-    struct Particle2
-    {
-        Vector3 pos;
-        real size;
-        Vector3 color;
-    };
-
     GLuint particleVAO, particleVBO;
     glGenVertexArrays(1, &particleVAO);
     glGenBuffers(1, &particleVBO);
@@ -113,13 +106,13 @@ int main()
     glBindVertexArray(particleVAO);
     glBindBuffer(GL_ARRAY_BUFFER, particleVBO);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle2), 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(SerializedParticle), 0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(Particle2), (void*)(3*sizeof(real)));
+    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(SerializedParticle), (void*)(3*sizeof(real)));
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Particle2), (void*)(4*sizeof(real)));
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(SerializedParticle), (void*)(4*sizeof(real)));
     glEnableVertexAttribArray(2);
 
     auto particleFragmentShader = new Shader("particle.frag", GL_FRAGMENT_SHADER);
@@ -309,13 +302,13 @@ int main()
         for(auto particle : scene.getParticles())
         {
             particle->update(dt);
-            if(particle->isAlive(time))
+            if(particle->isAlive())
                 P.push_back(particle->serialize());
         }
         std::sort(P.begin(), P.end(), [&scene] (const auto p1, const auto& p2) { return (p1.pos-scene.getCamera()->getPos()).length2() > (p2.pos-scene.getCamera()->getPos()).length2(); });
 
         glBindBuffer(GL_ARRAY_BUFFER, particleVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(Particle2)*P.size(), P.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(SerializedParticle)*P.size(), P.data(), GL_STATIC_DRAW);
 
         glBindVertexArray(particleVAO);
 

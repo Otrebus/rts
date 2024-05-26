@@ -142,6 +142,9 @@
     <ClCompile Include="Particle.cpp">
       <Filter>Source files\Models</Filter>
     </ClCompile>
+    <ClCompile Include="Vector4.cpp">
+      <Filter>Source files\Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -281,6 +284,9 @@
     </ClInclude>
     <ClInclude Include="Particle.h">
       <Filter>Source files\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector4.h">
+      <Filter>Source files\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
