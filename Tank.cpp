@@ -221,7 +221,7 @@ void Tank::shoot()
     p->init(scene);
     scene->addEntity(p);
 
-    for(int i = 0; i < 100; i++)
+    for(int i = 0; i < 150; i++)
     {
         auto gp = new GunFireParticle(position, direction, velocity);
         scene->addParticle(gp);

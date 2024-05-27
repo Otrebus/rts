@@ -53,9 +53,25 @@ GunFireParticle::GunFireParticle(Vector3 initialPos, Vector3 initialDir, Vector3
     auto right = (initialDir%Vector3(0, 0, 1)).normalized();
     auto up = initialDir%right;
     auto theta = getRandomFloat(0, 2*pi);
-    start = getRandomFloat(0, 0.1);
+    start = getRandomFloat(0, 0.15);
     this->initialVelocity = initialVelocity;
-    velocity = initialVelocity + 5.f*(initialDir*getRandomFloat(0.8, 1.0f) + getRandomFloat(0, 0.1)*(right*std::cos(theta) + up*std::cos(theta)));
+
+    smoke = getRandomFloat(0, 1.0) > 0.5;
+
+    if(!smoke)
+    {
+        lifeTime = 0.15;
+        velocity = initialVelocity + 5.f*(initialDir*getRandomFloat(0.8, 1.0f) + getRandomFloat(0, 0.1)*(right*std::sin(theta) + up*std::cos(theta)));
+    }
+    else
+    {
+        real darkness = getRandomFloat(0.37, 0.5);
+        startColor = Vector4(darkness, darkness, darkness, 1);
+        start = getRandomFloat(0.00, 0.02f);
+        lifeTime = 1.0;
+        velocity = initialVelocity + getRandomFloat(0.4, 1.38)*(initialDir*getRandomFloat(1.3, 2.5) + getRandomFloat(0.5, 0.7)*(right*std::sin(theta) + up*std::cos(theta)));
+    }
+    startVelocity = velocity;
 }
 
 void GunFireParticle::update(real dt)
@@ -65,11 +81,13 @@ void GunFireParticle::update(real dt)
         pos += velocity*dt;
     else
         pos += initialVelocity*dt;
+    if(smoke && time > start)
+        velocity = startVelocity*std::max(std::exp(start-time), 0.0f);
 }
 
 bool GunFireParticle::isAlive()
 {
-    return time < 0.2;
+    return time < start + lifeTime;
 }
 
 bool GunFireParticle::isVisible()
@@ -79,7 +97,14 @@ bool GunFireParticle::isVisible()
 
 SerializedParticle GunFireParticle::serialize()
 {
-    return SerializedParticle(pos, 0.01+time*0.15, Vector4(1.0-(time-start)*1.5, 1.0-(time-start)*1.5, (time-start)*1.5, 1-(time-start)*5));
+    if(!smoke)
+        return SerializedParticle(pos, 0.03+time*0.2, Vector4(1.0-(time-start)*1.5, 1.0-(time-start)*1.5, 0.7-(time-start)*1.5, 1-(time-start)/lifeTime));
+    else
+    {
+        auto color = startColor;
+        color.w = 1-(time-start)/lifeTime;
+        return SerializedParticle(pos, 0.02+time*0.35, color);
+    }
 }
 
 float Particle::getRandomFloat(float min, float max) {

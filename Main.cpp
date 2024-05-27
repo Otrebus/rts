@@ -216,7 +216,7 @@ int main()
         for(auto& light : scene.getLights())
         {
             real t = glfwGetTime() - light->getStart();
-            light->setColor(Vector3(0.2, 0.2, 0.12)*std::exp(-20.f*t));
+            light->setColor(Vector3(0.3, 0.3, 0.2)*std::exp(-20.f*t));
             light->setPos(light->getPos() + light->getVelocity()*dt);
             if(t > 0.6)
                 scene.removeLight(light);

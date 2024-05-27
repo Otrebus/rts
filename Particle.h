@@ -70,10 +70,13 @@ protected:
 
     Vector3 initialVelocity;
     Vector3 velocity;
+    Vector3 startVelocity;
     Vector3 pos;
     Vector3 color;
+    Vector4 startColor;
     real start;
     real time;
+    real lifeTime;
 };
 
 
@@ -86,4 +89,7 @@ public:
     bool isAlive();
     bool isVisible();
     SerializedParticle serialize();
+
+private:
+    bool smoke;
 };
