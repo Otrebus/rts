@@ -58,6 +58,16 @@ bool Entity::intersectBoundingBox(Vector3 p1, Vector3 p2)
     return false;
 }
 
+std::pair<Vector3, Vector3> Entity::getBoundingBoxIntersection(Vector3 p1, Vector3 p2)
+{
+    auto a = dir, b = dir%up, c = up;
+    Ray ray = Ray(p1, (p2-p1).normalized());
+    auto ray2 = Ray(rebaseOrtho(ray.pos-pos, a, b, c), rebaseOrtho(ray.dir, a, b, c));
+
+    real tnear, tfar;
+    auto normal = boundingBox.getNormal(ray2, tnear, tfar);
+    return { p1 + tnear*(p2-p1), normal.x * a + normal.y * b + normal.z * c };
+}
 
 void Entity::init(Scene* scene)
 {

@@ -62,6 +62,8 @@ public:
 	DrawMode getDrawMode() const;
 	std::pair<Vector3, Vector3> getBoundingBox() const;
 	real getElevation(real x, real y) const;
+	Vector3 getNormal(real x, real y) const;
+
 	int getWidth() const;
 	int getHeight() const;
 	bool inBounds(int x, int y) const;

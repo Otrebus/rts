@@ -93,3 +93,19 @@ public:
 private:
     bool smoke;
 };
+
+
+class GroundExplosionParticle : public Particle
+{
+public:
+    GroundExplosionParticle(Vector3 initialPos, Vector3 normal);
+
+    void update(real time);
+    bool isAlive();
+    bool isVisible();
+    SerializedParticle serialize();
+
+private:
+    Vector3 normal;
+    bool smoke;
+};

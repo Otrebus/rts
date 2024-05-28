@@ -45,3 +45,27 @@ bool BoundingBox::intersect(const Ray& ray, real& tnear, real& tfar) const
     }
     return tnear > 0;
 }
+
+Vector3 BoundingBox::getNormal(const Ray& ray, real& tnear, real& tfar) const
+{  
+    real t1, t2;
+    tfar = inf;
+    tnear = -inf;
+
+    Vector3 N[3] = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } }, normal;
+    for(int u = 0; u < 3; u++)
+    {
+        t1 = (c1[u] - ray.pos[u]) / ray.dir[u];
+        t2 = (c2[u] - ray.pos[u]) / ray.dir[u];
+        if(t1 > t2)  
+            std::swap(t1, t2);  
+        if(t1 > tnear)
+        {
+            tnear = t1;
+            normal = ray.dir[u] > 0 ? -N[u] : N[u];
+        }
+        if(t2 < tfar) 
+            tfar = t2;
+    }
+    return normal;
+}

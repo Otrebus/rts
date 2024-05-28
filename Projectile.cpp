@@ -94,7 +94,15 @@ void Projectile::update(real dt)
     //       do this in a robust fashion or if we just add some epsilon
     auto v2 = scene->getTerrain()->intersect(Ray(pos, velocity.normalized()));
     if(v2.length() < inf && (v2-pos).length() < dt*velocity.length())
+    {
+        auto normal = scene->getTerrain()->getNormal(v2.x, v2.y);
+        for(int i = 0; i < 150; i++)
+        {
+            auto gp = new GroundExplosionParticle(v2, normal);
+            scene->addParticle(gp);
+        }
         scene->removeEntity(this);
+    }
 
     for(auto unit : scene->getUnits())
     {
@@ -102,6 +110,12 @@ void Projectile::update(real dt)
         {
             if(unit != owner)
             {
+                auto [p, norm] = unit->getBoundingBoxIntersection(pos, pos+dt*velocity);
+                for(int i = 0; i < 150; i++)
+                {
+                    auto gp = new GroundExplosionParticle(p, norm);
+                    scene->addParticle(gp);
+                }
                 unit->health -= 20;
                 if(unit->health < 0)
                     scene->removeUnit(unit);

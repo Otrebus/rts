@@ -26,6 +26,7 @@ public:
     void drawBoundingBox();
     bool intersectBoundingBox(const Ray& ray);
     bool intersectBoundingBox(Vector3 p1, Vector3 p2);
+    std::pair<Vector3, Vector3> getBoundingBoxIntersection(Vector3 p1, Vector3 p2);
 
     virtual void init(Scene* scene);
     virtual void updateUniforms();

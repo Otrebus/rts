@@ -316,6 +316,33 @@ real Terrain::getElevation(real x, real y) const
     return z;
 }
 
+Vector3 Terrain::getNormal(real x, real y) const
+{
+    // TODO: could overflow, check
+    // temporary hack
+    if(y > 0)
+        y -= 1e-4;
+    if(x > 0)
+        x -= 1e-4;
+
+    int xl = x, yl = y;
+    auto p1 = points[yl*width+xl];
+    auto p2 = points[yl*width+xl+1];
+    auto p3 = points[(yl+1)*width+xl+1];
+    auto p4 = points[(yl+1)*width+xl];
+
+    auto dx = x-xl, dy = y-yl;
+    Vector3 a, b, c;
+    if(dy < dx)
+        a = p1, b = p2, c = p3;
+    else
+        a = p1, b = p3, c = p4;
+
+    auto v1 = c-a, v2 = b-a, w = Vector3(x, y, 0), A = Vector3(0, 0, -1);
+
+    return (v2%v1).normalized();
+}
+
 void Terrain::setDrawMode(DrawMode d)
 {
     drawMode = d;
