@@ -96,7 +96,7 @@ void Projectile::update(real dt)
     if(v2.length() < inf && (v2-pos).length() < dt*velocity.length())
     {
         auto normal = scene->getTerrain()->getNormal(v2.x, v2.y);
-        for(int i = 0; i < 150; i++)
+        for(int i = 0; i < 250; i++)
         {
             auto gp = new GroundExplosionParticle(v2, normal);
             scene->addParticle(gp);
@@ -113,7 +113,7 @@ void Projectile::update(real dt)
                 auto [p, norm] = unit->getBoundingBoxIntersection(pos, pos+dt*velocity);
                 for(int i = 0; i < 150; i++)
                 {
-                    auto gp = new GroundExplosionParticle(p, norm);
+                    auto gp = new UnitHitParticle(p, norm);
                     scene->addParticle(gp);
                 }
                 unit->health -= 20;

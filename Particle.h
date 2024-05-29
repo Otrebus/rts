@@ -107,5 +107,22 @@ public:
 
 private:
     Vector3 normal;
+    real size;
+    enum Type { Explosion, Dust, Debris } type;
+};
+
+
+class UnitHitParticle : public Particle
+{
+public:
+    UnitHitParticle(Vector3 initialPos, Vector3 normal);
+
+    void update(real time);
+    bool isAlive();
+    bool isVisible();
+    SerializedParticle serialize();
+
+private:
+    Vector3 normal;
     bool smoke;
 };
