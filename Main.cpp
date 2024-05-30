@@ -119,17 +119,17 @@ int main()
     auto particleGeometryShader = new Shader("particle.geom", GL_GEOMETRY_SHADER);
     auto particleVertexShader = new Shader("particle.vert", GL_VERTEX_SHADER);
 
-    for(int y = 0; y < 5; y++)
+    for(int y = 0; y < 2; y++)
     {
-        for(int x = 0; x < 5; x++)
+        for(int x = 0; x < 2; x++)
         {
             scene.addUnit(new Tank({ 155.5f+x, 85.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain));
         }
     }
 
-    for(int y = 0; y < 5; y++)
+    for(int y = 0; y < 2; y++)
     {
-        for(int x = 0; x < 5; x++)
+        for(int x = 0; x < 2; x++)
         {
             auto enemy = new Tank({ 170.5f+x, 85.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
             enemy->setEnemy(true);
@@ -222,8 +222,6 @@ int main()
                 scene.removeLight(light);
         }
 
-        scene.updateEntities();
-
         for(auto result = popPathFindingResult(); result; result = popPathFindingResult())
         {
             for(auto& unit : scene.getUnits())
@@ -307,6 +305,9 @@ int main()
         }
         std::sort(P.begin(), P.end(), [&scene] (const auto p1, const auto& p2) { return (p1.pos-scene.getCamera()->getPos()).length2() > (p2.pos-scene.getCamera()->getPos()).length2(); });
 
+        scene.updateParticles();
+        scene.updateEntities();
+
         glBindBuffer(GL_ARRAY_BUFFER, particleVBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(SerializedParticle)*P.size(), P.data(), GL_STATIC_DRAW);
 
@@ -339,6 +340,7 @@ int main()
 
         scene.clearUnits();
         scene.updateLights();
+
         for(auto program : scene.getShaderProgramManager()->getPrograms())
         {
             scene.setShaderProgram(program);

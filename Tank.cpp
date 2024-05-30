@@ -348,7 +348,7 @@ void Tank::update(real dt)
     if(!enemyTarget || closestEnemy && (closestEnemy->getPosition()-enemyTarget->getPosition()).length() < closestD*0.95)
         enemyTarget = closestEnemy;
 
-    if(enemyTarget && !setBallisticTarget(enemyTarget))
+    if(enemyTarget && (enemyTarget->dead || !setBallisticTarget(enemyTarget)))
     {
         enemyTarget = nullptr;
         turretTarget = Vector3(0, 1, 0);

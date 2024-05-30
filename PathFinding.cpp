@@ -119,7 +119,6 @@ PathFindingRequest* popPathFindingResult()
     if(resultQueue.empty())
         return nullptr;
 
-    std::cout << "popping" << std::endl;
     auto request = resultQueue.front();
     resultQueue.pop();
     return request;

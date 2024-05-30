@@ -67,7 +67,7 @@ public:
 
     const real bulletSpeed = 5.0;
 
-    const real fireInterval = 2.5;
+    const real fireInterval = 0.2;
 
     real lastFired;
 

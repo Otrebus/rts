@@ -143,3 +143,12 @@ const std::vector<Particle*>& Scene::getParticles() const
 {
     return particles;
 }
+
+void Scene::updateParticles()
+{
+    std::vector<Particle*> newParticles;
+    for(auto e : particles)
+        if(e->isAlive())
+            newParticles.push_back(e);
+    particles = newParticles;
+}
