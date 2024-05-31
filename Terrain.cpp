@@ -32,7 +32,7 @@ TerrainMesh* Terrain::createMesh(std::string fileName)
             real l = std::sqrt(dx*dx+dy*dy+1);
             points.push_back(Vector3(X, Y, H(x, y) + 3.0));
             vertices[width*y+x] = MeshVertex3d(X, Y, H(x, y) + 3.0, -dx/l, -dy/l, 1.0/l, x, y);
-            vertices[width*y+x].selected = false;
+            vertices[width*y+x].selected = 0;
         }
     }
     for(int y = 0; y < height-1; y++)
@@ -45,9 +45,9 @@ TerrainMesh* Terrain::createMesh(std::string fileName)
             int d = width*(y+1) + x;
             triangleIndices.insert(triangleIndices.end(), { a, c, d, a, b, c });
             if(!isTriangleAdmissible(points[a], points[b], points[c]))
-                vertices[a].selected = vertices[b].selected = vertices[c].selected = true;
+                vertices[a].selected = vertices[b].selected = vertices[c].selected = 1;
             if(!isTriangleAdmissible(points[a], points[c], points[d]))
-                vertices[a].selected = vertices[c].selected = vertices[d].selected = true;
+                vertices[a].selected = vertices[c].selected = vertices[d].selected = 1;
         }
     }
 
@@ -96,7 +96,7 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
             real l = std::sqrt(dx*dx+dy*dy+1);
             points.push_back(Vector3(X, Y, H(x, y) + 3.0));
             vertices[width*y+x] = MeshVertex3d(X, Y, H(x, y) + 3.0, -dx/l, -dy/l, 1.0/l, x, y);
-            vertices[width*y+x].selected = false;
+            vertices[width*y+x].selected = 0;
         }
     }
     
@@ -123,7 +123,7 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
                 vertices2.push_back(vertices[i]);
                 vertices2.back().normal = N1;
                 if(!isTriangleAdmissible(points[a], points[b], points[c]))
-                    vertices2.back().selected = true;
+                    vertices2.back().selected = 1;
             }
             for(auto i : { a, c, d } )
             {
@@ -132,7 +132,7 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
                 vertices2.push_back(vertices[i]);
                 vertices2.back().normal = N2;
                 if(!isTriangleAdmissible(points[a], points[c], points[d]))
-                    vertices2.back().selected = true;
+                    vertices2.back().selected = 1;
             }
         }
     }

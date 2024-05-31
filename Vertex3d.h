@@ -25,5 +25,5 @@ struct MeshVertex3d
     Vector3 pos;
     Vector3 normal;
     Vector2 tex;
-    float selected;
+    int selected;
 };
