@@ -145,6 +145,9 @@
     <ClCompile Include="Vector4.cpp">
       <Filter>Source files\Math</Filter>
     </ClCompile>
+    <ClCompile Include="Text.cpp">
+      <Filter>Source files\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -287,6 +290,9 @@
     </ClInclude>
     <ClInclude Include="Vector4.h">
       <Filter>Source files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>Source files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

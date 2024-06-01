@@ -32,7 +32,7 @@
 #include "Terrain.h"
 #include "Logger.h"
 #include "GeometryUtils.h"
-
+#include "Text.h"
 
 
 Line3d makeCircle(Vector2 pos, real radius)
@@ -328,8 +328,40 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
 }
 
 
+int drawTexts(GLFWwindow* window, int xres, int yres)
+{
+    InputQueue::getInstance().initInput(window);
+    OrthogonalCamera cam({ 0, 0, 1 }, { 0, 0, -1 }, { 0, 1, 0 }, real(xres)/float(yres));
+
+    glEnable              ( GL_DEBUG_OUTPUT );
+    glDebugMessageCallback( MessageCallback, 0 );
+
+    ShaderProgramManager shaderProgramManager;
+    Scene scene(&cam, &shaderProgramManager);
+    
+    while (!glfwWindowShouldClose(window))
+    {
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+            glfwSetWindowShouldClose(window, true);
+
+        glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+       
+        //checkError();
+        drawText("B", { 0, 0 }, 0.2f, { 1, 0, 0 });
+        
+        glfwPollEvents();
+        glfwSwapBuffers(window);
+    }
+    
+    glfwTerminate();
+    return 0;
+}
+
+
 int debugDraw(GLFWwindow* window, int xres, int yres)
 {
     // return drawCircleTriangle(window, xres, yres);
-    return drawDecals(window, xres, yres);
+    // return drawDecals(window, xres, yres);
+    return drawTexts(window, xres, yres);
 }

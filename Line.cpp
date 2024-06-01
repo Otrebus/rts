@@ -114,7 +114,12 @@ Line3d::Line3d(const std::vector<Vector3>& vertices) : Line(vertices)
 {
 }
 
-Line2d::~Line2d() {
+Line2d::Line2d()
+{
+}
+
+Line2d::~Line2d()
+{
     tearDown();
 }
 

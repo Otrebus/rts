@@ -16,7 +16,7 @@ public:
     Line(const std::vector<Vector3>& vertices);
     void setColor(Vector3 color);
 
-protected:
+public:
     GLuint VAO, VBO;
 
     static Shader* fragmentShader;

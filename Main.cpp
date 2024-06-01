@@ -31,6 +31,7 @@
 #include <thread>
 #include "Logger.h"
 #include <format>
+#include "Text.h"
 
 
 extern bool quitting = false;
@@ -334,6 +335,11 @@ int main()
 
         avgFps = ((9*avgFps + 1/dt))/10;
         //std::cout << avgFps << std::endl;
+        Line2d line;
+        line.setColor(Vector3(0.2, 0.7, 0.1));
+        line.init(&scene);
+        line.draw();
+        drawText(std::to_string(avgFps), { 0.80, 0.90 }, 0.03, { 0, 0.8, 0 });
         cameraControl.update(dt);
         glfwSwapBuffers(window);
         frames++;
