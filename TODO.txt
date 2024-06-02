@@ -37,8 +37,8 @@
   + Projectile update
   + Terrain intersection
   - Shooting effects?
-    - Gun recoil
-    - Light, smoke, particles
+    + Gun recoil
+    + Light, smoke, particles
 + Friendly/Enemy units
   + Make enemy units unselectable etc
   + Make friendly units react to enemy units (shoot, pursue?)
@@ -56,7 +56,8 @@
 - Combine Preselected/selected, and selectionstate in userinterface - into bitfields maybe
 - Add terrain/unit visualisations of all sorts (lines, arrows, dots, etc)
 + Move intersectRayOcclusion etc out of Terrain
-- Text output like fps counter
++ Text output like fps counter
+  - Signed-distance text?
 - Debug console
 + Turrets are offset when the tank is on a slope
 + Degree suffix (that converts from degrees to radians?)

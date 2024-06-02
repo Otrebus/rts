@@ -78,7 +78,7 @@ GunFireParticle::GunFireParticle(Vector3 initialPos, Vector3 initialDir, Vector3
     {
         real darkness = getRandomFloat(0.37, 0.5);
         startColor = Vector4(darkness, darkness, darkness, 1);
-        start = getRandomFloat(0.00, 0.02f);
+        start = getRandomFloat(0.00, 0.05f);
         lifeTime = 1.0;
         velocity = initialVelocity + getRandomFloat(0.4, 1.38)*(initialDir*getRandomFloat(1.3, 2.5) + getRandomFloat(0.5, 0.7)*(right*std::sin(theta) + up*std::cos(theta)));
     }

@@ -15,7 +15,7 @@
 
 
 // TODO: no need to get terrain since we have scene->getTerrain()
-Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) : Unit(pos, dir, up), turnRate(0), acceleration(0), terrain(terrain)
+Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) : Unit(pos, dir, up), turnRate(0), acceleration(0), terrain(terrain), gunRecoilPos(0.0f)
 {
     body = new Model3d("tankbody.obj");
     turret = new Model3d("tankturret.obj");
@@ -158,7 +158,7 @@ void Tank::drawTurret()
  
     auto gunDir = dir*turretDir.y + up*turretDir.z + (dir%up).normalized()*turretDir.x;
     gun->setDirection(gunDir, (gunDir%(turAbsDir%up)).normalized());
-    gun->setPosition(pos + turPos + turAbsDir*gunPos.y + (turAbsDir%up).normalized()*gunPos.x + gunPos.z*turAbsUp);
+    gun->setPosition(pos + turPos + turAbsDir*gunPos.y + (turAbsDir%up).normalized()*gunPos.x + gunPos.z*turAbsUp - gunDir*gunRecoilPos);
 
     turret->draw();
     gun->draw();
@@ -166,6 +166,7 @@ void Tank::drawTurret()
 
 void Tank::updateTurret(real dt)
 {
+    gunRecoilPos = std::max(gunRecoilPos - gunRecoilRecoveryRate*dt, 0.0f);
     auto u = turretDir.to2().normalized(), v = turretTarget.to2().normalized();
 
     if(std::abs(std::acos(u*v)) < dt*turretYawRate)
@@ -212,9 +213,10 @@ void Tank::shoot()
     Vector3 turAbsDir = (dir*turretDir.y + (dir%up).normalized()*turretDir.x).normalized();
     Vector3 turAbsUp = up.normalized();
 
+
     auto gunDir = dir*turretDir.y + up*turretDir.z + (dir%up).normalized()*turretDir.x;
     auto direction = gunDir;
-    auto position = pos + turPos + turAbsDir*gunPos.y + (turAbsDir%up).normalized()*gunPos.x + gunPos.z*turAbsUp + gunDir.normalized()*gunLength;
+    auto position = pos + turPos + turAbsDir*gunPos.y + (turAbsDir%up).normalized()*gunPos.x + gunPos.z*turAbsUp + gunDir.normalized()*gunLength - gunRecoilPos*gunDir;
 
     auto p = new Projectile(position, direction, turAbsUp, this);
     p->setVelocity(direction.normalized()*bulletSpeed + velocity);
@@ -226,6 +228,8 @@ void Tank::shoot()
         auto gp = new GunFireParticle(position, direction, velocity);
         scene->addParticle(gp);
     }
+
+    gunRecoilPos = gunRecoil;
 }
 
 

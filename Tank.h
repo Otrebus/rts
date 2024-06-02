@@ -67,7 +67,7 @@ public:
 
     const real bulletSpeed = 5.0;
 
-    const real fireInterval = 0.2;
+    const real fireInterval = 1.5;
 
     real lastFired;
 
@@ -84,6 +84,10 @@ public:
     Vector3 gunPos;
 
     real gunLength;
+    real gunRecoilPos;
+
+    const real gunRecoil = 0.2f;
+    const real gunRecoilRecoveryRate = 0.5f;
 
     Line3d destinationLine;
     Line3d enemyLine;
