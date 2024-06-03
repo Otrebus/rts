@@ -86,6 +86,14 @@ public:
     real gunLength;
     real gunRecoilPos;
 
+    Vector3 absGunDir;
+    Vector3 absGunUp;
+    Vector3 absGunPos;
+    Vector3 absTurUp;
+    Vector3 absTurDir;
+    Vector3 absMuzzlePos;
+    Vector3 absTurPos;
+
     const real gunRecoil = 0.2f;
     const real gunRecoilRecoveryRate = 0.5f;
 

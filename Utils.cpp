@@ -8,6 +8,8 @@
 #include "Entity.h"
 #include "Unit.h"
 #include "Math.h"
+#include <iomanip>
+#include <cmath>
 
 
 std::tuple<int, int, int> vectorToRgb(const Vector3& color)
@@ -86,4 +88,14 @@ void writeBMP(std::vector<Vector3> v, int width, int height, std::string filenam
 Vector2 mouseCoordToScreenCoord(int xres, int yres, int mouseX, int mouseY)
 {
     return { real(2*mouseX)/xres - 1,  -(real(2*mouseY)/yres - 1) };
+}
+
+
+std::string realToString(real num, int significantDigits)
+{
+    std::stringstream ss;
+    real d = significantDigits - std::log10(num);
+    ss << std::fixed << std::setprecision(std::max(0.f, d)) << num;
+    return ss.str();
+
 }

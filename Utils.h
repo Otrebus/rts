@@ -50,3 +50,4 @@ template <typename T, typename ...U> T max(T a, T b, U... c)
     return max(max(a, b), c...);
 }
 
+std::string realToString(real num, int significantDigits);

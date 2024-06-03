@@ -76,8 +76,7 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) :
         {
             for(auto& v : ((Mesh3d*) mesh)->v)
             {
-                // TODO: z is - ?
-                v.pos -= Vector3((bb.c2.x + bb.c1.x)/2, (bb.c2.y + bb.c1.y)/2, (bb.c2.z+bb.c1.z)/2);
+                v.pos -= Vector3((bb.c2.x + bb.c1.x)/2, (bb.c2.y + bb.c1.y)/2, (bb.c2.z + bb.c1.z)/2);
                 v.pos *= width/w;
             }
         }
@@ -149,16 +148,11 @@ void Tank::updateUniforms()
 
 void Tank::drawTurret()
 {
-    auto turPos = (dir*turretPos.y + (dir%up).normalized()*turretPos.x + up*turretPos.z);
-    turret->setPosition(pos + turPos);
-
-    Vector3 turAbsDir = (dir*turretDir.y + (dir%up).normalized()*turretDir.x).normalized();
-    Vector3 turAbsUp = up;
-    turret->setDirection(turAbsDir, turAbsUp);
+    turret->setDirection(absTurDir, absTurUp);
+    turret->setPosition(absTurPos);
  
-    auto gunDir = dir*turretDir.y + up*turretDir.z + (dir%up).normalized()*turretDir.x;
-    gun->setDirection(gunDir, (gunDir%(turAbsDir%up)).normalized());
-    gun->setPosition(pos + turPos + turAbsDir*gunPos.y + (turAbsDir%up).normalized()*gunPos.x + gunPos.z*turAbsUp - gunDir*gunRecoilPos);
+    gun->setDirection(absGunDir, absGunUp);
+    gun->setPosition(absGunPos);
 
     turret->draw();
     gun->draw();
@@ -169,6 +163,16 @@ void Tank::updateTurret(real dt)
     gunRecoilPos = std::max(gunRecoilPos - gunRecoilRecoveryRate*dt, 0.0f);
     auto u = turretDir.to2().normalized(), v = turretTarget.to2().normalized();
 
+    absTurPos = pos + (dir*turretPos.y + (dir%up).normalized()*turretPos.x + up*turretPos.z);
+
+    absTurUp = up;
+    absTurDir = (dir*turretDir.y + (dir%up).normalized()*turretDir.x).normalized();
+    absGunDir = dir*turretDir.y + up*turretDir.z + (dir%up).normalized()*turretDir.x;
+
+    absGunPos = absTurPos + absTurDir*gunPos.y + (absTurDir%up).normalized()*gunPos.x + gunPos.z*absTurUp - absGunDir*gunRecoilPos;
+    absGunUp = (absGunDir%(absTurDir%up)).normalized();
+    absMuzzlePos = absGunPos + absGunDir*gunLength;
+    
     if(std::abs(std::acos(u*v)) < dt*turretYawRate)
         u = v;
     else
@@ -209,23 +213,14 @@ void Tank::draw()
 
 void Tank::shoot()
 {
-    auto turPos = (dir*turretPos.y + (dir%up).normalized()*turretPos.x + up*turretPos.z);
-    Vector3 turAbsDir = (dir*turretDir.y + (dir%up).normalized()*turretDir.x).normalized();
-    Vector3 turAbsUp = up.normalized();
-
-
-    auto gunDir = dir*turretDir.y + up*turretDir.z + (dir%up).normalized()*turretDir.x;
-    auto direction = gunDir;
-    auto position = pos + turPos + turAbsDir*gunPos.y + (turAbsDir%up).normalized()*gunPos.x + gunPos.z*turAbsUp + gunDir.normalized()*gunLength - gunRecoilPos*gunDir;
-
-    auto p = new Projectile(position, direction, turAbsUp, this);
-    p->setVelocity(direction.normalized()*bulletSpeed + velocity);
+    auto p = new Projectile(absMuzzlePos, absGunDir, absTurUp, this);
+    p->setVelocity(absGunDir.normalized()*bulletSpeed + velocity);
     p->init(scene);
     scene->addEntity(p);
 
     for(int i = 0; i < 150; i++)
     {
-        auto gp = new GunFireParticle(position, direction, velocity);
+        auto gp = new GunFireParticle(absMuzzlePos, absGunDir, velocity);
         scene->addParticle(gp);
     }
 
@@ -296,16 +291,9 @@ void Tank::turn(bool left)
 
 bool Tank::setBallisticTarget(Unit* enemyTarget)
 {
-    auto turPos = (dir*turretPos.y + (dir%up).normalized()*turretPos.x + up*turretPos.z);
-    // TODO: this is repeated elsewhere
-    Vector3 turAbsDir = (dir*turretDir.y + (dir%up).normalized()*turretDir.x).normalized();
-    Vector3 turAbsUp = up;
-    auto gunDir = dir*turretDir.y + up*turretDir.z + (dir%up).normalized()*turretDir.x;
-    auto position = pos + turPos + turAbsDir*gunPos.y + (turAbsDir%up).normalized()*gunPos.x + gunPos.z*turAbsUp + gunDir.normalized()*gunLength;
-
     auto g = Vector3(0, 0, -gravity);
     auto v = enemyTarget->velocity - velocity;
-    auto p = enemyTarget->pos - position;
+    auto p = enemyTarget->pos - absMuzzlePos;
 
     ld t4 = g*g/4;
     ld t3 = -v*g;
@@ -367,10 +355,10 @@ void Tank::update(real dt)
             auto light = new PointLight(glfwGetTime());
 
             // TODO: this is repeated elsewhere
-            Vector3 turAbsDir = (dir*turretDir.y + (dir%up).normalized()*turretDir.x).normalized();
-            Vector3 turAbsUp = up;
+            Vector3 absTurDir = (dir*turretDir.y + (dir%up).normalized()*turretDir.x).normalized();
+            Vector3 absTurUp = up;
             auto gunDir = dir*turretDir.y + up*turretDir.z + (dir%up).normalized()*turretDir.x;
-            auto position = pos + turretPos + turAbsDir*gunPos.y + (turAbsDir%up).normalized()*gunPos.x + gunPos.z*turAbsUp + gunDir.normalized()*gunLength;
+            auto position = pos + turretPos + absTurDir*gunPos.y + (absTurDir%up).normalized()*gunPos.x + gunPos.z*absTurUp + gunDir.normalized()*gunLength;
             light->setPos(position);
             light->setVelocity(this->velocity);
             scene->addLight(light);

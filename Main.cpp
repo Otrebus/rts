@@ -166,40 +166,6 @@ int main()
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
 
-        glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
-        terrain.draw();
-
-        for(auto& unit : scene.getUnits())
-        {
-            unit->updateUniforms();
-            unit->draw();
-        }
-
-        for(auto& entity : scene.getEntities())
-        {
-            entity->updateUniforms();
-            entity->draw();
-        }
-
-        int i = 0;
-        for(auto& unit : scene.getUnits())
-        {
-            glPolygonOffset(-1.0, -1.0*++i);
-            unit->drawSelectionDecal(0);
-        }
-
-        glPolygonOffset(-1.0, -1.0);
-        for(auto& unit : scene.getUnits())
-        {
-            unit->drawSelectionDecal(1);
-        }
-
-        interface.setResolution(xres, yres);
-        cameraControl.setResolution(xres, yres);
-        interface.draw();
-
         auto prevTime = time;
         time = glfwGetTime();
         auto dt = time - prevTime;
@@ -297,6 +263,40 @@ int main()
             delete input;
         }
 
+        glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        terrain.draw();
+       
+        for(auto& unit : scene.getUnits())
+        {
+            unit->updateUniforms();
+            unit->draw();
+        }
+
+        for(auto& entity : scene.getEntities())
+        {
+            entity->updateUniforms();
+            entity->draw();
+        }
+
+        int i = 0;
+        for(auto& unit : scene.getUnits())
+        {
+            glPolygonOffset(-1.0, -1.0*++i);
+            unit->drawSelectionDecal(0);
+        }
+
+        glPolygonOffset(-1.0, -1.0);
+        for(auto& unit : scene.getUnits())
+        {
+            unit->drawSelectionDecal(1);
+        }
+
+        interface.setResolution(xres, yres);
+        cameraControl.setResolution(xres, yres);
+        interface.draw();
+
         std::vector<SerializedParticle> P;
         for(auto particle : scene.getParticles())
         {
@@ -339,7 +339,7 @@ int main()
         line.setColor(Vector3(0.2, 0.7, 0.1));
         line.init(&scene);
         line.draw();
-        drawText(std::to_string(avgFps), { 0.80, 0.90 }, 0.03, { 0, 0.8, 0 });
+        drawText(realToString(avgFps, 3), { 0.80, 0.90 }, 0.03, { 0, 0.8, 0 });
         cameraControl.update(dt);
         glfwSwapBuffers(window);
         frames++;

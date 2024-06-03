@@ -47,7 +47,7 @@
 - Selectionmaterial shader doesn't use half of the stuff in it
 - Paths are expressed backwards
 - Optimize selection markers
-- "TODO: z is - ?"
++ "TODO: z is - ?"
 + Better heap for path finding (find min prio etc)
 - Tank turret position etc should be constants and calculated once
 - Models should be instantiated from a single source
