@@ -31,6 +31,7 @@
 #include <thread>
 #include "Logger.h"
 #include <format>
+#include <thread>
 #include "Text.h"
 
 
@@ -120,31 +121,23 @@ int main()
     auto particleGeometryShader = new Shader("particle.geom", GL_GEOMETRY_SHADER);
     auto particleVertexShader = new Shader("particle.vert", GL_VERTEX_SHADER);
 
-    for(int y = 0; y < 2; y++)
+    for(int y = 0; y < 4; y++)
     {
-        for(int x = 0; x < 2; x++)
+        for(int x = 0; x < 4; x++)
         {
-            scene.addUnit(new Tank({ 155.5f+x, 85.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain));
+            scene.addUnit(new Tank({ 155.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain));
         }
     }
 
-    for(int y = 0; y < 2; y++)
+    for(int y = 0; y < 4; y++)
     {
-        for(int x = 0; x < 2; x++)
+        for(int x = 0; x < 4; x++)
         {
-            auto enemy = new Tank({ 170.5f+x, 85.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
+            auto enemy = new Tank({ 170.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
             enemy->setEnemy(true);
             scene.addUnit(enemy);
         }
     }
-
-    /*for(int i = 0; i < 50; i++)
-        scene.addParticle(new Particle(glfwGetTime(), Vector3(170.5, 85.15, 3.07f+i*0.1f), Vector3(dist(generator), dist(generator), dist(generator)) ));*/
-
-    //PointLight* p = new PointLight();
-    //p->setPos({ 170.5f, 85.15f, scene.getTerrain()->getElevation(170.5, 85.15) + 1.0f });
-    //p->setColor({ 1, 0, 0 });
-    //scene.addLight(p);
 
     for(auto& e : scene.getUnits())
         e->init(&scene);
@@ -334,7 +327,6 @@ int main()
         glDepthMask (GL_TRUE);
 
         avgFps = ((9*avgFps + 1/dt))/10;
-        //std::cout << avgFps << std::endl;
         Line2d line;
         line.setColor(Vector3(0.2, 0.7, 0.1));
         line.init(&scene);
@@ -363,14 +355,10 @@ int main()
             }
             glUniform1i(glGetUniformLocation(program->getId(), std::format("nLights", i).c_str()), scene.getLights().size());
         }
-
     }
 
     quitting = true;
     t.join();
-
-    //for(auto& u : scene.getUnits())
-    //    delete u;
 
     glfwTerminate();
     return 0;

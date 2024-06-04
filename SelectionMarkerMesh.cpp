@@ -23,7 +23,6 @@ void SelectionMarkerMesh::draw()
     if(pass == 0)
     {
         SelectionDecalMaterial::radius = 0.90;
-        SelectionDecalMaterial::pass = 0;
 
         glEnable(GL_BLEND);
         glEnable(GL_POLYGON_OFFSET_FILL);
@@ -33,14 +32,10 @@ void SelectionMarkerMesh::draw()
     {
         glEnable(GL_BLEND);
         glEnable(GL_POLYGON_OFFSET_FILL);
-        glEnable( GL_SAMPLE_SHADING ) ;
-        glMinSampleShading(1.0);
 
-        glBlendFunc( GL_SRC_ALPHA_SATURATE, GL_ONE ) ;
         glBlendFuncSeparate(GL_ONE, GL_ZERO, GL_ZERO, GL_ONE);
 
         SelectionDecalMaterial::radius = pre ? 0.95 : 1;
-        SelectionDecalMaterial::pass = 0;
     }
     updateUniforms();
 

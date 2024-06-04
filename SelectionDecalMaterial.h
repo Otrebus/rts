@@ -23,5 +23,4 @@ public:
     static GLint kdLoc;
 
     static real radius;
-    static int pass;
 };

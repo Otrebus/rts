@@ -48,7 +48,7 @@ public:
     void setEnemyTarget(Unit* enemy);
     Unit* getEnemyTarget() const;
 
-    real health = 100;
+    real health;
 
 protected:
     PathFindingRequest* pathFindingRequest;

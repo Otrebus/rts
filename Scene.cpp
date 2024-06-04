@@ -71,9 +71,6 @@ void Scene::clearUnits()
     std::vector<std::shared_ptr<Unit>> newUnits;
     for(auto unit : units)
     {
-        /*if(deadUnits.contains(unit))
-            delete unit;
-        else*/
         if(!deadUnits.contains(unit))
             newUnits.push_back(unit->shared_from_this());
     }

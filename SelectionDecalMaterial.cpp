@@ -24,7 +24,6 @@ Shader* SelectionDecalMaterial::getShader()
 void SelectionDecalMaterial::updateUniforms(Scene* scene)
 {
     auto program = scene->getShaderProgram();
-    glUniform1i(glGetUniformLocation(program->getId(), "pass"), pass);
     glUniform1f(glGetUniformLocation(program->getId(), "radius"), radius);
     GLuint kdLocation = glGetUniformLocation(program->getId(), "Kd");
     glUniform3f(kdLocation, Kd.x, Kd.y, Kd.z);
@@ -33,4 +32,3 @@ void SelectionDecalMaterial::updateUniforms(Scene* scene)
 
 Shader* SelectionDecalMaterial::fragmentShader = nullptr;
 real SelectionDecalMaterial::radius = 0;
-int SelectionDecalMaterial::pass = 0;

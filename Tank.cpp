@@ -30,6 +30,8 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) :
     geoPos = pos.to2();
     geoDir = dir.to2();
 
+    health = 1;
+
     BoundingBox bb;
 
     lastFired = -inf;
@@ -322,7 +324,6 @@ bool Tank::setBallisticTarget(Unit* enemyTarget)
 void Tank::update(real dt)
 {
     auto prePos = pos;
-    updateTurret(dt);
 
     Unit* closestEnemy = nullptr;
     real closestD = inf;
@@ -453,6 +454,7 @@ void Tank::update(real dt)
 
     plant(*scene->getTerrain());
     velocity = (pos-prePos)/dt;
+    updateTurret(dt);
 }
 
 Vector2 Tank::seek()

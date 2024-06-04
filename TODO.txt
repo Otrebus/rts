@@ -36,13 +36,13 @@
   + Add projectile to list of stuff (entities list?)
   + Projectile update
   + Terrain intersection
-  - Shooting effects?
+  + Shooting effects?
     + Gun recoil
     + Light, smoke, particles
 + Friendly/Enemy units
   + Make enemy units unselectable etc
   + Make friendly units react to enemy units (shoot, pursue?)
-- "TODO: this is repeated elsewhere" - turret pos
++ "TODO: this is repeated elsewhere" - turret pos
 - Units move through terrain at low fps
 - Selectionmaterial shader doesn't use half of the stuff in it
 - Paths are expressed backwards
