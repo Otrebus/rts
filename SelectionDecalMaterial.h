@@ -23,4 +23,5 @@ public:
     static GLint kdLoc;
 
     static real radius;
+    static real alpha;
 };

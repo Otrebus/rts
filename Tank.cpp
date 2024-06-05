@@ -30,7 +30,7 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) :
     geoPos = pos.to2();
     geoDir = dir.to2();
 
-    health = 1;
+    health = 100;
 
     BoundingBox bb;
 

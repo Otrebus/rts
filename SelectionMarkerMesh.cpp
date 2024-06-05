@@ -20,8 +20,11 @@ void SelectionMarkerMesh::draw()
     scene->setShaderProgram(program);
     program->use();
 
+    ((SelectionDecalMaterial*) this->material)->updateUniforms(scene);
+
     if(pass == 0)
     {
+        ((SelectionDecalMaterial*) this->material)->alpha = 0.89;
         SelectionDecalMaterial::radius = 0.90;
 
         glEnable(GL_BLEND);
@@ -30,12 +33,23 @@ void SelectionMarkerMesh::draw()
     }
     else if(pass == 1)
     {
+        ((SelectionDecalMaterial*) this->material)->alpha = 1.0;
+        SelectionDecalMaterial::radius = pre ? 0.95 : 1;
+
         glEnable(GL_BLEND);
         glEnable(GL_POLYGON_OFFSET_FILL);
 
         glBlendFuncSeparate(GL_ONE, GL_ZERO, GL_ZERO, GL_ONE);
+    }
+    else if(pass == 2)
+    {
+        ((SelectionDecalMaterial*) this->material)->alpha = 1.0;
+        SelectionDecalMaterial::radius = 0.90;
 
-        SelectionDecalMaterial::radius = pre ? 0.95 : 1;
+        glEnable(GL_BLEND);
+        glEnable(GL_POLYGON_OFFSET_FILL);
+
+        glBlendFuncSeparate(GL_ONE_MINUS_DST_ALPHA, GL_DST_ALPHA, GL_ONE, GL_ZERO);
     }
     updateUniforms();
 

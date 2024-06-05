@@ -37,6 +37,8 @@ public:
 
     void setCursor(int shape);
 
+    void moveDrawnUnits(const std::vector<Unit*>& selectedUnits);
+
 //private:
     CameraControl* cameraControl;
     int xres, yres;

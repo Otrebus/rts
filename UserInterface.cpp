@@ -204,6 +204,85 @@ Unit* UserInterface::getUnit(const Ray& ray, const std::vector<Unit*>& units) co
     return nullptr;
 }
 
+void UserInterface::moveDrawnUnits(const std::vector<Unit*>& selectedUnits)
+{
+    real length = 0;
+    for(int i = 0; i < drawTarget.size()-1; i++)
+        length += (drawTarget[i+1]-drawTarget[i]).length();
+
+    auto k = length/2;
+    std::vector<Vector3> points;
+    if(selectedUnits.size() > 1)
+    {
+        k = length/(selectedUnits.size()-1);
+        points.insert(points.end(), { drawTarget.front(), drawTarget.back() } );
+    }
+
+    real L = 0;
+    for(int i = 0; i < drawTarget.size()-1; i++)
+    {
+        auto l = (drawTarget[i+1]-drawTarget[i]).length();
+        L += l;
+        while(L >= k)
+        {
+            auto p = drawTarget[i] + (drawTarget[i+1]-drawTarget[i])*((L-k)/l);
+            L -= k;
+            points.push_back(p);
+        }
+    }
+
+    // Match units to the points (to minimize the total length we'd need the Hungarian algorithm)
+    std::vector<bool> P(points.size(), false);
+
+    struct Assignment
+    {
+        Unit* unit;
+        int point;
+        real d;
+    };
+
+    std::vector<Assignment> v;
+
+    for(auto u : selectedUnits)
+    {
+        real min = inf;
+        int mini = 0;
+        for(int i = 0; i < points.size(); i++)
+        {
+            if(auto d = (points[i] - u->getPosition()).length(); !P[i] && d < min)
+            {
+                min = d;
+                mini = i;
+            }
+        }
+                
+        v.push_back(Assignment { u, mini, min });
+        P[mini] = true;
+    }
+
+    real sumD = 0;
+    for(auto& a : v)
+        sumD += a.d;
+
+    std::default_random_engine generator;
+    std::uniform_int_distribution<int> dist(0, v.size()-1);
+    for(int i = 0; i < 10000; i++)
+    {
+        int a = dist(generator), b = dist(generator);
+        real newda = (v[b].unit->getPosition() - points[v[a].point]).length();
+        real newdb = (v[a].unit->getPosition() - points[v[b].point]).length();
+        if(auto newd = sumD - (v[a].d + v[b].d) + newda + newdb; newd < sumD)
+        {
+            sumD = newd;
+            std::swap(v[a].unit, v[b].unit);
+            v[a].d = newda;
+            v[b].d = newdb;
+        }
+    }
+    for(auto assignment : v)
+        addUnitPathfindingRequest(assignment.unit, points[assignment.point]);
+}
+
 void UserInterface::selectUnit(const Ray& ray, const std::vector<Unit*>& units, bool pre)
 {
     auto time = glfwGetTime();
@@ -292,6 +371,7 @@ void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
 
         if(selectState == DrawingBox)
             selectUnits(units, false);
+
         else if(selectState == Clicking)
         {
             auto c1 = drawBoxc1;
@@ -377,81 +457,8 @@ void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
                 if(unit->isSelected())
                     selectedUnits.push_back(unit);
 
-            real length = 0;
-            for(int i = 0; i < drawTarget.size()-1; i++)
-                length += (drawTarget[i+1]-drawTarget[i]).length();
-
-            auto k = length/2;
-            std::vector<Vector3> points;
-            if(selectedUnits.size() > 1)
-            {
-                k = length/(selectedUnits.size()-1);
-                points.insert(points.end(), { drawTarget.front(), drawTarget.back() } );
-            }
-
-            real L = 0;
-            for(int i = 0; i < drawTarget.size()-1; i++)
-            {
-                auto l = (drawTarget[i+1]-drawTarget[i]).length();
-                L += l;
-                while(L >= k)
-                {
-                    auto p = drawTarget[i] + (drawTarget[i+1]-drawTarget[i])*((L-k)/l);
-                    L -= k;
-                    points.push_back(p);
-                }
-            }
-
-            // Match units to the points (to minimize the total length we'd need the Hungarian algorithm)
-            std::vector<bool> P(points.size(), false);
-
-            struct Assignment
-            {
-                Unit* unit;
-                int point;
-                real d;
-            };
-
-            std::vector<Assignment> v;
-
-            for(auto u : selectedUnits)
-            {
-                real min = inf;
-                int mini = 0;
-                for(int i = 0; i < points.size(); i++)
-                {
-                    if(auto d = (points[i] - u->getPosition()).length(); !P[i] && d < min)
-                    {
-                        min = d;
-                        mini = i;
-                    }
-                }
-                
-                v.push_back(Assignment { u, mini, min });
-                P[mini] = true;
-            }
-
-            real sumD = 0;
-            for(auto& a : v)
-                sumD += a.d;
-
-            std::default_random_engine generator;
-            std::uniform_int_distribution<int> dist(0, v.size()-1);
-            for(int i = 0; i < 10000; i++)
-            {
-                int a = dist(generator), b = dist(generator);
-                real newda = (v[b].unit->getPosition() - points[v[a].point]).length();
-                real newdb = (v[a].unit->getPosition() - points[v[b].point]).length();
-                if(auto newd = sumD - (v[a].d + v[b].d) + newda + newdb; newd < sumD)
-                {
-                    sumD = newd;
-                    std::swap(v[a].unit, v[b].unit);
-                    v[a].d = newda;
-                    v[b].d = newdb;
-                }
-            }
-            for(auto assignment : v)
-                addUnitPathfindingRequest(assignment.unit, points[assignment.point]);
+            if(!selectedUnits.empty())
+                moveDrawnUnits(selectedUnits);
         }
 
         drawTarget.clear();
