@@ -220,6 +220,8 @@ int main()
                 {
                     auto mode = terrain.getDrawMode();
                     if(mode == Terrain::DrawMode::Normal)
+                        terrain.setDrawMode(Terrain::DrawMode::Grid);
+                    else if(mode == Terrain::DrawMode::Grid)
                         terrain.setDrawMode(Terrain::DrawMode::Wireframe);
                     else if(mode == Terrain::DrawMode::Wireframe)
                         terrain.setDrawMode(Terrain::DrawMode::Flat);

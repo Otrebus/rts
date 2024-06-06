@@ -3,6 +3,7 @@
 #include "TerrainMesh.h"
 #include "Ray.h"
 #include "GeometryUtils.h"
+#include "TexturedTerrainMaterial.h"
 
 
 TerrainMesh* Terrain::createMesh(std::string fileName)
@@ -64,6 +65,64 @@ TerrainMesh* Terrain::createMesh(std::string fileName)
     return terrainMesh = new TerrainMesh(vertices, triangleIndices, mat);
 }
 
+TerrainMesh* Terrain::createTexturedMesh(std::string fileName)
+{
+    auto [colors, width, height] = readBMP(fileName, false);
+    std::vector<MeshVertex3d> vertices(width*height);
+    points.clear();
+    triangleIndices.clear();
+
+    auto H = [&colors, &width, &height] (int x, int y)
+    {
+        return colors[width*3*(height-y-1)+x*3]/255.0*width/15;
+    };
+
+    for (int y = 0; y < height; y++)
+    {
+        for(int x = 0; x < width; x++)
+        {
+            real X = x;
+            real Y = y;
+
+            auto fx = x == 0, lx = x == width-1;
+            auto fy = y == 0, ly = y == height-1;
+
+            auto dx = ((!lx ? H(x+1, y) : H(x, y)) - (!fx ? H(x-1, y) : H(x, y)))/((!fx + !lx));
+            auto dy = ((!ly ? H(x, y+1) : H(x, y)) - (!fy ? H(x, y-1) : H(x, y)))/((!fy + !ly));
+            real l = std::sqrt(dx*dx+dy*dy+1);
+            points.push_back(Vector3(X, Y, H(x, y) + 3.0));
+            vertices[width*y+x] = MeshVertex3d(X, Y, H(x, y) + 3.0, -dx/l, -dy/l, 1.0/l, x, y);
+            vertices[width*y+x].selected = 0;
+        }
+    }
+    for(int y = 0; y < height-1; y++)
+    {
+        for(int x = 0; x < width-1; x++)
+        {
+            int a = width*y + x;
+            int b = width*y + x+1;
+            int c = width*(y+1) + x+1;
+            int d = width*(y+1) + x;
+            triangleIndices.insert(triangleIndices.end(), { a, c, d, a, b, c });
+            if(!isTriangleAdmissible(points[a], points[b], points[c]))
+                vertices[a].selected = vertices[b].selected = vertices[c].selected = 1;
+            if(!isTriangleAdmissible(points[a], points[c], points[d]))
+                vertices[a].selected = vertices[c].selected = vertices[d].selected = 1;
+        }
+    }
+
+    this->width = width;
+    this->height = height;
+
+    admissiblePoints = new bool[width*height];
+    std::fill(admissiblePoints, admissiblePoints + width*height, true);
+    calcAdmissiblePoints();
+    
+    if(terrainMesh)
+        delete terrainMesh;
+    Material* mat = new TexturedTerrainMaterial();
+    return terrainMesh = new TerrainMesh(vertices, triangleIndices, mat);
+}
 
 TerrainMesh* Terrain::createFlatMesh(std::string fileName)
 {
@@ -265,7 +324,10 @@ Terrain::Terrain(const std::string& fileName, Scene* scene) : fileName(fileName)
 
 void Terrain::init()
 {
-    auto terrainMesh = createMesh(fileName);
+    if(drawMode == Normal)
+        auto terrainMesh = createTexturedMesh(fileName);
+    else
+        auto terrainMesh = createMesh(fileName);
     terrainModel = Model3d(*terrainMesh);
     terrainModel.init(scene);
 }
@@ -284,14 +346,14 @@ void Terrain::draw()
     ((TerrainMesh*) (terrainModel.getMeshes()[0]))->setFlat(drawMode == DrawMode::Flat);
     terrainModel.updateUniforms();
     terrainModel.draw();
-    if(drawMode != DrawMode::Normal)
+    if(drawMode != DrawMode::Grid)
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 real Terrain::getElevation(real x, real y) const
 {
     // TODO: could overflow, check
-    // temporary hack
+    // temporary (ha!) hack
     if(y > 0)
         y -= 1e-4;
     if(x > 0)
@@ -347,7 +409,7 @@ void Terrain::setDrawMode(DrawMode d)
 {
     drawMode = d;
     std::cout << "Setting drawmode " << drawMode << std::endl;
-    if(drawMode == DrawMode::Flat || drawMode == DrawMode::Normal)
+    if(drawMode == DrawMode::Normal || drawMode == DrawMode::Grid)
     {
         tearDown();
         init();

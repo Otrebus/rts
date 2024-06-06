@@ -16,8 +16,9 @@ public:
    enum DrawMode
    {
       Normal = 0,
-      Wireframe = 1,
-      Flat = 2
+	  Grid = 1,
+      Wireframe = 2,
+      Flat = 3
    };
 
    std::pair<int, int> getClosestAdmissible(Vector2 v) const; // TODO: temp public
@@ -45,6 +46,7 @@ private:
 
 	TerrainMesh* createFlatMesh(std::string fileName);
 	TerrainMesh* createMesh(std::string fileName);
+	TerrainMesh* createTexturedMesh(std::string fileName);
 
 	bool isVisible(Vector2 start, Vector2 end) const;
 
