@@ -343,7 +343,8 @@ void Terrain::draw()
 {
     if(drawMode == DrawMode::Wireframe)
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    ((TerrainMesh*) (terrainModel.getMeshes()[0]))->setFlat(drawMode == DrawMode::Flat);
+    if(drawMode != DrawMode::Normal)
+        ((TerrainMesh*) (terrainModel.getMeshes()[0]))->setFlat(drawMode == DrawMode::Flat);
     terrainModel.updateUniforms();
     terrainModel.draw();
     if(drawMode != DrawMode::Grid)

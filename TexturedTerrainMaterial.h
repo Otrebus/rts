@@ -20,9 +20,9 @@ public:
 
     static Shader* fragmentShader;
 
-    bool isFlat;
-    void setFlat(bool flatness);
-
     unsigned int texture;
+    unsigned int texture2;
+
+    unsigned int splatMap;
     Scene* scene;
 };

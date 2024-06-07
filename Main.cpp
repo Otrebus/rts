@@ -76,8 +76,8 @@ int main()
     //debugDraw(window, xres, yres);
     //return 0;
 
-    /*glEnable              ( GL_DEBUG_OUTPUT );
-    glDebugMessageCallback( MessageCallback, 0 );*/
+    //glEnable              ( GL_DEBUG_OUTPUT );
+    //glDebugMessageCallback( MessageCallback, 0 );
 
     int success;
     char infoLog[512];
