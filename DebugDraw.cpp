@@ -12,7 +12,7 @@
 #include "Matrix4.h"
 #include "UserInterface.h"
 #include "LambertianMaterial.h"
-#include "ObjReader.h"
+#include "Parser.h"
 #include "Model3d.h"
 #include "TextureMaterial.h"
 #include "Input.h"

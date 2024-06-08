@@ -264,17 +264,13 @@ void Tank::accelerate(Vector2 velocityTarget)
     }
 
     auto radialAcc = Vector2(-dir.y, dir.x)*turnRate*maxSpeed;
-
-    //Line3d line({
-    //    pos,
-    //    pos + turnAcc.to3()
-    //});
-    //line.setUp(scene);
-    //line.setInFront(true);
-    //line.draw();
-
     auto projAcc = !radialAcc ? std::abs(accelerationTarget*geoDir.normalized()) : radialAcc.length()/(radialAcc.normalized()*accelerationTarget.normalized());
 
+    if(projAcc < 1e-6)
+    {
+        acceleration = 0;
+        return;
+    }
     acceleration = std::max(-maxBreakAcc, std::min(maxForwardAcc, (accelerationTarget.normalized()*projAcc)*geoDir));
 }
 

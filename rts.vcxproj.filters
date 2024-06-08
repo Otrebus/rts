@@ -13,7 +13,7 @@
     <ClCompile Include="Model3d.cpp">
       <Filter>Source files\Models</Filter>
     </ClCompile>
-    <ClCompile Include="ObjReader.cpp">
+    <ClCompile Include="Parser.cpp">
       <Filter>Source files\Models</Filter>
     </ClCompile>
     <ClCompile Include="Vector3.cpp">
@@ -162,7 +162,7 @@
     <ClInclude Include="Model3d.h">
       <Filter>Source files\Models</Filter>
     </ClInclude>
-    <ClInclude Include="ObjReader.h">
+    <ClInclude Include="Parser.h">
       <Filter>Source files\Models</Filter>
     </ClInclude>
     <ClInclude Include="Vector3.h">

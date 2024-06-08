@@ -82,15 +82,21 @@ void main()
     vec3 ambient = vec3(0.1, 0.1, 0.14);
     vec3 color = vec3(0.8, 0.75, 0.7)*lambertian + ambient;
 
-	vec4 FragColor1 = textureNoTile(texture1, texCoord);
-    vec4 FragColor2 = textureNoTile(texture2, texCoord);
+//	vec4 FragColor1 = textureNoTile(texture1, texCoord);
+//    vec4 FragColor2 = textureNoTile(texture2, texCoord);
     vec4 splatMap = texture(texture3, vec2(texCoord.x/terrainWidth, texCoord.y/terrainHeight));
 
-    vec4 texSum = splatMap.r*FragColor1 + splatMap.g*FragColor2;
+    vec4 texSum = vec4(0, 0, 0, 0);
+    if(splatMap.r > 0) 
+        texSum += splatMap.r*textureNoTile(texture1, texCoord);
+    if(splatMap.g > 0)
+        texSum += splatMap.g*textureNoTile(texture2, texCoord);
+    if(splatMap.b > 0)
+        texSum += splatMap.b*textureNoTile(texture2, texCoord);
 
     color = clamp(color, 0.0, 1.0);
-    FragColor = texSum*(vec4(color, 1) + vec4(ambient, 1)); // But ambient was already mixed in?
-    FragColor = clamp(FragColor, 0.0, 1.0);
+    FragColor = texSum*(vec4(color, 1));
+
     for(int i = 0; i < nLights; i++)
     {
         lightDir = normalize(pointLights[i].position-position);

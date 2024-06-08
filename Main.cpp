@@ -12,7 +12,7 @@
 #include "Camera.h"
 #include "Matrix4.h"
 #include "UserInterface.h"
-#include "ObjReader.h"
+#include "Parser.h"
 #include "Model3d.h"
 #include "TextureMaterial.h"
 #include "Input.h"
@@ -121,17 +121,17 @@ int main()
     auto particleGeometryShader = new Shader("particle.geom", GL_GEOMETRY_SHADER);
     auto particleVertexShader = new Shader("particle.vert", GL_VERTEX_SHADER);
 
-    for(int y = 0; y < 4; y++)
+    for(int y = 0; y < 8; y++)
     {
-        for(int x = 0; x < 4; x++)
+        for(int x = 0; x < 8; x++)
         {
             scene.addUnit(new Tank({ 155.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain));
         }
     }
 
-    for(int y = 0; y < 4; y++)
+    for(int y = 0; y < 8; y++)
     {
-        for(int x = 0; x < 4; x++)
+        for(int x = 0; x < 8; x++)
         {
             auto enemy = new Tank({ 170.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
             enemy->setEnemy(true);
@@ -275,22 +275,20 @@ int main()
             entity->draw();
         }
 
-        int i = 0;
+        glPolygonOffset(-1.0, -1.0);
         for(auto& unit : scene.getUnits())
         {
-            glPolygonOffset(-1.0, -1.0*++i);
             unit->drawSelectionDecal(0);
         }
 
-        glPolygonOffset(-1.0, -1.0);
         for(auto& unit : scene.getUnits())
         {
             unit->drawSelectionDecal(1);
         }
 
+        glPolygonOffset(-1.0, -2.0);
         for(auto& unit : scene.getUnits())
         {
-            glPolygonOffset(-1.0, -1.0*++i);
             unit->drawSelectionDecal(2);
         }
 

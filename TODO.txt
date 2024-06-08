@@ -27,6 +27,7 @@
 + "TODO: these vectors before normalization can be 0"
 + "TODO: is b in the right direction?"
 - Check if checking for release input checks that release can be both startStart and stateEnd, check
+- When path finding results return, the first waypoint of the tank can be right next to it (most noticable at low fps) - replace the first waypoint with the tank position?
 + Movement painting
 - Attack movement type
 * Shooting:
@@ -39,6 +40,8 @@
   + Shooting effects?
     + Gun recoil
     + Light, smoke, particles
+    - Improve hit effect
++ Tank textures
 + Friendly/Enemy units
   + Make enemy units unselectable etc
   + Make friendly units react to enemy units (shoot, pursue?)
