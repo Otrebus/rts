@@ -58,7 +58,7 @@ public:
 
     Vector2 geoPos, geoDir, geoVelocity;
 
-    BoundingBoxModel* boundingBoxModel;
+    Model3d* boundingBoxModel;
     BoundingBox boundingBox;
 
     Scene* scene;

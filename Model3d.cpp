@@ -36,7 +36,26 @@ struct ObjTriangle
 
 Model3d::Model3d(std::string filename)
 {
-    readFromFile(filename);
+
+    if(!templateMap.contains(filename))
+    {
+        readFromFile(filename);
+        templateMap[filename] = this;
+    }
+    else
+    {
+        auto model = templateMap[filename];
+        for(auto mesh : model->meshes)
+        {
+            meshes.push_back(new Mesh3d(*mesh));
+        }
+    }
+    this->filename = filename;
+}
+
+
+Model3d::~Model3d()
+{
 }
 
 
@@ -48,13 +67,6 @@ Model3d::Model3d(Mesh3d& mesh)
 
 Model3d::Model3d()
 {
-}
-
-
-Model3d::~Model3d()
-{
-    for(auto mat : materials)
-        delete mat;
 }
 
 
@@ -115,12 +127,6 @@ const std::vector<Mesh3d*>& Model3d::getMeshes() const
 }
 
 
-Vector3 Model3d::getPosition() const
-{
-    return position;
-}
-
-
 /**
  * Reads a Wavefront .mtl file.
  * 
@@ -145,7 +151,6 @@ std::map<std::string, Material*> Model3d::readMaterialFile(const std::string& ma
     auto parser = Parser(tokenize(matfile, str));
 
     LambertianMaterial* curmat = nullptr;
-    std::string matName;
     bool phong = false, emissive = false;
     while(!parser.accept(Token::Eof))
     {
@@ -154,50 +159,10 @@ std::map<std::string, Material*> Model3d::readMaterialFile(const std::string& ma
 
         else if(acceptAnyCaseStr(parser, "newmtl"))
         {
-            matName = expectStr(parser);
-
-            if(parser.accept(Token(Token::Operator, ":"))) // We expect a special material definition to follow
-            {
-                //auto b = std::string(expectStr(parser));
-                //transform(b.begin(), b.end(), b.begin(), [](char b) { return (char) tolower(b); });
-                //if(b == "emissive")
-                //    curmat = new EmissiveMaterial;
-                //else if(b == "lambertian")
-                //    curmat = new LambertianMaterial;
-                //else if(b == "mirror")
-                //    curmat = new MirrorMaterial;
-                //else if(b == "phong")
-                //    curmat = new PhongMaterial;
-                //else if(b == "dielectric")
-                //    curmat = new DielectricMaterial;
-                //else if(b == "ashikhminshirley")
-                //    curmat = new AshikhminShirley;
-                //else
-                //    throw ParseException("Unknown material: " + b);
-                //
-                //while(parser.accept(Token::Newline));
-                //parser.expect(Token(Token::Operator, "{"));
-
-                //Token token(Token::Eof);
-                //std::string matArg;
-                //while((token = parser.next()) != Token(Token::Operator, "}"))
-                //{
-                //    if(token == Token::Eof)
-                //        throw ParseException("Unexpected end of file");
-                //    matArg += std::string(token.str) + " ";
-                //}
-
-                //materials[matName] = curmat;
-                //std::stringstream ss(matArg);
-                //curmat->ReadProperties(ss);
-            }
-            else
-            {
-                curmat = new LambertianMaterial;
-                materials[matName] = curmat;
-                this->materials.push_back(curmat);
-                phong = true;
-            }
+            std::string matName = std::string(expectStr(parser));
+            curmat = new LambertianMaterial;
+            materials[matName] = curmat;
+            phong = true;
         }
 
         else if(acceptAnyCaseStr(parser, "ka"))
@@ -485,3 +450,6 @@ void Model3d::readFromFile(const std::string& file)
         __debugbreak();
     }
 }
+
+
+std::unordered_map<std::string, Model3d*> Model3d::templateMap = std::unordered_map<std::string, Model3d*>();

@@ -36,81 +36,90 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) :
 
     lastFired = -inf;
 
-    for(auto model : { body, turret, gun })
+    if(body->isTemplate())
     {
-        for(auto& mesh : model->getMeshes())
+        for(auto model : { body, turret, gun })
+        {
+            for(auto& mesh : model->getMeshes())
+            {
+                for(auto& v : ((Mesh3d*) mesh)->v)
+                {
+                    v.pos = Vector3(v.pos.z, v.pos.x, v.pos.y);
+                    v.normal = Vector3(v.normal.z, v.normal.x, v.normal.y);
+                    bb.c1.x = std::min(bb.c1.x, v.pos.x);
+                    bb.c1.y = std::min(bb.c1.y, v.pos.y);
+                    bb.c1.z = std::min(bb.c1.z, v.pos.z);
+                    bb.c2.x = std::max(bb.c2.x, v.pos.x);
+                    bb.c2.y = std::max(bb.c2.y, v.pos.y);
+                    bb.c2.z = std::max(bb.c2.z, v.pos.z);
+                }
+            }
+        }
+
+        auto w = (bb.c2.x - bb.c1.x);
+        auto d = (bb.c2.y - bb.c1.y);
+        auto h = (bb.c2.z - bb.c1.z);
+        auto ratio = width/w;
+
+        for(auto model : { body, turret, gun })
+        {
+            BoundingBox bb;
+            for(auto& mesh : model->getMeshes())
+            {
+                for(auto& v : ((Mesh3d*) mesh)->v)
+                {
+                    bb.c1.x = std::min(bb.c1.x, v.pos.x);
+                    bb.c1.y = std::min(bb.c1.y, v.pos.y);
+                    bb.c1.z = std::min(bb.c1.z, v.pos.z);
+                    bb.c2.x = std::max(bb.c2.x, v.pos.x);
+                    bb.c2.y = std::max(bb.c2.y, v.pos.y);
+                    bb.c2.z = std::max(bb.c2.z, v.pos.z);
+                }
+            }
+            for(auto& mesh : model->getMeshes())
+            {
+                for(auto& v : ((Mesh3d*) mesh)->v)
+                {
+                    v.pos -= Vector3((bb.c2.x + bb.c1.x)/2, (bb.c2.y + bb.c1.y)/2, (bb.c2.z + bb.c1.z)/2);
+                    v.pos *= width/w;
+                }
+            }
+        }
+        real gunMinX = inf;
+        real gunMaxX = -inf;
+        for(auto& mesh : gun->getMeshes())
         {
             for(auto& v : ((Mesh3d*) mesh)->v)
             {
-                v.pos = Vector3(v.pos.z, v.pos.x, v.pos.y);
-                v.normal = Vector3(v.normal.z, v.normal.x, v.normal.y);
-                bb.c1.x = std::min(bb.c1.x, v.pos.x);
-                bb.c1.y = std::min(bb.c1.y, v.pos.y);
-                bb.c1.z = std::min(bb.c1.z, v.pos.z);
-                bb.c2.x = std::max(bb.c2.x, v.pos.x);
-                bb.c2.y = std::max(bb.c2.y, v.pos.y);
-                bb.c2.z = std::max(bb.c2.z, v.pos.z);
+                gunMinX = std::min(v.pos.x, gunMinX);
+                gunMaxX = std::max(v.pos.x, gunMaxX);
             }
         }
-    }
-
-    auto w = (bb.c2.x - bb.c1.x);
-    auto d = (bb.c2.y - bb.c1.y);
-    auto h = (bb.c2.z - bb.c1.z);
-    auto ratio = width/w;
-
-    for(auto model : { body, turret, gun })
-    {
-        BoundingBox bb;
-        for(auto& mesh : model->getMeshes())
+        for(auto& mesh : gun->getMeshes())
         {
             for(auto& v : ((Mesh3d*) mesh)->v)
-            {
-                bb.c1.x = std::min(bb.c1.x, v.pos.x);
-                bb.c1.y = std::min(bb.c1.y, v.pos.y);
-                bb.c1.z = std::min(bb.c1.z, v.pos.z);
-                bb.c2.x = std::max(bb.c2.x, v.pos.x);
-                bb.c2.y = std::max(bb.c2.y, v.pos.y);
-                bb.c2.z = std::max(bb.c2.z, v.pos.z);
-            }
+                v.pos.x -= gunMinX;
         }
-        for(auto& mesh : model->getMeshes())
-        {
-            for(auto& v : ((Mesh3d*) mesh)->v)
-            {
-                v.pos -= Vector3((bb.c2.x + bb.c1.x)/2, (bb.c2.y + bb.c1.y)/2, (bb.c2.z + bb.c1.z)/2);
-                v.pos *= width/w;
-            }
-        }
-        model->setPosition(pos);
-        model->setDirection(dir, up);
+        gunLength = gunMaxX - gunMinX;
+
+        height = h*ratio;
+        depth = d*ratio;
+        tankBoundingBoxModel = new BoundingBoxModel(pos, dir, up, width, depth, height);
+        tankBoundingBox = BoundingBox(Vector3(-width/2, -depth/2, -height/2), Vector3(width/2, depth/2, height/2));
     }
 
-    real gunMinX = inf;
-    real gunMaxX = -inf;
-    for(auto& mesh : gun->getMeshes())
-    {
-        for(auto& v : ((Mesh3d*) mesh)->v)
-        {
-            gunMinX = std::min(v.pos.x, gunMinX);
-            gunMaxX = std::max(v.pos.x, gunMaxX);
-        }
-    }
-    for(auto& mesh : gun->getMeshes())
-    {
-        for(auto& v : ((Mesh3d*) mesh)->v)
-            v.pos.x -= gunMinX;
-    }
-    gunLength = gunMaxX - gunMinX;
-
-    height = h*ratio;
-    depth = d*ratio;
-    boundingBoxModel = new BoundingBoxModel(pos, dir, up, width, depth, height);
-    boundingBox = BoundingBox(Vector3(-width/2, -depth/2, -height/2), Vector3(width/2, depth/2, height/2));
+    boundingBox = tankBoundingBox;
+    boundingBoxModel = tankBoundingBoxModel;
 
     selectionMarkerMesh = new SelectionMarkerMesh(this);
 
     pathCalculationInterval = (500 + (rand() % 500))/1000.0f;
+
+    for(auto model : { body, turret, gun })
+    {
+        model->setPosition(pos);
+        model->setDirection(dir, up);
+    }
 }
 
 
@@ -578,3 +587,8 @@ bool Tank::canTurretAbsoluteTarget(Vector3 target)
         return false;
     return true;
 }
+
+
+
+Model3d* Tank::tankBoundingBoxModel = nullptr;
+BoundingBox Tank::tankBoundingBox = BoundingBox();

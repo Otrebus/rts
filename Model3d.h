@@ -14,9 +14,9 @@ class Model3d
 {
 protected:
     std::vector<Mesh3d*> meshes;
-    std::vector<Material*> materials;
-
-    Vector3 position;
+    Model3d* templateModel;
+    static std::unordered_map<std::string, Model3d*> templateMap;
+    std::string filename;
 
 public:
     Model3d(std::string filename);
@@ -38,7 +38,11 @@ public:
     void updateUniforms();
 
     void setPosition(Vector3 pos);
-    Vector3 getPosition() const;
 
     void setDirection(Vector3 dir, Vector3 up);
+
+    bool isTemplate()
+    {
+        return templateMap[filename] == this;
+    }
 };

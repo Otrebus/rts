@@ -99,4 +99,8 @@ public:
 
     Line3d destinationLine;
     Line3d enemyLine;
+
+    
+    static Model3d* tankBoundingBoxModel;
+    static BoundingBox tankBoundingBox;
 };

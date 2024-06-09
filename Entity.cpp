@@ -161,3 +161,4 @@ Vector2 Entity::getGeoVelocity() const
 {
     return geoVelocity;
 }
+
