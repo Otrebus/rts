@@ -104,7 +104,12 @@ void Scene::updateEntities()
     for(auto e : entities)
         if(!deadEntities.contains(e))
             newEntities.push_back(e);
+
     entities = newEntities;
+    for(auto& entity : deadEntities)
+        delete entity;
+
+    deadEntities.clear();
 }
 
 void Scene::addLight(PointLight* light)
@@ -123,6 +128,8 @@ void Scene::updateLights()
     for(auto e : lights)
         if(!deadLights.contains(e))
             newLights.push_back(e);
+        else
+            delete e;
     lights = newLights;
 }
 
@@ -147,5 +154,8 @@ void Scene::updateParticles()
     for(auto e : particles)
         if(e->isAlive())
             newParticles.push_back(e);
+        else
+            delete e;
+
     particles = newParticles;
 }

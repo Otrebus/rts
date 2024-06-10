@@ -42,4 +42,10 @@ void TextureMaterial::updateUniforms(Scene* scene)
 }
 
 
+Material* TextureMaterial::clone()
+{
+    return new TextureMaterial(*this);
+}
+
+
 Shader* TextureMaterial::fragmentShader = nullptr;

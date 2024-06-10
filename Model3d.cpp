@@ -8,6 +8,49 @@
 #include "Parser.h"
 
 
+bool ModelManager::hasModel(const std::string& identifier)
+{
+    return templateMap.contains(identifier);
+}
+
+
+Model3d* ModelManager::cloneModel(const std::string& identifier)
+{
+    auto baseModel = templateMap[identifier];
+    auto newModel = new Model3d();
+    for(auto mesh : baseModel->meshes)
+        newModel->meshes.push_back(new Mesh3d(*mesh));
+    return newModel;
+}
+
+
+void ModelManager::deleteModel(const std::string& identifier, Model3d* model)
+{
+    if(!model->_isTemplate)
+    {
+        delete model;
+    }
+}
+
+
+Model3d* Model3d::createModel(const std::string& fileName)
+{
+    if(!ModelManager::hasModel(fileName))
+    {
+        auto model = new Model3d();
+        model->readFromFile(fileName);
+        ModelManager::addModel(fileName, model);
+        model->_isTemplate = true;
+        return model;
+    }
+    else
+    {
+        auto model = ModelManager::cloneModel(fileName);
+        return model;
+    }
+}
+
+
 struct ObjVertex
 {
     ObjVertex(Vector3 position, Vector3 normal, Vector2 texture) : position(position), normal(normal), texture(texture) {}
@@ -34,41 +77,39 @@ struct ObjTriangle
 };
 
 
-Model3d::Model3d(std::string filename)
-{
-
-    if(!templateMap.contains(filename))
-    {
-        readFromFile(filename);
-        templateMap[filename] = this;
-    }
-    else
-    {
-        auto model = templateMap[filename];
-        for(auto mesh : model->meshes)
-        {
-            meshes.push_back(new Mesh3d(*mesh));
-        }
-    }
-    this->filename = filename;
-}
-
-
 Model3d::~Model3d()
 {
+    if(!_isTemplate)
+        for(auto& mesh : meshes)
+            delete mesh;
 }
 
 
-Model3d::Model3d(Mesh3d& mesh)
+Model3d::Model3d(Mesh3d& mesh) : _isTemplate(false)
 {
     addMesh(mesh);
 }
 
+Model3d& Model3d::operator= (const Model3d& model)
+{
+    /*for(auto mesh : meshes)
+        if(!mesh->isTemplate)
+            delete mesh;*/
+    meshes.clear();
+    for(auto mesh : model.meshes)
+        addMesh(*new Mesh3d(*mesh));
+    return *this;
+}
 
-Model3d::Model3d()
+Model3d::Model3d() : _isTemplate(false)
 {
 }
 
+Model3d::Model3d(Model3d& model)
+{
+    for(auto mesh : model.meshes)
+        addMesh(*new Mesh3d(*mesh));
+}
 
 void Model3d::addMesh(Mesh3d& mesh)
 {
@@ -79,7 +120,9 @@ void Model3d::addMesh(Mesh3d& mesh)
 void Model3d::init(Scene* scene)
 {
     for(auto& mesh : meshes)
+    {
         mesh->init(scene);
+    }
 }
 
 
@@ -452,4 +495,4 @@ void Model3d::readFromFile(const std::string& file)
 }
 
 
-std::unordered_map<std::string, Model3d*> Model3d::templateMap = std::unordered_map<std::string, Model3d*>();
+std::unordered_map<std::string, Model3d*> ModelManager::templateMap = std::unordered_map<std::string, Model3d*>();

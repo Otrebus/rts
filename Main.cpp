@@ -95,9 +95,8 @@ int main()
     ShaderProgramManager shaderProgramManager;
 
     Scene scene(&cam, &shaderProgramManager);
-
+    
     std::thread t(pathFindingThread);
-
     Terrain terrain("Heightmap.bmp", &scene);
     CameraControl cameraControl(&cam, &terrain, xres, yres);
 
@@ -121,17 +120,17 @@ int main()
     auto particleGeometryShader = new Shader("particle.geom", GL_GEOMETRY_SHADER);
     auto particleVertexShader = new Shader("particle.vert", GL_VERTEX_SHADER);
 
-    for(int y = 0; y < 2; y++)
+    for(int y = 0; y < 16; y++)
     {
-        for(int x = 0; x < 2; x++)
+        for(int x = 0; x < 16; x++)
         {
-            scene.addUnit(new Tank({ 155.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain));
+            scene.addUnit(new Tank({ 150.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain));
         }
     }
 
-    for(int y = 0; y < 2; y++)
+    for(int y = 0; y < 16; y++)
     {
-        for(int x = 0; x < 2; x++)
+        for(int x = 0; x < 16; x++)
         {
             auto enemy = new Tank({ 170.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
             enemy->setEnemy(true);

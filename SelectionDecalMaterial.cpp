@@ -32,6 +32,11 @@ void SelectionDecalMaterial::updateUniforms(Scene* scene)
     glUniform1f(alphaLocation, alpha);
 }
 
+Material* SelectionDecalMaterial::clone()
+{
+    return new SelectionDecalMaterial(*this);
+}
+
 
 Shader* SelectionDecalMaterial::fragmentShader = nullptr;
 real SelectionDecalMaterial::radius = 0;

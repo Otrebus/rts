@@ -19,6 +19,8 @@ public:
 
     Shader* getShader();
 
+    Material* clone();
+
     Vector3 Kd;
     static Shader* fragmentShader;
     static GLint kdLoc;

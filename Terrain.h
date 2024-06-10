@@ -26,7 +26,7 @@ public:
    bool isAdmissible(int x, int y) const;
 
 private:
-	Model3d terrainModel;
+	Model3d* terrainModel;
 	Scene* scene;
 	DrawMode drawMode;
 	std::string fileName;

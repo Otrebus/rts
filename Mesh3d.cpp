@@ -6,6 +6,8 @@
 
 Mesh3d::Mesh3d()
 {
+    isTemplate = true;
+    scene = nullptr;
     if(!vertexShader)
         vertexShader = new Shader("vertexShader.vert", GL_VERTEX_SHADER);
     if(!geometryShader)
@@ -15,6 +17,7 @@ Mesh3d::Mesh3d()
 
 Mesh3d::Mesh3d(std::vector<Vertex3d> vertices, std::vector<int> triangles, Material* material)
 {
+    isTemplate = true;
     this->material = material;
     this->v = vertices;
     this->triangles = triangles;
@@ -25,8 +28,22 @@ Mesh3d::Mesh3d(std::vector<Vertex3d> vertices, std::vector<int> triangles, Mater
 }
 
 
+Mesh3d::Mesh3d(Mesh3d& mesh)
+{
+    this->material = mesh.material->clone();
+    this->v = mesh.v;
+    this->triangles = mesh.triangles;
+    this->VAO = mesh.VAO;
+    this->VBO = mesh.VBO;
+    this->EBO = mesh.EBO;
+    this->isTemplate = false;
+}
+
+
 Mesh3d::~Mesh3d()
 {
+    if(!isTemplate)
+        delete material;
 }
 
 
@@ -59,9 +76,12 @@ void Mesh3d::init(Scene* s)
 
 void Mesh3d::tearDown()
 {
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
-    glDeleteVertexArrays(1, &VAO);
+    if(!isTemplate)
+    {
+        glDeleteBuffers(1, &VBO);
+        glDeleteBuffers(1, &EBO);
+        glDeleteVertexArrays(1, &VAO);
+    }
 }
 
 void Mesh3d::draw()

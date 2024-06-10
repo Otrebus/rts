@@ -17,9 +17,9 @@
 // TODO: no need to get terrain since we have scene->getTerrain()
 Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) : Unit(pos, dir, up), turnRate(0), acceleration(0), terrain(terrain), gunRecoilPos(0.0f)
 {
-    body = new Model3d("tankbody.obj");
-    turret = new Model3d("tankturret.obj");
-    gun = new Model3d("tankbarrel.obj");
+    body = Model3d::createModel("tankbody.obj");
+    turret = Model3d::createModel("tankturret.obj");
+    gun = Model3d::createModel("tankbarrel.obj");
 
     turretDir = Vector3(1, 1, 0).normalized();
 

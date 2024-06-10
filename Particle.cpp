@@ -8,6 +8,9 @@ Particle::Particle(const Vector3& pos, const Vector3& color) : pos(pos), color(c
 {
 }
 
+Particle::~Particle()
+{
+}
 
 void Particle::setPos(const Vector3& pos)
 {

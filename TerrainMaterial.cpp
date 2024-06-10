@@ -34,4 +34,9 @@ void TerrainMaterial::setFlat(bool flat)
     isFlat = flat;
 }
 
+Material* TerrainMaterial::clone()
+{
+    return new TerrainMaterial(*this);
+}
+
 Shader* TerrainMaterial::fragmentShader = nullptr;

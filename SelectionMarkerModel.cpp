@@ -15,6 +15,11 @@ SelectionMarkerModel::SelectionMarkerModel(Entity* tank)
 }
 
 
+SelectionMarkerModel::~SelectionMarkerModel() // TODO: delete
+{
+}
+
+
 std::pair<std::vector<Vertex3d>, std::vector<int>> SelectionMarkerModel::calcVertices(Scene* scene)
 {
     auto tankPos = tank->getPosition();

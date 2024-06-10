@@ -16,6 +16,8 @@ public:
     void updateUniforms(Scene* scene);
     void use();
 
+    Material* clone();
+
     Shader* getShader();
 
     static Shader* fragmentShader;

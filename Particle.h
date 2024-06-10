@@ -47,6 +47,7 @@ class Particle
 {
 public:
     Particle(const Vector3& pos, const Vector3& color);
+    ~Particle();
 
     void setPos(const Vector3& pos);
     const Vector3& getPos() const;

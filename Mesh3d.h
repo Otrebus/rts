@@ -20,7 +20,8 @@ public:
 
     Mesh3d(std::vector<Vertex3d> vertices, std::vector<int> triangles, Material* material);
     Mesh3d();
-    ~Mesh3d();
+    virtual ~Mesh3d();
+    Mesh3d(Mesh3d& mesh);
 
     virtual void init(Scene* scene);
     virtual void tearDown();

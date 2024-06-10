@@ -30,4 +30,10 @@ void LineMaterial::updateUniforms(Scene* scene)
 }
 
 
+Material* LineMaterial::clone()
+{
+    return new LineMaterial(*this);
+}
+
+
 Shader* LineMaterial::fragmentShader = nullptr;

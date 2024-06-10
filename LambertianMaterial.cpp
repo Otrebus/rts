@@ -30,4 +30,10 @@ void LambertianMaterial::updateUniforms(Scene* scene)
 }
 
 
+Material* LambertianMaterial::clone()
+{
+    return new LambertianMaterial(*this);
+}
+
+
 Shader* LambertianMaterial::fragmentShader = nullptr;

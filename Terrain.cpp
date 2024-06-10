@@ -325,17 +325,17 @@ Terrain::Terrain(const std::string& fileName, Scene* scene) : fileName(fileName)
 void Terrain::init()
 {
     if(drawMode == Normal)
-        auto terrainMesh = createTexturedMesh(fileName);
+        createTexturedMesh(fileName);
     else
-        auto terrainMesh = createMesh(fileName);
-    terrainModel = Model3d(*terrainMesh);
-    terrainModel.init(scene);
+        createMesh(fileName);
+    terrainModel = ModelManager::addModel("terrain", *terrainMesh);
+    terrainModel->init(scene);
 }
 
 
 void Terrain::tearDown()
 {
-    terrainModel.tearDown(scene);
+    terrainModel->tearDown(scene);
 }
 
 
@@ -344,9 +344,9 @@ void Terrain::draw()
     if(drawMode == DrawMode::Wireframe)
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     if(drawMode != DrawMode::Normal)
-        ((TerrainMesh*) (terrainModel.getMeshes()[0]))->setFlat(drawMode == DrawMode::Flat);
-    terrainModel.updateUniforms();
-    terrainModel.draw();
+        ((TerrainMesh*) (terrainModel->getMeshes()[0]))->setFlat(drawMode == DrawMode::Flat);
+    terrainModel->updateUniforms();
+    terrainModel->draw();
     if(drawMode != DrawMode::Grid)
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }

@@ -19,6 +19,8 @@ public:
 
     static Shader* fragmentShader;
 
+    Material* clone();
+
     bool isFlat;
     void setFlat(bool flatness);
 };

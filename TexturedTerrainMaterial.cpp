@@ -86,4 +86,10 @@ void TexturedTerrainMaterial::updateUniforms(Scene* scene)
 }
 
 
+Material* TexturedTerrainMaterial::clone()
+{
+    return new TexturedTerrainMaterial(*this);
+}
+
+
 Shader* TexturedTerrainMaterial::fragmentShader = nullptr;

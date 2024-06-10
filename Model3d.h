@@ -12,17 +12,19 @@
 
 class Model3d
 {
-protected:
+public:
     std::vector<Mesh3d*> meshes;
-    Model3d* templateModel;
-    static std::unordered_map<std::string, Model3d*> templateMap;
-    std::string filename;
+    bool _isTemplate;
 
 public:
-    Model3d(std::string filename);
+    static Model3d* createModel(const std::string& filename);
+    //Model3d(std::string filename);
     Model3d(Mesh3d& mesh);
     Model3d();
-    ~Model3d();
+    Model3d(Model3d& model);
+    virtual ~Model3d();
+
+    Model3d& operator= (const Model3d& model);
 
     std::map<std::string, Material*> readMaterialFile(const std::string& matfilestr);
     void readFromFile(const std::string& file);
@@ -43,6 +45,39 @@ public:
 
     bool isTemplate()
     {
-        return templateMap[filename] == this;
+        return _isTemplate;
     }
+};
+
+
+class ModelManager
+{
+public:
+    static bool hasModel(const std::string& str);
+    //static void addModel(const std::string& identifier, Model3d& model);
+
+    template<typename ...args> static Model3d* addModel(const std::string& identifier, Model3d* model)
+    {
+        templateMap[identifier] = model;
+        for(auto mesh : model->meshes)
+            mesh->isTemplate = true;
+        model->_isTemplate = true;
+        return model;
+    }
+
+    template<typename ...Args> static Model3d* addModel(const std::string& identifier, Args&&... args)
+    {
+        Model3d* model = new Model3d(std::forward<Args>(args)...);
+        model->_isTemplate = true;
+        templateMap[identifier] = model;
+        for(auto mesh : model->meshes)
+            mesh->isTemplate = true;
+        return model;
+    }
+
+    static Model3d* cloneModel(const std::string& str);
+    static void deleteModel(const std::string& str, Model3d* model);
+
+protected:
+    static std::unordered_map<std::string, Model3d*> templateMap;
 };

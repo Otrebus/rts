@@ -8,7 +8,8 @@ class Shader;
 class Material
 {
 public:
-    virtual ~Material() {};
+    virtual ~Material() {};    
+    virtual Material* clone() = 0;
 
 public:
     virtual void updateUniforms(Scene* scene) = 0;

@@ -29,5 +29,9 @@ void ProjectileMaterial::updateUniforms(Scene* scene)
     glUniform3f(kdLocation, Kd.x, Kd.y, Kd.z);
 }
 
+Material* ProjectileMaterial::clone()
+{
+    return new ProjectileMaterial(*this);
+}
 
 Shader* ProjectileMaterial::fragmentShader = nullptr;
