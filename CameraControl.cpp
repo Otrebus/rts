@@ -99,12 +99,20 @@ void CameraControl::update(real dt)
     {
         auto time = glfwGetTime();
         auto dDir = movementImpulse.getVal(time) - movementImpulse.getVal(time-dt);
-        if(!movementImpulse.isFinished(time))
-            v.push_back(movementImpulse);
-        cam->setPos(cam->getPos() + dDir);
+
+        if(!dDir)
+            continue;
+        auto w = terrain->intersect( { cam->getPos(), dDir.normalized() } );
+        if(w.x < inf && ((w - (cam->getPos() + dDir)).length() < 1.0f || (cam->getPos() + dDir - w)*(dDir) > 0))
+            cam->setPos(w - dDir.normalized()*0.5f);
+        else
+        {
+            cam->setPos(cam->getPos() + dDir);
+            if(!movementImpulse.isFinished(time))
+                v.push_back(movementImpulse);
+        }
         setTerrainPosFromPos();
     }
-    
     movementImpulses = v;
 }
 

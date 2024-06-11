@@ -120,17 +120,17 @@ int main()
     auto particleGeometryShader = new Shader("particle.geom", GL_GEOMETRY_SHADER);
     auto particleVertexShader = new Shader("particle.vert", GL_VERTEX_SHADER);
 
-    for(int y = 0; y < 16; y++)
+    for(int y = 0; y < 4; y++)
     {
-        for(int x = 0; x < 16; x++)
+        for(int x = 0; x < 4; x++)
         {
             scene.addUnit(new Tank({ 150.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain));
         }
     }
 
-    for(int y = 0; y < 16; y++)
+    for(int y = 0; y < 4; y++)
     {
-        for(int x = 0; x < 16; x++)
+        for(int x = 0; x < 4; x++)
         {
             auto enemy = new Tank({ 170.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, 1, &terrain);
             enemy->setEnemy(true);
