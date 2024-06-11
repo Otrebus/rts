@@ -76,10 +76,10 @@ void Unit::drawSelectionDecal(int pass)
     }
 }
 
-void Unit::init(Scene* scene)
+void Unit::setScene(Scene* scene)
 {
     this->scene = scene;
-    selectionMarkerMesh->init(scene);
+    selectionMarkerMesh->setScene(scene);
 }
 
 void Unit::setSelected(bool selected)

@@ -91,19 +91,18 @@ std::pair<std::vector<Vertex3d>, std::vector<int>> SelectionMarkerMesh::calcVert
 }
 
 
-void SelectionMarkerMesh::init(Scene* scene)
+void SelectionMarkerMesh::init()
 {
-    this->scene = scene;
-	auto [vs, triangles] = calcVertices(scene);
+    auto [vs, triangles] = calcVertices(scene);
 
     auto material = new SelectionDecalMaterial({ 0, 0.8, 0.1 });
 
     v = vs;
     this->triangles = triangles;
     this->material = material;
-
-    Mesh3d::init(scene);
+    Mesh3d::init();
 }
+
 
 void SelectionMarkerMesh::update()
 {

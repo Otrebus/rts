@@ -25,7 +25,7 @@ public:
 
     bool isTemplate;
 
-    virtual void init(Scene* scene) = 0;
+    void setScene(Scene* scene);
     virtual void tearDown() = 0;
 
     virtual Shader* getVertexShader() const = 0;

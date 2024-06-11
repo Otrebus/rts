@@ -27,5 +27,5 @@ public:
     using Mesh3d::Mesh3d;
 
     void setFlat(bool flatness);
-    void init(Scene* scene);
+    void init();
 };

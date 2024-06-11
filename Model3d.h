@@ -31,7 +31,8 @@ public:
 
     const std::vector<Mesh3d*>& getMeshes() const;
 
-    void init(Scene* scene);
+    void setScene(Scene* scene);
+    void init();
     void tearDown(Scene* scene);
 
     void draw();
@@ -58,20 +59,24 @@ public:
 
     template<typename ...args> static Model3d* addModel(const std::string& identifier, Model3d* model)
     {
+        assert(!templateMap.contains(identifier));
         templateMap[identifier] = model;
         for(auto mesh : model->meshes)
             mesh->isTemplate = true;
         model->_isTemplate = true;
+        model->init();
         return model;
     }
 
     template<typename ...Args> static Model3d* addModel(const std::string& identifier, Args&&... args)
     {
+        assert(!templateMap.contains(identifier));
         Model3d* model = new Model3d(std::forward<Args>(args)...);
         model->_isTemplate = true;
         templateMap[identifier] = model;
         for(auto mesh : model->meshes)
             mesh->isTemplate = true;
+        model->init();
         return model;
     }
 

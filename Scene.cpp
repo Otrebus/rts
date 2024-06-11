@@ -130,6 +130,7 @@ void Scene::updateLights()
             newLights.push_back(e);
         else
             delete e;
+    deadLights.clear();
     lights = newLights;
 }
 

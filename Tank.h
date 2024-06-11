@@ -97,8 +97,8 @@ public:
     const real gunRecoil = 0.2f;
     const real gunRecoilRecoveryRate = 0.5f;
 
-    Line3d destinationLine;
-    Line3d enemyLine;
+    //Line3d destinationLine;
+    //Line3d enemyLine;
 
     
     static Model3d* tankBoundingBoxModel;

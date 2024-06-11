@@ -61,7 +61,7 @@ void SelectionMarkerModel::init(Scene* scene)
 
     decalMesh = new Mesh3d(vs, triangles, material);
     addMesh(*decalMesh);
-    decalMesh->init(scene);
+    decalMesh->setScene(scene);
 }
 
 void SelectionMarkerModel::update()
@@ -69,5 +69,5 @@ void SelectionMarkerModel::update()
     auto [vs, triangles] = calcVertices(meshes[0]->scene);
     meshes[0]->v = vs;
     meshes[0]->tearDown();
-    meshes[0]->init(meshes[0]->scene);
+    meshes[0]->setScene(meshes[0]->scene);
 }

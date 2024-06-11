@@ -329,7 +329,7 @@ void Terrain::init()
     else
         createMesh(fileName);
     terrainModel = ModelManager::addModel("terrain", *terrainMesh);
-    terrainModel->init(scene);
+    terrainModel->setScene(scene);
 }
 
 

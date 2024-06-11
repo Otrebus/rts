@@ -21,6 +21,10 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) :
     turret = Model3d::createModel("tankturret.obj");
     gun = Model3d::createModel("tankbarrel.obj");
 
+    body->setScene(scene);
+    turret->setScene(scene);
+    gun->setScene(scene);
+
     turretDir = Vector3(1, 1, 0).normalized();
 
     turretTarget = Vector3(-1, 1, 1).normalized();
@@ -119,6 +123,7 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain) :
     {
         model->setPosition(pos);
         model->setDirection(dir, up);
+        model->init(); // TODO: we're updating the VAOs etc, but not deleting the old ones
     }
 }
 
@@ -131,19 +136,20 @@ Tank::~Tank()
 void Tank::init(Scene* scene)
 {
     this->scene = scene;
-    body->init(scene);
-    turret->init(scene);
-    gun->init(scene);
-    boundingBoxModel->init(scene);
-    destinationLine.init(scene);
-    destinationLine.setColor(Vector3(0.2, 0.7, 0.1));
-    destinationLine.setInFront(true);
+    body->setScene(scene);
+    turret->setScene(scene);
+    gun->setScene(scene);
+    boundingBoxModel->setScene(scene);
+    //destinationLine.init(scene);
+    //destinationLine.setColor(Vector3(0.2, 0.7, 0.1));
+    //destinationLine.setInFront(true);
 
-    enemyLine.init(scene);
-    enemyLine.setColor(Vector3(0.2, 0.7, 0.1));
-    enemyLine.setInFront(true);
+    //enemyLine.init(scene);
+    //enemyLine.setColor(Vector3(0.2, 0.7, 0.1));
+    //enemyLine.setInFront(true);
 
-    selectionMarkerMesh->init(scene);
+    selectionMarkerMesh->setScene(scene);
+    selectionMarkerMesh->init();
 }
 
 
@@ -211,14 +217,14 @@ void Tank::draw()
     for(auto p : path)
         P.push_back( { p.x, p.y, terrain->getElevation(p.x, p.y) });
     P.push_back(getPosition());
-    destinationLine.setVertices(P);
+    //destinationLine.setVertices(P);
 
     body->draw();
     
     drawTurret();
 
-    if(selected && path.size() > 0)
-        destinationLine.draw();
+    /*if(selected && path.size() > 0)
+        destinationLine.draw();*/
 }
 
 
@@ -360,12 +366,7 @@ void Tank::update(real dt)
             shoot();
             auto light = new PointLight(glfwGetTime());
 
-            // TODO: this is repeated elsewhere
-            Vector3 absTurDir = (dir*turretDir.y + (dir%up).normalized()*turretDir.x).normalized();
-            Vector3 absTurUp = up;
-            auto gunDir = dir*turretDir.y + up*turretDir.z + (dir%up).normalized()*turretDir.x;
-            auto position = pos + turretPos + absTurDir*gunPos.y + (absTurDir%up).normalized()*gunPos.x + gunPos.z*absTurUp + gunDir.normalized()*gunLength;
-            light->setPos(position);
+            light->setPos(absMuzzlePos);
             light->setVelocity(this->velocity);
             scene->addLight(light);
         }

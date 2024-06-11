@@ -332,10 +332,7 @@ int main()
         glDepthMask (GL_TRUE);
 
         avgFps = ((9*avgFps + 1/dt))/10;
-        Line2d line;
-        line.setColor(Vector3(0.2, 0.7, 0.1));
-        line.init(&scene);
-        line.draw();
+
         drawText(realToString(avgFps, 3), { 0.80, 0.90 }, 0.03, { 0, 0.8, 0 });
         cameraControl.update(dt);
         glfwSwapBuffers(window);

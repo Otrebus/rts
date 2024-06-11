@@ -27,6 +27,11 @@ Material* Mesh::getMaterial() const
     return material;
 }
 
+void Mesh::setScene(Scene* s)
+{
+    scene = s;
+}
+
 Vector3 Mesh::getUp() const
 {
     return up;

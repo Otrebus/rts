@@ -100,9 +100,9 @@ void Line::setColor(Vector3 color)
 
 Line2d::Line2d(const std::vector<Vector2>& vertices)
 {
-        for (const auto& vertex : vertices) {
-            vertexData.push_back(vertex.x);
-            vertexData.push_back(vertex.y);
+    for (const auto& vertex : vertices) {
+        vertexData.push_back(vertex.x);
+        vertexData.push_back(vertex.y);
     }
     if(!fragmentShader)
         fragmentShader = new Shader("line.frag", GL_FRAGMENT_SHADER);

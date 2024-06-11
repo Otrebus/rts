@@ -17,7 +17,7 @@ Mesh3d::Mesh3d()
 
 Mesh3d::Mesh3d(std::vector<Vertex3d> vertices, std::vector<int> triangles, Material* material)
 {
-    isTemplate = true;
+    isTemplate = false;
     this->material = material;
     this->v = vertices;
     this->triangles = triangles;
@@ -42,16 +42,20 @@ Mesh3d::Mesh3d(Mesh3d& mesh)
 
 Mesh3d::~Mesh3d()
 {
-    if(!isTemplate)
-        delete material;
+    if(isTemplate)
+    {   
+        glDeleteBuffers(1, &VBO);
+        glDeleteBuffers(1, &EBO);
+        glDeleteVertexArrays(1, &VAO);
+    }
+    delete material;
 }
 
 
-void Mesh3d::init(Scene* s)
+void Mesh3d::init()
 {
-    if(!scene)
+    if(isTemplate)
     {
-        scene = s;
         glGenVertexArrays(1, &VAO);
         glBindVertexArray(VAO);
 
@@ -76,12 +80,6 @@ void Mesh3d::init(Scene* s)
 
 void Mesh3d::tearDown()
 {
-    if(!isTemplate)
-    {
-        glDeleteBuffers(1, &VBO);
-        glDeleteBuffers(1, &EBO);
-        glDeleteVertexArrays(1, &VAO);
-    }
 }
 
 void Mesh3d::draw()

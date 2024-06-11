@@ -191,7 +191,7 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
     {
         auto mesh = new Mesh3d(createQuadVertices(), quadIndices(), decalMaterial);
         Model3d* decal = new Model3d(*mesh);
-        decal->init(&scene);
+        decal->setScene(&scene);
         decals.push_back(decal);
         
 
@@ -214,7 +214,7 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
     };
     TextureMaterial texture("grass.bmp");
     Mesh3d mesh(meshVertices, { 0, 1, 2, 2, 3, 0 }, &texture);
-    mesh.init(&scene);
+    mesh.setScene(&scene);
 
     glfwWindowHint(GLFW_SAMPLES, 4);
     glEnable(GL_MULTISAMPLE); 

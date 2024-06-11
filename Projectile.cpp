@@ -66,9 +66,7 @@ Projectile::Projectile(Vector3 pos, Vector3 dir, Vector3 up, Entity* owner = nul
         projectileModel = ModelManager::addModel("projectile", *projectileMesh);
     }
     else
-    {
         projectileModel = ModelManager::cloneModel("projectile");
-    }
 
     setPosition(pos);
     setDirection(dir, up);
@@ -82,7 +80,7 @@ Projectile::~Projectile()
 void Projectile::init(Scene* scene)
 {
     this->scene = scene;
-    projectileModel->init(scene);
+    projectileModel->setScene(scene);
 }
 
 void Projectile::setPosition(Vector3 pos)

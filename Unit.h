@@ -28,8 +28,6 @@ public:
     void setTarget(Vector3 pos);
     Vector3 getTarget() const;
 
-    void init(Scene* scene);
-
     PathFindingRequest* getCurrentPathfindingRequest() const;
     void setCurrentPathfindingRequest(PathFindingRequest* request);
 
@@ -41,6 +39,8 @@ public:
     bool isSelected() const;
     void setSelected(bool selected);
     void setPreSelected(bool preSelected);
+
+    void setScene(Scene* s);
 
     void setEnemy(bool enemy);
     bool isEnemy() const;

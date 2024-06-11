@@ -17,16 +17,22 @@ bool ModelManager::hasModel(const std::string& identifier)
 Model3d* ModelManager::cloneModel(const std::string& identifier)
 {
     auto baseModel = templateMap[identifier];
-    auto newModel = new Model3d();
+    baseModel->_isTemplate = true;
+    auto newModel = new Model3d(*baseModel);
     for(auto mesh : baseModel->meshes)
-        newModel->meshes.push_back(new Mesh3d(*mesh));
+    {
+        mesh->isTemplate = true;
+        auto newMesh = new Mesh3d(*mesh);
+        newModel->meshes.push_back(newMesh);
+    }
+    newModel->init();
     return newModel;
 }
 
 
 void ModelManager::deleteModel(const std::string& identifier, Model3d* model)
 {
-    if(!model->_isTemplate)
+    if(templateMap.contains(identifier) && templateMap[identifier] != model)
     {
         delete model;
     }
@@ -40,7 +46,6 @@ Model3d* Model3d::createModel(const std::string& fileName)
         auto model = new Model3d();
         model->readFromFile(fileName);
         ModelManager::addModel(fileName, model);
-        model->_isTemplate = true;
         return model;
     }
     else
@@ -105,7 +110,7 @@ Model3d::Model3d() : _isTemplate(false)
 {
 }
 
-Model3d::Model3d(Model3d& model)
+Model3d::Model3d(Model3d& model) : _isTemplate(false)
 {
     for(auto mesh : model.meshes)
         addMesh(*new Mesh3d(*mesh));
@@ -117,12 +122,19 @@ void Model3d::addMesh(Mesh3d& mesh)
 }
 
 
-void Model3d::init(Scene* scene)
+void Model3d::setScene(Scene* scene)
 {
     for(auto& mesh : meshes)
     {
-        mesh->init(scene);
+        mesh->setScene(scene);
     }
+}
+
+
+void Model3d::init()
+{
+    for(auto& mesh : meshes)
+        mesh->init();
 }
 
 
