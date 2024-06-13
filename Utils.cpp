@@ -97,5 +97,4 @@ std::string realToString(real num, int significantDigits)
     real d = significantDigits - std::log10(num);
     ss << std::fixed << std::setprecision(std::max(0.f, d)) << num;
     return ss.str();
-
 }

@@ -1,6 +1,5 @@
 #version 450 core
 
-
 uniform vec3 Kd;
 uniform float radius;
 uniform int pass;

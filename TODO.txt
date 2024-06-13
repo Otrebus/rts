@@ -49,13 +49,13 @@
   + Make friendly units react to enemy units (shoot, pursue?)
 + "TODO: this is repeated elsewhere" - turret pos
 - Units move through terrain at low fps
-- Selectionmaterial shader doesn't use half of the stuff in it
++ Selectionmaterial shader doesn't use half of the stuff in it
 - Paths are expressed backwards
-- Optimize selection markers
++ Optimize selection markers
 + "TODO: z is - ?"
 + Better heap for path finding (find min prio etc)
 - Tank turret position etc should be constants and calculated once
-- Models should be instantiated from a single source
++ Models should be instantiated from a single source
 - Reorganize project a bit
 + Gun vibrates ever so slightly
 - Combine Preselected/selected, and selectionstate in userinterface - into bitfields maybe

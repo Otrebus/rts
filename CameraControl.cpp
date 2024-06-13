@@ -46,17 +46,13 @@ void CameraControl::changeMode(CameraMode cameraMode)
     else if(cameraMode == Freelook)
     {
         prevX = prevY = NAN;
-        //setPosFromTerrainPos();
         auto theta = std::atan2(cam->getDir().y, cam->getDir().x);
         auto phi = std::atan2(cam->getDir().z, cam->getDir().y);
         setAngle(theta, phi);
 
     }
     else
-    {
         setTerrainPosFromPos();
-        //setPosFromTerrainPos();
-    }
 }
 
     
@@ -153,15 +149,13 @@ void CameraControl::handleInput(const Input& input)
     }
     else if(cameraMode != Freelook && input.stateStart == InputType::ScrollOffset)
     {
-        auto x = real(2*prevX)/xres - 1;
-        auto y = -(real(2*prevY)/yres - 1);
+        auto x = resToScreenX(prevX, xres);
+        auto y = resToScreenY(prevY, yres);
 
         auto zoomDir = cam->getViewRay(x, y);
-        //terrainDist += input.posY*(moveSlow ? -1 : -10);
         // TODO: if scalar left-multiplication is undefined, this becomes a real - investigate what sort of explicit conversion is going on there
         auto dir = -(input.posY)*(zoomDir.dir.normalized())*(moveSlow ? 0.5f : 5.f);
         movementImpulses.push_back(MovementImpulse(glfwGetTime(), 0.2f, dir));
-        //setPosFromTerrainPos();
     }
 }
 
@@ -183,7 +177,14 @@ void CameraControl::setAngle(real theta, real phi)
 void CameraControl::moveForward(real t)
 {
     if(cameraMode == Freelook)
-        cam->setPos(cam->getPos() + cam->getDir()*t*100.f);
+    {
+        auto dDir = cam->getDir()*t*100.f;
+        auto w = terrain->intersect( { cam->getPos(), dDir.normalized() } );
+        if(w.x < inf && ((w - (cam->getPos() + dDir)).length() < 1.0f || (cam->getPos() + dDir - w)*(dDir) > 0))
+            cam->setPos(w - dDir.normalized()*0.5f);
+        else
+            cam->setPos(cam->getPos() + dDir);
+    }
     else
     {
         terrainPos += Vector3(cam->getDir().x, cam->getDir().y, 0).normalized()*t*100.f;

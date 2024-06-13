@@ -451,8 +451,6 @@ bool Terrain::isAdmissible(int x, int y) const
 std::pair<int, int> Terrain::getClosestAdmissible(Vector2 v) const
 {
     auto x = int(v.x), y = int(v.y);
-    int y1, y2;
-    int x1, x2;
 
     if(v.y > 0.5f+y)
     {
@@ -572,7 +570,8 @@ std::pair<real, Vector2> Terrain::intersectRayOcclusion(Vector2 pos, Vector2 dir
             return { t, { 1, 0 }};
     }
 
-    if(t < inf) {
+    if(t < inf)
+    {
         auto [u, V] = intersectRayOcclusion(pos+dir*t, dir);
         return { u + t, V };
     }

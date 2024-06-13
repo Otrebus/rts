@@ -79,9 +79,6 @@ int main()
     //glEnable              ( GL_DEBUG_OUTPUT );
     //glDebugMessageCallback( MessageCallback, 0 );
 
-    int success;
-    char infoLog[512];
-
     glEnable(GL_DEPTH_TEST);
 
     auto startTime = glfwGetTime();
@@ -141,10 +138,6 @@ int main()
     for(auto& e : scene.getUnits())
         e->init(&scene);
 
-    auto moveSlow = false;
-
-    int mouseX, mouseY;
-
     checkError();
 
     UserInterface interface(window, &scene, &cameraControl);
@@ -177,7 +170,7 @@ int main()
             real t = glfwGetTime() - light->getStart();
             light->setColor(Vector3(0.3, 0.3, 0.2)*std::exp(-20.f*t));
             light->setPos(light->getPos() + light->getVelocity()*dt);
-            if(t > 0.6)
+            if(light->getColor().length() < 1e-3)
                 scene.removeLight(light);
         }
 
@@ -210,10 +203,7 @@ int main()
                 cameraControl.handleInput(*input);
             interface.handleInput(*input, scene.getUnits());
 
-            if(input->stateStart == MousePosition)
-                mouseX = input->posX, mouseY = input->posY;
-
-            else if(isGraphicsInput(input))
+            if(isGraphicsInput(input))
             {
                 if(input->stateStart == InputType::KeyPress && input->key == GLFW_KEY_Z)
                 {
@@ -276,20 +266,14 @@ int main()
 
         glPolygonOffset(-1.0, -1.0);
         for(auto& unit : scene.getUnits())
-        {
             unit->drawSelectionDecal(0);
-        }
 
         for(auto& unit : scene.getUnits())
-        {
             unit->drawSelectionDecal(1);
-        }
 
         glPolygonOffset(-1.0, -2.0);
         for(auto& unit : scene.getUnits())
-        {
             unit->drawSelectionDecal(2);
-        }
 
         interface.setResolution(xres, yres);
         cameraControl.setResolution(xres, yres);
