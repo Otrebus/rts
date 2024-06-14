@@ -45,7 +45,8 @@ public:
     InputQueue(const InputQueue&) = delete;
     InputQueue& operator=(const InputQueue&) = delete;
 
-    static InputQueue& getInstance() {
+    static InputQueue& getInstance()
+    {
         static InputQueue instance;
         return instance;
     }

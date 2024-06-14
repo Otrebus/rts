@@ -139,10 +139,11 @@ void Tank::init(Scene* scene)
     body->setScene(scene);
     turret->setScene(scene);
     gun->setScene(scene);
+    destinationLine.init(scene);
     boundingBoxModel->setScene(scene);
     //destinationLine.init(scene);
-    //destinationLine.setColor(Vector3(0.2, 0.7, 0.1));
-    //destinationLine.setInFront(true);
+    destinationLine.setColor(Vector3(0.2, 0.7, 0.1));
+    destinationLine.setInFront(true);
 
     //enemyLine.init(scene);
     //enemyLine.setColor(Vector3(0.2, 0.7, 0.1));
@@ -211,20 +212,19 @@ void Tank::updateTurret(real dt)
 
 void Tank::draw()
 {
-    //destinationLine.setVertices( { pos, target });
     std::vector<Vector3> P;
     // TODO: slow
     for(auto p : path)
         P.push_back( { p.x, p.y, terrain->getElevation(p.x, p.y) });
     P.push_back(getPosition());
-    //destinationLine.setVertices(P);
+    destinationLine.setVertices(P);
 
     body->draw();
     
     drawTurret();
 
-    /*if(selected && path.size() > 0)
-        destinationLine.draw();*/
+    if(selected && path.size() > 0)
+        destinationLine.draw();
 }
 
 
@@ -461,6 +461,26 @@ void Tank::update(real dt)
     plant(*scene->getTerrain());
     velocity = (pos-prePos)/dt;
     updateTurret(dt);
+
+    if(!path.empty())
+    {
+        auto target2d = path.back();
+        target = { target2d.x, target2d.y, scene->getTerrain()->getElevation(target2d.x, target2d.y) };
+
+        while(true)
+        {
+            auto l = (target.to2() - geoPos).length();
+            auto R = path.size() < 2 ? getArrivalRadius(target.to2(), scene->getUnits()) : 0.5;
+            if(l < R)
+            {
+                path.pop_back();
+                target = path.back().to3();
+                target = { target.x, target.y, scene->getTerrain()->getElevation(target.x, target.y) };
+            }
+            else
+                break;
+        }
+    }
 }
 
 Vector2 Tank::seek()
@@ -473,10 +493,6 @@ Vector2 Tank::seek()
         {
             auto l = (target - geoPos).length();
 
-            auto R = path.size() < 2 ? getArrivalRadius(target, scene->getUnits()) : 0.5;
-
-            if(l < R)
-                path.pop_back();
             if(path.empty())
                 return { 0, 0 };
             target = path.back();

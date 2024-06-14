@@ -151,6 +151,8 @@ int main()
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
 
+        for(int i = 0; i < 100000000; i++);
+
         auto prevTime = time;
         time = glfwGetTime();
         auto dt = time - prevTime;
@@ -158,6 +160,20 @@ int main()
         auto inputs = InputQueue::getInstance().handleInput(prevTime, time);
         glfwPollEvents();
         
+
+        for(auto result = popPathFindingResult(); result; result = popPathFindingResult())
+        {
+            for(auto& unit : scene.getUnits())
+            {
+                if(unit->getCurrentPathfindingRequest() == result)
+                {
+                    unit->setCurrentPathfindingRequest(nullptr);
+                    unit->setPath(result->path);
+                }
+            }
+            delete result;
+        }
+
         for(auto& unit : scene.getUnits())
             unit->update(dt);
 
@@ -172,19 +188,6 @@ int main()
             light->setPos(light->getPos() + light->getVelocity()*dt);
             if(light->getColor().length() < 1e-3)
                 scene.removeLight(light);
-        }
-
-        for(auto result = popPathFindingResult(); result; result = popPathFindingResult())
-        {
-            for(auto& unit : scene.getUnits())
-            {
-                if(unit->getCurrentPathfindingRequest() == result)
-                {
-                    unit->setCurrentPathfindingRequest(nullptr);
-                    unit->setPath(result->path);
-                }
-            }
-            delete result;
         }
 
         auto isCameraInput = [] (Input* input)
