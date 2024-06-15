@@ -12,6 +12,7 @@
 #include "Mesh3d.h"
 #include "LineMesh3d.h"
 #include "Entity.h"
+#include <deque>
 
 class SelectionMarkerMesh;
 class BoundingBoxModel;
@@ -31,8 +32,7 @@ public:
     PathFindingRequest* getCurrentPathfindingRequest() const;
     void setCurrentPathfindingRequest(PathFindingRequest* request);
 
-    void setPath(std::vector<Vector2> path);
-    const std::vector<Vector2>& getPath() const;
+    void setPath(std::deque<Vector2> path);
 
     void drawSelectionDecal(int pass);
 
@@ -56,7 +56,7 @@ protected:
     real pathCalculationInterval;
     bool selected;
     bool preSelected;
-    std::vector<Vector2> path;
+    std::deque<Vector2> path;
     SelectionMarkerMesh* selectionMarkerMesh;
 
     bool enemy;

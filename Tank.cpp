@@ -214,9 +214,9 @@ void Tank::draw()
 {
     std::vector<Vector3> P;
     // TODO: slow
+    P.push_back(getPosition());
     for(auto p : path)
         P.push_back( { p.x, p.y, terrain->getElevation(p.x, p.y) });
-    P.push_back(getPosition());
     destinationLine.setVertices(P);
 
     body->draw();
@@ -453,7 +453,7 @@ void Tank::update(real dt)
         PathFindingRequest* request = new PathFindingRequest;
         request->requester = shared_from_this();
         request->start = getPosition().to2();
-        request->dest = path.front();
+        request->dest = path.back();
         setCurrentPathfindingRequest(request);
         addPathFindingRequest(request);
     }
@@ -461,46 +461,34 @@ void Tank::update(real dt)
     plant(*scene->getTerrain());
     velocity = (pos-prePos)/dt;
     updateTurret(dt);
-
-    if(!path.empty())
-    {
-        auto target2d = path.back();
-        target = { target2d.x, target2d.y, scene->getTerrain()->getElevation(target2d.x, target2d.y) };
-
-        while(true)
-        {
-            auto l = (target.to2() - geoPos).length();
-            auto R = path.size() < 2 ? getArrivalRadius(target.to2(), scene->getUnits()) : 0.5;
-            if(l < R)
-            {
-                path.pop_back();
-                target = path.back().to3();
-                target = { target.x, target.y, scene->getTerrain()->getElevation(target.x, target.y) };
-            }
-            else
-                break;
-        }
-    }
 }
 
 Vector2 Tank::seek()
 {
     if(!path.empty())
     {
-        auto target = path.back();
+        auto target = path.front();
 
-        if(target.length() > 0.0001)
+        if(target.length() > 0.0001) // TODO: ???
         {
             auto l = (target - geoPos).length();
 
             if(path.empty())
                 return { 0, 0 };
-            target = path.back();
+            target = path.front();
 
             // TODO: this could become NaN
             if(!l)
                 return { 0, 0 };
             auto v2 = (target - geoPos).normalized();
+
+            auto R = path.size() < 2 ? getArrivalRadius(target, scene->getUnits()) : 0.5;
+            if(l < R)
+            {
+                path.pop_front();
+                if(!path.empty())
+                    this->target = path.front().to3();
+            }
 
             auto speed = maxSpeed;
             if(path.size() == 1)

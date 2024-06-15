@@ -45,15 +45,10 @@ Vector3 Unit::getTarget() const
     return { 0, 0, 0 };
 }
 
-void Unit::setPath(std::vector<Vector2> path)
+void Unit::setPath(std::deque<Vector2> path)
 {
-    this->path = path;
+    this->path = std::deque(path.begin(), path.end());
     pathLastCalculated = glfwGetTime();
-}
-
-const std::vector<Vector2>& Unit::getPath() const
-{
-    return path;
 }
 
 void Unit::setPreSelected(bool preSelected)

@@ -142,7 +142,7 @@ void pathFindingThread()
 }
 
 
-std::vector<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destination)
+std::deque<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destination)
 {
     auto width = terrain->getWidth(), height = terrain->getHeight();
 
@@ -197,10 +197,10 @@ std::vector<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinati
         }
     };
 
-    std::vector<Vector2> outPath;
+    std::deque<Vector2> outPath;
     if(C[destX+destY*width] < inf)
     {
-        std::vector<Vector2> result = { destination };
+        std::deque<Vector2> result = { destination };
 
         for(std::pair<int, int> node = { destX, destY };;)
         {
@@ -213,7 +213,9 @@ std::vector<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinati
         if(result.size())
             result.back() = start;
 
+        std::reverse(result.begin(), result.end());
         outPath = terrain->straightenPath(result);
+        outPath.pop_front();
         //outPath = result;
         //std::cout << "Constructed path in " << glfwGetTime() - time << std::endl;
     }

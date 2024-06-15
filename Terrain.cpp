@@ -691,17 +691,18 @@ bool Terrain::isVisible(Vector2 start, Vector2 end) const
     return true;
 }
 
-std::vector<Vector2> Terrain::straightenPath(const std::vector<Vector2>& path) const
+std::deque<Vector2> Terrain::straightenPath(const std::deque<Vector2>& path, int maxSteps) const
 {
-    std::vector<Vector2> result = { path[0] };
-    for(int i = 0; i < path.size();)
+    std::deque<Vector2> result = { path[0] };
+    //for(int i = 0; i < std::min((int)path.size(), maxSteps);)
+    for(auto it = path.begin(); it != path.end() && it-path.begin() < maxSteps; )
     {
-        int j = i;
-        for(int k = i+1; k < path.size(); k++)
-            if(isVisible(result.back(), path[k]))
-                j = k;
-        result.push_back(path[j]);
-        i = std::max(j, i+1);
+        auto jt = it;
+        for(auto kt = jt+1; kt != path.end(); kt++)
+            if(isVisible(result.back(), *kt))
+                jt = kt;
+        result.push_back(*jt);
+        it = std::max(jt, it+1);
     }
     return result;
 }

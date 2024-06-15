@@ -27,7 +27,7 @@ public:
     Vector2 start;
     Vector2 dest;
 
-    std::vector<Vector2> path;
+    std::deque<Vector2> path;
 };
 
 class PriorityQueue
@@ -57,7 +57,7 @@ public:
 
 void addPathFindingRequest(PathFindingRequest*);
 void addPathFindingResult(PathFindingRequest*);
-std::vector<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destination);
+std::deque<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destination);
 
 PathFindingRequest* popPathFindingResult();
 PathFindingRequest* popPathFindingRequest();
