@@ -26,6 +26,7 @@ TextureMaterial::TextureMaterial(const std::string& textureFile)
 
 TextureMaterial::~TextureMaterial()
 {
+    glDeleteTextures(1, &texture);
 }
 
 

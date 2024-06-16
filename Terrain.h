@@ -39,6 +39,8 @@ private:
 	std::vector<Vector3> points;
 	std::vector<int> triangleIndices;
 
+	Terrain();
+
 	void calcAdmissiblePoints();
 	bool isTriangleAdmissible(const Vector3& p1, const Vector3& p2, const Vector3& p3) const;
 	bool isTriangleAdmissible(int x1, int y1, int x2, int y2, int x3, int y3) const;
@@ -53,7 +55,25 @@ private:
 
 public:
 	bool isTriangleAdmissible(Vector2 p) const;
-	std::deque<Vector2> straightenPath(const std::deque<Vector2>& path, int maxSteps=1e9) const;
+	template <typename Iterator> std::deque<Vector2> straightenPath(Iterator begin, Iterator end) const
+	{
+		std::deque<Vector2> result = { *begin };
+		for(auto it = begin; it != end; )
+		{
+			auto jt = it;
+			for(auto kt = jt+1; kt != end; kt++)
+				if(isVisible(result.back(), *kt))
+					jt = kt;
+			if(jt != it)
+			{
+				result.push_back(*jt);
+				it = jt;
+			}
+			else
+				it++;
+		}
+		return result;
+	}
 	std::pair<real, Vector2> intersectRayOcclusion(Vector2 pos, Vector2 dir) const;
     std::pair<real, Vector2> intersectCirclePathOcclusion(Vector2 pos, Vector2 pos2, real radius) const;
 	void init();

@@ -52,6 +52,9 @@ TexturedTerrainMaterial::TexturedTerrainMaterial()
 
 TexturedTerrainMaterial::~TexturedTerrainMaterial()
 {
+    glDeleteTextures(1, &texture);
+    glDeleteTextures(1, &texture2);
+    glDeleteTextures(1, &splatMap);
 }
 
 

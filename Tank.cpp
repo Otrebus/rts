@@ -469,7 +469,7 @@ Vector2 Tank::seek()
     {
         auto target = path.front();
 
-        if(target.length() > 0.0001) // TODO: ???
+        if(target.length() > 0.0001)
         {
             auto l = (target - geoPos).length();
 
@@ -488,6 +488,8 @@ Vector2 Tank::seek()
                 path.pop_front();
                 if(!path.empty())
                     this->target = path.front().to3();
+                else
+                    this->target = Vector3(0, 0, 0);
             }
 
             auto speed = maxSpeed;

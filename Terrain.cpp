@@ -6,6 +6,11 @@
 #include "TexturedTerrainMaterial.h"
 
 
+Terrain::Terrain() : admissiblePoints(nullptr)
+{
+}
+
+
 TerrainMesh* Terrain::createMesh(std::string fileName)
 {
     auto [colors, width, height] = readBMP(fileName, false);
@@ -113,8 +118,9 @@ TerrainMesh* Terrain::createTexturedMesh(std::string fileName)
 
     this->width = width;
     this->height = height;
-
-    admissiblePoints = new bool[width*height];
+    
+    if(!admissiblePoints)
+        admissiblePoints = new bool[width*height];
     std::fill(admissiblePoints, admissiblePoints + width*height, true);
     calcAdmissiblePoints();
     
@@ -199,7 +205,8 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
     this->width = width;
     this->height = height;
 
-    admissiblePoints = new bool[width*height*2];
+    if(!admissiblePoints)
+        admissiblePoints = new bool[width*height*2];
     std::fill(admissiblePoints, admissiblePoints + width*height*2, true);
     calcAdmissiblePoints();
 
@@ -328,7 +335,10 @@ void Terrain::init()
         createTexturedMesh(fileName);
     else
         createMesh(fileName);
-    terrainModel = ModelManager::addModel("terrain", *terrainMesh);
+    /*if(!ModelManager::hasModel("terrain");
+        terrainModel = ModelManager::addModel("terrain", *terrainMesh);*/
+    terrainModel = new Model3d(*terrainMesh);
+    terrainModel->init();
     terrainModel->setScene(scene);
 }
 
@@ -691,21 +701,6 @@ bool Terrain::isVisible(Vector2 start, Vector2 end) const
     return true;
 }
 
-std::deque<Vector2> Terrain::straightenPath(const std::deque<Vector2>& path, int maxSteps) const
-{
-    std::deque<Vector2> result = { path[0] };
-    //for(int i = 0; i < std::min((int)path.size(), maxSteps);)
-    for(auto it = path.begin(); it != path.end() && it-path.begin() < maxSteps; )
-    {
-        auto jt = it;
-        for(auto kt = jt+1; kt != path.end(); kt++)
-            if(isVisible(result.back(), *kt))
-                jt = kt;
-        result.push_back(*jt);
-        it = std::max(jt, it+1);
-    }
-    return result;
-}
 
 int Terrain::getHeight() const
 {

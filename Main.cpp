@@ -151,8 +151,6 @@ int main()
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
 
-        for(int i = 0; i < 100000000; i++);
-
         auto prevTime = time;
         time = glfwGetTime();
         auto dt = time - prevTime;
@@ -160,7 +158,6 @@ int main()
         auto inputs = InputQueue::getInstance().handleInput(prevTime, time);
         glfwPollEvents();
         
-
         for(auto result = popPathFindingResult(); result; result = popPathFindingResult())
         {
             for(auto& unit : scene.getUnits())
@@ -168,6 +165,8 @@ int main()
                 if(unit->getCurrentPathfindingRequest() == result)
                 {
                     unit->setCurrentPathfindingRequest(nullptr);
+                    if(!result->path.empty())
+                        result->path.pop_front();
                     unit->setPath(result->path);
                 }
             }

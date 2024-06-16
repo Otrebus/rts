@@ -61,9 +61,11 @@
 - Combine Preselected/selected, and selectionstate in userinterface - into bitfields maybe
 - Add terrain/unit visualisations of all sorts (lines, arrows, dots, etc)
 + Move intersectRayOcclusion etc out of Terrain
+- Modelmanager, getModel vs cloneModel vs createModel vs deleteModel, rework somehow
 + Text output like fps counter
   - Signed-distance text?
 - Debug console
++ If assigning move target to inadmissible terrain, find closest allowable or handle otherwise
 + Turrets are offset when the tank is on a slope
 + Degree suffix (that converts from degrees to radians?)
 + General refactoring, like ctrl+f "stuff like this should be moved to a more specialized place"

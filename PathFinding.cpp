@@ -210,12 +210,9 @@ std::deque<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinatio
                 break;
             node = P[x+y*width];
         }
-        if(result.size())
-            result.back() = start;
 
         std::reverse(result.begin(), result.end());
-        outPath = terrain->straightenPath(result);
-        outPath.pop_front();
+        outPath = terrain->straightenPath(result.begin(), result.end());
         //outPath = result;
         //std::cout << "Constructed path in " << glfwGetTime() - time << std::endl;
     }
