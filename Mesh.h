@@ -23,8 +23,6 @@ public:
     GLuint VBO, VAO, EBO;
     Scene* scene;
 
-    bool isTemplate;
-
     void setScene(Scene* scene);
     virtual void tearDown() = 0;
 

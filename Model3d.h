@@ -17,7 +17,6 @@ public:
     bool _isTemplate;
 
 public:
-    static Model3d* createModel(const std::string& filename);
     //Model3d(std::string filename);
     Model3d(Mesh3d& mesh);
     Model3d();
@@ -44,10 +43,7 @@ public:
 
     void setDirection(Vector3 dir, Vector3 up);
 
-    bool isTemplate()
-    {
-        return _isTemplate;
-    }
+    bool cloned;
 };
 
 
@@ -61,9 +57,6 @@ public:
     {
         assert(!templateMap.contains(identifier));
         templateMap[identifier] = model;
-        for(auto mesh : model->meshes)
-            mesh->isTemplate = true;
-        model->_isTemplate = true;
         model->init();
         return model;
     }
@@ -72,16 +65,17 @@ public:
     {
         assert(!templateMap.contains(identifier));
         Model3d* model = new Model3d(std::forward<Args>(args)...);
-        model->_isTemplate = true;
         templateMap[identifier] = model;
-        for(auto mesh : model->meshes)
-            mesh->isTemplate = true;
         model->init();
         return model;
     }
 
-    static Model3d* cloneModel(const std::string& str);
+    static Model3d* instantiateModel(const std::string& str);
     static void deleteModel(const std::string& str, Model3d* model);
+    
+    Model3d* createModel(const std::string& str);
+    static Model3d* addModel(const std::string& filename, Model3d* model);
+    Model3d* getModel(const std::string& name);
 
 protected:
     static std::unordered_map<std::string, Model3d*> templateMap;

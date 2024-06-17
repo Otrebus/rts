@@ -14,14 +14,13 @@ bool ModelManager::hasModel(const std::string& identifier)
 }
 
 
-Model3d* ModelManager::cloneModel(const std::string& identifier)
+Model3d* ModelManager::instantiateModel(const std::string& identifier)
 {
+    assert(ModelManager::hasModel(identifier));
     auto baseModel = templateMap[identifier];
-    baseModel->_isTemplate = true;
     auto newModel = new Model3d(*baseModel);
     for(auto mesh : baseModel->meshes)
     {
-        mesh->isTemplate = true;
         auto newMesh = new Mesh3d(*mesh);
         newModel->meshes.push_back(newMesh);
     }
@@ -32,28 +31,39 @@ Model3d* ModelManager::cloneModel(const std::string& identifier)
 
 void ModelManager::deleteModel(const std::string& identifier, Model3d* model)
 {
-    if(templateMap.contains(identifier) && templateMap[identifier] != model)
-    {
-        delete model;
-    }
+    delete model; // TODO: superfluous function
 }
 
 
-Model3d* Model3d::createModel(const std::string& fileName)
+Model3d* ModelManager::addModel(const std::string& name, Model3d* model)
 {
-    if(!ModelManager::hasModel(fileName))
-    {
-        auto model = new Model3d();
-        model->readFromFile(fileName);
-        ModelManager::addModel(fileName, model);
-        return model;
-    }
-    else
-    {
-        auto model = ModelManager::cloneModel(fileName);
-        return model;
-    }
+    assert(!ModelManager::hasModel(name));
+    templateMap[name] = model;
+    return model;
 }
+
+
+Model3d* ModelManager::getModel(const std::string& name)
+{
+    return templateMap[name];
+}
+
+
+//Model3d* ModelManager::getOrCreateModel(const std::string& fileName)
+//{
+//    if(!ModelManager::hasModel(fileName))
+//    {
+//        auto model = new Model3d();
+//        model->readFromFile(fileName);
+//        ModelManager::addModel(fileName, model);
+//        return model;
+//    }
+//    else
+//    {
+//        auto model = ModelManager::getModel(fileName);
+//        return model;
+//    }
+//}
 
 
 struct ObjVertex
@@ -84,13 +94,13 @@ struct ObjTriangle
 
 Model3d::~Model3d()
 {
-    if(!_isTemplate)
+    if(cloned)
         for(auto& mesh : meshes)
             delete mesh;
 }
 
 
-Model3d::Model3d(Mesh3d& mesh) : _isTemplate(false)
+Model3d::Model3d(Mesh3d& mesh)
 {
     addMesh(mesh);
 }
@@ -106,11 +116,11 @@ Model3d& Model3d::operator= (const Model3d& model)
     return *this;
 }
 
-Model3d::Model3d() : _isTemplate(false)
+Model3d::Model3d() : cloned(false)
 {
 }
 
-Model3d::Model3d(Model3d& model) : _isTemplate(false)
+Model3d::Model3d(Model3d& model) : cloned(true)
 {
     for(auto mesh : model.meshes)
         addMesh(*new Mesh3d(*mesh));

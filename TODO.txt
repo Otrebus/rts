@@ -29,6 +29,7 @@
 - Check if checking for release input checks that release can be both startStart and stateEnd, check
 - When path finding results return, the first waypoint of the tank can be right next to it (most noticable at low fps) - replace the first waypoint with the tank position?
 + Movement painting
+- Terrain make* share a lot of code, unify
 - Make scene singleton
 - Setting terrainMesh to non-pointer (living in Terrain) exposes bug in mesh memory management
 - Attack movement type

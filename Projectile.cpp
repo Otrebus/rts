@@ -63,10 +63,11 @@ Projectile::Projectile(Vector3 pos, Vector3 dir, Vector3 up, Entity* owner = nul
         Model3d::templateMap["projectile"] = projectileModel;
         for(auto mesh : projectileModel->meshes)
             mesh->isTemplate = true;*/
-        projectileModel = ModelManager::addModel("projectile", *projectileMesh);
+        ModelManager::addModel("projectile", *projectileMesh);
+        projectileModel = ModelManager::instantiateModel("projectile");
     }
     else
-        projectileModel = ModelManager::cloneModel("projectile");
+        projectileModel = ModelManager::instantiateModel("projectile");
 
     setPosition(pos);
     setDirection(dir, up);

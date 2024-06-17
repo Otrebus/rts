@@ -15,7 +15,7 @@ class Line3d;
 class Tank : public Unit
 {
 public:
-    Tank(Vector3 pos, Vector3 dir, Vector3 up, real width, Terrain* terrain);
+    Tank(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain);
     ~Tank();
 
     void init(Scene* scene);
@@ -40,6 +40,8 @@ public:
     void shoot();
 
     bool setBallisticTarget(Unit* enemyTarget);
+
+    static void loadModels();
 
     Vector2 seek();
     Vector2 evade();
@@ -83,7 +85,7 @@ public:
     Vector3 turretPos;
     Vector3 gunPos;
 
-    real gunLength;
+    static real gunLength;
     real gunRecoilPos;
 
     Vector3 absGunDir;

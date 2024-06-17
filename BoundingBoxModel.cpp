@@ -5,7 +5,7 @@
 #include "Math.h"
 
 
-BoundingBoxModel::BoundingBoxModel(Vector3 pos, Vector3 dir, Vector3 up, real width, real depth, real height)
+BoundingBoxModel::BoundingBoxModel(real width, real depth, real height)
 {
     real w = width, d = depth, h = height;
     std::vector<Vector3> c = {
@@ -56,9 +56,6 @@ BoundingBoxModel::BoundingBoxModel(Vector3 pos, Vector3 dir, Vector3 up, real wi
     std::vector<Vector3> vs({ { w/2, 0, 0 }, { w, 0, 0 }, { (1.f - 0.25f)*w, w*0.25f, 0 }, { w*(1.0f - 0.25f), -w*0.25f, 0 }, { 0, 0, h/2 }, { 0, 0, h }, { 0, h*0.25f, (1.f - 0.25f)*h }, { 0, -h*0.25f, h*(1.0f - 0.25f) } });
     auto lineMesh = new LineMesh3d(vs, { { 0, 1 }, { 1, 2 }, { 1, 3 }, { 4, 5 }, { 5, 6 }, { 5, 7 } }, material2, 2);
     addMesh(*lineMesh);
-
-    setPosition(pos);
-    setDirection(dir, up);
 }
 
 BoundingBoxModel::~BoundingBoxModel()
