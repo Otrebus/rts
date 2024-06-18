@@ -1,6 +1,7 @@
 #version 330 core
 
-struct PointLight {    
+struct PointLight
+{    
     vec3 position;
     vec3 color;
 };  
@@ -11,6 +12,7 @@ uniform int nLights;
 out vec4 FragColor;
 uniform vec3 Kd;
 
-void main() {
+void main()
+{
     FragColor = vec4(Kd, 1.0f);
 }

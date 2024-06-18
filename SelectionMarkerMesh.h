@@ -19,7 +19,6 @@ class SelectionMarkerMesh : public Mesh3d
 {
 public:
     SelectionMarkerMesh(Entity* tank);
-    SelectionMarkerMesh(std::vector<Vertex3d> vertices, std::vector<int> triangles, Material* material);
 
     void draw();
     void update();

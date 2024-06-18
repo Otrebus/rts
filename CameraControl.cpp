@@ -197,7 +197,8 @@ void CameraControl::moveRight(real t)
 {
     if(cameraMode == Freelook)
         cam->setPos(cam->getPos() - cam->getUp()%cam->getDir()*t*100.f);
-    else {
+    else
+    {
         terrainPos += (Vector3(cam->getDir().x, cam->getDir().y, 0)%Vector3(0, 0, 1)).normalized()*t*100.f;
         setPosFromTerrainPos();
     }

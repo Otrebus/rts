@@ -51,13 +51,15 @@ real Particle::getStart()
     return start;
 }
 
-float Particle::getRandomFloat(float min, float max) {
+float Particle::getRandomFloat(float min, float max)
+{
     std::uniform_real_distribution<float> distribution(min, max);
     return distribution(Random::getInstance().getGenerator());
 }
 
 
-int Particle::getRandomInt(int min, int max) {
+int Particle::getRandomInt(int min, int max)
+{
     std::uniform_int_distribution<int> distribution(min, max);
     return distribution(Random::getInstance().getGenerator());
 }

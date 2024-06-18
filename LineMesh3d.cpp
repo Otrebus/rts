@@ -49,7 +49,8 @@ void LineMesh3d::init(Scene* s)
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
-    for (const auto& line : lines) {
+    for (const auto& line : lines)
+    {
         indices.push_back(static_cast<GLuint>(line.first));
         indices.push_back(static_cast<GLuint>(line.second));
     }

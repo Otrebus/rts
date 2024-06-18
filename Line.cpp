@@ -100,7 +100,8 @@ void Line::setColor(Vector3 color)
 
 Line2d::Line2d(const std::vector<Vector2>& vertices)
 {
-    for (const auto& vertex : vertices) {
+    for (const auto& vertex : vertices)
+    {
         vertexData.push_back(vertex.x);
         vertexData.push_back(vertex.y);
     }
@@ -123,7 +124,8 @@ Line2d::~Line2d()
     tearDown();
 }
 
-void Line2d::init(Scene* scene) {
+void Line2d::init(Scene* scene)
+{
     this->scene = scene;
 
     glGenVertexArrays(1, &VAO);
@@ -137,7 +139,8 @@ void Line2d::init(Scene* scene) {
     glEnableVertexAttribArray(0);
 }
 
-void Line2d::draw() {
+void Line2d::draw()
+{
     auto s = scene->getShaderProgramManager();
     auto program = s->getProgram(fragmentShader, vertexShader);
     scene->setShaderProgram(program);
@@ -150,7 +153,8 @@ void Line2d::draw() {
     glDrawArrays(GL_LINE_STRIP, 0, vertexData.size()/2);
 }
 
-void Line2d::tearDown() {
+void Line2d::tearDown()
+{
     glDeleteBuffers(1, &VBO);
     glDeleteVertexArrays(1, &VAO);
 }

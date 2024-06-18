@@ -19,7 +19,8 @@ public:
         GLint success;
         GLchar infoLog[1024];
         glGetProgramiv(id, GL_LINK_STATUS, &success);
-        if (!success) {
+        if (!success)
+        {
             glGetProgramInfoLog(id, 1024, nullptr, infoLog);
             std::cerr << "Program Linking Error: " << infoLog << std::endl;
         }

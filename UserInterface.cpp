@@ -38,7 +38,8 @@ int sideSAT(const Polyhedra& a, Ray r)
         float t = 0;
         if(v == r.pos)
             pos++, neg++;
-        else {
+        else
+        {
             t = (v-r.pos).normalized()*r.dir;
             if(t > -eps)
                 pos++;

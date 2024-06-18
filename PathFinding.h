@@ -37,10 +37,8 @@ class PriorityQueue
         real prio;
         int key;
     };
-    //std::pair<real, int>* A;
     std::vector<PriorityQueueEntry> A;
     std::vector<int> P;
-    //int* P;
     int n;
     void heapify(int pos);
 

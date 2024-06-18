@@ -293,9 +293,8 @@ void Tank::accelerate(Vector2 velocityTarget)
 
     if(velocityTarget.length() > 0.01 && velocityTarget.normalized()*geoDir < 0.999)
         turn(geoDir%velocityTarget > 0);
-    else {
+    else
         turnRate = 0;
-    }
 
     auto radialAcc = Vector2(-dir.y, dir.x)*turnRate*maxSpeed;
     auto projAcc = !radialAcc ? std::abs(accelerationTarget*geoDir.normalized()) : radialAcc.length()/(radialAcc.normalized()*accelerationTarget.normalized());
@@ -366,28 +365,6 @@ void Tank::update(real dt)
                 closestD = d;
                 closestEnemy = unit;
             }
-        }
-    }
-    if(!enemyTarget || closestEnemy && (closestEnemy->getPosition()-enemyTarget->getPosition()).length() < closestD*0.95)
-        enemyTarget = closestEnemy;
-
-    if(enemyTarget && (enemyTarget->dead || !setBallisticTarget(enemyTarget)))
-    {
-        enemyTarget = nullptr;
-        turretTarget = Vector3(0, 1, 0);
-    }
-
-    if(enemyTarget && glfwGetTime() - lastFired > fireInterval)
-    {
-        if((turretTarget*turretDir) > 0.99)
-        {
-            lastFired = glfwGetTime();
-            shoot();
-            auto light = new PointLight(glfwGetTime());
-
-            light->setPos(absMuzzlePos);
-            light->setVelocity(this->velocity);
-            scene->addLight(light);
         }
     }
 
@@ -480,6 +457,29 @@ void Tank::update(real dt)
     plant(*scene->getTerrain());
     velocity = (pos-prePos)/dt;
     updateTurret(dt);
+
+    if(!enemyTarget || closestEnemy && (closestEnemy->getPosition()-enemyTarget->getPosition()).length() < closestD*0.95)
+        enemyTarget = closestEnemy;
+
+    if(enemyTarget && (enemyTarget->dead || !setBallisticTarget(enemyTarget)))
+    {
+        enemyTarget = nullptr;
+        turretTarget = Vector3(0, 1, 0);
+    }
+
+    if(enemyTarget && glfwGetTime() - lastFired > fireInterval)
+    {
+        if((turretTarget*turretDir) > 1-1e-6)
+        {
+            lastFired = glfwGetTime();
+            shoot();
+            auto light = new PointLight(glfwGetTime());
+
+            light->setPos(absMuzzlePos);
+            light->setVelocity(this->velocity);
+            scene->addLight(light);
+        }
+    }
 }
 
 Vector2 Tank::seek()
@@ -521,9 +521,8 @@ Vector2 Tank::seek()
             return v2*speed;
         }
     }
-    else {
+    else
         return { 0, 0 };
-    }
 }
 
 Vector2 Tank::evade()

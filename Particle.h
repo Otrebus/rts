@@ -13,14 +13,17 @@ class Ray;
 
 
 
-class Random {
+class Random
+{
 public:
-    static Random& getInstance() {
+    static Random& getInstance()
+    {
         static Random instance;
         return instance;
     }
 
-    std::default_random_engine& getGenerator() {
+    std::default_random_engine& getGenerator()
+    {
         return generator;
     }
 
