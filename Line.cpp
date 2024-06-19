@@ -1,6 +1,6 @@
 #include "Line.h"
-#include "Shader.h"
 #include "Math.h"
+#include "Shader.h"
 
 
 Line::Line() : VAO(0), VBO(0)
@@ -13,7 +13,7 @@ Line::Line() : VAO(0), VBO(0)
 
 Line::Line(const std::vector<Vector3>& vertices)
 {
-    for (const auto& vertex : vertices)
+    for(const auto& vertex : vertices)
     {
         vertexData.push_back(vertex.x);
         vertexData.push_back(vertex.y);
@@ -50,7 +50,7 @@ void Line3d::init(Scene* scene)
 void Line3d::setVertices(const std::vector<Vector3>& vertices)
 {
     vertexData.clear();
-    for (const auto& vertex : vertices)
+    for(const auto& vertex : vertices)
     {
         vertexData.push_back(vertex.x);
         vertexData.push_back(vertex.y);
@@ -100,7 +100,7 @@ void Line::setColor(Vector3 color)
 
 Line2d::Line2d(const std::vector<Vector2>& vertices)
 {
-    for (const auto& vertex : vertices)
+    for(const auto& vertex : vertices)
     {
         vertexData.push_back(vertex.x);
         vertexData.push_back(vertex.y);
@@ -145,7 +145,6 @@ void Line2d::draw()
     auto program = s->getProgram(fragmentShader, vertexShader);
     scene->setShaderProgram(program);
     program->use();
-    //program->use();
 
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)(&identityMatrix.m_val));
     glUniform3fv(glGetUniformLocation(program->getId(), "Kd"), 1, (float*)(&color));

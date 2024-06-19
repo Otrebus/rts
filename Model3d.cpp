@@ -1,11 +1,11 @@
-#include <vector>
+#include "Camera.h"
+#include "LambertianMaterial.h"
+#include "Model3d.h"
+#include "Parser.h"
 #include "Utils.h"
 #include "Vector2.h"
 #include "Vector3.h"
-#include "Model3d.h"
-#include "LambertianMaterial.h"
-#include "Camera.h"
-#include "Parser.h"
+#include <vector>
 
 
 bool ModelManager::hasModel(const std::string& identifier)
@@ -194,7 +194,7 @@ const std::vector<Mesh3d*>& Model3d::getMeshes() const
 
 /**
  * Reads a Wavefront .mtl file.
- * 
+ *
  * @throws ParseException If the file was badly formed.
  * @param file The name of the obj file.
  * @param matefilestr The name of the materials file.
@@ -290,11 +290,11 @@ std::map<std::string, Material*> Model3d::readMaterialFile(const std::string& ma
             else if(!emissive)
                 throw ParseException("Ns specified for custom material");
         }
-        else if(acceptAnyCaseStr(parser, "ke")) 
+        else if(acceptAnyCaseStr(parser, "ke"))
             expectVector3d(parser);
-        else if(acceptAnyCaseStr(parser, "ni")) 
+        else if(acceptAnyCaseStr(parser, "ni"))
             expectReal(parser);
-        else if(acceptAnyCaseStr(parser, "illum")) 
+        else if(acceptAnyCaseStr(parser, "illum"))
             expectInt(parser);
         else
         {
@@ -327,68 +327,69 @@ void Model3d::readFromFile(const std::string& file)
 
     std::vector<Mesh3d> mesh;
 
-    auto getOrMakeVertex = [&smoothingVertices, &positions, &normals, &textureCoords] (int group, int position, int normal, int tex)
-    {
-        for(auto v : smoothingVertices[group][position])
-            if((v->texture == (tex ? textureCoords[tex-1] : Vector2(0, 0))) && v->normal == (normal ? normals[normal-1] : Vector3(0, 0, 0)))
-                return v;
-
-        auto v = new ObjVertex(positions[position-1], normal ? normals[normal-1] : Vector3(0, 0, 0), tex ? textureCoords[tex-1] : Vector2(0, 0));
-        smoothingVertices[group][position].push_back(v);
-        return v;
-    };
-
-    auto addMesh = [&smoothingTriangles, &smoothingVertices, this, &curmat] ()
-    {
-        std::vector<ObjVertex*> vertices[33];
-
-        for(int i = 0; i < 33; i++)
+    auto getOrMakeVertex = [&smoothingVertices, &positions, &normals, &textureCoords](int group, int position, int normal, int tex)
         {
-            Mesh3d* mesh = new Mesh3d;
-            mesh->material = curmat;
-            std::vector<Vertex3d> vertices;
-            std::vector<int> indices;
-            std::unordered_map<ObjVertex*, int> vertMap;
+            for(auto v : smoothingVertices[group][position])
+                if((v->texture == (tex ? textureCoords[tex-1] : Vector2(0, 0))) && v->normal == (normal ? normals[normal-1] : Vector3(0, 0, 0)))
+                    return v;
 
-            for(auto& t : smoothingTriangles[i])
+            auto v = new ObjVertex(positions[position-1], normal ? normals[normal-1] : Vector3(0, 0, 0), tex ? textureCoords[tex-1] : Vector2(0, 0));
+            smoothingVertices[group][position].push_back(v);
+            return v;
+        };
+
+    auto addMesh = [&smoothingTriangles, &smoothingVertices, this, &curmat]()
+        {
+            std::vector<ObjVertex*> vertices[33];
+
+            for(int i = 0; i < 33; i++)
             {
-                for(auto& v : { t->v0, t->v1, t->v2 } )
-                {
-                    auto normal = v->normal;
-                    if(!normal)
-                        normal = ((t->v1->position-t->v0->position)%(t->v2->position-t->v0->position)).normalized();
+                Mesh3d* mesh = new Mesh3d;
+                mesh->material = curmat;
+                std::vector<Vertex3d> vertices;
+                std::vector<int> indices;
+                std::unordered_map<ObjVertex*, int> vertMap;
 
-                    if(vertMap.find(v) == vertMap.end())
+                for(auto& t : smoothingTriangles[i])
+                {
+                    for(auto& v :{ t->v0, t->v1, t->v2 })
                     {
-                        vertMap[v] = vertices.size();
-                        vertices.emplace_back(v->position, normal, v->texture);
+                        auto normal = v->normal;
+                        if(!normal)
+                            normal = ((t->v1->position-t->v0->position)%(t->v2->position-t->v0->position)).normalized();
+
+                        if(vertMap.find(v) == vertMap.end())
+                        {
+                            vertMap[v] = vertices.size();
+                            vertices.emplace_back(v->position, normal, v->texture);
+                        }
+                        indices.push_back(vertMap[v]);
                     }
-                    indices.push_back(vertMap[v]);
+                    delete t;
                 }
-                delete t;
-            }
 
-            if(indices.size())
-            {
-                for(auto& p : smoothingVertices[i])
+                if(indices.size())
                 {
-                    for(auto& v : p.second)
-                        delete v;
-                    p.second.clear();
+                    for(auto& p : smoothingVertices[i])
+                    {
+                        for(auto& v : p.second)
+                            delete v;
+                        p.second.clear();
+                    }
+                    smoothingVertices[i].clear();
+                    smoothingTriangles[i].clear();
+
+                    mesh->v = vertices;
+                    mesh->triangles = indices;
+
+                    if(mesh->triangles.size())
+                        this->addMesh(*mesh);
                 }
-                smoothingVertices[i].clear();
-                smoothingTriangles[i].clear();
-
-                mesh->v = vertices;
-                mesh->triangles = indices;
-
-                if(mesh->triangles.size())
-                    this->addMesh(*mesh);
             }
-        }
-    };
+        };
 
-    try {
+    try
+    {
         if(myfile.fail())
         {
             myfile.close();
@@ -413,25 +414,25 @@ void Model3d::readFromFile(const std::string& file)
                         break;
 
                     if(v < 0)
-                        v = (int) positions.size() + v + 1;
+                        v = (int)positions.size() + v + 1;
 
                     auto vertex = getOrMakeVertex(currentSmoothingGroup, v, n, t);
                     faceVertices.push_back(vertex);
                 }
 
-                for(int i = 0; i < (int) faceVertices.size()-2; i++)
+                for(int i = 0; i < (int)faceVertices.size()-2; i++)
                 {
                     auto pv0 = faceVertices[0], pv1 = faceVertices[i+1], pv2 = faceVertices[i+2];
 
                     ObjTriangle* tri = new ObjTriangle(pv0, pv1, pv2);
 
                     smoothingTriangles[currentSmoothingGroup].push_back(tri);
-                    for(auto& p : { pv0, pv1, pv2 })
+                    for(auto& p :{ pv0, pv1, pv2 })
                         p->triangles.push_back(tri);
                 }
             }
             else if(parser.accept("g") || parser.peek() == Token::Eof)
-            {   
+            {
                 // We don't care about the name of the group
                 for(auto p = acceptStr(parser); std::get<0>(p); p = acceptStr(parser));
 

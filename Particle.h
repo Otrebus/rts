@@ -2,10 +2,10 @@
 
 #define NOMINMAX
 
+#include "Matrix4.h"
 #include "Vector3.h"
 #include <iostream>
 #include <random>
-#include "Matrix4.h"
 
 class Terrain;
 class Input;
@@ -62,7 +62,7 @@ public:
     void setColor(const Vector3&);
 
     real getStart();
-    
+
     virtual void update(real time) = 0;
     virtual bool isAlive() = 0;
     virtual bool isVisible() = 0;

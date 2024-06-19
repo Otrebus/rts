@@ -1,7 +1,7 @@
-#include "PathFinding.h"
-#include <thread>
-#include <chrono>
 #include "Main.h"
+#include "PathFinding.h"
+#include <chrono>
+#include <thread>
 
 
 using namespace std::literals::chrono_literals;
@@ -70,7 +70,7 @@ int PriorityQueue::pop()
     int key = A[1].key, k = 1;
     std::swap(P[key], P[A[n].key]);
     std::swap(A[k], A[n]);
-    
+
     n--;
     while(k*2 <= n)
     {
@@ -161,7 +161,7 @@ std::deque<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinatio
     int endIndex = destY*width + destX;
     C[startIndex] = 0;
 
-    auto dist = [] (int x, int y) { return real(std::sqrt(real(x*x + y*y))); };
+    auto dist = [](int x, int y) { return real(std::sqrt(real(x*x + y*y))); };
 
     Q.insert(startY*width+startX, 0);
 

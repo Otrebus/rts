@@ -1,9 +1,9 @@
 #pragma once
 
 #define NOMINMAX
-#include "Vector2.h"
 #include "Line.h"
 #include "Ray.h"
+#include "Vector2.h"
 
 class Input;
 class Scene;
@@ -12,11 +12,13 @@ class Ray;
 class CameraControl;
 class Unit;
 
-enum SelectState {
+enum SelectState
+{
     NotSelecting, Clicking, DrawingBox
 };
 
-enum CommandState {
+enum CommandState
+{
     NotCommanding, Moving, Attacking
 };
 

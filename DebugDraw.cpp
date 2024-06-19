@@ -1,39 +1,37 @@
 #define NOMINMAX
 
+#include "Camera.h"
+#include "Entity.h"
+#include "GeometryUtils.h"
+#include "Input.h"
+#include "LambertianMaterial.h"
+#include "Line.h"
+#include "Logger.h"
+#include "Main.h"
+#include "Math.h"
+#include "Matrix4.h"
+#include "Model3d.h"
+#include "Parser.h"
+#include "Ray.h"
+#include "Scene.h"
+#include "SelectionDecalMaterial.h"
+#include "Shader.h"
+#include "ShaderProgram.h"
+#include "ShaderProgramManager.h"
+#include "Tank.h"
+#include "Terrain.h"
+#include "Text.h"
+#include "TextureMaterial.h"
+#include "UserInterface.h"
+#include "Utils.h"
+#include "Vector2.h"
 #include <cmath>
-#include <stdio.h>
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include "Shader.h"
-#include "ShaderProgram.h"
-#include "Utils.h"
-#include "Camera.h"
-#include "Matrix4.h"
-#include "UserInterface.h"
-#include "LambertianMaterial.h"
-#include "Parser.h"
-#include "Model3d.h"
-#include "TextureMaterial.h"
-#include "Input.h"
-#include "Tank.h"
-#include "Scene.h"
 #include <queue>
-#include "Terrain.h"
+#include <stdio.h>
 #include <thread>
-#include "Line.h"
-#include "Ray.h"
-#include "Entity.h"
-#include "ShaderProgramManager.h"
-#include "SelectionDecalMaterial.h"
-#include "Main.h"
-#include "Math.h"
-#include "Vector2.h"
-#include "Terrain.h"
-#include "Logger.h"
-#include "GeometryUtils.h"
-#include "Text.h"
-
 
 Line3d makeCircle(Vector2 pos, real radius)
 {
@@ -43,7 +41,6 @@ Line3d makeCircle(Vector2 pos, real radius)
         points.push_back(pos.to3() + Vector3(std::cos(i*(2*pi/N))*radius, std::sin(i*(2*pi/N))*radius, 0));
     return { points };
 }
-
 
 int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
 {
@@ -58,16 +55,16 @@ int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
     bool intersecting = false;
     real startX, startY;
     int mouseX, mouseY;
-    
+
     Ray r1, r2;
 
     //Vector2 p1(0.5, 0.5), p2(0.65, 0.75), p3(0.55, 0.85);
 
     Vector2 p1(0.3, -0.3), p2(0, 0.3), p3(-0.3, 0);
 
-    while (!glfwWindowShouldClose(window))
+    while(!glfwWindowShouldClose(window))
     {
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
 
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
@@ -75,10 +72,10 @@ int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
         auto prevTime = time;
         time = glfwGetTime();
         auto dt = time - prevTime;
-       
+
         auto inputs = InputQueue::getInstance().handleInput(prevTime, time);
         glfwPollEvents();
-        
+
         for(auto input : inputs)
         {
             if(input->stateStart == MousePosition)
@@ -96,8 +93,8 @@ int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
             }
             delete input;
         }
-        
-        Line3d tri({p1.to3(), p2.to3(), p3.to3(), p1.to3()});
+
+        Line3d tri({ p1.to3(), p2.to3(), p3.to3(), p1.to3() });
         tri.init(&scene);
         tri.draw();
 
@@ -111,11 +108,11 @@ int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
 
             if(r1.pos == r2.pos)
                 continue;
-        
+
             Line3d line({
                 r1.pos,
                 r2.pos
-            });
+                        });
             line.init(&scene);
             line.draw();
 
@@ -125,7 +122,7 @@ int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
             auto [s, norm] = intersectCircleTrianglePath(r1.pos.to2(), radius, (r2.pos-r1.pos).to2().normalized(), p1, p2, p3);
             auto p1 = r1.pos + (r2.pos-r1.pos).normalized()*s;
             auto p2 = p1 + norm.to3()*0.5f;
-            Line3d normalLine( { p1, p2 });
+            Line3d normalLine({ p1, p2 });
             normalLine.init(&scene);
             normalLine.draw();
 
@@ -157,10 +154,10 @@ std::vector<Vertex3d> createQuadVertices()
     return vs;
 }
 
-std::vector<int> quadIndices() {
-    return {0, 1, 2, 2, 3, 0};
+std::vector<int> quadIndices()
+{
+    return { 0, 1, 2, 2, 3, 0 };
 }
-
 
 int drawDecals(GLFWwindow* window, int xres, int yres)
 {
@@ -169,8 +166,8 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
 
     real time = glfwGetTime();
 
-    glEnable              ( GL_DEBUG_OUTPUT );
-    glDebugMessageCallback( MessageCallback, 0 );
+    glEnable(GL_DEBUG_OUTPUT);
+    glDebugMessageCallback(MessageCallback, 0);
 
     ShaderProgramManager shaderProgramManager;
     Scene scene(&cam, &shaderProgramManager);
@@ -178,7 +175,7 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
     bool intersecting = false;
     real startX, startY;
     int mouseX, mouseY;
-    
+
     Ray r1, r2;
 
     std::vector<Model3d*> decals;
@@ -186,14 +183,14 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
     auto decalMaterial = new SelectionDecalMaterial();
 
     Vector3 position[10], velocity[10];
-    
-    for (int i = 0; i < 10; ++i)
+
+    for(int i = 0; i < 10; ++i)
     {
         auto mesh = new Mesh3d(createQuadVertices(), quadIndices(), decalMaterial);
         Model3d* decal = new Model3d(*mesh);
         decal->setScene(&scene);
         decals.push_back(decal);
-        
+
 
         real x = ((rand()%2000) - 1000.0)/10000.0;
         real y = ((rand()%2000) - 1000.0)/10000.0;
@@ -217,15 +214,15 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
     mesh.setScene(&scene);
 
     glfwWindowHint(GLFW_SAMPLES, 4);
-    glEnable(GL_MULTISAMPLE); 
+    glEnable(GL_MULTISAMPLE);
     glfwWindowHint(GLFW_DEPTH_BITS, 24);
-    
+
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    while (!glfwWindowShouldClose(window))
+    while(!glfwWindowShouldClose(window))
     {
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
 
         glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
@@ -237,7 +234,7 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
         auto prevTime = time;
         time = glfwGetTime();
         auto dt = time - prevTime;
-       
+
         checkError();
 
         SelectionDecalMaterial::radius = 0.15;
@@ -257,15 +254,15 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
         //glPolygonOffset(0, 0);
         //glDisable(GL_BLEND);
         /*glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); 
+        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
         glStencilMask(0x00);*/
         //glBlendFunc(GL_ZERO, GL_ONE);
         //glBlendFuncSeparate(GL_ONE_MINUS_DST_ALPHA, GL_ONE, GL_ZERO, GL_ONE);
-        
-        glEnable( GL_SAMPLE_SHADING ) ;
+
+        glEnable(GL_SAMPLE_SHADING);
         glMinSampleShading(1.0);
 
-        glBlendFunc( GL_SRC_ALPHA_SATURATE, GL_ONE ) ;
+        glBlendFunc(GL_SRC_ALPHA_SATURATE, GL_ONE);
         glBlendFuncSeparate(GL_ONE, GL_ZERO, GL_ZERO, GL_ONE);
         i = 0;
 
@@ -305,12 +302,12 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
         }
 
         glDisable(GL_POLYGON_OFFSET_FILL);
-        
+
         glDisable(GL_BLEND);
 
         auto inputs = InputQueue::getInstance().handleInput(prevTime, time);
         glfwPollEvents();
-        
+
         for(auto input : inputs)
         {
             if(input->stateStart == MousePosition)
@@ -330,27 +327,27 @@ int drawTexts(GLFWwindow* window, int xres, int yres)
     InputQueue::getInstance().initInput(window);
     OrthogonalCamera cam({ 0, 0, 1 }, { 0, 0, -1 }, { 0, 1, 0 }, real(xres)/float(yres));
 
-    glEnable              ( GL_DEBUG_OUTPUT );
-    glDebugMessageCallback( MessageCallback, 0 );
+    glEnable(GL_DEBUG_OUTPUT);
+    glDebugMessageCallback(MessageCallback, 0);
 
     ShaderProgramManager shaderProgramManager;
     Scene scene(&cam, &shaderProgramManager);
-    
-    while (!glfwWindowShouldClose(window))
+
+    while(!glfwWindowShouldClose(window))
     {
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
 
         glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-       
+
         //checkError();
         drawText("B", { 0, 0 }, 0.2f, { 1, 0, 0 });
-        
+
         glfwPollEvents();
         glfwSwapBuffers(window);
     }
-    
+
     glfwTerminate();
     return 0;
 }

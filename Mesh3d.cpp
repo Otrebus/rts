@@ -1,8 +1,8 @@
+#include "Math.h"
+#include "Matrix4.h"
 #include "Mesh3d.h"
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
-#include "Matrix4.h"
-#include "Math.h"
 
 Mesh3d::Mesh3d()
 {
@@ -12,7 +12,6 @@ Mesh3d::Mesh3d()
     if(!geometryShader)
         geometryShader = new Shader("geometryShader.geom", GL_GEOMETRY_SHADER);
 }
-
 
 Mesh3d::Mesh3d(std::vector<Vertex3d> vertices, std::vector<int> triangles, Material* material)
 {
@@ -25,7 +24,6 @@ Mesh3d::Mesh3d(std::vector<Vertex3d> vertices, std::vector<int> triangles, Mater
         geometryShader = new Shader("geometryShader.geom", GL_GEOMETRY_SHADER);
 }
 
-
 Mesh3d::Mesh3d(Mesh3d& mesh)
 {
     this->material = mesh.material->clone();
@@ -36,7 +34,6 @@ Mesh3d::Mesh3d(Mesh3d& mesh)
     this->EBO = mesh.EBO;
 }
 
-
 Mesh3d::~Mesh3d()
 {
     glDeleteBuffers(1, &VBO);
@@ -44,7 +41,6 @@ Mesh3d::~Mesh3d()
     glDeleteVertexArrays(1, &VAO);
     delete material;
 }
-
 
 void Mesh3d::init()
 {

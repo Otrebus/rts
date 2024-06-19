@@ -1,21 +1,21 @@
 #pragma once
 
+#include "LambertianMaterial.h"
+#include "Logger.h"
+#include "Model3d.h"
+#include "Utils.h"
+#include "Vector2.h"
+#include "Vector3.h"
+#include <charconv>
+#include <fstream>
+#include <map>
+#include <set>
+#include <stack>
 #include <string>
 #include <tuple>
-#include <vector>
-#include <map>
-#include "Vector3.h"
-#include "Vector2.h"
-#include "Utils.h"
-#include <stack>
 #include <tuple>
-#include <set>
 #include <unordered_map>
-#include <fstream>
-#include <charconv>
-#include "Model3d.h"
-#include "Logger.h"
-#include "LambertianMaterial.h"
+#include <vector>
 
 class Material;
 class TriangleMesh;
@@ -81,7 +81,7 @@ public:
 
 /**
  * Optionally attempts to parse a string of any kind.
- * 
+ *
  * @param parser The parser object.
  * @returns A pair of { whether we succeeded (bool), and the string that we parsed (string view) }.
  */

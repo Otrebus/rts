@@ -1,8 +1,8 @@
 #pragma once
 
+#include "Utils.h"
 #include <cmath>
 #include <iostream>
-#include "Utils.h"
 
 class Matrix4;
 
@@ -47,7 +47,7 @@ public:
     Vector2 normalized() const;
     Vector2 perp() const;
     bool isValid() const;
-    
+
     Vector3 to3() const;
     real x, y;
 };

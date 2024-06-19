@@ -1,11 +1,11 @@
-#include "SelectionDecalMaterial.h"
-#include "Vector3.h"
-#include "Shader.h"
 #include "Scene.h"
+#include "SelectionDecalMaterial.h"
+#include "Shader.h"
+#include "Vector3.h"
 
 
 SelectionDecalMaterial::SelectionDecalMaterial(Vector3 Kd) : Kd(Kd)
-{     
+{
     if(!fragmentShader)
         fragmentShader = new Shader("selectionMaterial.frag", GL_FRAGMENT_SHADER);
 }

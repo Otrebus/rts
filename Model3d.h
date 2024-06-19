@@ -1,12 +1,12 @@
 #pragma once
-#include "Mesh3d.h"
-#include "Vector3.h"
-#include "Vector2.h"
-#include "Matrix4.h"
-#include "ShaderProgram.h"
-#include "Material.h"
 #include "Camera.h"
+#include "Material.h"
+#include "Matrix4.h"
 #include "Mesh.h"
+#include "Mesh3d.h"
+#include "ShaderProgram.h"
+#include "Vector2.h"
+#include "Vector3.h"
 #include <map>
 
 
@@ -72,7 +72,7 @@ public:
 
     static Model3d* instantiateModel(const std::string& str);
     static void deleteModel(const std::string& str, Model3d* model);
-    
+
     Model3d* createModel(const std::string& str);
     static Model3d* addModel(const std::string& filename, Model3d* model);
     Model3d* getModel(const std::string& name);

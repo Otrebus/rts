@@ -1,17 +1,17 @@
-#include "Tank.h"
-#include "Model3d.h"
-#include "Utils.h"
-#include "Math.h"
 #include "BoundingBoxModel.h"
-#include "Terrain.h"
-#include "PathFinding.h"
 #include "Entity.h"
+#include "GeometryUtils.h"
+#include "Math.h"
+#include "Model3d.h"
+#include "Particle.h"
+#include "PathFinding.h"
+#include "Polysolver.h"
+#include "Projectile.h"
 #include "SelectionDecalMaterial.h"
 #include "SelectionMarkerMesh.h"
-#include "Projectile.h"
-#include "GeometryUtils.h"
-#include "Polysolver.h"
-#include "Particle.h"
+#include "Tank.h"
+#include "Terrain.h"
+#include "Utils.h"
 
 
 void Tank::loadModels()
@@ -30,14 +30,14 @@ void Tank::loadModels()
     ModelManager::addModel("tankbarrel", gun);
 
     real width = 1;
- 
+
     BoundingBox bb;
 
-    for(auto model : { body, turret, gun })
+    for(auto model :{ body, turret, gun })
     {
         for(auto& mesh : model->getMeshes())
         {
-            for(auto& v : ((Mesh3d*) mesh)->v)
+            for(auto& v : ((Mesh3d*)mesh)->v)
             {
                 v.pos = Vector3(v.pos.z, v.pos.x, v.pos.y);
                 v.normal = Vector3(v.normal.z, v.normal.x, v.normal.y);
@@ -56,12 +56,12 @@ void Tank::loadModels()
     auto h = (bb.c2.z - bb.c1.z);
     auto ratio = width/w;
 
-    for(auto model : { body, turret, gun })
+    for(auto model :{ body, turret, gun })
     {
         BoundingBox bb;
         for(auto& mesh : model->getMeshes())
         {
-            for(auto& v : ((Mesh3d*) mesh)->v)
+            for(auto& v : ((Mesh3d*)mesh)->v)
             {
                 bb.c1.x = std::min(bb.c1.x, v.pos.x);
                 bb.c1.y = std::min(bb.c1.y, v.pos.y);
@@ -73,7 +73,7 @@ void Tank::loadModels()
         }
         for(auto& mesh : model->getMeshes())
         {
-            for(auto& v : ((Mesh3d*) mesh)->v)
+            for(auto& v : ((Mesh3d*)mesh)->v)
             {
                 v.pos -= Vector3((bb.c2.x + bb.c1.x)/2, (bb.c2.y + bb.c1.y)/2, (bb.c2.z + bb.c1.z)/2);
                 v.pos *= width/w;
@@ -84,7 +84,7 @@ void Tank::loadModels()
     real gunMaxX = -inf;
     for(auto& mesh : gun->getMeshes())
     {
-        for(auto& v : ((Mesh3d*) mesh)->v)
+        for(auto& v : ((Mesh3d*)mesh)->v)
         {
             gunMinX = std::min(v.pos.x, gunMinX);
             gunMaxX = std::max(v.pos.x, gunMaxX);
@@ -92,7 +92,7 @@ void Tank::loadModels()
     }
     for(auto& mesh : gun->getMeshes())
     {
-        for(auto& v : ((Mesh3d*) mesh)->v)
+        for(auto& v : ((Mesh3d*)mesh)->v)
             v.pos.x -= gunMinX;
     }
     gunLength = gunMaxX - gunMinX;
@@ -138,7 +138,7 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, d
 
     pathCalculationInterval = (500 + (rand() % 500))/1000.0f;
 
-    for(auto model : { body, turret, gun })
+    for(auto model :{ body, turret, gun })
     {
         model->setPosition(pos);
         model->setDirection(dir, up);
@@ -187,7 +187,7 @@ void Tank::drawTurret()
 {
     turret->setDirection(absTurDir, absTurUp);
     turret->setPosition(absTurPos);
- 
+
     gun->setDirection(absGunDir, absGunUp);
     gun->setPosition(absGunPos);
 
@@ -209,7 +209,7 @@ void Tank::updateTurret(real dt)
     absGunPos = absTurPos + absTurDir*gunPos.y + (absTurDir%up).normalized()*gunPos.x + gunPos.z*absTurUp - absGunDir*gunRecoilPos;
     absGunUp = (absGunDir%(absTurDir%up)).normalized();
     absMuzzlePos = absGunPos + absGunDir*gunLength;
-    
+
     if(std::abs(std::acos(u*v)) < dt*turretYawRate)
         u = v;
     else
@@ -235,11 +235,11 @@ void Tank::draw()
     // TODO: slow
     P.push_back(getPosition());
     for(auto p : path)
-        P.push_back( { p.x, p.y, terrain->getElevation(p.x, p.y) });
+        P.push_back({ p.x, p.y, terrain->getElevation(p.x, p.y) });
     destinationLine.setVertices(P);
 
     body->draw();
-    
+
     drawTurret();
 
     if(selected && path.size() > 0)
@@ -332,7 +332,7 @@ bool Tank::setBallisticTarget(Unit* enemyTarget)
     ld t1 = 2.0f*p*v;
     ld c = p*p;
 
-    auto ts = findPolynomialRoots( { t4, t3, t2, t1, c } );
+    auto ts = findPolynomialRoots({ t4, t3, t2, t1, c });
 
     for(real t : ts)
     {
@@ -346,7 +346,7 @@ bool Tank::setBallisticTarget(Unit* enemyTarget)
             }
         }
     }
-    
+
     return false;
 }
 
@@ -387,7 +387,7 @@ void Tank::update(real dt)
     if(t > -inf && t < t2 && geoDir*norm < 0)
     {
         assert(t >= 0);
-        
+
         // A bit hacky, we do another pass to see if we hit anything perpendicularly to the normal as well
         velocity2 = (geoVelocity*norm.perp())*norm.perp();
 
@@ -398,7 +398,7 @@ void Tank::update(real dt)
         if(t > -inf && t < t2 && geoDir*norm < 0)
             velocity2 = { 0, 0 };
     }
-    
+
     // TODO: we should still close the distance here
     auto posNext = geoPos + velocity2*dt;
 
@@ -412,7 +412,7 @@ void Tank::update(real dt)
             {
                 pos1 += (geoPos-pos2).normalized()*(1-d)/2.f;
                 pos2 += (pos2-geoPos).normalized()*(1-d)/2.f;
-            }   
+            }
             geoPos = pos1;
             unit->geoPos = pos2;
         }

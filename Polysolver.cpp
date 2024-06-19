@@ -1,8 +1,8 @@
-#include <vector>
-#include <algorithm>
 #include "Math.h"
 #include "Polysolver.h"
+#include <algorithm>
 #include <array>
+#include <vector>
 
 const int MAX_N = 10;
 
@@ -13,7 +13,7 @@ void diff(ld* w, ld* v, int n) // Differentiates a polynomial
 }
 
 ld eval(ld* v, ld x, int n) // Evaluates a polynomial with Horner's rule
-{ 
+{
     ld sum = 0;
     for(int i = 0; i < n; i++)
         sum = sum*x + v[i];
@@ -21,7 +21,7 @@ ld eval(ld* v, ld x, int n) // Evaluates a polynomial with Horner's rule
 }
 
 ld bisect(ld x1, ld x2, ld* v, int n) // Finds a root of a poly between x1 and x2
-{ 
+{
     auto a = eval(v, x1, n), b = eval(v, x2, n);
 
     while(x2-x1 > 1e-9)

@@ -1,13 +1,13 @@
 #define NOMINMAX
 
-#include "Text.h"
-#include <vector>
-#include <GL/gl3w.h>
-#include "ShaderProgram.h"
-#include "Shader.h"
-#include "Vector2.h"
 #include "Math.h"
 #include "Matrix4.h"
+#include "Shader.h"
+#include "ShaderProgram.h"
+#include "Text.h"
+#include "Vector2.h"
+#include <GL/gl3w.h>
+#include <vector>
 
 GLuint VAO, VBO, EBO;
 bool init;
@@ -19,9 +19,9 @@ int drawChar(char c, Vector2 position, float size)
 {
     std::vector<Vector2> vertices;
     std::vector<GLuint> indices;
-    
+
     int j = vertices.size();
-    for (int i = 2; i < 112; i += 2)
+    for(int i = 2; i < 112; i += 2)
     {
         if(simplex[c-32][i] == -1)
         {
@@ -48,7 +48,7 @@ int drawChar(char c, Vector2 position, float size)
         }
         else
         {
-            vertices.push_back( { position.x + (size / 32.0f)*simplex[c-32][i], position.y + (size / 32.0f)*simplex[c-32][i+1] } );
+            vertices.push_back({ position.x + (size / 32.0f)*simplex[c-32][i], position.y + (size / 32.0f)*simplex[c-32][i+1] });
         }
     }
     return simplex[c-32][1];
@@ -63,7 +63,7 @@ void drawText(const std::string& text, Vector2 position, float size, Vector3 col
         glGenBuffers(1, &VBO);
         glGenBuffers(1, &EBO);
         shaderProgram = new ShaderProgram();
-        
+
         if(!fragmentShader)
             fragmentShader = new Shader("line.frag", GL_FRAGMENT_SHADER);
         if(!vertexShader)
@@ -71,11 +71,11 @@ void drawText(const std::string& text, Vector2 position, float size, Vector3 col
         shaderProgram->addShaders(*fragmentShader, *vertexShader);
     }
     shaderProgram->use();
-    
+
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram->getId(), "transform"), 1, GL_TRUE, (float*)(&identityMatrix.m_val));
     glUniform3fv(glGetUniformLocation(shaderProgram->getId(), "Kd"), 1, (float*)(&color));
     Vector2 cursor = position;
-    for (char c : text)
+    for(char c : text)
         cursor.x += (drawChar(c, cursor, size) * size) / 32.0f;
 }
 

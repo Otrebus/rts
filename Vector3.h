@@ -1,8 +1,8 @@
 #pragma once
 
+#include "Utils.h"
 #include <cmath>
 #include <sstream>
-#include "Utils.h"
 
 class Matrix4;
 class Vector2;
@@ -39,7 +39,7 @@ public:
 
     real& operator[](int);
     real operator[](int) const;
-    
+
     real length() const;
     real length2() const;
     void normalize();

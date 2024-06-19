@@ -1,16 +1,16 @@
 #define NOMINMAX
-#include "UserInterface.h"
+#include "Entity.h"
 #include "Input.h"
 #include "Line.h"
 #include "Math.h"
-#include "Entity.h"
-#include "Ray.h"
-#include <ranges>
 #include "PathFinding.h"
-#include <random>
-#include <numeric>
-#include "Unit.h"
+#include "Ray.h"
 #include "Tank.h"
+#include "Unit.h"
+#include "UserInterface.h"
+#include <numeric>
+#include <random>
+#include <ranges>
 
 
 UserInterface::UserInterface(GLFWwindow* window, Scene* scene, CameraControl* cameraControl) : scene(scene), cameraControl(cameraControl), cursor(nullptr), window(window)
@@ -23,7 +23,8 @@ UserInterface::UserInterface(GLFWwindow* window, Scene* scene, CameraControl* ca
 }
 
 
-struct Polyhedra {
+struct Polyhedra
+{
     std::vector<Vector3> vertices;
     std::vector<std::pair<int, int>> edges;
     std::vector<int> faceIndices;
@@ -61,11 +62,11 @@ bool testNormals(const Polyhedra& a, const Polyhedra& b)
 {
     auto& v = a.vertices;
     auto& f = a.faceIndices;
-    for (auto& [i, n] : a.faces)
+    for(auto& [i, n] : a.faces)
     {
         auto v1 = (v[f[i]] - v[f[i+1]]).normalized();
         auto v2 = (v[f[i+2]] - v[f[i]]).normalized();
-        if (auto k = v1%v2; k && testSides(a, b, { v[f[i+1]], (v1%v2).normalized() }))
+        if(auto k = v1%v2; k && testSides(a, b, { v[f[i+1]], (v1%v2).normalized() }))
             return false;
     }
     return true;
@@ -110,7 +111,7 @@ bool intersectsFrustum(Vector3 pos, Vector3 v[4], Entity& entity, Scene* scene)
         c2,
         Vector3(c1.x, c2.y, c2.z),
     };
-    
+
     for(auto& c : C)
         c = M*c + entity.pos;
 
@@ -216,7 +217,7 @@ void UserInterface::moveDrawnUnits(const std::vector<Unit*>& selectedUnits)
     if(selectedUnits.size() > 1)
     {
         k = length/(selectedUnits.size()-1);
-        points.insert(points.end(), { drawTarget.front(), drawTarget.back() } );
+        points.insert(points.end(), { drawTarget.front(), drawTarget.back() });
     }
 
     real L = 0;
@@ -256,8 +257,8 @@ void UserInterface::moveDrawnUnits(const std::vector<Unit*>& selectedUnits)
                 mini = i;
             }
         }
-                
-        v.push_back(Assignment { u, mini, min });
+
+        v.push_back(Assignment{ u, mini, min });
         P[mini] = true;
     }
 
@@ -288,7 +289,7 @@ void UserInterface::selectUnit(const Ray& ray, const std::vector<Unit*>& units, 
 {
     auto time = glfwGetTime();
     auto camera = scene->getCamera();
-    
+
     if(!pre)
     {
         for(auto u : units)
@@ -438,7 +439,7 @@ void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
 
     else if((input.stateStart == InputType::MousePress || input.stateStart == InputType::MouseHold) && input.key == GLFW_MOUSE_BUTTON_2)
     {
-        bool anySelected = std::ranges::any_of(units, [] (auto unit) { return unit->isSelected(); });
+        bool anySelected = std::ranges::any_of(units, [](auto unit) { return unit->isSelected(); });
         if(anySelected)
         {
             auto [x, y] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
@@ -471,7 +472,7 @@ void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
         {
             if(unit->isSelected())
             {
-                ((Tank*) unit)->shoot();
+                ((Tank*)unit)->shoot();
             }
         }
     }
@@ -495,7 +496,7 @@ void UserInterface::draw()
             { drawBoxc2.x, drawBoxc2.y, },
             { drawBoxc1.x, drawBoxc2.y, },
             { drawBoxc1.x, drawBoxc1.y, }
-        });
+                    });
         line.setColor(Vector3(0.2, 0.7, 0.1));
         line.init(scene);
         line.draw();

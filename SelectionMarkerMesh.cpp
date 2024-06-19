@@ -1,9 +1,9 @@
-#include "SelectionMarkerMesh.h"
-#include "SelectionDecalMaterial.h"
-#include "Scene.h"
 #include "LambertianMaterial.h"
-#include "Terrain.h"
+#include "Scene.h"
 #include "SelectionDecalMaterial.h"
+#include "SelectionDecalMaterial.h"
+#include "SelectionMarkerMesh.h"
+#include "Terrain.h"
 
 
 SelectionMarkerMesh::SelectionMarkerMesh(Entity* tank)
@@ -22,7 +22,7 @@ void SelectionMarkerMesh::draw()
 
     if(pass == 0)
     {
-        ((SelectionDecalMaterial*) this->material)->alpha = 0.89;
+        ((SelectionDecalMaterial*)this->material)->alpha = 0.89;
         SelectionDecalMaterial::radius = 0.90;
 
         glEnable(GL_BLEND);
@@ -31,7 +31,7 @@ void SelectionMarkerMesh::draw()
     }
     else if(pass == 1)
     {
-        ((SelectionDecalMaterial*) this->material)->alpha = 1.0;
+        ((SelectionDecalMaterial*)this->material)->alpha = 1.0;
         SelectionDecalMaterial::radius = pre ? 0.95 : 1;
 
         glEnable(GL_BLEND);
@@ -41,7 +41,7 @@ void SelectionMarkerMesh::draw()
     }
     else if(pass == 2)
     {
-        ((SelectionDecalMaterial*) this->material)->alpha = 1.0;
+        ((SelectionDecalMaterial*)this->material)->alpha = 1.0;
         SelectionDecalMaterial::radius = 0.90;
 
         glEnable(GL_BLEND);
@@ -63,7 +63,7 @@ void SelectionMarkerMesh::draw()
 std::pair<std::vector<Vertex3d>, std::vector<int>> SelectionMarkerMesh::calcVertices(Scene* scene)
 {
     auto tankPos = tank->getPosition();
-    
+
     int xc = tankPos.x, yc = tankPos.y;
 
     std::vector<Vertex3d> vs;
@@ -73,7 +73,7 @@ std::pair<std::vector<Vertex3d>, std::vector<int>> SelectionMarkerMesh::calcVert
         {
             auto pos = scene->getTerrain()->getPoint(x, y);
             pos.z += 0.01;
-            vs.push_back( { pos.x, pos.y, pos.z, 0, 0, 1, real(x)-tankPos.x, real(y)-tankPos.y});
+            vs.push_back({ pos.x, pos.y, pos.z, 0, 0, 1, real(x)-tankPos.x, real(y)-tankPos.y });
         }
     }
 
@@ -84,7 +84,7 @@ std::pair<std::vector<Vertex3d>, std::vector<int>> SelectionMarkerMesh::calcVert
         for(int x = 0; x < 3; x++)
         {
             int i1 = y*4+x, i2 = y*4+x+1, i3 = (y+1)*4+x+1, i4 = (y+1)*4 + x;
-            triangles.insert( triangles.end(), { i1, i2, i3, i1, i3, i4 } );
+            triangles.insert(triangles.end(), { i1, i2, i3, i1, i3, i4 });
         }
     }
     return { vs, triangles };

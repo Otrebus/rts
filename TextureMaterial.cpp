@@ -1,7 +1,7 @@
-#include "TextureMaterial.h"
-#include "Vector3.h"
 #include "Shader.h"
+#include "TextureMaterial.h"
 #include "Utils.h"
+#include "Vector3.h"
 
 
 TextureMaterial::TextureMaterial(const std::string& textureFile)
@@ -11,7 +11,7 @@ TextureMaterial::TextureMaterial(const std::string& textureFile)
 
     auto [data, width, height] = readBMP(textureFile);
 
-    glGenTextures(1, &this->texture); 
+    glGenTextures(1, &this->texture);
 
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -39,7 +39,7 @@ Shader* TextureMaterial::getShader()
 void TextureMaterial::updateUniforms(Scene* scene)
 {
     glBindTexture(GL_TEXTURE_2D, texture);
-    glUniform3fv(glGetUniformLocation(scene->getShaderProgram()->getId(), "camPos"), 1, (GLfloat*) &scene->getCamera()->getPos());
+    glUniform3fv(glGetUniformLocation(scene->getShaderProgram()->getId(), "camPos"), 1, (GLfloat*)&scene->getCamera()->getPos());
 }
 
 

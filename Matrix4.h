@@ -1,9 +1,9 @@
 #pragma once
 
+#include "Utils.h"
 #include "Vector3.h"
 #include "Vector4.h"
 #include <assert.h>
-#include "Utils.h"
 
 
 class Matrix4

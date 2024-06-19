@@ -1,38 +1,38 @@
 #define NOMINMAX
 
+#include "Camera.h"
+#include "DebugDraw.h"
+#include "Entity.h"
+#include "Input.h"
+#include "Line.h"
+#include "Logger.h"
+#include "Main.h"
+#include "Math.h"
+#include "Matrix4.h"
+#include "Model3d.h"
+#include "Parser.h"
+#include "PathFinding.h"
+#include "Ray.h"
+#include "Scene.h"
+#include "Shader.h"
+#include "ShaderProgram.h"
+#include "ShaderProgramManager.h"
+#include "Tank.h"
+#include "Terrain.h"
+#include "Text.h"
+#include "TextureMaterial.h"
+#include "UserInterface.h"
+#include "Utils.h"
 #include <cmath>
-#include <stdio.h>
+#include <format>
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include "Shader.h"
-#include <random>
-#include "ShaderProgram.h"
-#include "Utils.h"
-#include "Camera.h"
-#include "Matrix4.h"
-#include "UserInterface.h"
-#include "Parser.h"
-#include "Model3d.h"
-#include "TextureMaterial.h"
-#include "Input.h"
-#include "Tank.h"
-#include "Scene.h"
 #include <queue>
-#include "Terrain.h"
-#include "Line.h"
-#include "Ray.h"
-#include "Entity.h"
-#include "PathFinding.h"
-#include "ShaderProgramManager.h"
-#include "Main.h"
-#include "Math.h"
-#include "DebugDraw.h"
+#include <random>
+#include <stdio.h>
 #include <thread>
-#include "Logger.h"
-#include <format>
 #include <thread>
-#include "Text.h"
 
 
 extern bool quitting = false;
@@ -52,7 +52,7 @@ int main()
     std::default_random_engine generator;
     std::uniform_real_distribution<real> dist(0, 1.0f);
 
-    if (!glfwInit())
+    if(!glfwInit())
     {
         printf("failed to initialize GLFW.\n");
         return -1;
@@ -62,13 +62,13 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_DEPTH_BITS, 24);
-     
+
     auto window = glfwCreateWindow(xres, yres, "PolRts", nullptr, nullptr);
-    if (!window)
+    if(!window)
         return -1;
     glfwSetWindowAspectRatio(window, xres, yres);
     glfwMakeContextCurrent(window);
-    if (gl3wInit())
+    if(gl3wInit())
         return -1;
 
     glfwSetFramebufferSizeCallback(window, sizeCallback);
@@ -92,7 +92,7 @@ int main()
     ShaderProgramManager shaderProgramManager;
 
     Scene scene(&cam, &shaderProgramManager);
-    
+
     std::thread t(pathFindingThread);
     Terrain terrain("Heightmap.bmp", &scene);
     CameraControl cameraControl(&cam, &terrain, xres, yres);
@@ -148,9 +148,9 @@ int main()
     real frameTime = 0;
     real avgFps = 0;
 
-    while (!glfwWindowShouldClose(window))
+    while(!glfwWindowShouldClose(window))
     {
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
 
         auto prevTime = time;
@@ -159,7 +159,7 @@ int main()
 
         auto inputs = InputQueue::getInstance().handleInput(prevTime, time);
         glfwPollEvents();
-        
+
         for(auto result = popPathFindingResult(); result; result = popPathFindingResult())
         {
             for(auto& unit : scene.getUnits())
@@ -191,15 +191,15 @@ int main()
                 scene.removeLight(light);
         }
 
-        auto isCameraInput = [] (Input* input)
-        {
-            auto key = input->key;
-            return key == GLFW_KEY_E || key == GLFW_KEY_S || key == GLFW_KEY_F || key == GLFW_KEY_D || key == GLFW_KEY_LEFT_SHIFT || key == GLFW_MOUSE_BUTTON_1 || key == GLFW_MOUSE_BUTTON_2 || input->stateStart == MousePosition || key == GLFW_KEY_C || input->stateStart == ScrollOffset;
-        };
-        auto isGraphicsInput = [] (Input* input)
-        {
-            return input->key == GLFW_KEY_Z || input->key == GLFW_KEY_P;
-        };
+        auto isCameraInput = [](Input* input)
+            {
+                auto key = input->key;
+                return key == GLFW_KEY_E || key == GLFW_KEY_S || key == GLFW_KEY_F || key == GLFW_KEY_D || key == GLFW_KEY_LEFT_SHIFT || key == GLFW_MOUSE_BUTTON_1 || key == GLFW_MOUSE_BUTTON_2 || input->stateStart == MousePosition || key == GLFW_KEY_C || input->stateStart == ScrollOffset;
+            };
+        auto isGraphicsInput = [](Input* input)
+            {
+                return input->key == GLFW_KEY_Z || input->key == GLFW_KEY_P;
+            };
 
         for(auto input : inputs)
         {
@@ -255,7 +255,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         terrain.draw();
-       
+
         for(auto& unit : scene.getUnits())
         {
             unit->updateUniforms();
@@ -290,7 +290,7 @@ int main()
             if(particle->isAlive())
                 P.push_back(particle->serialize());
         }
-        std::sort(P.begin(), P.end(), [&scene] (const auto p1, const auto& p2) { return (p1.pos-scene.getCamera()->getPos()).length2() > (p2.pos-scene.getCamera()->getPos()).length2(); });
+        std::sort(P.begin(), P.end(), [&scene](const auto p1, const auto& p2) { return (p1.pos-scene.getCamera()->getPos()).length2() > (p2.pos-scene.getCamera()->getPos()).length2(); });
 
         scene.updateParticles();
         scene.updateEntities();
@@ -311,13 +311,13 @@ int main()
         glUniform3fv(glGetUniformLocation(program->getId(), "camPos"), 1, (float*)(&scene.getCamera()->getPos()));
         glUniform3fv(glGetUniformLocation(program->getId(), "camUp"), 1, (float*)(&scene.getCamera()->getUp()));
 
-        glDepthMask (GL_FALSE);
+        glDepthMask(GL_FALSE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);
         glDrawArrays(GL_POINTS, 0, P.size());
         glDisable(GL_BLEND);
         glBindVertexArray(0);
-        glDepthMask (GL_TRUE);
+        glDepthMask(GL_TRUE);
 
         avgFps = ((9*avgFps + 1/dt))/10;
 
@@ -338,9 +338,9 @@ int main()
             for(auto light : scene.getLights())
             {
                 auto loc = glGetUniformLocation(program->getId(), std::format("pointLights[{}].color", i).c_str());
-                glUniform3fv(loc, 1, (GLfloat*) &(light->getColor()));
+                glUniform3fv(loc, 1, (GLfloat*)&(light->getColor()));
                 loc = glGetUniformLocation(program->getId(), std::format("pointLights[{}].position", i).c_str());
-                glUniform3fv(loc, 1, (GLfloat*) &(light->getPos()));
+                glUniform3fv(loc, 1, (GLfloat*)&(light->getPos()));
                 i++;
             }
             glUniform1i(glGetUniformLocation(program->getId(), std::format("nLights", i).c_str()), scene.getLights().size());

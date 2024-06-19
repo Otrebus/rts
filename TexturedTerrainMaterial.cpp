@@ -1,12 +1,12 @@
+#include "Scene.h"
+#include "Shader.h"
+#include "Terrain.h"
 #include "TexturedTerrainMaterial.h"
 #include "Vector3.h"
-#include "Shader.h"
-#include "Scene.h"
-#include "Terrain.h"
 
 
 TexturedTerrainMaterial::TexturedTerrainMaterial()
-{     
+{
     if(!fragmentShader)
         fragmentShader = new Shader("texturedTerrain.frag", GL_FRAGMENT_SHADER);
 
@@ -67,7 +67,7 @@ Shader* TexturedTerrainMaterial::getShader()
 void TexturedTerrainMaterial::updateUniforms(Scene* scene)
 {
     GLuint shaderProgramId = scene->getShaderProgram()->getId();
-    
+
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
     glUniform1i(glGetUniformLocation(shaderProgramId, "texture1"), 0);

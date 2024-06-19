@@ -75,9 +75,9 @@ Matrix4 Matrix4::operator*(const Matrix4& m) const
     {
         for(int j = 0; j < 4; j++)
         {
-            result(i,j) = 0;
+            result(i, j) = 0;
             for(int k = 0; k < 4; k++)
-                result(i,j) += (*this)(i,k)*m(k,j);
+                result(i, j) += (*this)(i, k)*m(k, j);
         }
     }
     return result;

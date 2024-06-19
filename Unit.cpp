@@ -1,19 +1,19 @@
 #define NOMINMAX
-#include "Entity.h"
-#include "Mesh3d.h"
-#include "Vertex3d.h"
-#include "Model3d.h"
-#include "LineMesh3d.h"
-#include "Line.h"
-#include "Ray.h"
-#include "Terrain.h"
-#include "LambertianMaterial.h"
-#include "SelectionDecalMaterial.h"
-#include "LineMaterial.h"
-#include <vector>
-#include <array>
 #include "BoundingBoxModel.h"
+#include "Entity.h"
+#include "LambertianMaterial.h"
+#include "Line.h"
+#include "LineMaterial.h"
+#include "LineMesh3d.h"
+#include "Mesh3d.h"
+#include "Model3d.h"
+#include "Ray.h"
+#include "SelectionDecalMaterial.h"
 #include "SelectionMarkerMesh.h"
+#include "Terrain.h"
+#include "Vertex3d.h"
+#include <array>
+#include <vector>
 
 Unit::Unit(Vector3 pos, Vector3 dir, Vector3 up) : Entity(pos, dir, up) {}
 
@@ -64,7 +64,7 @@ void Unit::drawSelectionDecal(int pass)
         selectionMarkerMesh->update();
         selectionMarkerMesh->pass = pass;
         if(isEnemy())
-            ((SelectionDecalMaterial*) (selectionMarkerMesh->getMaterial()))->Kd = Vector3(0.8, 0, 0);
+            ((SelectionDecalMaterial*)(selectionMarkerMesh->getMaterial()))->Kd = Vector3(0.8, 0, 0);
         selectionMarkerMesh->updateUniforms();
         selectionMarkerMesh->draw();
         selectionMarkerMesh->setSelectionType(preSelected && !selected);

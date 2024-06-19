@@ -1,11 +1,11 @@
 #define NOMINMAX
+#include "Camera.h"
 #include "Input.h"
+#include "Terrain.h"
+#include <cmath>
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
-#include <cmath>
 #include <iostream>
-#include "Camera.h"
-#include "Terrain.h"
 #include <unordered_map>
 
 
@@ -49,7 +49,7 @@ bool InputQueue::hasInput()
 }
 
 
-QueuedInput InputQueue::peek() 
+QueuedInput InputQueue::peek()
 {
     return queue.front();
 }
@@ -72,7 +72,7 @@ QueuedInput InputQueue::pop()
         keyState[input.key] = input.state;
         lastKeyboardKey[input.key] = Input(0, 0, input.key, input.state ? KeyPress : KeyRelease, None, input.time, 0.0);
     }
-        
+
     if(input.type == QueuedInputType::MousePos)
         posX = input.posX, posY = input.posY;
     return input;
@@ -80,19 +80,19 @@ QueuedInput InputQueue::pop()
 
 bool panning;
 
-auto keyCallback = [] (GLFWwindow* window, int key, int scancode, int action, int mods)
+auto keyCallback = [](GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if(action != GLFW_REPEAT)
         InputQueue::getInstance().addKeyInput(glfwGetTime(), key, action);
 };
 
-auto mouseButtonCallback = [] (GLFWwindow* window, int button, int action, int mods)
+auto mouseButtonCallback = [](GLFWwindow* window, int button, int action, int mods)
 {
     InputQueue::getInstance().addMouseInput(glfwGetTime(), button, action);
 };
 
-auto cursorPositionCallback = [] (GLFWwindow* window, double xpos, double ypos)
-{         
+auto cursorPositionCallback = [](GLFWwindow* window, double xpos, double ypos)
+{
     InputQueue::getInstance().addMousePosition(glfwGetTime(), xpos, ypos);
 };
 
@@ -144,7 +144,7 @@ std::vector<Input*> InputQueue::handleInput(real prevTime, real time)
     std::unordered_map<int, Input*> lastMouseInput;
     std::vector<Input*> inputs;
 
-    auto pushInput = [&inputs, this] (std::unordered_map<int, Input*>& lastInput, int key, real time, InputType start, InputType end)
+    auto pushInput = [&inputs, this](std::unordered_map<int, Input*>& lastInput, int key, real time, InputType start, InputType end)
     {
         Input* input = new Input();
         inputs.push_back(input);

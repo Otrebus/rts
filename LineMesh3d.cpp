@@ -1,16 +1,14 @@
 #include "LineMesh3d.h"
+#include "Math.h"
+#include "Matrix4.h"
+#include "Vector3.h"
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
-#include "Matrix4.h"
-#include "Math.h"
-#include "Vector3.h"
 
 LineMesh3d::LineMesh3d()
 {
     if(!vertexShader)
         vertexShader = new Shader("lineModel.vert", GL_VERTEX_SHADER);
-    //if(!geometryShader)
-    //    geometryShader = new Shader("geometryShader.geom", GL_GEOMETRY_SHADER);
 }
 
 
@@ -26,8 +24,6 @@ LineMesh3d::LineMesh3d(std::vector<Vector3> vertices, std::vector<std::pair<int,
     this->lines = lines;
     if(!vertexShader)
         vertexShader = new Shader("lineModel.vert", GL_VERTEX_SHADER);
-    //if(!geometryShader)
-    //    geometryShader = new Shader("geometryShader.geom", GL_GEOMETRY_SHADER);
 }
 
 
@@ -49,7 +45,7 @@ void LineMesh3d::init(Scene* s)
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
-    for (const auto& line : lines)
+    for(const auto& line : lines)
     {
         indices.push_back(static_cast<GLuint>(line.first));
         indices.push_back(static_cast<GLuint>(line.second));

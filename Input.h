@@ -1,11 +1,11 @@
 #pragma once
 #define NOMINMAX
-#include <Queue>
+#include "CameraControl.h"
+#include "Terrain.h"
 #include "Utils.h"
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
-#include "Terrain.h"
-#include "CameraControl.h"
+#include <Queue>
 
 class InputQueue;
 

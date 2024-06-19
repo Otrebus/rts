@@ -1,15 +1,58 @@
+#include "GeometryUtils.h"
+#include "Ray.h"
 #include "Terrain.h"
 #include "TerrainMaterial.h"
 #include "TerrainMesh.h"
-#include "Ray.h"
-#include "GeometryUtils.h"
 #include "TexturedTerrainMaterial.h"
-
 
 Terrain::Terrain() : admissiblePoints(nullptr)
 {
 }
 
+void Terrain::calcMinMax()
+{
+    max_R = new real[width];
+    max_L = new real[width];
+    min_R = new real[width];
+    min_L = new real[width];
+
+    /*std::fill(max_R, max_R+width, -inf);
+    std::fill(max_L, max_L+width, -inf);
+    std::fill(min_R, min_R+width, inf);
+    std::fill(min_L, min_L+width, inf);*/
+
+    for(int x = width-1; x >= 0; x--)
+    {
+        real max = x < width-1 ? max_R[x+1] : -inf;
+        for(int y = 0; y < height; y++)
+            max = std::max(max, points[y*width+x].z);
+        max_R[x] = max;
+    }
+
+    for(int x = 0; x < width; x++)
+    {
+        real max = x ? max_L[x-1] : -inf;
+        for(int y = 0; y < height; y++)
+            max = std::max(max, points[y*width+x].z);
+        max_L[x] = max;
+    }
+
+    for(int x = width-1; x >= 0; x--)
+    {
+        real min = x < width-1 ? min_R[x+1] : inf;
+        for(int y = 0; y < height; y++)
+            min = std::min(min, points[y*width+x].z);
+        min_R[x] = min;
+    }
+
+    for(int x = 0; x < width; x++)
+    {
+        real min = x ? min_L[x-1] : inf;
+        for(int y = 0; y < height; y++)
+            min = std::min(min, points[y*width+x].z);
+        min_L[x] = min;
+    }
+}
 
 TerrainMesh* Terrain::createMesh(std::string fileName)
 {
@@ -18,12 +61,12 @@ TerrainMesh* Terrain::createMesh(std::string fileName)
     points.clear();
     triangleIndices.clear();
 
-    auto H = [&colors, &width, &height] (int x, int y)
+    auto H = [&colors, &width, &height](int x, int y)
     {
         return colors[width*3*(height-y-1)+x*3]/255.0*width/15;
     };
 
-    for (int y = 0; y < height; y++)
+    for(int y = 0; y < height; y++)
     {
         for(int x = 0; x < width; x++)
         {
@@ -63,10 +106,13 @@ TerrainMesh* Terrain::createMesh(std::string fileName)
     admissiblePoints = new bool[width*height];
     std::fill(admissiblePoints, admissiblePoints + width*height, true);
     calcAdmissiblePoints();
-    
+
     if(terrainMesh)
         delete terrainMesh;
     Material* mat = new TerrainMaterial();
+
+    calcMinMax();
+
     return terrainMesh = new TerrainMesh(vertices, triangleIndices, mat);
 }
 
@@ -77,12 +123,12 @@ TerrainMesh* Terrain::createTexturedMesh(std::string fileName)
     points.clear();
     triangleIndices.clear();
 
-    auto H = [&colors, &width, &height] (int x, int y)
+    auto H = [&colors, &width, &height](int x, int y)
     {
         return colors[width*3*(height-y-1)+x*3]/255.0*width/15;
     };
 
-    for (int y = 0; y < height; y++)
+    for(int y = 0; y < height; y++)
     {
         for(int x = 0; x < width; x++)
         {
@@ -118,15 +164,18 @@ TerrainMesh* Terrain::createTexturedMesh(std::string fileName)
 
     this->width = width;
     this->height = height;
-    
+
     if(!admissiblePoints)
         admissiblePoints = new bool[width*height];
     std::fill(admissiblePoints, admissiblePoints + width*height, true);
     calcAdmissiblePoints();
-    
+
     if(terrainMesh)
         delete terrainMesh;
     Material* mat = new TexturedTerrainMaterial();
+
+    calcMinMax();
+
     return terrainMesh = new TerrainMesh(vertices, triangleIndices, mat);
 }
 
@@ -141,7 +190,7 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
     const int nVertices = width*height;
     std::vector<MeshVertex3d> vertices(nVertices);
 
-    auto H = [&colors, &width, &height] (int x, int y)
+    auto H = [&colors, &width, &height](int x, int y)
     {
         return colors[width*3*(height-y-1)+x*3]/255.0*width/15;
     };
@@ -164,7 +213,7 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
             vertices[width*y+x].selected = 0;
         }
     }
-    
+
     std::vector<MeshVertex3d> vertices2;
     int j = 0, k = 0;
     for(int y = 0; y < height-1; y++)
@@ -181,7 +230,7 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
             auto N2 = (points[c]-points[a])%(points[d]-points[a]);
             N2.normalize();
 
-            for(auto i : { a, b, c } )
+            for(auto i :{ a, b, c })
             {
                 triangleIndices2.push_back(vertices2.size());
                 triangleIndices.push_back(i);
@@ -190,7 +239,7 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
                 if(!isTriangleAdmissible(points[a], points[b], points[c]))
                     vertices2.back().selected = 1;
             }
-            for(auto i : { a, c, d } )
+            for(auto i :{ a, c, d })
             {
                 triangleIndices2.push_back(vertices2.size());
                 triangleIndices.push_back(i);
@@ -213,9 +262,11 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
     if(terrainMesh)
         delete terrainMesh;
     Material* mat = new TerrainMaterial();
+    
+    calcMinMax();
+
     return terrainMesh = new TerrainMesh(vertices2, triangleIndices2, mat);
 }
-
 
 void Terrain::calcAdmissiblePoints()
 {
@@ -238,12 +289,11 @@ void Terrain::calcAdmissiblePoints()
             {
                 admissiblePoints[width*y+x] = false;
                 admissiblePoints[width*(y+1)+x+1] = false;
-                admissiblePoints[width*(y+1)+x] = false;                
+                admissiblePoints[width*(y+1)+x] = false;
             }
         }
     }
 }
-
 
 Vector3 Terrain::intersect(const Ray& ray)
 {
@@ -278,10 +328,29 @@ Vector3 Terrain::intersect(const Ray& ray)
         if(xm < 0 || xm >= width-1)
             break;
 
+        int X = int(xm);
+
         if(d.x != 0)
         {
             ym = p.y + d.y*(xm - p.x)/d.x;
             yM = p.y + d.y*(xM - p.x)/d.x;
+
+            if(d.x*d.y > 0)
+            {
+                auto z = (d.z/d.x)*(X-p.x) + p.z;
+                if(d.z/d.x > 0 && z > max_R[X])
+                    return { inf, inf, inf };
+                if(d.z/d.x < 0 && z < min_R[X])
+                    return { inf, inf, inf };
+            }
+            else
+            {
+                auto z = (d.z/d.x)*(X+1-p.x) + p.z;
+                if(-d.z/d.x > 0 && z > max_L[X])
+                    return { inf, inf, inf };
+                if(-d.z/d.x < 0 && z < min_L[X])
+                    return { inf, inf, inf };
+            }
         }
         else
         {
@@ -289,8 +358,6 @@ Vector3 Terrain::intersect(const Ray& ray)
             yM = height;
         }
 
-
-        int X = int(xm);
         for(int Y = std::max(0.f, std::min(ym, yM)); Y < std::min(height-1, int(std::max(ym, yM)+1)); Y++)
         {
             auto p1 = getPoint(X, Y);
@@ -308,7 +375,7 @@ Vector3 Terrain::intersect(const Ray& ray)
                     closestT = t;
             }
         }
-        if(ray.dir.x*ray.dir.y > 0)
+        if(d.x*d.y > 0)
             xm = xM++;
         else
             xM = xm--;
@@ -320,14 +387,12 @@ Vector3 Terrain::intersect(const Ray& ray)
     return { inf, inf, inf };
 }
 
-
 Terrain::Terrain(const std::string& fileName, Scene* scene) : fileName(fileName), scene(scene)
 {
     init();
     pickedTriangle = -1;
     scene->setTerrain(this);
 };
-
 
 void Terrain::init()
 {
@@ -342,19 +407,17 @@ void Terrain::init()
     terrainModel->setScene(scene);
 }
 
-
 void Terrain::tearDown()
 {
     terrainModel->tearDown(scene);
 }
-
 
 void Terrain::draw()
 {
     if(drawMode == DrawMode::Wireframe)
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     if(drawMode != DrawMode::Normal)
-        ((TerrainMesh*) (terrainModel->getMeshes()[0]))->setFlat(drawMode == DrawMode::Flat);
+        ((TerrainMesh*)(terrainModel->getMeshes()[0]))->setFlat(drawMode == DrawMode::Flat);
     terrainModel->updateUniforms();
     terrainModel->draw();
     if(drawMode != DrawMode::Grid)
@@ -427,36 +490,30 @@ void Terrain::setDrawMode(DrawMode d)
     }
 }
 
-
 Terrain::DrawMode Terrain::getDrawMode() const
 {
     return drawMode;
 }
-
 
 std::pair<Vector3, Vector3> Terrain::getBoundingBox() const
 {
     return { { 0.f, 0.f, width/10.0f }, { real(width), real(height), width/10.0f } };
 }
 
-
 const Vector3& Terrain::getPoint(int x, int y) const
 {
     return points[x + y*height];
 }
-
 
 bool Terrain::inBounds(int x, int y) const
 {
     return x >= 0 && x < width && y >= 0 && y < height;
 }
 
-
 bool Terrain::isAdmissible(int x, int y) const
 {
     return admissiblePoints[y*width+x];
 }
-
 
 std::pair<int, int> Terrain::getClosestAdmissible(Vector2 v) const
 {
@@ -504,13 +561,11 @@ std::pair<int, int> Terrain::getClosestAdmissible(Vector2 v) const
     return { x, y };
 }
 
-
 bool Terrain::isTriangleAdmissible(const Vector3& p1, const Vector3& p2, const Vector3& p3) const
 {
     auto cosSlope = std::abs((((p2-p1)%(p3-p1)).normalized()).z);
     return cosSlope >= cosMaxSlope;
 }
-
 
 bool Terrain::isTriangleAdmissible(int x1, int y1, int x2, int y2, int x3, int y3) const
 {
@@ -521,7 +576,6 @@ bool Terrain::isTriangleAdmissible(int x1, int y1, int x2, int y2, int x3, int y
 
     return isTriangleAdmissible(points[y1*width+x1], points[y2*width+x2], points[y3*width+x3]);
 }
-
 
 std::pair<real, Vector2> Terrain::intersectRayOcclusion(Vector2 pos, Vector2 dir) const
 {
@@ -559,26 +613,14 @@ std::pair<real, Vector2> Terrain::intersectRayOcclusion(Vector2 pos, Vector2 dir
             return { t, { real(dx), -real(dy) } };
     }
 
-    if(t == t1)
-    {
-        if(!isTriangleAdmissible(X, Y+1, X+1, Y+1, X+1, Y+2))
-            return { t, { 0, -1 }};
-    }
-    if(t == t2)
-    {
-        if(!isTriangleAdmissible(X, Y, X+1, Y, X, Y-1))
-            return { t, { 0, 1 }};
-    }
-    if(t == t3)
-    {
-        if(!isTriangleAdmissible(X+1, Y, X+1, Y+1, X+2, Y))
-            return { t, { -1, 0 }};
-    }
-    if(t == t4)
-    {
-        if(!isTriangleAdmissible(X, Y, X-1, Y, X, Y+1))
-            return { t, { 1, 0 }};
-    }
+    if(t == t1 && !isTriangleAdmissible(X, Y+1, X+1, Y+1, X+1, Y+2))
+        return { t, { 0, -1 } };
+    if(t == t2 && !isTriangleAdmissible(X, Y, X+1, Y, X, Y-1))
+        return { t, { 0, 1 } };
+    if(t == t3 && isTriangleAdmissible(X+1, Y, X+1, Y+1, X+2, Y))
+        return { t, { -1, 0 } };
+    if(t == t4 && !isTriangleAdmissible(X, Y, X-1, Y, X, Y+1))
+        return { t, { 1, 0 } };
 
     if(t < inf)
     {
@@ -595,8 +637,6 @@ bool Terrain::isTriangleAdmissible(Vector2 p) const
         return isTriangleAdmissible(x, y, x+1, y, x+1, y+1);
     return isTriangleAdmissible(x, y, x+1, y+1, x, y+1);
 }
-
-
 
 std::pair<real, Vector2> Terrain::intersectCirclePathOcclusion(Vector2 pos, Vector2 pos2, real radius) const
 {
@@ -667,7 +707,6 @@ std::pair<real, Vector2> Terrain::intersectCirclePathOcclusion(Vector2 pos, Vect
     return { mint, N };
 }
 
-
 bool Terrain::isVisible(Vector2 start, Vector2 end) const
 {
     auto dx = end.x-start.x;
@@ -700,7 +739,6 @@ bool Terrain::isVisible(Vector2 start, Vector2 end) const
     }
     return true;
 }
-
 
 int Terrain::getHeight() const
 {

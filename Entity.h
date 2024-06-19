@@ -1,10 +1,10 @@
 #pragma once
 
 #define NOMINMAX
-#include "Utils.h"
-#include "Vector3.h"
-#include "Vector2.h"
 #include "BoundingBox.h"
+#include "Utils.h"
+#include "Vector2.h"
+#include "Vector3.h"
 
 class SelectionMarkerMesh;
 class BoundingBox;

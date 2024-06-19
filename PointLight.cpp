@@ -1,5 +1,5 @@
-#include "PointLight.h"
 #include "Input.h"
+#include "PointLight.h"
 #include "Ray.h"
 
 

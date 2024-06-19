@@ -2,9 +2,9 @@
 #pragma once
 
 #include "Material.h"
-#include "Vector3.h"
-#include "ShaderProgram.h"
 #include "Scene.h"
+#include "ShaderProgram.h"
+#include "Vector3.h"
 
 class Shader;
 

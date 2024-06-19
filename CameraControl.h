@@ -19,7 +19,7 @@ enum CameraMode
 
 struct MovementImpulse
 {
-    MovementImpulse(real start, real duration, Vector3 dir) : start(start), duration(duration), dir(dir) { }
+    MovementImpulse(real start, real duration, Vector3 dir) : start(start), duration(duration), dir(dir) {}
 
     Vector3 dir;
     real start, duration;

@@ -1,11 +1,11 @@
+#include "Scene.h"
+#include "Shader.h"
 #include "TerrainMaterial.h"
 #include "Vector3.h"
-#include "Shader.h"
-#include "Scene.h"
 
 
 TerrainMaterial::TerrainMaterial()
-{     
+{
     if(!fragmentShader)
         fragmentShader = new Shader("terrain.frag", GL_FRAGMENT_SHADER);
 }
@@ -24,7 +24,7 @@ Shader* TerrainMaterial::getShader()
 
 void TerrainMaterial::updateUniforms(Scene* scene)
 {
-    glUniform3fv(glGetUniformLocation(scene->getShaderProgram()->getId(), "camPos"), 1, (GLfloat*) &scene->getCamera()->getPos());
+    glUniform3fv(glGetUniformLocation(scene->getShaderProgram()->getId(), "camPos"), 1, (GLfloat*)&scene->getCamera()->getPos());
     glUniform1i(glGetUniformLocation(scene->getShaderProgram()->getId(), "flatShaded"), isFlat);
 }
 

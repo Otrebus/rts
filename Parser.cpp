@@ -1,22 +1,22 @@
 #pragma once
 
+#include "LambertianMaterial.h"
+#include "Logger.h"
+#include "Model3d.h"
 #include "Parser.h"
-#include <tuple>
-#include <vector>
-#include <map>
-#include "Vector3.h"
-#include "Vector2.h"
 #include "Utils.h"
+#include "Vector2.h"
+#include "Vector3.h"
+#include <charconv>
+#include <fstream>
+#include <map>
+#include <set>
 #include <stack>
 #include <string>
 #include <tuple>
-#include <set>
+#include <tuple>
 #include <unordered_map>
-#include <fstream>
-#include <charconv>
-#include "Model3d.h"
-#include "Logger.h"
-#include "LambertianMaterial.h"
+#include <vector>
 
 class Material;
 class TriangleMesh;
@@ -26,7 +26,7 @@ class ObjTriangle;
 
 /**
  * Constructor. Creates a token.
- * 
+ *
  * @param t The category of the token.
  * @param a A pointer to where the token starts.
  * @param b A pointer to where the next token starts.
@@ -37,7 +37,7 @@ Token::Token(Type t, const char* a, const char* b) : type(t), str(a, b), line(0)
 
 /**
  * Constructor. Creates a token.
- * 
+ *
  * @param t The type of the token.
  * @param s The string that forms the token.
  */
@@ -47,7 +47,7 @@ Token::Token(Type t, const std::string& s) : type(t), str(s), line(0), column(0)
 
 /**
  * Constructor. Creates a token.
- * 
+ *
  * @param t The type of the token.
  */
 Token::Token(Type t) : type(t), line(0), column(0)
@@ -56,7 +56,7 @@ Token::Token(Type t) : type(t), line(0), column(0)
 
 /**
  * Compares the token to the given token.
- * 
+ *
  * @param token The token to compare to.
  * @returns True If the strings forming the tokens are equal, and if their types are the same.
  */
@@ -67,7 +67,7 @@ bool Token::operator==(const Token& token)
 
 /**
  * Compares the token to the given token.
- * 
+ *
  * @param token The token to compare to.
  * @returns True If the strings forming the tokens are non-equal, or if their types differ.
  */
@@ -78,7 +78,7 @@ bool Token::operator!=(const Token& token)
 
 /**
  * Constructor. Creates a piece of information regarding a parsing error.
- * 
+ *
  * @param str A string describing the error.
  * @param line The line of the error.
  * @param col The column of the error.
@@ -91,7 +91,7 @@ ParseException::ParseException(const std::string& str, int line, int col)
 
 /**
  * Constructor. Creates a ParseException.
- * 
+ *
  * @param str A string describing the error.
  * @param t The token that caused the error.
  */
@@ -102,7 +102,7 @@ ParseException::ParseException(const std::string& str, const Token& t)
 
 /**
  * Constructor.
- * 
+ *
  * @param str A string describing the error.
  */
 ParseException::ParseException(const std::string& str)
@@ -112,7 +112,7 @@ ParseException::ParseException(const std::string& str)
 
 /**
  * Constructor.
- * 
+ *
  * @param tokens A vector of tokens of a tokenized string.
  */
 Parser::Parser(const std::vector<Token>& tokens) : tokens(tokens), p(0)
@@ -121,7 +121,7 @@ Parser::Parser(const std::vector<Token>& tokens) : tokens(tokens), p(0)
 
 /**
  * Returns the token at the current position in the string.
- * 
+ *
  * @returns The token.
  */
 Token Parser::peek()
@@ -131,7 +131,7 @@ Token Parser::peek()
 
 /**
  * Returns the token at the current position in the string, and advances the string pointer.
- * 
+ *
  * @returns The token at the current position.
  */
 Token Parser::next()
@@ -142,7 +142,7 @@ Token Parser::next()
 /**
  * Checks if the string contents of the current token equals the argument, and advances to
  * the next token if it does.
- * 
+ *
  * @returns True if the string matched.
  */
 bool Parser::accept(const char* s)
@@ -153,7 +153,7 @@ bool Parser::accept(const char* s)
 /**
  * Checks if the current token in the parsing stream equals the argument, and advances
  * the stream if it does.
- * 
+ *
  * @returns True if the token matched.
  */
 bool Parser::accept(const Token& t)
@@ -164,7 +164,7 @@ bool Parser::accept(const Token& t)
 /**
  * Checks if the type of the current token in the parsing stream equals that of the argument,
  * and advances the stream if it does.
- * 
+ *
  * @returns True if the type matched.
  */
 bool Parser::accept(Token::Type t)
@@ -175,7 +175,7 @@ bool Parser::accept(Token::Type t)
 /**
  * Checks that the type of the current token in the stream matches that of the
  * argument, and advances the stream if so.
- * 
+ *
  * @throws ParseException if the tokens don't match.
  */
 void Parser::expect(Token::Type t)
@@ -188,7 +188,7 @@ void Parser::expect(Token::Type t)
 /**
  * Checks that the current token in the stream matches that of the argument, and advances
  * the stream if so.
- * 
+ *
  * @throws ParseException if the tokens don't match.
  */
 void Parser::expect(const Token& token)
@@ -200,7 +200,7 @@ void Parser::expect(const Token& token)
 
 /**
  * Checks if the stream has reached the end.
- * 
+ *
  * @returns True if we are at EOF.
  */
 bool Parser::eof()
@@ -210,7 +210,7 @@ bool Parser::eof()
 
 /**
  * Optionally attempts to parse a string of any kind.
- * 
+ *
  * @param parser The parser object.
  * @returns A pair of { whether we succeeded (bool), and the string that we parsed (string view) }.
  */
@@ -224,7 +224,7 @@ std::tuple<bool, std::string_view> acceptStr(Parser& parser)
 
 /**
  * Attempts to parse the given string.
- * 
+ *
  * @param parser The parser object.
  * @param parser The string we accept.
  * @returns Whether the string was parsed.
@@ -244,7 +244,7 @@ bool acceptAnyCaseStr(Parser& parser, const std::string_view& str)
 
 /**
  * Unconditionally parses an alphanumeric string without whitespace.
- * 
+ *
  * @throws A ParseException if the string isn't alphanumeric.
  * @param parser The parser object.
  * @returns A string_view of the string.
@@ -258,7 +258,7 @@ std::string_view expectStr(Parser& parser)
 
 /**
  * Unconditionally parses an integer.
- * 
+ *
  * @throws A ParseException if an integer point number was unable to be parsed.
  * @param parser The parser object.
  * @returns The integer.
@@ -279,7 +279,7 @@ int expectInt(Parser& parser)
 
 /**
  * Optionally parses an integer.
- * 
+ *
  * @param parser The parser object.
  * @returns The integer.
  */
@@ -297,7 +297,7 @@ std::tuple<bool, int> acceptInt(Parser& parser)
 
 /**
  * Unconditionally parses a floating point number.
- * 
+ *
  * @throws A ParseException if a floating point number was unable to be parsed.
  * @param parser The parser object.
  * @returns The real number.
@@ -316,7 +316,7 @@ double expectReal(Parser& parser)
 
 /**
  * Attempts to parse a floating point number.
- * 
+ *
  * @param parser The parser object.
  * @returns A tuple of { success, real } where success is if the parsing was successful and
  *          along with the real number parsed.
@@ -335,7 +335,7 @@ std::tuple<bool, double> acceptReal(Parser& parser)
 
 /**
  * Attempts to parse a v/t/n face element.
- * 
+ *
  * @throws ParseException If an element was encountered but it contained badly formed data.
  * @param parser The parser object.
  * @returns A tuple of success/v/t/n indices. Success is true if the parsing succeeded, and the
@@ -347,7 +347,7 @@ std::tuple<bool, int, int, int> acceptVertex(Parser& parser)
     auto [success, n1] = acceptInt(parser);
     if(!success)
         return { false, 0, 0, 0 };
-    
+
     if(!parser.accept("/")) // Format is x
         return { true, n1, 0, 0 };
 
@@ -365,7 +365,7 @@ std::tuple<bool, int, int, int> acceptVertex(Parser& parser)
 
 /**
  * Parses a 3d vector consisting of floating point numbers.
- * 
+ *
  * @throws ParseException if a 3d vector was unable to be parsed.
  * @param parser The parser object.
  * @returns A 3d vector.
@@ -380,7 +380,7 @@ Vector3 expectVector3d(Parser& parser)
 
 /**
  * Parses a texture coordinate.
- * 
+ *
  * @throws ParseException if a texture coordinate was unable to be parsed.
  * @param parser The parser object.
  * @returns A 2d vector of the coordinates. Depending on the dimensionality of the coordinate
@@ -406,7 +406,7 @@ Vector2 expectVtCoordinate(Parser& parser)
 
 /**
  * Turns the contents of a text file into a vector of Tokens.
- * 
+ *
  * @throws ParseException if an unknown token was encountered.
  * @param file The file to tokenize.
  * @returns A vector of Token objects.
@@ -426,45 +426,45 @@ std::vector<Token> tokenize(std::ifstream& file, std::string& str)
     int line = 1, col = 1, p = 0;
 
     // Adds a token to the token stream
-    auto addToken = [&v, &line, &col, &str] (Token::Type t, int a, int b)
-    {
-        for(auto it = str.begin()+a; it < str.begin()+b; it++)
+    auto addToken = [&v, &line, &col, &str](Token::Type t, int a, int b)
         {
-            if(*it == '\n')
-                line++, col = 1;
-            else
-                col++;
-        }
-        Token token(t, str.c_str()+a, str.c_str()+b);
-        token.line = line;
-        token.column = col;
-        v.push_back(token);
-    };
+            for(auto it = str.begin()+a; it < str.begin()+b; it++)
+            {
+                if(*it == '\n')
+                    line++, col = 1;
+                else
+                    col++;
+            }
+            Token token(t, str.c_str()+a, str.c_str()+b);
+            token.line = line;
+            token.column = col;
+            v.push_back(token);
+        };
 
-    // Skips every character until the next token
-    auto skipspace = [&p, &str] ()
-    {
-        while(p < str.length() && str[p] == ' ' || str[p] == '\t')
-            p++;
-    };
+        // Skips every character until the next token
+    auto skipspace = [&p, &str]()
+        {
+            while(p < str.length() && str[p] == ' ' || str[p] == '\t')
+                p++;
+        };
 
-    // Returns current character in the string
-    auto peek = [&p, &str] () -> char
-    {
-        return p < str.size() ? str[p] : 0;
-    };
+        // Returns current character in the string
+    auto peek = [&p, &str]() -> char
+        {
+            return p < str.size() ? str[p] : 0;
+        };
 
-    // Advances to the next character in the string
-    auto next = [&p, &str] () -> char
-    {
-        return p < str.size() ? str[p++] : 0;
-    };
+        // Advances to the next character in the string
+    auto next = [&p, &str]() -> char
+        {
+            return p < str.size() ? str[p++] : 0;
+        };
 
-    // Optionally advances to the next character in the string if the given character matches
-    auto accept = [&p, &str] (char c) -> bool
-    {
-        return (p < str.size() && str[p] == c) ? ++ p : false;
-    };
+        // Optionally advances to the next character in the string if the given character matches
+    auto accept = [&p, &str](char c) -> bool
+        {
+            return (p < str.size() && str[p] == c) ? ++p : false;
+        };
 
     while(p < str.size())
     {

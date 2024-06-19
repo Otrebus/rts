@@ -1,18 +1,18 @@
 #define NOMINMAX
 #include "Entity.h"
-#include "Mesh3d.h"
-#include "Vertex3d.h"
-#include "Model3d.h"
-#include "LineMesh3d.h"
 #include "Line.h"
-#include "Ray.h"
-#include "Terrain.h"
-#include "ProjectileMaterial.h"
 #include "LineMaterial.h"
-#include <vector>
-#include <array>
-#include "SelectionMarkerMesh.h"
+#include "LineMesh3d.h"
+#include "Mesh3d.h"
+#include "Model3d.h"
 #include "Projectile.h"
+#include "ProjectileMaterial.h"
+#include "Ray.h"
+#include "SelectionMarkerMesh.h"
+#include "Terrain.h"
+#include "Vertex3d.h"
+#include <array>
+#include <vector>
 
 
 Projectile::Projectile(Vector3 pos, Vector3 dir, Vector3 up, Entity* owner = nullptr) : Entity(pos, dir, up), owner(owner)
@@ -21,7 +21,7 @@ Projectile::Projectile(Vector3 pos, Vector3 dir, Vector3 up, Entity* owner = nul
     {
         depth = height = 0.03;
         width = 0.10;
-	    real w = width, d = depth, h = height;
+        real w = width, d = depth, h = height;
         std::vector<Vector3> c = {
             { -w/2, -d/2, -h/2 }, // bottom-front-left
             {  w/2, -d/2, -h/2 }, // bottom-front-right
@@ -52,8 +52,8 @@ Projectile::Projectile(Vector3 pos, Vector3 dir, Vector3 up, Entity* owner = nul
             int j = vertices.size();
             for(int i = 0; i < 4; i++)
                 vertices.push_back({ c[ci[i]], calcNormal(c[ci[0]], c[ci[1]], c[ci[2]]), { 0, 0 } });
-            triangles.insert(triangles.end(), { j, j+1, j+2 } );
-            triangles.insert(triangles.end(), { j, j+2, j+3 } );
+            triangles.insert(triangles.end(), { j, j+1, j+2 });
+            triangles.insert(triangles.end(), { j, j+2, j+3 });
         }
 
         auto material = new ProjectileMaterial({ 1.0, 1.0, 0.0 });
@@ -133,7 +133,7 @@ void Projectile::update(real dt)
     }
 
     setPosition(pos + velocity*dt -Vector3(0, 0, gravity)*dt*dt*0.5f);
-    velocity += Vector3( { 0, 0, -gravity } )*dt;
+    velocity += Vector3({ 0, 0, -gravity })*dt;
     setDirection(velocity.normalized(), ((velocity%up%velocity).normalized()));
 }
 

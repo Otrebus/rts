@@ -1,8 +1,8 @@
+#include "Matrix4.h"
+#include "TerrainMaterial.h"
 #include "TerrainMesh.h"
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
-#include "Matrix4.h"
-#include "TerrainMaterial.h"
 
 TerrainMesh::TerrainMesh(std::vector<MeshVertex3d> vertices, std::vector<int> triangles, Material* material)
 {
@@ -68,7 +68,7 @@ Shader* TerrainMesh::getVertexShader() const
 
 void TerrainMesh::setFlat(bool flatness)
 {
-    ((TerrainMaterial*) material)->setFlat(flatness);
+    ((TerrainMaterial*)material)->setFlat(flatness);
 }
 
 Shader* TerrainMesh::terrainVertexShader = nullptr;

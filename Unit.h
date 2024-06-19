@@ -2,17 +2,17 @@
 #pragma once
 
 #define NOMINMAX
-#include "Vector3.h"
-#include <vector>
-#include <GL/gl3w.h>
-#include <GLFW/glfw3.h>
+#include "BoundingBox.h"
+#include "Entity.h"
+#include "LineMesh3d.h"
+#include "Mesh3d.h"
 #include "Scene.h"
 #include "ShaderProgram.h"
-#include "BoundingBox.h"
-#include "Mesh3d.h"
-#include "LineMesh3d.h"
-#include "Entity.h"
+#include "Vector3.h"
 #include <deque>
+#include <GL/gl3w.h>
+#include <GLFW/glfw3.h>
+#include <vector>
 
 class SelectionMarkerMesh;
 class BoundingBoxModel;
@@ -23,7 +23,7 @@ class PathFindingRequest;
 class Unit : public Entity, public std::enable_shared_from_this<Unit>
 {
 public:
-	Unit(Vector3 pos, Vector3 dir, Vector3 up);
+    Unit(Vector3 pos, Vector3 dir, Vector3 up);
     ~Unit();
 
     void setTarget(Vector3 pos);

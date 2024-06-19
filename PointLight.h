@@ -2,9 +2,9 @@
 #pragma once
 #define NOMINMAX
 
+#include "Matrix4.h"
 #include "Vector3.h"
 #include <iostream>
-#include "Matrix4.h"
 
 class Terrain;
 class Input;
@@ -25,7 +25,7 @@ public:
     void setColor(const Vector3&);
 
     real getStart();
-    
+
     void update();
 protected:
     Vector3 velocity;

@@ -1,15 +1,15 @@
-#include <vector>
-#include <fstream>
-#include <algorithm>
-#include <tuple>
-#include "Matrix4.h"
-#include "Vector3.h"
-#include "Utils.h"
 #include "Entity.h"
-#include "Unit.h"
 #include "Math.h"
-#include <iomanip>
+#include "Matrix4.h"
+#include "Unit.h"
+#include "Utils.h"
+#include "Vector3.h"
+#include <algorithm>
 #include <cmath>
+#include <fstream>
+#include <iomanip>
+#include <tuple>
+#include <vector>
 
 
 std::tuple<int, int, int> vectorToRgb(const Vector3& color)
@@ -20,7 +20,7 @@ std::tuple<int, int, int> vectorToRgb(const Vector3& color)
 
 Vector3 rgbToVector(unsigned char r, unsigned char g, unsigned char b)
 {
-    return Vector3 { real(r)/255+(real)1e-6, real(g)/255+(real)1e-6, real(b)/255+(real)1e-6 };
+    return Vector3{ real(r)/255+(real)1e-6, real(g)/255+(real)1e-6, real(b)/255+(real)1e-6 };
 }
 
 

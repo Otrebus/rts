@@ -1,19 +1,18 @@
-
 #define NOMINMAX
-#include "Entity.h"
-#include "Mesh3d.h"
-#include "Vertex3d.h"
-#include "Model3d.h"
-#include "LineMesh3d.h"
-#include "Line.h"
-#include "Ray.h"
-#include "Terrain.h"
-#include "LambertianMaterial.h"
-#include "LineMaterial.h"
-#include <vector>
-#include <array>
 #include "BoundingBoxModel.h"
+#include "Entity.h"
+#include "LambertianMaterial.h"
+#include "Line.h"
+#include "LineMaterial.h"
+#include "LineMesh3d.h"
+#include "Mesh3d.h"
+#include "Model3d.h"
+#include "Ray.h"
 #include "SelectionMarkerMesh.h"
+#include "Terrain.h"
+#include "Vertex3d.h"
+#include <array>
+#include <vector>
 
 
 Entity::Entity(Vector3 pos, Vector3 dir, Vector3 up, real height, real width, real depth) : pos(pos), dir(dir), up(up), velocity({ 0, 0, 0 })

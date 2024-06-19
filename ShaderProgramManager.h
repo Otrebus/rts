@@ -6,12 +6,15 @@
 #include <unordered_map>
 
 // Shamelessly copied from https://stackoverflow.com/questions/7110301/generic-hash-for-tuples-in-unordered-map-unordered-set
-class hash_tuple {
+class hash_tuple
+{
     template<class T>
-    struct component {
+    struct component
+    {
         const T& value;
         component(const T& value) : value(value) {}
-        uintmax_t operator,(uintmax_t n) const {
+        uintmax_t operator,(uintmax_t n) const
+        {
             n ^= std::hash<T>()(value);
             n ^= n << (sizeof(uintmax_t) * 4 - 1);
             return n ^ std::hash<uintmax_t>()(n);

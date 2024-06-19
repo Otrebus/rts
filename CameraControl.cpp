@@ -10,7 +10,7 @@ CameraControl::CameraControl(Camera* cam, Terrain* terrain, int xres, int yres) 
     auto [p1, p2] = terrain->getBoundingBox();
     terrainPos = (p1 + p2)/2.f;
     terrainPos.z = 0;
-    
+
     changeMode(FollowingReset);
 }
 
@@ -28,7 +28,7 @@ real CameraControl::getTheta()
 
 
 Camera* CameraControl::getCamera()
-{ 
+{
     return cam;
 }
 
@@ -55,7 +55,7 @@ void CameraControl::changeMode(CameraMode cameraMode)
         setTerrainPosFromPos();
 }
 
-    
+
 CameraMode CameraControl::getMode() const
 {
     return cameraMode;
@@ -81,7 +81,7 @@ void CameraControl::setTerrainPosFromPos()
         terrainPos.x = camPos.y;
     else
         terrainPos.y = ((camDir.z/camDir.y)*camPos.y - camPos.z)/(camDir.z/camDir.y);
-    
+
     auto dx = (terrainPos.x-camPos.x);
     auto dy = (terrainPos.y-camPos.y);
     auto dz = (terrainPos.z-camPos.z);
@@ -98,7 +98,7 @@ void CameraControl::update(real dt)
 
         if(!dDir)
             continue;
-        auto w = terrain->intersect( { cam->getPos(), dDir.normalized() } );
+        auto w = terrain->intersect({ cam->getPos(), dDir.normalized() });
         if(w.x < inf && ((w - (cam->getPos() + dDir)).length() < 1.0f || (cam->getPos() + dDir - w)*(dDir) > 0))
             cam->setPos(w - dDir.normalized()*0.5f);
         else
@@ -179,7 +179,7 @@ void CameraControl::moveForward(real t)
     if(cameraMode == Freelook)
     {
         auto dDir = cam->getDir()*t*100.f;
-        auto w = terrain->intersect( { cam->getPos(), dDir.normalized() } );
+        auto w = terrain->intersect({ cam->getPos(), dDir.normalized() });
         if(w.x < inf && ((w - (cam->getPos() + dDir)).length() < 1.0f || (cam->getPos() + dDir - w)*(dDir) > 0))
             cam->setPos(w - dDir.normalized()*0.5f);
         else

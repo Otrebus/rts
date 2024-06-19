@@ -1,5 +1,5 @@
-#include "Particle.h"
 #include "Input.h"
+#include "Particle.h"
 #include "Ray.h"
 #include <random>
 

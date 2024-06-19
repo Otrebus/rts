@@ -1,17 +1,11 @@
-#include "Vector3.h"
 #include "Matrix4.h"
-#include <iostream>
 #include "Vector2.h"
-
-
+#include "Vector3.h"
 #include "Vector4.h"
-#include "Matrix4.h"
 #include <iostream>
-#include "Vector3.h"
-#include "Vector2.h"
 
 Vector4::Vector4(real x, real y, real z, real w) : x(x), y(y), z(z), w(w)
-{ 
+{
 }
 
 Vector4::Vector4() : x(0), y(0), z(0), w(0)

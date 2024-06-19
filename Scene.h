@@ -2,12 +2,12 @@
 
 #define NOMINMAX
 #include "Camera.h"
-#include "ShaderProgramManager.h"
-#include "ShaderProgram.h"
-#include <unordered_set>
-#include <memory>
-#include "PointLight.h"
 #include "Particle.h"
+#include "PointLight.h"
+#include "ShaderProgram.h"
+#include "ShaderProgramManager.h"
+#include <memory>
+#include <unordered_set>
 
 class Unit;
 
@@ -47,7 +47,7 @@ public:
 private:
     std::vector<std::shared_ptr<Unit>> units;
     std::unordered_set<std::shared_ptr<Unit>> deadUnits;
-    
+
     std::vector<Entity*> entities;
     std::unordered_set<Entity*> deadEntities;
 

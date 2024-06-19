@@ -1,9 +1,9 @@
 #pragma once
 #define NOMINMAX
 
+#include "Matrix4.h"
 #include "Vector3.h"
 #include <iostream>
-#include "Matrix4.h"
 
 class Terrain;
 class Input;

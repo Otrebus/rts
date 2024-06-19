@@ -1,6 +1,6 @@
 #include "BoundingBoxModel.h"
-#include "LineMaterial.h"
 #include "LambertianMaterial.h"
+#include "LineMaterial.h"
 #include "LineMesh3d.h"
 #include "Math.h"
 
@@ -38,8 +38,8 @@ BoundingBoxModel::BoundingBoxModel(real width, real depth, real height)
         int j = vertices.size();
         for(int i = 0; i < 4; i++)
             vertices.push_back({ c[ci[i]], calcNormal(c[ci[0]], c[ci[1]], c[ci[2]]), { 0, 0 } });
-        triangles.insert(triangles.end(), { j, j+1, j+2 } );
-        triangles.insert(triangles.end(), { j, j+2, j+3 } );
+        triangles.insert(triangles.end(), { j, j+1, j+2 });
+        triangles.insert(triangles.end(), { j, j+2, j+3 });
     }
 
     auto material = new LambertianMaterial({ 0, 0.8, 0.1 });

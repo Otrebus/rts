@@ -1,5 +1,5 @@
-#include "Mesh.h"
 #include "Math.h"
+#include "Mesh.h"
 
 Mesh::Mesh() : pos({ 0, 0, 0 }), dir({ 1, 0, 0 }), up({ 0, 0, 1 }), matrixCached(false)
 {

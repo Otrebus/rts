@@ -1,9 +1,9 @@
 #pragma once
 
 #define NOMINMAX
-#include "Unit.h"
-#include "Math.h"
 #include "Line.h"
+#include "Math.h"
+#include "Unit.h"
 
 
 class Model3d;
@@ -104,7 +104,7 @@ public:
     Line3d destinationLine;
     //Line3d enemyLine;
 
-    
+
     static Model3d* tankBoundingBoxModel;
     static BoundingBox tankBoundingBox;
 };
