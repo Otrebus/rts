@@ -119,23 +119,25 @@ int main()
 
     Tank::loadModels();
 
-    for(int y = 0; y < 4; y++)
-    {
-        for(int x = 0; x < 4; x++)
-        {
-            scene.addUnit(new Tank({ 150.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain));
-        }
-    }
+    scene.addUnit(new Tank({ 180.480316, 99.7414932, 15.0 }, { 1, 0, 0 }, { 0, 0, 1}, &terrain));
 
-    for(int y = 0; y < 4; y++)
-    {
-        for(int x = 0; x < 4; x++)
-        {
-            auto enemy = new Tank({ 170.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
-            enemy->setEnemy(true);
-            scene.addUnit(enemy);
-        }
-    }
+    //for(int y = 0; y < 4; y++)
+    //{
+    //    for(int x = 0; x < 4; x++)
+    //    {
+    //        scene.addUnit(new Tank({ 150.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain));
+    //    }
+    //}
+
+    //for(int y = 0; y < 4; y++)
+    //{
+    //    for(int x = 0; x < 4; x++)
+    //    {
+    //        auto enemy = new Tank({ 170.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+    //        enemy->setEnemy(true);
+    //        scene.addUnit(enemy);
+    //    }
+    //}
 
     for(auto& e : scene.getUnits())
         e->init(&scene);
@@ -192,14 +194,14 @@ int main()
         }
 
         auto isCameraInput = [](Input* input)
-            {
-                auto key = input->key;
-                return key == GLFW_KEY_E || key == GLFW_KEY_S || key == GLFW_KEY_F || key == GLFW_KEY_D || key == GLFW_KEY_LEFT_SHIFT || key == GLFW_MOUSE_BUTTON_1 || key == GLFW_MOUSE_BUTTON_2 || input->stateStart == MousePosition || key == GLFW_KEY_C || input->stateStart == ScrollOffset;
-            };
+        {
+            auto key = input->key;
+            return key == GLFW_KEY_E || key == GLFW_KEY_S || key == GLFW_KEY_F || key == GLFW_KEY_D || key == GLFW_KEY_LEFT_SHIFT || key == GLFW_MOUSE_BUTTON_1 || key == GLFW_MOUSE_BUTTON_2 || input->stateStart == MousePosition || key == GLFW_KEY_C || input->stateStart == ScrollOffset;
+        };
         auto isGraphicsInput = [](Input* input)
-            {
-                return input->key == GLFW_KEY_Z || input->key == GLFW_KEY_P;
-            };
+        {
+            return input->key == GLFW_KEY_Z || input->key == GLFW_KEY_P;
+        };
 
         for(auto input : inputs)
         {

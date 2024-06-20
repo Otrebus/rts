@@ -98,20 +98,7 @@ void Projectile::setDirection(Vector3 dir, Vector3 up)
 
 void Projectile::update(real dt)
 {
-    // TOOD: conceivably this could miss the intersection, figure out if we want to
-    //       do this in a robust fashion or if we just add some epsilon
-    auto v2 = scene->getTerrain()->intersect(Ray(pos, velocity.normalized()));
-    if(v2.length() < inf && (v2-pos).length() < dt*velocity.length())
-    {
-        auto normal = scene->getTerrain()->getNormal(v2.x, v2.y);
-        for(int i = 0; i < 250; i++)
-        {
-            auto gp = new GroundExplosionParticle(v2, normal);
-            scene->addParticle(gp);
-        }
-        scene->removeEntity(this);
-    }
-
+    auto p1 = pos;
     for(auto unit : scene->getUnits())
     {
         if(unit->intersectBoundingBox(pos, pos+dt*velocity))
@@ -133,8 +120,22 @@ void Projectile::update(real dt)
     }
 
     setPosition(pos + velocity*dt -Vector3(0, 0, gravity)*dt*dt*0.5f);
-    velocity += Vector3({ 0, 0, -gravity })*dt;
     setDirection(velocity.normalized(), ((velocity%up%velocity).normalized()));
+
+    auto p2 = pos;
+    auto v2 = scene->getTerrain()->intersect(Ray(pos, (p2-p1).normalized()), (p2-p1).length()*(1+1e-6));
+
+    if(v2.length() < inf)
+    {
+        auto normal = scene->getTerrain()->getNormal(v2.x, v2.y);
+        for(int i = 0; i < 250; i++)
+        {
+            auto gp = new GroundExplosionParticle(v2, normal);
+            scene->addParticle(gp);
+        }
+        scene->removeEntity(this);
+    }
+    velocity += Vector3({ 0, 0, -gravity })*dt;
 }
 
 void Projectile::draw()

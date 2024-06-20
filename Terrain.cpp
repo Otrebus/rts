@@ -3,6 +3,7 @@
 #include "Terrain.h"
 #include "TerrainMaterial.h"
 #include "TerrainMesh.h"
+#include <array>
 #include "TexturedTerrainMaterial.h"
 
 Terrain::Terrain() : admissiblePoints(nullptr)
@@ -295,27 +296,31 @@ void Terrain::calcAdmissiblePoints()
     }
 }
 
-Vector3 Terrain::intersect(const Ray& ray)
+Vector3 Terrain::intersect(const Ray& ray, real maxT)
 {
     real t1 = glfwGetTime();
-    real closestT = inf;
-
     auto p = ray.pos, d = ray.dir;
 
-    auto x0 = p.x - d.x*(p.y/d.y);
-    auto y0 = 0;
-    if(x0 < 0 || x0 > width-2)
+    real x0, y0;
+
+    if(p.x > 0 && p.x <= width-2 && p.y > 0 && p.y <= height-2)
     {
-        if(x0 < 0)
-        {
-            x0 = 0;
-            y0 = p.y - d.y*(p.x/d.x);
-        }
-        if(x0 > width-2)
-        {
-            x0 = width-2;
-            y0 = p.y - d.y*(width-2-p.x/d.x);
-        }
+        x0 = p.x;
+        y0 = p.y;
+    }
+    else
+    {
+        real t0 = inf, t1 = inf, t2 = inf, t3 = inf;
+
+        std::array<Vector2, 4> vs = {Vector2{0.0f, 0.0f}, Vector2{width - 2.0f, 0.0f}, Vector2{width - 2.0f, height - 2.0f}, Vector2{0.0f, height - 2.0f}};
+
+        auto t = -inf;
+        for(int i = 0; i < 4 && t == -inf; i++)
+            t = intersectRaySegment(p.to2(), d.to2(), vs[i], vs[(i+1)%4]);
+
+        auto p0 = p + d*t;
+        x0 = p0.x;
+        y0 = p0.y;
     }
 
     real xm = x0, xM, ym, yM;
@@ -335,20 +340,20 @@ Vector3 Terrain::intersect(const Ray& ray)
             ym = p.y + d.y*(xm - p.x)/d.x;
             yM = p.y + d.y*(xM - p.x)/d.x;
 
-            if(d.x*d.y > 0)
+            if(d.x > 0)
             {
                 auto z = (d.z/d.x)*(X-p.x) + p.z;
-                if(d.z/d.x > 0 && z > max_R[X])
+                if(d.z > 0 && z > max_R[X+1])
                     return { inf, inf, inf };
-                if(d.z/d.x < 0 && z < min_R[X])
+                if(d.z < 0 && z < min_R[X+1])
                     return { inf, inf, inf };
             }
             else
             {
                 auto z = (d.z/d.x)*(X+1-p.x) + p.z;
-                if(-d.z/d.x > 0 && z > max_L[X])
+                if(d.z > 0 && z > max_L[X])
                     return { inf, inf, inf };
-                if(-d.z/d.x < 0 && z < min_L[X])
+                if(d.z < 0 && z < min_L[X])
                     return { inf, inf, inf };
             }
         }
@@ -366,23 +371,20 @@ Vector3 Terrain::intersect(const Ray& ray)
             auto p4 = getPoint(X, Y+1);
 
             auto [t, u, v] = intersectTriangle(p1, p2, p3, ray);
-            if(t > -inf && t < closestT)
-                closestT = t;
+            if(t > -inf && t < maxT)
+                return ray.pos + ray.dir*real(t);
             else
             {
                 auto [t, u, v] = intersectTriangle(p1, p3, p4, ray);
-                if(t > -inf && t < closestT)
-                    closestT = t;
+                if(t > -inf && t < maxT)
+                    return ray.pos + ray.dir*real(t);
             }
         }
-        if(d.x*d.y > 0)
+        if(d.x > 0)
             xm = xM++;
         else
             xM = xm--;
     }
-
-    if(closestT < inf)
-        return ray.pos + ray.dir*closestT;
 
     return { inf, inf, inf };
 }
