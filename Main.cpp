@@ -119,25 +119,25 @@ int main()
 
     Tank::loadModels();
 
-    scene.addUnit(new Tank({ 180.480316, 99.7414932, 15.0 }, { 1, 0, 0 }, { 0, 0, 1}, &terrain));
+    //scene.addUnit(new Tank({ 180.480316, 99.7414932, 15.0 }, { 1, 0, 0 }, { 0, 0, 1}, &terrain));
 
-    //for(int y = 0; y < 4; y++)
-    //{
-    //    for(int x = 0; x < 4; x++)
-    //    {
-    //        scene.addUnit(new Tank({ 150.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain));
-    //    }
-    //}
+    for(int y = 0; y < 4; y++)
+    {
+        for(int x = 0; x < 4; x++)
+        {
+            scene.addUnit(new Tank({ 150.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain));
+        }
+    }
 
-    //for(int y = 0; y < 4; y++)
-    //{
-    //    for(int x = 0; x < 4; x++)
-    //    {
-    //        auto enemy = new Tank({ 170.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
-    //        enemy->setEnemy(true);
-    //        scene.addUnit(enemy);
-    //    }
-    //}
+    for(int y = 0; y < 4; y++)
+    {
+        for(int x = 0; x < 4; x++)
+        {
+            auto enemy = new Tank({ 170.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+            enemy->setEnemy(true);
+            scene.addUnit(enemy);
+        }
+    }
 
     for(auto& e : scene.getUnits())
         e->init(&scene);

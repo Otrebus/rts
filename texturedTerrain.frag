@@ -87,12 +87,21 @@ void main()
     vec4 splatMap = texture(texture3, vec2(texCoord.x/terrainWidth, texCoord.y/terrainHeight));
 
     vec4 texSum = vec4(0, 0, 0, 0);
+    /*
     if(splatMap.r > 0) 
         texSum += splatMap.r*textureNoTile(texture1, texCoord);
     if(splatMap.g > 0)
         texSum += splatMap.g*textureNoTile(texture2, texCoord);
     if(splatMap.b > 0)
         texSum += splatMap.b*textureNoTile(texture2, texCoord);
+    */
+
+    if(splatMap.r > 0) 
+        texSum += splatMap.r*texture(texture1, texCoord);
+    if(splatMap.g > 0)
+        texSum += splatMap.g*texture(texture2, texCoord);
+    if(splatMap.b > 0)
+        texSum += splatMap.b*texture(texture2, texCoord);
 
     color = clamp(color, 0.0, 1.0);
     FragColor = texSum*(vec4(color, 1));

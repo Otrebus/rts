@@ -64,19 +64,13 @@ public:
     template <typename Iterator> std::deque<Vector2> straightenPath(Iterator begin, Iterator end) const
     {
         std::deque<Vector2> result = { *begin };
-        for(auto it = begin; it != end; )
+        for(auto it = begin, jt = it+1; it != end; it = jt, jt = it+1)
         {
-            auto jt = it;
-            for(auto kt = jt+1; kt != end; kt++)
+            for(auto kt = jt; kt != end; kt++)
                 if(isVisible(result.back(), *kt))
                     jt = kt;
-            if(jt != it)
-            {
+            if(jt != end)
                 result.push_back(*jt);
-                it = jt;
-            }
-            else
-                it++;
         }
         return result;
     }
