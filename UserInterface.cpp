@@ -13,7 +13,7 @@
 #include <ranges>
 
 
-UserInterface::UserInterface(GLFWwindow* window, Scene* scene, CameraControl* cameraControl) : scene(scene), cameraControl(cameraControl), cursor(nullptr), window(window)
+UserInterface::UserInterface(GLFWwindow* window, Scene* scene, CameraControl* cameraControl) : scene(scene), cameraControl(cameraControl), cursor(nullptr), window(window), lastClickedUnit(nullptr)
 {
     drawBoxc1 = { 0, 0 };
     drawBoxc2 = { 0, 0 };
@@ -198,6 +198,21 @@ void UserInterface::selectUnits(std::vector<Unit*> units, bool pre)
     }
 }
 
+bool UserInterface::isInFrustum(Unit* unit)
+{
+auto time = glfwGetTime();
+    auto camera = scene->getCamera();
+
+    Vector3 v[4] = {
+        camera->getViewRay(1, 1).dir,
+        camera->getViewRay(-1, 1).dir,
+        camera->getViewRay(-1, -1).dir,
+        camera->getViewRay(1, -1).dir
+    };
+
+    return intersectsFrustum(camera->getPos(), v, *unit, scene);
+}
+
 Unit* UserInterface::getUnit(const Ray& ray, const std::vector<Unit*>& units) const
 {
     for(auto u : units)
@@ -295,7 +310,19 @@ void UserInterface::selectUnit(const Ray& ray, const std::vector<Unit*>& units, 
         for(auto u : units)
         {
             if(/*!u->isEnemy() && */u->intersectBoundingBox(ray))
+            {
+                if(time - timeClickedUnit < 0.5 && u == lastClickedUnit)
+                {
+                    for(auto& unit : units)
+                    {
+                        if(unit->isEnemy() == u->isEnemy() && isInFrustum(unit))
+                            unit->setSelected(true);
+                    }
+                }
+                timeClickedUnit = time;
+                lastClickedUnit = u;
                 u->setSelected(true);
+            }
         }
     }
     else
@@ -313,6 +340,8 @@ void UserInterface::selectUnit(const Ray& ray, const std::vector<Unit*>& units, 
 void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& units)
 {
     auto& inputQueue = InputQueue::getInstance();
+
+    auto time = glfwGetTime();
 
     if(movingUnit)
     {
@@ -367,7 +396,9 @@ void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
             {
                 unit->setPreSelected(false);
                 if(!selectingAdditional)
+                {
                     unit->setSelected(false);
+                }
             }
         }
 

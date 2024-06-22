@@ -35,6 +35,8 @@ public:
     void selectUnits(std::vector<Unit*> units, bool pre);
     void selectUnit(const Ray& ray, const std::vector<Unit*>& units, bool pre);
 
+    bool isInFrustum(Unit*);
+
     Unit* getUnit(const Ray& ray, const std::vector<Unit*>& units) const;
 
     void setCursor(int shape);
@@ -55,6 +57,9 @@ public:
     Unit* movingUnit;
 
     std::vector<Vector3> drawTarget;
+
+    real timeClickedUnit;
+    Unit* lastClickedUnit;
 
     Ray intersectRay;
     GLFWcursor* cursor;

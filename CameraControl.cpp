@@ -35,7 +35,6 @@ Camera* CameraControl::getCamera()
 
 void CameraControl::changeMode(CameraMode cameraMode)
 {
-    this->cameraMode = cameraMode;
     if(cameraMode == FollowingReset)
     {
         cam->setDir(Vector3(0, 1, -1).normalized());
@@ -49,10 +48,13 @@ void CameraControl::changeMode(CameraMode cameraMode)
         auto theta = std::atan2(cam->getDir().y, cam->getDir().x);
         auto phi = std::atan2(cam->getDir().z, cam->getDir().y);
         setAngle(theta, phi);
-
+        setPosFromTerrainPos();
     }
     else
+    {
         setTerrainPosFromPos();
+    }
+    this->cameraMode = cameraMode;
 }
 
 
@@ -134,8 +136,22 @@ void CameraControl::handleInput(const Input& input)
     {
         if(input.key == GLFW_KEY_C)
         {
-            cameraMode = cameraMode == Following ? FollowingReset : cameraMode == FollowingReset ? Freelook : Following;
+            switch(cameraMode)
+            {
+            case FollowingReset:
+            case Following:
+                cameraMode = Freelook;
+                break;
+            case Freelook:
+                cameraMode = Following;
+                break;
+            }
+            changeMode(cameraMode);
             inputQueue.captureMouse(cameraMode == Freelook);
+        }
+        if(input.key == GLFW_KEY_G)
+        {
+            cameraMode = FollowingReset ? Freelook : FollowingReset;
             changeMode(cameraMode);
         }
     }

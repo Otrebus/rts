@@ -89,7 +89,7 @@ void Camera::setPos(const Vector3& pos)
 
 void Camera::setDir(const Vector3& dir)
 {
-    this->dir = dir;
+    this->dir = dir.normalized();
     matrixCached = false;
 }
 
