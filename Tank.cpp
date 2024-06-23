@@ -284,7 +284,7 @@ void Tank::setDirection(Vector3 dir, Vector3 up)
 void Tank::accelerate(Vector2 velocityTarget)
 {
     accelerationTarget = velocityTarget - geoVelocity;
-    if(accelerationTarget < 1e-6)
+    if(accelerationTarget.length() < 1e-6)
     {
         turnRate = 0;
         acceleration = 0;

@@ -59,15 +59,9 @@ const real pi = std::acos(-1);
 const real eps = 1e-6;
 const real gravity = 1; // TODO: put in another file eventually, not a math constant
 
-
-real resToScreenX(real x, int xres)
+Vector2 resToScreen(real x, real y, int xres, int yres)
 {
-    return real(2*x)/xres - 1;
-}
-
-real resToScreenY(real y, int yres)
-{
-    return -(real(2*y)/yres - 1);
+    return { real(2*x)/xres - 1, -(real(2*y)/yres - 1) };
 }
 
 Vector3 calcNormal(Vector3 a, Vector3 b, Vector3 c)

@@ -26,7 +26,7 @@ public:
 
     Vector3& operator*=(const Matrix4& m);
 
-    operator bool() const;
+    explicit operator bool() const;
     bool operator!() const;
     bool operator!=(const Vector3&) const;
     bool operator==(const Vector3&) const;
@@ -54,4 +54,4 @@ public:
 class ostream;
 
 std::ostream& operator<<(std::ostream& s, const Vector3& v);
-Vector3 operator*(float, Vector3);
+Vector3 operator*(float, const Vector3& v);

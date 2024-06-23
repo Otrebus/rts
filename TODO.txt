@@ -27,6 +27,7 @@
 + "TODO: these vectors before normalization can be 0"
 + "TODO: is b in the right direction?"
 + "Select all"-doubleclick
+- When clicking move on inadmissible terrain, place movement marker somewhere closer
 - Make camera toggle and not reset and have a specific reset button
 - Check if checking for release input checks that release can be both startStart and stateEnd, check
 + When path finding results return, the first waypoint of the tank can be right next to it (most noticable at low fps) - replace the first waypoint with the tank position?

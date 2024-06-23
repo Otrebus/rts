@@ -26,7 +26,7 @@ public:
 
     Vector4& operator*=(const Matrix4& m);
 
-    operator bool() const;
+    explicit operator bool() const;
     bool operator!() const;
     bool operator!=(const Vector4&) const;
     bool operator==(const Vector4&) const;

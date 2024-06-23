@@ -19,8 +19,7 @@ Matrix4 getTranslationMatrix(Vector3 v);
 Matrix4 getDirectionMatrix(Vector3 dir, Vector3 up);
 Matrix4 getNormalMatrix(const Matrix4& m);
 
-real resToScreenX(real x, int xres);
-real resToScreenY(real y, int yres);
+Vector2 resToScreen(real x, real y, int xres, int yres);
 Vector3 calcNormal(Vector3 a, Vector3 b, Vector3 c);
 Vector3 rebaseOrtho(const Vector3& v, const Vector3& a, const Vector3& b, const Vector3& c);
 

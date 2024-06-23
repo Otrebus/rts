@@ -45,14 +45,16 @@ void CameraControl::changeMode(CameraMode cameraMode)
     else if(cameraMode == Freelook)
     {
         prevX = prevY = NAN;
+
+        //setPosFromTerrainPos();
         auto theta = std::atan2(cam->getDir().y, cam->getDir().x);
-        auto phi = std::atan2(cam->getDir().z, cam->getDir().y);
+        auto phi = std::atan2(cam->getDir().z, Vector2(cam->getDir().y, cam->getDir().x).length());
         setAngle(theta, phi);
-        setPosFromTerrainPos();
     }
     else
     {
         setTerrainPosFromPos();
+        setPosFromTerrainPos();
     }
     this->cameraMode = cameraMode;
 }
@@ -165,11 +167,9 @@ void CameraControl::handleInput(const Input& input)
     }
     else if(cameraMode != Freelook && input.stateStart == InputType::ScrollOffset)
     {
-        auto x = resToScreenX(prevX, xres);
-        auto y = resToScreenY(prevY, yres);
+        auto [x, y] = resToScreen(prevX, prevY, xres, yres);
 
         auto zoomDir = cam->getViewRay(x, y);
-        // TODO: if scalar left-multiplication is undefined, this becomes a real - investigate what sort of explicit conversion is going on there
         auto dir = -(input.posY)*(zoomDir.dir.normalized())*(moveSlow ? 0.5f : 5.f);
         movementImpulses.push_back(MovementImpulse(glfwGetTime(), 0.2f, dir));
     }
