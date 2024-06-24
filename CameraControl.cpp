@@ -7,6 +7,7 @@ CameraControl::CameraControl(Camera* cam, Terrain* terrain, int xres, int yres) 
     cam(cam), terrain(terrain), terrainDist(100), xres(xres), yres(yres)
 {
     //setAngle(0, 0);
+    
     auto [p1, p2] = terrain->getBoundingBox();
     terrainPos = (p1 + p2)/2.f;
     terrainPos.z = 0;
@@ -38,15 +39,16 @@ void CameraControl::changeMode(CameraMode cameraMode)
     if(cameraMode == FollowingReset)
     {
         cam->setDir(Vector3(0, 1, -1).normalized());
-        setPosFromTerrainPos();
         cam->setUp(Vector3(0, 0, 1));
+        if(this->cameraMode == Freelook)
+            setTerrainPosFromPos();
+        else
+            setPosFromTerrainPos();
     }
 
     else if(cameraMode == Freelook)
     {
         prevX = prevY = NAN;
-
-        //setPosFromTerrainPos();
         auto theta = std::atan2(cam->getDir().y, cam->getDir().x);
         auto phi = std::atan2(cam->getDir().z, Vector2(cam->getDir().y, cam->getDir().x).length());
         setAngle(theta, phi);
@@ -54,7 +56,6 @@ void CameraControl::changeMode(CameraMode cameraMode)
     else
     {
         setTerrainPosFromPos();
-        setPosFromTerrainPos();
     }
     this->cameraMode = cameraMode;
 }
@@ -168,6 +169,8 @@ void CameraControl::handleInput(const Input& input)
     else if(cameraMode != Freelook && input.stateStart == InputType::ScrollOffset)
     {
         auto [x, y] = resToScreen(prevX, prevY, xres, yres);
+
+        std::cout << input.posY << std::endl;
 
         auto zoomDir = cam->getViewRay(x, y);
         auto dir = -(input.posY)*(zoomDir.dir.normalized())*(moveSlow ? 0.5f : 5.f);

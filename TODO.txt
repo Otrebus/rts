@@ -30,6 +30,7 @@
 - When clicking move on inadmissible terrain, place movement marker somewhere closer
 - Make camera toggle and not reset and have a specific reset button
 - Check if checking for release input checks that release can be both startStart and stateEnd, check
+- When paint-moving, one end might get two units assigned (with 4 units selected)
 + When path finding results return, the first waypoint of the tank can be right next to it (most noticable at low fps) - replace the first waypoint with the tank position?
 + Movement painting
 - Terrain make* share a lot of code, unify

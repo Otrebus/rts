@@ -205,7 +205,7 @@ int main()
 
         for(auto input : inputs)
         {
-            if(isCameraInput(input))
+            //if(isCameraInput(input))
                 cameraControl.handleInput(*input);
             interface.handleInput(*input, scene.getUnits());
 
