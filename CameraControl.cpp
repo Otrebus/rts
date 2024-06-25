@@ -1,5 +1,5 @@
 #include "CameraControl.h"
-#include "Input.h"
+#include "InputManager.h"
 #include "Ray.h"
 
 
@@ -119,7 +119,7 @@ void CameraControl::update(real dt)
 
 void CameraControl::handleInput(const Input& input)
 {
-    auto& inputQueue = InputQueue::getInstance();
+    auto& inputQueue = InputManager::getInstance();
 
     if(input.stateStart == InputType::KeyPress || input.stateStart == InputType::KeyHold)
     {

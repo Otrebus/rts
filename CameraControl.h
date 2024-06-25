@@ -6,7 +6,7 @@
 
 class Camera;
 class Terrain;
-class InputQueue;
+class InputManager;
 class Input;
 
 

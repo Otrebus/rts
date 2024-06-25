@@ -3,7 +3,7 @@
 #include "Camera.h"
 #include "Entity.h"
 #include "GeometryUtils.h"
-#include "Input.h"
+#include "InputManager.h"
 #include "LambertianMaterial.h"
 #include "Line.h"
 #include "Logger.h"
@@ -44,7 +44,7 @@ Line3d makeCircle(Vector2 pos, real radius)
 
 int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
 {
-    InputQueue::getInstance().initInput(window);
+    InputManager::getInstance().initInput(window);
     OrthogonalCamera cam({ 0, 0, 1 }, { 0, 0, -1 }, { 0, 1, 0 }, real(xres)/float(yres));
 
     real time = glfwGetTime();
@@ -73,7 +73,7 @@ int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
         time = glfwGetTime();
         auto dt = time - prevTime;
 
-        auto inputs = InputQueue::getInstance().handleInput(prevTime, time);
+        auto inputs = InputManager::getInstance().handleInput(prevTime, time);
         glfwPollEvents();
 
         for(auto input : inputs)
@@ -161,7 +161,7 @@ std::vector<int> quadIndices()
 
 int drawDecals(GLFWwindow* window, int xres, int yres)
 {
-    InputQueue::getInstance().initInput(window);
+    InputManager::getInstance().initInput(window);
     OrthogonalCamera cam({ 0, 0, 1 }, { 0, 0, -1 }, { 0, 1, 0 }, real(xres)/float(yres));
 
     real time = glfwGetTime();
@@ -305,7 +305,7 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
 
         glDisable(GL_BLEND);
 
-        auto inputs = InputQueue::getInstance().handleInput(prevTime, time);
+        auto inputs = InputManager::getInstance().handleInput(prevTime, time);
         glfwPollEvents();
 
         for(auto input : inputs)
@@ -324,7 +324,7 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
 
 int drawTexts(GLFWwindow* window, int xres, int yres)
 {
-    InputQueue::getInstance().initInput(window);
+    InputManager::getInstance().initInput(window);
     OrthogonalCamera cam({ 0, 0, 1 }, { 0, 0, -1 }, { 0, 1, 0 }, real(xres)/float(yres));
 
     glEnable(GL_DEBUG_OUTPUT);

@@ -1,6 +1,6 @@
 #define NOMINMAX
 #include "Entity.h"
-#include "Input.h"
+#include "InputManager.h"
 #include "Line.h"
 #include "Math.h"
 #include "PathFinding.h"
@@ -339,7 +339,7 @@ void UserInterface::selectUnit(const Ray& ray, const std::vector<Unit*>& units, 
 
 void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& units)
 {
-    auto& inputQueue = InputQueue::getInstance();
+    auto& inputQueue = InputManager::getInstance();
 
     auto time = glfwGetTime();
 

@@ -3,7 +3,7 @@
 #include "Camera.h"
 #include "DebugDraw.h"
 #include "Entity.h"
-#include "Input.h"
+#include "InputManager.h"
 #include "Line.h"
 #include "Logger.h"
 #include "Main.h"
@@ -32,7 +32,7 @@
 #include <random>
 #include <stdio.h>
 #include <thread>
-#include <thread>
+#include "Input.h"
 
 
 extern bool quitting = false;
@@ -83,7 +83,7 @@ int main()
 
     auto startTime = glfwGetTime();
 
-    InputQueue::getInstance().initInput(window);
+    InputManager::getInstance().initInput(window);
 
     PerspectiveCamera cam({ 0, 0, 100 }, { 0, 1, -1 }, { 0, 0, 1 }, 59, real(xres)/float(yres));
 
@@ -159,8 +159,7 @@ int main()
         time = glfwGetTime();
         auto dt = time - prevTime;
 
-        auto inputs = InputQueue::getInstance().handleInput(prevTime, time);
-        glfwPollEvents();
+        handleInput(prevTime, time, cameraControl, interface, scene, terrain, window);
 
         for(auto result = popPathFindingResult(); result; result = popPathFindingResult())
         {
@@ -191,66 +190,6 @@ int main()
             light->setPos(light->getPos() + light->getVelocity()*dt);
             if(light->getColor().length() < 1e-3)
                 scene.removeLight(light);
-        }
-
-        auto isCameraInput = [](Input* input)
-        {
-            auto key = input->key;
-            return key == GLFW_KEY_E || key == GLFW_KEY_S || key == GLFW_KEY_F || key == GLFW_KEY_D || key == GLFW_KEY_LEFT_SHIFT || key == GLFW_MOUSE_BUTTON_1 || key == GLFW_MOUSE_BUTTON_2 || input->stateStart == MousePosition || key == GLFW_KEY_C || input->stateStart == ScrollOffset;
-        };
-        auto isGraphicsInput = [](Input* input)
-        {
-            return input->key == GLFW_KEY_Z || input->key == GLFW_KEY_P;
-        };
-
-        for(auto input : inputs)
-        {
-            //if(isCameraInput(input))
-                cameraControl.handleInput(*input);
-            interface.handleInput(*input, scene.getUnits());
-
-            if(isGraphicsInput(input))
-            {
-                if(input->stateStart == InputType::KeyPress && input->key == GLFW_KEY_Z)
-                {
-                    auto mode = terrain.getDrawMode();
-                    if(mode == Terrain::DrawMode::Normal)
-                        terrain.setDrawMode(Terrain::DrawMode::Grid);
-                    else if(mode == Terrain::DrawMode::Grid)
-                        terrain.setDrawMode(Terrain::DrawMode::Wireframe);
-                    else if(mode == Terrain::DrawMode::Wireframe)
-                        terrain.setDrawMode(Terrain::DrawMode::Flat);
-                    else
-                        terrain.setDrawMode(Terrain::DrawMode::Normal);
-                }
-                else if(input->stateStart == InputType::KeyPress && input->key == GLFW_KEY_P)
-                {
-                    int width, height;
-                    glfwGetFramebufferSize(window, &width, &height);
-
-                    GLubyte *pixels = new GLubyte[width*height*3];
-                    std::vector<Vector3> v(width*height);
-
-                    glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
-
-                    for(int y = 0; y < height; y++)
-                    {
-                        for(int x = 0; x < width; x++)
-                        {
-                            auto i = 3*((height-1-y)*width + x);
-                            auto r = pixels[i];
-                            auto g = pixels[i+1];
-                            auto b = pixels[i+2];
-                            v[x+y*width] = rgbToVector(r, g, b);
-                        }
-                    }
-                    delete[] pixels;
-
-                    writeBMP(v, width, height, "screenshot.bmp");
-                }
-
-            }
-            delete input;
         }
 
         glClearColor(0.5f, 0.5f, 0.5f, 0.0f);

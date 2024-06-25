@@ -1,4 +1,4 @@
-#include "Input.h"
+#include "InputManager.h"
 #include "Particle.h"
 #include "Ray.h"
 #include <random>

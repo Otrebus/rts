@@ -43,7 +43,7 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source files\System</Filter>
     </ClCompile>
-    <ClCompile Include="Input.cpp">
+    <ClCompile Include="InputManager.cpp">
       <Filter>Source files\System</Filter>
     </ClCompile>
     <ClCompile Include="Logger.cpp">
@@ -151,6 +151,9 @@
     <ClCompile Include="TexturedTerrainMaterial.cpp">
       <Filter>Source files\Materials</Filter>
     </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Source files\System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -189,7 +192,7 @@
     <ClInclude Include="Camera.h">
       <Filter>Source files\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Input.h">
+    <ClInclude Include="InputManager.h">
       <Filter>Source files\System</Filter>
     </ClInclude>
     <ClInclude Include="Logger.h">
@@ -299,6 +302,9 @@
     </ClInclude>
     <ClInclude Include="TexturedTerrainMaterial.h">
       <Filter>Source files\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>Source files\System</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

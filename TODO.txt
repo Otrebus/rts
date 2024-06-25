@@ -28,7 +28,7 @@
 + "TODO: is b in the right direction?"
 + "Select all"-doubleclick
 - When clicking move on inadmissible terrain, place movement marker somewhere closer
-- Make camera toggle and not reset and have a specific reset button
++ Make camera toggle and not reset and have a specific reset button
 - Check if checking for release input checks that release can be both startStart and stateEnd, check
 - When paint-moving, one end might get two units assigned (with 4 units selected)
 + When path finding results return, the first waypoint of the tank can be right next to it (most noticable at low fps) - replace the first waypoint with the tank position?
@@ -88,7 +88,7 @@
 - Fix normals for intersectCircleTrianglePath when the circle is inside the triangle
 - Make sure derived classes have virtual destructors
 - Move boundingbox mesh construction out of Entity
-- Make inputqueue all static and remove getInstance
+- Make InputManager all static and remove getInstance
 + Breakacc vs forwardacc
 + Review the two vertex shaders for lines, if we can unify them 
 - Now that we have geometric normals we don't really need to create a new mesh for flat rendering

@@ -1,5 +1,5 @@
 #include "Camera.h"
-#include "Input.h"
+#include "InputManager.h"
 #include "Ray.h"
 
 
