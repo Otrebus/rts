@@ -235,16 +235,16 @@ void UserInterface::moveDrawnUnits(const std::vector<Unit*>& selectedUnits)
         points.insert(points.end(), { drawTarget.front(), drawTarget.back() });
     }
 
-    real L = 0;
+    real L = 0, K = k;
     for(int i = 0; i < drawTarget.size()-1; i++)
     {
         auto l = (drawTarget[i+1]-drawTarget[i]).length();
         L += l;
-        while(L >= k)
+        while(L >= K && points.size() < selectedUnits.size())
         {
-            auto p = drawTarget[i] + (drawTarget[i+1]-drawTarget[i])*((L-k)/l);
-            L -= k;
+            auto p = drawTarget[i] + (drawTarget[i+1]-drawTarget[i])*((K-(L-l))/l);
             points.push_back(p);
+            K += k;
         }
     }
 
