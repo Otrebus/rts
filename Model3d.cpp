@@ -24,7 +24,6 @@ Model3d* ModelManager::instantiateModel(const std::string& identifier)
         auto newMesh = new Mesh3d(*mesh);
         newModel->meshes.push_back(newMesh);
     }
-    newModel->init();
     return newModel;
 }
 
@@ -94,9 +93,8 @@ struct ObjTriangle
 
 Model3d::~Model3d()
 {
-    if(cloned)
-        for(auto& mesh : meshes)
-            delete mesh;
+    for(auto& mesh : meshes)
+        delete mesh;
 }
 
 
@@ -385,6 +383,7 @@ void Model3d::readFromFile(const std::string& file)
                     if(mesh->triangles.size())
                         this->addMesh(*mesh);
                 }
+                mesh->nTriangles = mesh->triangles.size();
             }
         };
 

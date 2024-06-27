@@ -43,6 +43,7 @@ public:
     Vector3 getDir() const;
     Vector3 getPos() const;
 
+    int nTriangles;
 private:
     Vector3 dir, up, pos;
     Matrix4 transformationMatrix;

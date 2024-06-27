@@ -64,7 +64,7 @@ public:
     template <typename Iterator> std::deque<Vector2> straightenPath(Iterator begin, Iterator end) const
     {
         std::deque<Vector2> result = { *begin };
-        for(auto it = begin, jt = it; it != end; it = jt)
+        for(auto it = begin, jt = it+1; it != end; it = jt)
         {
             jt = it+1;
             for(auto kt = jt; kt != end; kt++)

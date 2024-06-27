@@ -61,8 +61,7 @@ Vector3 Vector3::operator+(const Vector3& v) const
 
 Vector3 Vector3::operator-(const Vector3& v) const
 {
-    auto ret = Vector3(x-v.x, y-v.y, z-v.z);
-    return ret;
+    return { x-v.x, y-v.y, z-v.z };
 }
 
 

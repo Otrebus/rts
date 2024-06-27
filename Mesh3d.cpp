@@ -18,6 +18,7 @@ Mesh3d::Mesh3d(std::vector<Vertex3d> vertices, std::vector<int> triangles, Mater
     this->material = material;
     this->v = vertices;
     this->triangles = triangles;
+    this->nTriangles = triangles.size();
     if(!vertexShader)
         vertexShader = new Shader("vertexShader.vert", GL_VERTEX_SHADER);
     if(!geometryShader)
@@ -28,7 +29,8 @@ Mesh3d::Mesh3d(Mesh3d& mesh)
 {
     this->material = mesh.material->clone();
     this->v = mesh.v;
-    this->triangles = mesh.triangles;
+    //this->triangles = mesh.triangles;
+    this->nTriangles = mesh.nTriangles;
     this->VAO = mesh.VAO;
     this->VBO = mesh.VBO;
     this->EBO = mesh.EBO;
@@ -36,9 +38,6 @@ Mesh3d::Mesh3d(Mesh3d& mesh)
 
 Mesh3d::~Mesh3d()
 {
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
-    glDeleteVertexArrays(1, &VAO);
     delete material;
 }
 
@@ -77,7 +76,7 @@ void Mesh3d::draw()
     program->use();
 
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, triangles.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, nTriangles, GL_UNSIGNED_INT, 0);
 }
 
 void Mesh3d::updateUniforms()

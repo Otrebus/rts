@@ -165,12 +165,10 @@ std::deque<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinatio
 
     Q.insert(startY*width+startX, 0);
 
-    int n = 1;
     while(!Q.empty())
     {
-        n++;
         auto i = Q.pop();
-        int y = i/width, x = i%width;
+        int x = i%width, y = i/width;
         V[i] = true;
         if(i == endIndex)
             break;

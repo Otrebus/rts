@@ -59,11 +59,8 @@ Projectile::Projectile(Vector3 pos, Vector3 dir, Vector3 up, Entity* owner = nul
         auto material = new ProjectileMaterial({ 1.0, 1.0, 0.0 });
 
         auto projectileMesh = new Mesh3d(vertices, triangles, material);
-        /*projectileModel = new Model3d(*projectileMesh);
-        Model3d::templateMap["projectile"] = projectileModel;
-        for(auto mesh : projectileModel->meshes)
-            mesh->isTemplate = true;*/
-        ModelManager::addModel("projectile", *projectileMesh);
+        auto model = ModelManager::addModel("projectile", *projectileMesh);
+        model->init();
         projectileModel = ModelManager::instantiateModel("projectile");
     }
     else

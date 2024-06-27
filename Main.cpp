@@ -121,17 +121,17 @@ int main()
 
     //scene.addUnit(new Tank({ 180.480316, 99.7414932, 15.0 }, { 1, 0, 0 }, { 0, 0, 1}, &terrain));
 
-    for(int y = 0; y < 4; y++)
+    for(int y = 0; y < 12; y++)
     {
-        for(int x = 0; x < 4; x++)
+        for(int x = 0; x < 12; x++)
         {
             scene.addUnit(new Tank({ 150.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain));
         }
     }
 
-    for(int y = 0; y < 4; y++)
+    for(int y = 0; y < 12; y++)
     {
-        for(int x = 0; x < 4; x++)
+        for(int x = 0; x < 12; x++)
         {
             auto enemy = new Tank({ 170.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
             enemy->setEnemy(true);

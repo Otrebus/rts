@@ -9,6 +9,7 @@ TerrainMesh::TerrainMesh(std::vector<MeshVertex3d> vertices, std::vector<int> tr
     this->material = material;
     this->v = vertices;
     this->triangles = triangles;
+    this->nTriangles = triangles.size();
     if(!geometryShader)
         geometryShader = new Shader("geometryShader.geom", GL_GEOMETRY_SHADER);
     if(!terrainVertexShader)

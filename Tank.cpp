@@ -33,7 +33,7 @@ void Tank::loadModels()
 
     BoundingBox bb;
 
-    for(auto model :{ body, turret, gun })
+    for(auto model : { body, turret, gun })
     {
         for(auto& mesh : model->getMeshes())
         {
@@ -56,7 +56,7 @@ void Tank::loadModels()
     auto h = (bb.c2.z - bb.c1.z);
     auto ratio = width/w;
 
-    for(auto model :{ body, turret, gun })
+    for(auto model : { body, turret, gun })
     {
         BoundingBox bb;
         for(auto& mesh : model->getMeshes())
@@ -101,6 +101,10 @@ void Tank::loadModels()
     auto depth = d*ratio;
     tankBoundingBoxModel = new BoundingBoxModel(width, depth, height);
     tankBoundingBox = BoundingBox(Vector3(-width/2, -depth/2, -height/2), Vector3(width/2, depth/2, height/2));
+
+    body->init();
+    gun->init();
+    turret->init();
 }
 
 
@@ -142,7 +146,7 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, d
     {
         model->setPosition(pos);
         model->setDirection(dir, up);
-        model->init(); // TODO: we're updating the VAOs etc, but not deleting the old ones
+        //model->init(); // TODO: we're updating the VAOs etc, but not deleting the old ones
     }
 }
 
