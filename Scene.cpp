@@ -50,6 +50,7 @@ void Scene::setUnits(std::vector<Unit*> units)
 void Scene::addUnit(Unit* unit)
 {
     this->units.push_back(std::shared_ptr<Unit>(unit));
+    addEntity(unit);
 }
 
 std::vector<Unit*> Scene::getUnits() const
@@ -64,6 +65,7 @@ void Scene::removeUnit(Unit* unit)
 {
     unit->setDead();
     deadUnits.insert(unit->shared_from_this());
+    removeEntity(unit);
 }
 
 void Scene::clearUnits()

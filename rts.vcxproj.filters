@@ -10,12 +10,6 @@
     <ClCompile Include="Material.cpp">
       <Filter>Source files\Materials</Filter>
     </ClCompile>
-    <ClCompile Include="Model3d.cpp">
-      <Filter>Source files\Models</Filter>
-    </ClCompile>
-    <ClCompile Include="Parser.cpp">
-      <Filter>Source files\Models</Filter>
-    </ClCompile>
     <ClCompile Include="Vector3.cpp">
       <Filter>Source files\Math</Filter>
     </ClCompile>
@@ -27,12 +21,6 @@
     </ClCompile>
     <ClCompile Include="TextureMaterial.cpp">
       <Filter>Source files\Materials</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh3d.cpp">
-      <Filter>Source files\Models</Filter>
-    </ClCompile>
-    <ClCompile Include="Vertex3d.cpp">
-      <Filter>Source files\Models</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>Source files\Scene</Filter>
@@ -58,9 +46,6 @@
     <ClCompile Include="CameraControl.cpp">
       <Filter>Source files\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="TerrainMesh.cpp">
-      <Filter>Source files\Models</Filter>
-    </ClCompile>
     <ClCompile Include="Ray.cpp">
       <Filter>Source files\Math</Filter>
     </ClCompile>
@@ -70,53 +55,17 @@
     <ClCompile Include="TerrainMaterial.cpp">
       <Filter>Source files\Materials</Filter>
     </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>Source files\Models</Filter>
-    </ClCompile>
-    <ClCompile Include="BoundingBox.cpp">
-      <Filter>Source files\Models</Filter>
-    </ClCompile>
     <ClCompile Include="UserInterface.cpp">
       <Filter>Source files\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="LineMesh3d.cpp">
-      <Filter>Source files\Models</Filter>
     </ClCompile>
     <ClCompile Include="LineMaterial.cpp">
       <Filter>Source files\Materials</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Source files\Models</Filter>
-    </ClCompile>
-    <ClCompile Include="Line.cpp">
-      <Filter>Source files\Models</Filter>
-    </ClCompile>
-    <ClCompile Include="Tank.cpp">
-      <Filter>Source files\Models</Filter>
-    </ClCompile>
-    <ClCompile Include="BoundingBoxModel.cpp">
-      <Filter>Source files\Models</Filter>
-    </ClCompile>
     <ClCompile Include="DebugDraw.cpp">
       <Filter>Source files\System</Filter>
     </ClCompile>
-    <ClCompile Include="PathFinding.cpp">
-      <Filter>Source files\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="SelectionDecalMaterial.cpp">
       <Filter>Source files\Materials</Filter>
-    </ClCompile>
-    <ClCompile Include="SelectionMarkerModel.cpp">
-      <Filter>Source files\Models</Filter>
-    </ClCompile>
-    <ClCompile Include="SelectionMarkerMesh.cpp">
-      <Filter>Source files\Models</Filter>
-    </ClCompile>
-    <ClCompile Include="Unit.cpp">
-      <Filter>Source files\Models</Filter>
-    </ClCompile>
-    <ClCompile Include="Projectile.cpp">
-      <Filter>Source files\Models</Filter>
     </ClCompile>
     <ClCompile Include="GeometryUtils.cpp">
       <Filter>Source files\Utils</Filter>
@@ -139,9 +88,6 @@
     <ClCompile Include="PointLight.cpp">
       <Filter>Source files\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Particle.cpp">
-      <Filter>Source files\Models</Filter>
-    </ClCompile>
     <ClCompile Include="Vector4.cpp">
       <Filter>Source files\Math</Filter>
     </ClCompile>
@@ -154,6 +100,63 @@
     <ClCompile Include="Input.cpp">
       <Filter>Source files\System</Filter>
     </ClCompile>
+    <ClCompile Include="Parser.cpp">
+      <Filter>Source files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source files\Entities\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh3d.cpp">
+      <Filter>Source files\Entities\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Model3d.cpp">
+      <Filter>Source files\Entities\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertex3d.cpp">
+      <Filter>Source files\Entities\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectionMarkerMesh.cpp">
+      <Filter>Source files\Entities\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectionMarkerModel.cpp">
+      <Filter>Source files\Entities\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Line.cpp">
+      <Filter>Source files\Entities\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="LineMesh3d.cpp">
+      <Filter>Source files\Entities\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="TerrainMesh.cpp">
+      <Filter>Source files\Entities\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Source files\Entities\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>Source files\Entities\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Projectile.cpp">
+      <Filter>Source files\Entities\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Tank.cpp">
+      <Filter>Source files\Entities\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Unit.cpp">
+      <Filter>Source files\Entities\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="BoundingBoxModel.cpp">
+      <Filter>Source files\Entities\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="BoundingBox.cpp">
+      <Filter>Source files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="PathFinding.cpp">
+      <Filter>Source files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="TankWreck.cpp">
+      <Filter>Source files\Entities\Entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -161,12 +164,6 @@
     </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>Source files\Materials</Filter>
-    </ClInclude>
-    <ClInclude Include="Model3d.h">
-      <Filter>Source files\Models</Filter>
-    </ClInclude>
-    <ClInclude Include="Parser.h">
-      <Filter>Source files\Models</Filter>
     </ClInclude>
     <ClInclude Include="Vector3.h">
       <Filter>Source files\Math</Filter>
@@ -179,12 +176,6 @@
     </ClInclude>
     <ClInclude Include="TextureMaterial.h">
       <Filter>Source files\Materials</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh3d.h">
-      <Filter>Source files\Models</Filter>
-    </ClInclude>
-    <ClInclude Include="Vertex3d.h">
-      <Filter>Source files\Models</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>Source files\Scene</Filter>
@@ -207,9 +198,6 @@
     <ClInclude Include="CameraControl.h">
       <Filter>Source files\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="TerrainMesh.h">
-      <Filter>Source files\Models</Filter>
-    </ClInclude>
     <ClInclude Include="Ray.h">
       <Filter>Source files\Math</Filter>
     </ClInclude>
@@ -219,56 +207,20 @@
     <ClInclude Include="TerrainMaterial.h">
       <Filter>Source files\Materials</Filter>
     </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>Source files\Models</Filter>
-    </ClInclude>
-    <ClInclude Include="BoundingBox.h">
-      <Filter>Source files\Models</Filter>
-    </ClInclude>
     <ClInclude Include="UserInterface.h">
       <Filter>Source files\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="LineMesh3d.h">
-      <Filter>Source files\Models</Filter>
     </ClInclude>
     <ClInclude Include="LineMaterial.h">
       <Filter>Source files\Materials</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Source files\Models</Filter>
-    </ClInclude>
     <ClInclude Include="Main.h">
       <Filter>Source files\System</Filter>
-    </ClInclude>
-    <ClInclude Include="Line.h">
-      <Filter>Source files\Models</Filter>
-    </ClInclude>
-    <ClInclude Include="Tank.h">
-      <Filter>Source files\Models</Filter>
-    </ClInclude>
-    <ClInclude Include="BoundingBoxModel.h">
-      <Filter>Source files\Models</Filter>
     </ClInclude>
     <ClInclude Include="DebugDraw.h">
       <Filter>Source files\System</Filter>
     </ClInclude>
-    <ClInclude Include="PathFinding.h">
-      <Filter>Source files\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="SelectionDecalMaterial.h">
       <Filter>Source files\Materials</Filter>
-    </ClInclude>
-    <ClInclude Include="SelectionMarkerModel.h">
-      <Filter>Source files\Models</Filter>
-    </ClInclude>
-    <ClInclude Include="SelectionMarkerMesh.h">
-      <Filter>Source files\Models</Filter>
-    </ClInclude>
-    <ClInclude Include="Unit.h">
-      <Filter>Source files\Models</Filter>
-    </ClInclude>
-    <ClInclude Include="Projectile.h">
-      <Filter>Source files\Models</Filter>
     </ClInclude>
     <ClInclude Include="GeometryUtils.h">
       <Filter>Source files\Utils</Filter>
@@ -291,9 +243,6 @@
     <ClInclude Include="PointLight.h">
       <Filter>Source files\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Particle.h">
-      <Filter>Source files\Models</Filter>
-    </ClInclude>
     <ClInclude Include="Vector4.h">
       <Filter>Source files\Math</Filter>
     </ClInclude>
@@ -305,6 +254,63 @@
     </ClInclude>
     <ClInclude Include="Input.h">
       <Filter>Source files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Parser.h">
+      <Filter>Source files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Source files\Entities\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh3d.h">
+      <Filter>Source files\Entities\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Model3d.h">
+      <Filter>Source files\Entities\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex3d.h">
+      <Filter>Source files\Entities\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectionMarkerModel.h">
+      <Filter>Source files\Entities\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectionMarkerMesh.h">
+      <Filter>Source files\Entities\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="LineMesh3d.h">
+      <Filter>Source files\Entities\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Line.h">
+      <Filter>Source files\Entities\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="TerrainMesh.h">
+      <Filter>Source files\Entities\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Source files\Entities\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>Source files\Entities\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Projectile.h">
+      <Filter>Source files\Entities\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Tank.h">
+      <Filter>Source files\Entities\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Unit.h">
+      <Filter>Source files\Entities\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="BoundingBoxModel.h">
+      <Filter>Source files\Entities\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="BoundingBox.h">
+      <Filter>Source files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="PathFinding.h">
+      <Filter>Source files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="TankWreck.h">
+      <Filter>Source files\Entities\Entities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -364,9 +370,6 @@
     <Filter Include="Source files\Materials">
       <UniqueIdentifier>{939fbeba-4a24-44a7-bbee-47dd888bc68c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source files\Models">
-      <UniqueIdentifier>{56ebef11-3089-49c4-8c17-9ff355ced8a4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source files\Math">
       <UniqueIdentifier>{13fc9ec7-6edb-4159-b632-313f0891eb2c}</UniqueIdentifier>
     </Filter>
@@ -387,6 +390,15 @@
     </Filter>
     <Filter Include="Shaders\Geometry shaders">
       <UniqueIdentifier>{fe5ba678-c725-47a5-99b3-ce253a562f60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Entities">
+      <UniqueIdentifier>{56ebef11-3089-49c4-8c17-9ff355ced8a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Entities\Models">
+      <UniqueIdentifier>{2be68ce0-d7ee-49de-a483-dc9fdacf59ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Entities\Entities">
+      <UniqueIdentifier>{b64539a5-145c-4e1d-b85a-651396f741b6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

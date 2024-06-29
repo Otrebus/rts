@@ -13,6 +13,7 @@
 #include "Vertex3d.h"
 #include <array>
 #include <vector>
+#include "TankWreck.h"
 
 
 Projectile::Projectile(Vector3 pos, Vector3 dir, Vector3 up, Entity* owner = nullptr) : Entity(pos, dir, up), owner(owner)
@@ -110,7 +111,12 @@ void Projectile::update(real dt)
                 }
                 unit->health -= 20;
                 if(unit->health < 0)
+                {
                     scene->removeUnit(unit);
+                    auto tw = new TankWreck(unit->pos, unit->dir, unit->up, unit->scene->getTerrain());
+                    tw->init(scene);
+                    scene->addEntity(tw);
+                }
             }
             scene->removeEntity(this);
         }

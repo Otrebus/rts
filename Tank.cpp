@@ -407,7 +407,7 @@ void Tank::update(real dt)
     auto posNext = geoPos + velocity2*dt;
 
     // Collision detection, against other units
-    for(auto unit : scene->getUnits())
+    for(auto unit : scene->getEntities())
     {
         if(unit != this)
         {
@@ -532,7 +532,7 @@ Vector2 Tank::seek()
 Vector2 Tank::evade()
 {
     Vector2 sum = { 0, 0 };
-    for(auto unit : scene->getUnits())
+    for(auto unit : scene->getEntities())
     {
         if(unit != this)
         {
@@ -570,7 +570,7 @@ Vector2 Tank::avoid()
 Vector2 Tank::separate()
 {
     Vector2 sum = { 0, 0 };
-    for(auto unit : scene->getUnits())
+    for(auto unit : scene->getEntities())
     {
         if(unit != this)
         {

@@ -2,6 +2,7 @@
 
 #include "Camera.h"
 #include "DebugDraw.h"
+#include "TankWreck.h"
 #include "Entity.h"
 #include "InputManager.h"
 #include "Line.h"
@@ -118,20 +119,21 @@ int main()
     auto particleVertexShader = new Shader("particle.vert", GL_VERTEX_SHADER);
 
     Tank::loadModels();
+    TankWreck::loadModels();
 
     //scene.addUnit(new Tank({ 180.480316, 99.7414932, 15.0 }, { 1, 0, 0 }, { 0, 0, 1}, &terrain));
 
-    for(int y = 0; y < 12; y++)
+    for(int y = 0; y < 4; y++)
     {
-        for(int x = 0; x < 12; x++)
+        for(int x = 0; x < 4; x++)
         {
             scene.addUnit(new Tank({ 150.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain));
         }
     }
 
-    for(int y = 0; y < 12; y++)
+    for(int y = 0; y < 4; y++)
     {
-        for(int x = 0; x < 12; x++)
+        for(int x = 0; x < 4; x++)
         {
             auto enemy = new Tank({ 170.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
             enemy->setEnemy(true);
@@ -176,8 +178,11 @@ int main()
             delete result;
         }
 
-        for(auto& unit : scene.getUnits())
-            unit->update(dt);
+        scene.clearUnits();
+        scene.updateEntities();
+
+        //for(auto& unit : scene.getUnits())
+        //    unit->update(dt);
 
         for(auto& entity : scene.getEntities())
             entity->update(dt);
@@ -234,7 +239,6 @@ int main()
         std::sort(P.begin(), P.end(), [&scene](const auto p1, const auto& p2) { return (p1.pos-scene.getCamera()->getPos()).length2() > (p2.pos-scene.getCamera()->getPos()).length2(); });
 
         scene.updateParticles();
-        scene.updateEntities();
 
         glBindBuffer(GL_ARRAY_BUFFER, particleVBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(SerializedParticle)*P.size(), P.data(), GL_STATIC_DRAW);
@@ -267,7 +271,6 @@ int main()
         glfwSwapBuffers(window);
         frames++;
 
-        scene.clearUnits();
         scene.updateLights();
 
         for(auto program : scene.getShaderProgramManager()->getPrograms())
