@@ -73,6 +73,7 @@ Projectile::Projectile(Vector3 pos, Vector3 dir, Vector3 up, Entity* owner = nul
 
 Projectile::~Projectile()
 {
+    std::cout << "deleting" << std::endl;
     ModelManager::deleteModel("projectile", projectileModel);
 }
 
@@ -97,7 +98,8 @@ void Projectile::setDirection(Vector3 dir, Vector3 up)
 void Projectile::update(real dt)
 {
     auto p1 = pos;
-    for(auto unit : scene->getUnits())
+    auto units = scene->getUnits();
+    for(auto unit : units)
     {
         if(unit->intersectBoundingBox(pos, pos+dt*velocity))
         {
@@ -112,10 +114,9 @@ void Projectile::update(real dt)
                 unit->health -= 20;
                 if(unit->health < 0)
                 {
+                    auto wreck = unit->spawnWreck();
                     scene->removeUnit(unit);
-                    auto tw = new TankWreck(unit->pos, unit->dir, unit->up, unit->scene->getTerrain());
-                    tw->init(scene);
-                    scene->addEntity(tw);
+                    scene->addEntity(wreck);
                 }
             }
             scene->removeEntity(this);

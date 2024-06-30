@@ -37,6 +37,8 @@ public:
     void updateTurret(real dt);
     void update(real dt);
 
+    Entity* spawnWreck();
+
     void shoot();
 
     bool setBallisticTarget(Unit* enemyTarget);

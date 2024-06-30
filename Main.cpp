@@ -184,7 +184,8 @@ int main()
         //for(auto& unit : scene.getUnits())
         //    unit->update(dt);
 
-        for(auto& entity : scene.getEntities())
+        auto entities = scene.getEntities();
+        for(auto& entity : entities)
             entity->update(dt);
 
         // TODO: this should be done in some update function or something

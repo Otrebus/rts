@@ -120,6 +120,9 @@ Model3d::Model3d() : cloned(false)
 
 Model3d::Model3d(Model3d& model) : cloned(true)
 {
+    pos = model.pos;
+    dir = model.dir;
+    up = model.up;
     for(auto mesh : model.meshes)
         addMesh(*new Mesh3d(*mesh));
 }
@@ -152,6 +155,20 @@ void Model3d::tearDown(Scene* scene)
         mesh->tearDown();
 }
 
+Vector3 Model3d::getPosition()
+{
+    return pos;
+}
+
+Vector3 Model3d::getDirection()
+{
+    return dir;
+}
+
+Vector3 Model3d::getUp()
+{
+    return up;
+}
 
 void Model3d::draw()
 {
@@ -172,6 +189,7 @@ void Model3d::updateUniforms()
 
 void Model3d::setPosition(Vector3 pos)
 {
+    this->pos = pos;
     for(auto& mesh : meshes)
         mesh->setPosition(pos);
 }
@@ -179,6 +197,8 @@ void Model3d::setPosition(Vector3 pos)
 
 void Model3d::setDirection(Vector3 dir, Vector3 up)
 {
+    this->dir = dir;
+    this->up = up;
     for(auto& mesh : meshes)
         mesh->setDirection(dir, up);
 }

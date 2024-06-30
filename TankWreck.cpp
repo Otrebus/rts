@@ -19,9 +19,9 @@
 
 TankWreck::TankWreck(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Entity(pos, dir, up, width, height, depth)
 {
-    body = ModelManager::instantiateModel("tankbody");
-    turret = ModelManager::instantiateModel("tankturret");
-    gun = ModelManager::instantiateModel("tankbarrel");
+    body = ModelManager::instantiateModel("wreckbody");
+    turret = ModelManager::instantiateModel("wreckturret");
+    gun = ModelManager::instantiateModel("wreckbarrel");
 
     body->setScene(scene);
     turret->setScene(scene);
@@ -145,19 +145,11 @@ void TankWreck::loadModels()
     turret->init();
 }
 
-
 void TankWreck::drawTurret()
 {
-    turret->setDirection(absTurDir, absTurUp);
-    turret->setPosition(absTurPos);
-
-    gun->setDirection(absGunDir, absGunUp);
-    gun->setPosition(absGunPos);
-
     turret->draw();
     gun->draw();
 }
-
 
 void TankWreck::draw()
 {
@@ -165,11 +157,9 @@ void TankWreck::draw()
     drawTurret();
 }
 
-
 void TankWreck::update(real dt)
 {
 }
-
 
 void TankWreck::updateUniforms()
 {
@@ -177,8 +167,6 @@ void TankWreck::updateUniforms()
     turret->updateUniforms();
     gun->updateUniforms();
 }
-
-
 
 real TankWreck::gunLength = 1.0f;
 Model3d* TankWreck::tankWreckBoundingBoxModel = nullptr;

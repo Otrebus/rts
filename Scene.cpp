@@ -1,6 +1,7 @@
 #include "Entity.h"
 #include "Scene.h"
 #include "Unit.h"
+#include <algorithm>
 
 class Camera;
 class ShaderProgramManager;
@@ -76,6 +77,11 @@ void Scene::clearUnits()
         if(!deadUnits.contains(unit))
             newUnits.push_back(unit->shared_from_this());
     }
+    for(auto& unit : deadUnits)
+    {
+        deadEntities.erase((Entity*)unit.get());
+        entities.erase(std::remove(entities.begin(), entities.end(), unit.get()), entities.end());
+    }
     deadUnits.clear();
     units = newUnits;
 }
@@ -104,12 +110,16 @@ void Scene::updateEntities()
 {
     std::vector<Entity*> newEntities;
     for(auto e : entities)
+    {
         if(!deadEntities.contains(e))
             newEntities.push_back(e);
+    }
 
     entities = newEntities;
     for(auto& entity : deadEntities)
+    {
         delete entity;
+    }
 
     deadEntities.clear();
 }

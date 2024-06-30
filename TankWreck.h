@@ -12,6 +12,7 @@ public:
     void init(Scene* scene);
     
 protected:
+    friend class Tank;
     Model3d* body;
     Model3d* turret;
     Model3d* gun;

@@ -6,6 +6,7 @@
 #include "Particle.h"
 #include "PathFinding.h"
 #include "Polysolver.h"
+#include "TankWreck.h"
 #include "Projectile.h"
 #include "SelectionDecalMaterial.h"
 #include "SelectionMarkerMesh.h"
@@ -153,6 +154,18 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, d
 
 Tank::~Tank()
 {
+    std::cout << "deleting tank";
+}
+
+
+Entity* Tank::spawnWreck()
+{
+    auto tw = new TankWreck(pos, dir, up, terrain);
+    tw->body->setPosition(this->body->getPosition());
+    tw->gun->setPosition(this->gun->getPosition());
+    tw->turret->setPosition(this->turret->getPosition());
+    tw->init(scene);
+    return tw;
 }
 
 

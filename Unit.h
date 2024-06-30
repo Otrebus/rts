@@ -45,6 +45,8 @@ public:
     void setEnemy(bool enemy);
     bool isEnemy() const;
 
+    virtual Entity* spawnWreck() = 0;
+
     void setEnemyTarget(Unit* enemy);
     Unit* getEnemyTarget() const;
 

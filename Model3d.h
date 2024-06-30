@@ -40,8 +40,13 @@ public:
     void updateUniforms();
 
     void setPosition(Vector3 pos);
+    Vector3 getPosition();
 
     void setDirection(Vector3 dir, Vector3 up);
+    Vector3 getDirection();
+    Vector3 getUp();
+
+    Vector3 pos, dir, up;
 
     bool cloned;
 };
