@@ -10,6 +10,9 @@ public:
     void drawTurret();
     void update(real dt);
     void init(Scene* scene);
+
+    void setPosition(Vector3 pos);
+    void setDirection(Vector3 dir, Vector3 up);
     
 protected:
     friend class Tank;
@@ -27,8 +30,8 @@ protected:
     Vector3 absGunPos;
     Vector3 absTurUp;
     Vector3 absTurDir;
-    Vector3 absMuzzlePos;
     Vector3 absTurPos;
+    Vector3 absMuzzlePos;
     static Model3d* tankWreckBoundingBoxModel;
     static BoundingBox tankWreckBoundingBox;
 };

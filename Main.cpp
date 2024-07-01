@@ -131,15 +131,28 @@ int main()
         }
     }
 
-    for(int y = 0; y < 4; y++)
-    {
-        for(int x = 0; x < 4; x++)
-        {
-            auto enemy = new Tank({ 170.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
-            enemy->setEnemy(true);
-            scene.addUnit(enemy);
-        }
-    }
+    //for(int y = 0; y < 4; y++)
+    //{
+    //    for(int x = 0; x < 4; x++)
+    //    {
+    //        auto enemy = new Tank({ 170.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+    //        enemy->setEnemy(true);
+    //        scene.addUnit(enemy);
+    //    }
+    //}
+
+    //for(int y = 0; y < 1; y++)
+    //{
+    //    for(int x = 0; x < 1; x++)
+    //    {
+    //        auto enemy = new Tank({ 170.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+    //        scene.addUnit(enemy);
+    //    }
+    //}
+
+    //auto wreck = new TankWreck({ 172.5f, 65.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+    //wreck->init(&scene);
+    //scene.addEntity(wreck);
 
     for(auto& e : scene.getUnits())
         e->init(&scene);

@@ -164,6 +164,15 @@ Entity* Tank::spawnWreck()
     tw->body->setPosition(this->body->getPosition());
     tw->gun->setPosition(this->gun->getPosition());
     tw->turret->setPosition(this->turret->getPosition());
+
+    tw->absGunPos = absGunPos;
+    tw->absGunDir = absGunDir;
+    tw->absGunUp = absGunUp;
+
+    tw->absTurPos = absTurPos;
+    tw->absTurUp = absTurUp;
+    tw->absTurDir = absTurDir;
+
     tw->init(scene);
     return tw;
 }

@@ -316,7 +316,14 @@ Vector3 Terrain::intersect(const Ray& ray, real maxT)
 
         auto t = -inf;
         for(int i = 0; i < 4 && t == -inf; i++)
-            t = intersectRaySegment(p.to2(), d.to2(), vs[i], vs[(i+1)%4]);
+        {
+            auto d2 = vs[(i+1)%4] - vs[i];
+            auto t2 = -inf;
+            if(d2.perp()*d.to2() > 0)
+                t2 = intersectRaySegment(p.to2(), d.to2(), vs[i], vs[(i+1)%4]);
+            if(t2 > 0)
+                t = max(t, t2);
+        }
 
         auto p0 = p + d*t;
         x0 = p0.x;

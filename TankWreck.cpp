@@ -40,7 +40,6 @@ TankWreck::TankWreck(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : E
     {
         model->setPosition(pos);
         model->setDirection(dir, up);
-        //model->init(); // TODO: we're updating the VAOs etc, but not deleting the old ones
     }
 }
 
@@ -145,8 +144,31 @@ void TankWreck::loadModels()
     turret->init();
 }
 
+void TankWreck::setPosition(Vector3 pos)
+{
+    Vector3 delta = pos-this->pos;
+    this->pos = pos;
+    body->setPosition(pos);
+    turret->setPosition(turret->getPosition()+delta);
+    gun->setPosition(gun->getPosition()+delta);
+}
+
+
+void TankWreck::setDirection(Vector3 dir, Vector3 up)
+{
+    this->dir = dir;
+    this->up = up;
+    body->setDirection(dir, up);
+}
+
 void TankWreck::drawTurret()
 {
+    turret->setDirection(absTurDir, absTurUp);
+    turret->setPosition(absTurPos);
+
+    gun->setDirection(absGunDir, absGunUp);
+    gun->setPosition(absGunPos);
+
     turret->draw();
     gun->draw();
 }
@@ -159,6 +181,15 @@ void TankWreck::draw()
 
 void TankWreck::update(real dt)
 {
+    plant(*scene->getTerrain());
+    absTurPos = pos + (dir*turretPos.y + (dir%up).normalized()*turretPos.x + up*turretPos.z);
+
+    absTurUp = up;
+    absTurDir = (dir*turretDir.y + (dir%up).normalized()*turretDir.x).normalized();
+    absGunDir = dir*turretDir.y + up*turretDir.z + (dir%up).normalized()*turretDir.x;
+
+    absGunPos = absTurPos + absTurDir*gunPos.y + (absTurDir%up).normalized()*gunPos.x + gunPos.z*absTurUp - absGunDir*gunRecoilPos;
+    absGunUp = (absGunDir%(absTurDir%up)).normalized();
 }
 
 void TankWreck::updateUniforms()

@@ -18,6 +18,7 @@
 + Figure out aspect ratio in debug mode
 + Unit picker/dropper
 + Unit collision detection
++ Clicking unit terrain target sometimes doesn't work
 + Boids:
   + Wall avoidance
   + Obstacle avoidance
@@ -38,6 +39,7 @@
 - Make scene singleton
 - Setting terrainMesh to non-pointer (living in Terrain) exposes bug in mesh memory management
 - Attack movement type
+- MovingUnit (ctrl-click) crashes if unit is destroyed
 * Shooting:
   + Target direction of gun should be relative
   + Set absolute gun direction
