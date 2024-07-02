@@ -8,6 +8,8 @@
 #include "ShaderProgramManager.h"
 #include <memory>
 #include <unordered_set>
+#include <thread>
+#include <mutex>
 
 class Unit;
 
@@ -44,9 +46,15 @@ public:
     void addParticle(Particle* particle);
     void updateParticles();
     const std::vector<Particle*>& getParticles() const;
+
+    void borrow(Unit* unit);
+    void unBorrow(Unit* unit);
+
 private:
-    std::vector<std::shared_ptr<Unit>> units;
-    std::unordered_set<std::shared_ptr<Unit>> deadUnits;
+    std::mutex borrowMutex;
+
+    std::vector<Unit*> units;
+    std::unordered_set<Unit*> deadUnits;
 
     std::vector<Entity*> entities;
     std::unordered_set<Entity*> deadEntities;
@@ -55,6 +63,8 @@ private:
     std::unordered_set<PointLight*> deadLights;
 
     std::vector<Particle*> particles;
+
+    std::unordered_map<Entity*, int> borrowed;
 
     Terrain* terrain;
     Camera* camera;

@@ -91,6 +91,7 @@ int PriorityQueue::pop()
 void addPathFindingRequest(PathFindingRequest* request)
 {
     std::lock_guard<std::mutex> guard(requestMutex);
+    request->requester->scene->borrow(request->requester);
     requestQueue.push(request);
 }
 
@@ -121,6 +122,7 @@ PathFindingRequest* popPathFindingResult()
 
     auto request = resultQueue.front();
     resultQueue.pop();
+    request->requester->scene->unBorrow(request->requester);
     return request;
 }
 
@@ -133,8 +135,8 @@ void pathFindingThread()
         auto p = popPathFindingRequest();
         if(p)
         {
-            auto t = (p->requester.get())->scene->getTerrain();
-            auto path = findPath(t, (p->requester.get())->geoPos, p->dest);
+            auto t = (p->requester)->scene->getTerrain();
+            auto path = findPath(t, p->requester->geoPos, p->dest);
             p->path = path;
             addPathFindingResult(p);
         }

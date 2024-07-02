@@ -20,7 +20,7 @@ class Model3d;
 class Scene;
 class PathFindingRequest;
 
-class Unit : public Entity, public std::enable_shared_from_this<Unit>
+class Unit : public Entity
 {
 public:
     Unit(Vector3 pos, Vector3 dir, Vector3 up);

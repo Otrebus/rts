@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "Unit.h"
 #include <algorithm>
+#include <thread>
 
 class Camera;
 class ShaderProgramManager;
@@ -42,15 +43,15 @@ Terrain* Scene::getTerrain() const
 
 void Scene::setUnits(std::vector<Unit*> units)
 {
-    std::vector<std::shared_ptr<Unit>> ptrs;
+    std::vector<Unit*> ptrs;
     for(auto unit : units)
-        ptrs.push_back(std::shared_ptr<Unit>(unit));
+        ptrs.push_back(unit);
     this->units = ptrs;
 }
 
 void Scene::addUnit(Unit* unit)
 {
-    this->units.push_back(std::shared_ptr<Unit>(unit));
+    this->units.push_back(unit);
     addEntity(unit);
 }
 
@@ -58,29 +59,31 @@ std::vector<Unit*> Scene::getUnits() const
 {
     std::vector<Unit*> U;
     for(auto& u : units)
-        U.push_back(u.get());
+        U.push_back(u);
     return U;
 }
 
 void Scene::removeUnit(Unit* unit)
 {
     unit->setDead();
-    deadUnits.insert(unit->shared_from_this());
+    deadUnits.insert(unit);
     removeEntity(unit);
 }
 
 void Scene::clearUnits()
 {
-    std::vector<std::shared_ptr<Unit>> newUnits;
+    std::vector<Unit*> newUnits;
     for(auto unit : units)
     {
         if(!deadUnits.contains(unit))
-            newUnits.push_back(unit->shared_from_this());
+            newUnits.push_back(unit);
     }
     for(auto& unit : deadUnits)
     {
-        deadEntities.erase((Entity*)unit.get());
-        entities.erase(std::remove(entities.begin(), entities.end(), unit.get()), entities.end());
+        deadEntities.erase(unit);
+        if(!borrowed[unit])
+            delete unit;
+        entities.erase(std::remove(entities.begin(), entities.end(), unit), entities.end());
     }
     deadUnits.clear();
     units = newUnits;
@@ -108,6 +111,7 @@ void Scene::removeEntity(Entity* entity)
 
 void Scene::updateEntities()
 {
+    std::lock_guard<std::mutex> guard(borrowMutex);
     std::vector<Entity*> newEntities;
     for(auto e : entities)
     {
@@ -116,12 +120,27 @@ void Scene::updateEntities()
     }
 
     entities = newEntities;
+    std::unordered_set<Entity*> newDeadEntities;
     for(auto& entity : deadEntities)
     {
-        delete entity;
+        if(!borrowed[entity])
+            delete entity;
+        else
+            newDeadEntities.insert(entity);
     }
+    deadEntities = newDeadEntities;
+}
 
-    deadEntities.clear();
+void Scene::borrow(Unit* unit)
+{
+    std::lock_guard<std::mutex> guard(borrowMutex);
+    borrowed[unit]++;
+}
+
+void Scene::unBorrow(Unit* unit)
+{
+    std::lock_guard<std::mutex> guard(borrowMutex);
+    borrowed[unit]--;
 }
 
 void Scene::addLight(PointLight* light)

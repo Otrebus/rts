@@ -270,6 +270,18 @@ void Tank::draw()
 
     if(selected && path.size() > 0)
         destinationLine.draw();
+
+    if(selected)
+    {
+        if(enemyTarget)
+        {
+            auto bb = BoundingBoxModel(0.5, 0.5, 0.5);
+            bb.setPosition(enemyTarget->getPosition() + Vector3(0, 0, 1));
+            bb.setScene(scene);
+            bb.init();
+            bb.draw();
+        }
+    }
 }
 
 
@@ -384,7 +396,7 @@ void Tank::update(real dt)
     real closestD = inf;
     for(auto unit : scene->getUnits())
     {
-        if(unit->isEnemy() != enemy)
+        if(unit->isEnemy() != enemy && !unit->dead)
         {
             if(auto d = (unit->getPosition() - pos).length(); d < closestD)
             {
@@ -473,7 +485,7 @@ void Tank::update(real dt)
     if(!pathFindingRequest && glfwGetTime() - pathLastCalculated > pathCalculationInterval && path.size())
     {
         PathFindingRequest* request = new PathFindingRequest;
-        request->requester = shared_from_this();
+        request->requester = this;
         request->start = getPosition().to2();
         request->dest = path.back();
         setCurrentPathfindingRequest(request);
@@ -483,6 +495,9 @@ void Tank::update(real dt)
     plant(*scene->getTerrain());
     velocity = (pos-prePos)/dt;
     updateTurret(dt);
+
+    if(enemyTarget && (enemyTarget->getPosition()).length() > 1000)
+        __debugbreak();
 
     if(!enemyTarget || closestEnemy && (closestEnemy->getPosition()-enemyTarget->getPosition()).length() < closestD*0.95)
         enemyTarget = closestEnemy;

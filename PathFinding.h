@@ -22,7 +22,7 @@
 class PathFindingRequest
 {
 public:
-    std::shared_ptr<Unit> requester;
+    Unit* requester;
 
     Vector2 start;
     Vector2 dest;
