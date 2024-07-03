@@ -34,6 +34,7 @@ public:
     void setEntities(std::vector<Entity*> entities);
     const std::vector<Entity*>& getEntities() const;
 
+    Entity* getEntity(int id);
     void addEntity(Entity* entity);
     void removeEntity(Entity* entity);
     void updateEntities();
@@ -65,6 +66,10 @@ private:
     std::vector<Particle*> particles;
 
     std::unordered_map<Entity*, int> borrowed;
+
+    std::unordered_map<int, Entity*> entityMap;
+
+    int id;
 
     Terrain* terrain;
     Camera* camera;

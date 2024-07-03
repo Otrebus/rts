@@ -98,13 +98,13 @@ void Unit::setEnemy(bool enemy)
 }
 
 
-void Unit::setEnemyTarget(Unit* enemy)
+void Unit::setEnemyTargetId(int enemy)
 {
-    this->enemyTarget = enemy;
+    this->enemyTargetId = enemy;
 }
 
 
-Unit* Unit::getEnemyTarget() const
+int Unit::getEnemyTargetId() const
 {
-    return enemyTarget;
+    return enemyTargetId;
 }

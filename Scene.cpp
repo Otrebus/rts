@@ -7,7 +7,7 @@
 class Camera;
 class ShaderProgramManager;
 
-Scene::Scene(Camera* camera, ShaderProgramManager* shaderProgramManager) : camera(camera), shaderProgramManager(shaderProgramManager)
+Scene::Scene(Camera* camera, ShaderProgramManager* shaderProgramManager) : camera(camera), shaderProgramManager(shaderProgramManager), id(1)
 {
 }
 
@@ -102,11 +102,14 @@ const std::vector<Entity*>& Scene::getEntities() const
 void Scene::addEntity(Entity* entity)
 {
     entities.push_back(entity);
+    entity->setId(id);
+    entityMap[id++] = entity;
 }
 
 void Scene::removeEntity(Entity* entity)
 {
     deadEntities.insert(entity);
+    entityMap.erase(entity->getId());
 }
 
 void Scene::updateEntities()
@@ -190,4 +193,11 @@ void Scene::updateParticles()
             delete e;
 
     particles = newParticles;
+}
+
+Entity* Scene::getEntity(int id)
+{
+    if(entityMap.contains(id))
+        return entityMap[id];
+    return nullptr;
 }

@@ -443,7 +443,7 @@ void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
                         if(b->isSelected())
                         {
                             found = true;
-                            b->setEnemyTarget(u);
+                            b->setEnemyTargetId(u->getId());
                         }
                     }
                 }

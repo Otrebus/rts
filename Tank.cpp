@@ -273,7 +273,7 @@ void Tank::draw()
 
     if(selected)
     {
-        if(enemyTarget)
+        if(Unit* enemyTarget = dynamic_cast<Unit*>(scene->getEntity(enemyTargetId)))
         {
             auto bb = BoundingBoxModel(0.5, 0.5, 0.5);
             bb.setPosition(enemyTarget->getPosition() + Vector3(0, 0, 1));
@@ -496,19 +496,20 @@ void Tank::update(real dt)
     velocity = (pos-prePos)/dt;
     updateTurret(dt);
 
-    if(enemyTarget && (enemyTarget->getPosition()).length() > 1000)
+    // TODO: rewrite
+    if(scene->getEntity(enemyTargetId) && (scene->getEntity(enemyTargetId)->getPosition()).length() > 1000)
         __debugbreak();
 
-    if(!enemyTarget || closestEnemy && (closestEnemy->getPosition()-enemyTarget->getPosition()).length() < closestD*0.95)
-        enemyTarget = closestEnemy;
+    if(closestEnemy && (!scene->getEntity(enemyTargetId) || (closestEnemy->getPosition()-scene->getEntity(enemyTargetId)->getPosition()).length() < closestD*0.95))
+        enemyTargetId = closestEnemy->getId();
 
-    if(enemyTarget && (enemyTarget->dead || !setBallisticTarget(enemyTarget)))
+    if(enemyTargetId && (scene->getEntity(enemyTargetId)->dead || !setBallisticTarget(static_cast<Unit*>(scene->getEntity(enemyTargetId)))))
     {
-        enemyTarget = nullptr;
+        enemyTargetId = 0;
         turretTarget = Vector3(0, 1, 0);
     }
 
-    if(enemyTarget && glfwGetTime() - lastFired > fireInterval)
+    if(enemyTargetId && glfwGetTime() - lastFired > fireInterval)
     {
         if((turretTarget*turretDir) > 1-1e-6)
         {

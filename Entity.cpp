@@ -163,3 +163,12 @@ Vector2 Entity::getGeoVelocity() const
     return geoVelocity;
 }
 
+void Entity::setId(int id)
+{
+    this->id = id;
+}
+
+int Entity::getId() const
+{
+    return id;
+}

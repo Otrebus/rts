@@ -47,8 +47,8 @@ public:
 
     virtual Entity* spawnWreck() = 0;
 
-    void setEnemyTarget(Unit* enemy);
-    Unit* getEnemyTarget() const;
+    void setEnemyTargetId(int enemy);
+    int getEnemyTargetId() const;
 
     real health;
 
@@ -62,5 +62,5 @@ protected:
     SelectionMarkerMesh* selectionMarkerMesh;
 
     bool enemy;
-    Unit* enemyTarget;
+    int enemyTargetId;
 };

@@ -50,8 +50,13 @@ public:
 
     Vector2 getGeoVelocity() const;
 
+    int getId() const;
+    void setId(int id);
+
     Vector3 dir, up, pos;
     Vector3 velocity;
+
+    int id;
 
     // TODO: are these used? width seems to be zero
     real width, height, depth;
