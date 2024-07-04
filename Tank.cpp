@@ -362,7 +362,7 @@ bool Tank::setBallisticTarget(Unit* enemyTarget)
 {
     auto g = Vector3(0, 0, -gravity);
     auto v = enemyTarget->velocity - velocity;
-    auto p = enemyTarget->pos - absMuzzlePos;
+    auto p = enemyTarget->pos - absMuzzlePos; // NOTE: this isn't quite right
 
     ld t4 = g*g/4;
     ld t3 = -v*g;
@@ -482,7 +482,9 @@ void Tank::update(real dt)
     if(geoVelocity.length() > maxSpeed)
         geoVelocity = geoVelocity.normalized()*maxSpeed;
 
-    if(!pathFindingRequest && glfwGetTime() - pathLastCalculated > pathCalculationInterval && path.size())
+    auto time = glfwGetTime();
+
+    if(!pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && path.size())
     {
         PathFindingRequest* request = new PathFindingRequest;
         request->requester = this;
@@ -494,28 +496,28 @@ void Tank::update(real dt)
 
     plant(*scene->getTerrain());
     velocity = (pos-prePos)/dt;
-    updateTurret(dt);
 
-    // TODO: rewrite
-    if(scene->getEntity(enemyTargetId) && (scene->getEntity(enemyTargetId)->getPosition()).length() > 1000)
-        __debugbreak();
+    auto enemyTarget = dynamic_cast<Unit*>(scene->getEntity(enemyTargetId));
 
-    if(closestEnemy && (!scene->getEntity(enemyTargetId) || (closestEnemy->getPosition()-scene->getEntity(enemyTargetId)->getPosition()).length() < closestD*0.95))
+    if(closestEnemy && (!enemyTarget || (closestEnemy->getPosition()-enemyTarget->getPosition()).length() < closestD*0.95))
         enemyTargetId = closestEnemy->getId();
 
-    if(enemyTargetId && (scene->getEntity(enemyTargetId)->dead || !setBallisticTarget(static_cast<Unit*>(scene->getEntity(enemyTargetId)))))
+    if(enemyTarget && (enemyTarget->dead || !setBallisticTarget(enemyTarget)))
     {
         enemyTargetId = 0;
         turretTarget = Vector3(0, 1, 0);
     }
 
-    if(enemyTargetId && glfwGetTime() - lastFired > fireInterval)
+    updateTurret(dt);
+
+    if(enemyTarget && time - lastFired > fireInterval)
     {
+        std::cout << turretTarget*turretDir << std::endl;
         if((turretTarget*turretDir) > 1-1e-6)
         {
-            lastFired = glfwGetTime();
+            lastFired = time;
             shoot();
-            auto light = new PointLight(glfwGetTime());
+            auto light = new PointLight(time);
 
             light->setPos(absMuzzlePos);
             light->setVelocity(this->velocity);
