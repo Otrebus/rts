@@ -41,52 +41,9 @@ Terrain* Scene::getTerrain() const
     return terrain;
 }
 
-void Scene::setUnits(std::vector<Unit*> units)
-{
-    std::vector<Unit*> ptrs;
-    for(auto unit : units)
-        ptrs.push_back(unit);
-    this->units = ptrs;
-}
-
-void Scene::addUnit(Unit* unit)
-{
-    this->units.push_back(unit);
-    addEntity(unit);
-}
-
 std::vector<Unit*> Scene::getUnits() const
 {
-    std::vector<Unit*> U;
-    for(auto& u : units)
-        U.push_back(u);
-    return U;
-}
-
-void Scene::removeUnit(Unit* unit)
-{
-    unit->setDead();
-    deadUnits.insert(unit);
-    removeEntity(unit);
-}
-
-void Scene::clearUnits()
-{
-    std::vector<Unit*> newUnits;
-    for(auto unit : units)
-    {
-        if(!deadUnits.contains(unit))
-            newUnits.push_back(unit);
-    }
-    for(auto& unit : deadUnits)
-    {
-        deadEntities.erase(unit);
-        if(!borrowed[unit])
-            delete unit;
-        entities.erase(std::remove(entities.begin(), entities.end(), unit), entities.end());
-    }
-    deadUnits.clear();
-    units = newUnits;
+    return units;
 }
 
 void Scene::setEntities(std::vector<Entity*> entities)
@@ -104,6 +61,7 @@ void Scene::addEntity(Entity* entity)
     entities.push_back(entity);
     entity->setId(id);
     entityMap[id++] = entity;
+    entity->scene = this;
 }
 
 void Scene::removeEntity(Entity* entity)
@@ -132,6 +90,16 @@ void Scene::updateEntities()
             newDeadEntities.insert(entity);
     }
     deadEntities = newDeadEntities;
+}
+
+void Scene::updateUnitList()
+{
+    units.clear();
+    for(auto e : entities)
+    {
+        if(auto p = dynamic_cast<Unit*>(e); p)
+            units.push_back(p);
+    }
 }
 
 void Scene::borrow(Unit* unit)

@@ -116,10 +116,6 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, d
     turret = ModelManager::instantiateModel("tankturret");
     gun = ModelManager::instantiateModel("tankbarrel");
 
-    body->setScene(scene);
-    turret->setScene(scene);
-    gun->setScene(scene);
-
     turretDir = Vector3(1, 1, 0).normalized();
 
     turretTarget = Vector3(-1, 1, 1).normalized();
@@ -499,14 +495,14 @@ void Tank::update(real dt)
 
     auto enemyTarget = dynamic_cast<Unit*>(scene->getEntity(enemyTargetId));
 
-    if(closestEnemy && (!enemyTarget || (closestEnemy->getPosition()-enemyTarget->getPosition()).length() < closestD*0.95))
-        enemyTargetId = closestEnemy->getId();
-
-    if(enemyTarget && (enemyTarget->dead || !setBallisticTarget(enemyTarget)))
+    if(!enemyTarget || enemyTarget && (enemyTarget->dead || !setBallisticTarget(enemyTarget)))
     {
         enemyTargetId = 0;
         turretTarget = Vector3(0, 1, 0);
     }
+
+    if(closestEnemy && (!enemyTarget || (closestEnemy->getPosition()-enemyTarget->getPosition()).length() < closestD*0.95))
+        enemyTargetId = closestEnemy->getId();
 
     updateTurret(dt);
 

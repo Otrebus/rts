@@ -25,11 +25,7 @@ public:
     void setTerrain(Terrain* terrain);
     Terrain* getTerrain() const;
 
-    void addUnit(Unit* unit);
-    void setUnits(std::vector<Unit*> units);
     std::vector<Unit*> getUnits() const;
-    void removeUnit(Unit* unit);
-    void clearUnits();
 
     void setEntities(std::vector<Entity*> entities);
     const std::vector<Entity*>& getEntities() const;
@@ -50,6 +46,8 @@ public:
 
     void borrow(Unit* unit);
     void unBorrow(Unit* unit);
+
+    void updateUnitList();
 
 private:
     std::mutex borrowMutex;

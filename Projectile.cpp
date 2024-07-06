@@ -115,7 +115,7 @@ void Projectile::update(real dt)
                 if(unit->health < 0)
                 {
                     auto wreck = unit->spawnWreck();
-                    scene->removeUnit(unit);
+                    scene->removeEntity(unit);
                     scene->addEntity(wreck);
                 }
             }

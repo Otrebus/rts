@@ -69,7 +69,7 @@ public:
     const real minTurretPitch = -10_deg;
     const real maxTurretPitch = 90_deg; // Exaggerated for now
 
-    const real bulletSpeed = 15;
+    const real bulletSpeed = 5;
     const real fireInterval = 1.5;
 
     real lastFired;
