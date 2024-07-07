@@ -332,7 +332,7 @@ void UserInterface::selectUnit(const Ray& ray, const std::vector<Unit*>& units, 
             if(/*!u->isEnemy() && */u->intersectBoundingBox(ray))
                 u->setPreSelected(true);
             else
-                u->setPreSelected(false);
+                u->setPreSelected(false); 
         }
     }
 }
@@ -454,14 +454,11 @@ void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
                 auto [px, py] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
 
                 auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
-                if(scene->getTerrain()->isTriangleAdmissible(pos.to2()))
+                for(auto unit : units)
                 {
-                    for(auto unit : units)
+                    if(unit->isSelected())
                     {
-                        if(unit->isSelected())
-                        {
-                            addUnitPathfindingRequest(unit, pos);
-                        }
+                        addUnitPathfindingRequest(unit, pos);
                     }
                 }
             }

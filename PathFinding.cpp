@@ -154,6 +154,9 @@ std::deque<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinatio
     std::vector<real> C(width*height, inf);
     std::vector<std::pair<int, int>> P(width*height);
 
+    std::pair<int, int> minQi;
+    real minQ = inf;
+
     PriorityQueue Q(width*height);
 
     auto [startX, startY] = terrain->getClosestAdmissible(start);
@@ -186,8 +189,14 @@ std::deque<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinatio
                 {
                     real h_j = dist(destX-(x+dx), destY-(y+dy));
                     real d = dist(dx, dy);
+
                     if(auto c2 = C[i] + d; c2 < C[j])
                     {
+                        if(minQ > h_j)
+                        {
+                            minQ = h_j;
+                            minQi = { x+dx, y+dy };
+                        }
                         C[j] = c2;
                         Q.decreaseKey(j, C[j] + h_j);
                         P[j] = { x, y };
@@ -198,24 +207,29 @@ std::deque<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinatio
     };
 
     std::deque<Vector2> outPath;
-    if(C[destX+destY*width] < inf)
+
+    if(C[destX+destY*width] == inf)
     {
-        std::deque<Vector2> result = { destination };
-
-        for(std::pair<int, int> node = { destX, destY };;)
-        {
-            auto [x, y] = node;
-            result.push_back({ real(x), real(y) });
-            if(x == startX && y == startY)
-                break;
-            node = P[x+y*width];
-        }
-
-        std::reverse(result.begin(), result.end());
-        outPath = terrain->straightenPath(result.begin(), result.end());
-        //outPath = result;
-        //std::cout << "Constructed path in " << glfwGetTime() - time << std::endl;
+        destX = minQi.first;
+        destY = minQi.second;
+        destination = { real(destX), real(destY) };
     }
+
+    std::deque<Vector2> result = { destination };
+
+    for(std::pair<int, int> node = { destX, destY };;)
+    {
+        auto [x, y] = node;
+        result.push_back({ real(x), real(y) });
+        if(x == startX && y == startY)
+            break;
+        node = P[x+y*width];
+    }
+
+    std::reverse(result.begin(), result.end());
+    outPath = terrain->straightenPath(result.begin(), result.end());
+    //outPath = result;
+    //std::cout << "Constructed path in " << glfwGetTime() - time << std::endl;
 
     return outPath;
 }
