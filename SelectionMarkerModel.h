@@ -22,7 +22,7 @@ public:
     SelectionMarkerModel(Entity* tank);
     ~SelectionMarkerModel();
 
-    std::pair<std::vector<Vertex3d>, std::vector<int>> calcVertices(Scene* scene);
+    std::pair<std::vector<Vertex3>, std::vector<int>> calcVertices(Scene* scene);
 
     void update();
 

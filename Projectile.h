@@ -23,7 +23,7 @@ class Projectile : public Entity
 public:
     Projectile(Vector3 pos, Vector3 dir, Vector3 up, Entity* owner);
     ~Projectile();
-    void draw();
+    void draw(Material* mat = nullptr);
 
     void setPosition(Vector3 pos);
     void setDirection(Vector3 pos, Vector3 up);

@@ -142,9 +142,9 @@ int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
     return 0;
 }
 
-std::vector<Vertex3d> createQuadVertices()
+std::vector<Vertex3> createQuadVertices()
 {
-    std::vector<Vertex3d> vs = {
+    std::vector<Vertex3> vs = {
         {{-0.15, -0.15, 0.0}, {0.0, 0.0, 1.0}, {-0.5, -0.5}},
         {{ 0.15, -0.15, 0.0}, {0.0, 0.0, 1.0}, {0.5, -0.5}},
         {{ 0.15,  0.15, 0.0}, {0.0, 0.0, 1.0}, {0.5, 0.5}},
@@ -203,7 +203,7 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
         velocity[i] = { vx, vy, 0 };
     }
 
-    std::vector<Vertex3d> meshVertices = {
+    std::vector<Vertex3> meshVertices = {
         { -0.5f, -0.5f, 0.0, 0, 0, -1, 0, 0 },
         { 0.5f, -0.5f, 0.0, 0, 0, -1, 1, 0, },
         { 0.5f,  0.5f, 0.0, 0, 0, -1, 1, 1, },

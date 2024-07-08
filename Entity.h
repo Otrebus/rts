@@ -16,6 +16,7 @@ class Ray;
 class Vector3;
 class Vector2;
 class Terrain;
+class Material;
 
 class Entity
 {
@@ -39,7 +40,7 @@ public:
     Vector2 getGeoPosition() const;
     virtual void setDirection(Vector3 dir, Vector3 up);
 
-    virtual void draw() = 0;
+    virtual void draw(Material* mat = nullptr) = 0;
 
     virtual void update(real dt) = 0;
 

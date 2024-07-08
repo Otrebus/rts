@@ -161,7 +161,7 @@ void TankWreck::setDirection(Vector3 dir, Vector3 up)
     body->setDirection(dir, up);
 }
 
-void TankWreck::drawTurret()
+void TankWreck::drawTurret(Material* mat)
 {
     turret->setDirection(absTurDir, absTurUp);
     turret->setPosition(absTurPos);
@@ -173,10 +173,10 @@ void TankWreck::drawTurret()
     gun->draw();
 }
 
-void TankWreck::draw()
+void TankWreck::draw(Material* mat)
 {
-    body->draw();
-    drawTurret();
+    body->draw(mat);
+    drawTurret(mat);
 }
 
 void TankWreck::update(real dt)

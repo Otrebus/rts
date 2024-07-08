@@ -7,6 +7,7 @@
 #include "InputManager.h"
 #include "Line.h"
 #include "Logger.h"
+#include "ShapeDrawer.h"
 #include "Main.h"
 #include "Math.h"
 #include "Matrix4.h"
@@ -118,6 +119,8 @@ int main()
     auto particleGeometryShader = new Shader("particle.geom", GL_GEOMETRY_SHADER);
     auto particleVertexShader = new Shader("particle.vert", GL_VERTEX_SHADER);
 
+    auto mat = new LambertianMaterial(Vector3(0.3, 0, 0));
+
     Tank::loadModels();
     TankWreck::loadModels();
 
@@ -165,6 +168,9 @@ int main()
     int frames = 0;
     real frameTime = 0;
     real avgFps = 0;
+
+    ShapeDrawer::setScene(&scene);
+    ShapeDrawer::loadModels();
 
     while(!glfwWindowShouldClose(window))
     {
@@ -277,6 +283,8 @@ int main()
         glDepthMask(GL_TRUE);
 
         avgFps = ((9*avgFps + 1/dt))/10;
+        
+        ShapeDrawer::drawArrow(Vector3(1, 1, 20), Vector3(1, 1, 0));
 
         drawText(realToString(avgFps, 3), { 0.80, 0.90 }, 0.03, { 0, 0.8, 0 });
         cameraControl.update(dt);

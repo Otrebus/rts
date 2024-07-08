@@ -29,8 +29,8 @@ public:
     virtual Shader* getVertexShader() const = 0;
     virtual Shader* getGeometryShader() const = 0;
 
-    virtual void draw() = 0;
-    virtual void updateUniforms() = 0;
+    virtual void draw(Material* mat = nullptr) = 0;
+    virtual void updateUniforms(Material* mat = nullptr) = 0;
 
     void setDirection(Vector3 dir, Vector3 up);
     void setPosition(Vector3 pos);

@@ -205,7 +205,7 @@ void Tank::updateUniforms()
 }
 
 
-void Tank::drawTurret()
+void Tank::drawTurret(Material* mat)
 {
     turret->setDirection(absTurDir, absTurUp);
     turret->setPosition(absTurPos);
@@ -213,8 +213,8 @@ void Tank::drawTurret()
     gun->setDirection(absGunDir, absGunUp);
     gun->setPosition(absGunPos);
 
-    turret->draw();
-    gun->draw();
+    turret->draw(mat);
+    gun->draw(mat);
 }
 
 void Tank::updateTurret(real dt)
@@ -251,7 +251,7 @@ void Tank::updateTurret(real dt)
     turretDir = Vector3(x*u.x, x*u.y, y);
 }
 
-void Tank::draw()
+void Tank::draw(Material* mat)
 {
     std::vector<Vector3> P;
     // TODO: slow
@@ -260,9 +260,9 @@ void Tank::draw()
         P.push_back({ p.x, p.y, terrain->getElevation(p.x, p.y) });
     destinationLine.setVertices(P);
 
-    body->draw();
+    body->draw(mat);
 
-    drawTurret();
+    drawTurret(mat);
 
     if(selected && path.size() > 0)
         destinationLine.draw();

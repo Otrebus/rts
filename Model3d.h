@@ -34,10 +34,10 @@ public:
     void init();
     void tearDown(Scene* scene);
 
-    void draw();
+    void draw(Material* mat = nullptr);
     void addMesh(Mesh3d& mesh);
 
-    void updateUniforms();
+    void updateUniforms(Material* mat = nullptr);
 
     void setPosition(Vector3 pos);
     Vector3 getPosition();
@@ -80,7 +80,7 @@ public:
 
     Model3d* createModel(const std::string& str);
     static Model3d* addModel(const std::string& filename, Model3d* model);
-    Model3d* getModel(const std::string& name);
+    static Model3d* getModel(const std::string& name);
 
 protected:
     static std::unordered_map<std::string, Model3d*> templateMap;

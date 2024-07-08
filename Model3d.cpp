@@ -48,23 +48,6 @@ Model3d* ModelManager::getModel(const std::string& name)
 }
 
 
-//Model3d* ModelManager::getOrCreateModel(const std::string& fileName)
-//{
-//    if(!ModelManager::hasModel(fileName))
-//    {
-//        auto model = new Model3d();
-//        model->readFromFile(fileName);
-//        ModelManager::addModel(fileName, model);
-//        return model;
-//    }
-//    else
-//    {
-//        auto model = ModelManager::getModel(fileName);
-//        return model;
-//    }
-//}
-
-
 struct ObjVertex
 {
     ObjVertex(Vector3 position, Vector3 normal, Vector2 texture) : position(position), normal(normal), texture(texture) {}
@@ -170,20 +153,20 @@ Vector3 Model3d::getUp()
     return up;
 }
 
-void Model3d::draw()
+void Model3d::draw(Material* mat)
 {
     for(auto& mesh : meshes)
     {
-        mesh->updateUniforms();
-        mesh->draw();
+        mesh->updateUniforms(mat);
+        mesh->draw(mat);
     }
 }
 
 
-void Model3d::updateUniforms()
+void Model3d::updateUniforms(Material* mat)
 {
     for(auto& mesh : meshes)
-        mesh->updateUniforms();
+        mesh->updateUniforms(mat);
 }
 
 
@@ -364,7 +347,7 @@ void Model3d::readFromFile(const std::string& file)
             {
                 Mesh3d* mesh = new Mesh3d;
                 mesh->material = curmat;
-                std::vector<Vertex3d> vertices;
+                std::vector<Vertex3> vertices;
                 std::vector<int> indices;
                 std::unordered_map<ObjVertex*, int> vertMap;
 

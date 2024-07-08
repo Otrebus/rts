@@ -29,8 +29,8 @@ public:
     Shader* getVertexShader() const;
     Shader* getGeometryShader() const;
 
-    void draw();
-    void updateUniforms();
+    void draw(Material* mat = nullptr);
+    void updateUniforms(Material* mat = nullptr);
 
     int lineWidth;
 

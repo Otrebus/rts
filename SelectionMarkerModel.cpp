@@ -20,13 +20,13 @@ SelectionMarkerModel::~SelectionMarkerModel() // TODO: delete
 }
 
 
-std::pair<std::vector<Vertex3d>, std::vector<int>> SelectionMarkerModel::calcVertices(Scene* scene)
+std::pair<std::vector<Vertex3>, std::vector<int>> SelectionMarkerModel::calcVertices(Scene* scene)
 {
     auto tankPos = tank->getPosition();
 
     int xc = tankPos.x, yc = tankPos.y;
 
-    std::vector<Vertex3d> vs;
+    std::vector<Vertex3> vs;
     for(int y = yc-1; y < yc+3; y++)
     {
         for(int x = xc-1; x < xc+3; x++)

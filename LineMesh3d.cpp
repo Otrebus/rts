@@ -61,7 +61,7 @@ void LineMesh3d::tearDown(Scene* s)
     glDeleteVertexArrays(1, &VAO);
 }
 
-void LineMesh3d::draw()
+void LineMesh3d::draw(Material *mat)
 {
     auto s = scene->getShaderProgramManager();
     auto program = s->getProgram(this->material->getShader(), getVertexShader());
@@ -73,10 +73,11 @@ void LineMesh3d::draw()
     glDrawElements(GL_LINES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
 }
 
-void LineMesh3d::updateUniforms()
+void LineMesh3d::updateUniforms(Material* mat)
 {
+    auto material = mat ? mat : this->material;
     auto s = scene->getShaderProgramManager();
-    auto program = s->getProgram(this->material->getShader(), getVertexShader());
+    auto program = s->getProgram(material->getShader(), getVertexShader());
     scene->setShaderProgram(program);
 
     program->use();
@@ -87,7 +88,7 @@ void LineMesh3d::updateUniforms()
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "modelViewMatrix"), 1, GL_TRUE, (float*)matrix.m_val);
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "projectionMatrix"), 1, GL_TRUE, (float*)perspM.m_val);
 
-    this->material->updateUniforms(scene);
+    material->updateUniforms(scene);
 }
 
 Shader* LineMesh3d::getGeometryShader() const

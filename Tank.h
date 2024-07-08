@@ -21,8 +21,8 @@ public:
     void init(Scene* scene);
     void updateUniforms();
 
-    void drawTurret();
-    void draw();
+    void drawTurret(Material* mat = nullptr);
+    void draw(Material* mat = nullptr);
 
     void setPosition(Vector3 pos);
     void setDirection(Vector3 dir, Vector3 up);

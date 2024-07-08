@@ -6,8 +6,8 @@ public:
     TankWreck(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain);
     void updateUniforms();
 	static void loadModels();
-    void draw();
-    void drawTurret();
+    void draw(Material* mat = nullptr);
+    void drawTurret(Material* mat = nullptr);
     void update(real dt);
     void init(Scene* scene);
 

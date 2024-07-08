@@ -12,13 +12,13 @@
 class Mesh3d : public Mesh
 {
 public:
-    std::vector<Vertex3d> v;
+    std::vector<Vertex3> v;
     std::vector<int> triangles;
 
     static Shader* vertexShader;
     static Shader* geometryShader;
 
-    Mesh3d(std::vector<Vertex3d> vertices, std::vector<int> triangles, Material* material);
+    Mesh3d(std::vector<Vertex3> vertices, std::vector<int> triangles, Material* material);
     Mesh3d();
     virtual ~Mesh3d();
     Mesh3d(Mesh3d& mesh);
@@ -29,6 +29,6 @@ public:
     virtual Shader* getVertexShader() const;
     virtual Shader* getGeometryShader() const;
 
-    void draw();
-    virtual void updateUniforms();
+    void draw(Material* mat = nullptr);
+    virtual void updateUniforms(Material* mat = nullptr);
 };

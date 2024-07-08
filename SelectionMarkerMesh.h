@@ -20,12 +20,12 @@ class SelectionMarkerMesh : public Mesh3d
 public:
     SelectionMarkerMesh(Entity* tank);
 
-    void draw();
+    void draw(Material* mat = nullptr);
     void update();
 
     void setSelectionType(bool pre);
 
-    std::pair<std::vector<Vertex3d>, std::vector<int>> calcVertices(Scene* scene);
+    std::pair<std::vector<Vertex3>, std::vector<int>> calcVertices(Scene* scene);
     void init();
 
     int pass;

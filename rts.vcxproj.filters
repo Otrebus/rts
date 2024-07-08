@@ -157,6 +157,12 @@
     <ClCompile Include="TankWreck.cpp">
       <Filter>Source files\Entities\Entities</Filter>
     </ClCompile>
+    <ClCompile Include="Primitives.cpp">
+      <Filter>Source files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="ShapeDrawer.cpp">
+      <Filter>Source files\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -311,6 +317,12 @@
     </ClInclude>
     <ClInclude Include="TankWreck.h">
       <Filter>Source files\Entities\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives.h">
+      <Filter>Source files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="ShapeDrawer.h">
+      <Filter>Source files\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

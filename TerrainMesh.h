@@ -12,7 +12,7 @@
 class TerrainMesh : public Mesh3d
 {
 public:
-    TerrainMesh(std::vector<MeshVertex3d> meshData, std::vector<int> triangles, Material* material);
+    TerrainMesh(std::vector<MeshVertex3> meshData, std::vector<int> triangles, Material* material);
     //TerrainMesh();
     ~TerrainMesh();
 
@@ -22,7 +22,7 @@ public:
 
     Shader* getVertexShader() const;
 
-    std::vector<MeshVertex3d> v;
+    std::vector<MeshVertex3> v;
 
     using Mesh3d::Mesh3d;
 

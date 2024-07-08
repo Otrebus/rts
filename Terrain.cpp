@@ -58,7 +58,7 @@ void Terrain::calcMinMax()
 TerrainMesh* Terrain::createMesh(std::string fileName)
 {
     auto [colors, width, height] = readBMP(fileName, false);
-    std::vector<MeshVertex3d> vertices(width*height);
+    std::vector<MeshVertex3> vertices(width*height);
     points.clear();
     triangleIndices.clear();
 
@@ -81,7 +81,7 @@ TerrainMesh* Terrain::createMesh(std::string fileName)
             auto dy = ((!ly ? H(x, y+1) : H(x, y)) - (!fy ? H(x, y-1) : H(x, y)))/((!fy + !ly));
             real l = std::sqrt(dx*dx+dy*dy+1);
             points.push_back(Vector3(X, Y, H(x, y) + 3.0));
-            vertices[width*y+x] = MeshVertex3d(X, Y, H(x, y) + 3.0, -dx/l, -dy/l, 1.0/l, x, y);
+            vertices[width*y+x] = MeshVertex3(X, Y, H(x, y) + 3.0, -dx/l, -dy/l, 1.0/l, x, y);
             vertices[width*y+x].selected = 0;
         }
     }
@@ -120,7 +120,7 @@ TerrainMesh* Terrain::createMesh(std::string fileName)
 TerrainMesh* Terrain::createTexturedMesh(std::string fileName)
 {
     auto [colors, width, height] = readBMP(fileName, false);
-    std::vector<MeshVertex3d> vertices(width*height);
+    std::vector<MeshVertex3> vertices(width*height);
     points.clear();
     triangleIndices.clear();
 
@@ -143,7 +143,7 @@ TerrainMesh* Terrain::createTexturedMesh(std::string fileName)
             auto dy = ((!ly ? H(x, y+1) : H(x, y)) - (!fy ? H(x, y-1) : H(x, y)))/((!fy + !ly));
             real l = std::sqrt(dx*dx+dy*dy+1);
             points.push_back(Vector3(X, Y, H(x, y) + 3.0));
-            vertices[width*y+x] = MeshVertex3d(X, Y, H(x, y) + 3.0, -dx/l, -dy/l, 1.0/l, x, y);
+            vertices[width*y+x] = MeshVertex3(X, Y, H(x, y) + 3.0, -dx/l, -dy/l, 1.0/l, x, y);
             vertices[width*y+x].selected = 0;
         }
     }
@@ -189,7 +189,7 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
     std::vector<int> triangleIndices2;
 
     const int nVertices = width*height;
-    std::vector<MeshVertex3d> vertices(nVertices);
+    std::vector<MeshVertex3> vertices(nVertices);
 
     auto H = [&colors, &width, &height](int x, int y)
     {
@@ -210,12 +210,12 @@ TerrainMesh* Terrain::createFlatMesh(std::string fileName)
             auto dy = ((!ly ? H(x, y+1) : H(x, y)) - (!fy ? H(x, y-1) : H(x, y)))/((!fy + !ly));
             real l = std::sqrt(dx*dx+dy*dy+1);
             points.push_back(Vector3(X, Y, H(x, y) + 3.0));
-            vertices[width*y+x] = MeshVertex3d(X, Y, H(x, y) + 3.0, -dx/l, -dy/l, 1.0/l, x, y);
+            vertices[width*y+x] = MeshVertex3(X, Y, H(x, y) + 3.0, -dx/l, -dy/l, 1.0/l, x, y);
             vertices[width*y+x].selected = 0;
         }
     }
 
-    std::vector<MeshVertex3d> vertices2;
+    std::vector<MeshVertex3> vertices2;
     int j = 0, k = 0;
     for(int y = 0; y < height-1; y++)
     {

@@ -149,6 +149,8 @@
     <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Primitives.cpp" />
+    <ClCompile Include="ShapeDrawer.cpp" />
     <ClCompile Include="TankWreck.cpp" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="GeometryUtils.cpp" />
@@ -208,6 +210,8 @@
     <ClInclude Include="DebugDraw.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="Primitives.h" />
+    <ClInclude Include="ShapeDrawer.h" />
     <ClInclude Include="TankWreck.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="GeometryUtils.h" />

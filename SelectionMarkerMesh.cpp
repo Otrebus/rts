@@ -13,16 +13,17 @@ SelectionMarkerMesh::SelectionMarkerMesh(Entity* tank)
 }
 
 
-void SelectionMarkerMesh::draw()
+void SelectionMarkerMesh::draw(Material* mat)
 {
+    auto material = mat ? mat : this->material;
     auto s = scene->getShaderProgramManager();
-    auto program = s->getProgram(this->material->getShader(), getGeometryShader(), getVertexShader());
+    auto program = s->getProgram(material->getShader(), getGeometryShader(), getVertexShader());
     scene->setShaderProgram(program);
     program->use();
 
     if(pass == 0)
     {
-        ((SelectionDecalMaterial*)this->material)->alpha = 0.89;
+        ((SelectionDecalMaterial*)material)->alpha = 0.89;
         SelectionDecalMaterial::radius = 0.90;
 
         glEnable(GL_BLEND);
@@ -31,7 +32,7 @@ void SelectionMarkerMesh::draw()
     }
     else if(pass == 1)
     {
-        ((SelectionDecalMaterial*)this->material)->alpha = 1.0;
+        ((SelectionDecalMaterial*)material)->alpha = 1.0;
         SelectionDecalMaterial::radius = pre ? 0.95 : 1;
 
         glEnable(GL_BLEND);
@@ -41,7 +42,7 @@ void SelectionMarkerMesh::draw()
     }
     else if(pass == 2)
     {
-        ((SelectionDecalMaterial*)this->material)->alpha = 1.0;
+        ((SelectionDecalMaterial*)material)->alpha = 1.0;
         SelectionDecalMaterial::radius = 0.90;
 
         glEnable(GL_BLEND);
@@ -60,13 +61,13 @@ void SelectionMarkerMesh::draw()
 }
 
 
-std::pair<std::vector<Vertex3d>, std::vector<int>> SelectionMarkerMesh::calcVertices(Scene* scene)
+std::pair<std::vector<Vertex3>, std::vector<int>> SelectionMarkerMesh::calcVertices(Scene* scene)
 {
     auto tankPos = tank->getPosition();
 
     int xc = tankPos.x, yc = tankPos.y;
 
-    std::vector<Vertex3d> vs;
+    std::vector<Vertex3> vs;
     for(int y = yc-1; y < yc+3; y++)
     {
         for(int x = xc-1; x < xc+3; x++)
@@ -107,7 +108,7 @@ void SelectionMarkerMesh::init()
 
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex3d)*v.size(), v.data(), GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex3)*v.size(), v.data(), GL_STREAM_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -154,7 +155,7 @@ void SelectionMarkerMesh::update()
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex3d)*v.size(), v.data(), GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex3)*v.size(), v.data(), GL_STREAM_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*triangles.size(), triangles.data(), GL_STREAM_DRAW);

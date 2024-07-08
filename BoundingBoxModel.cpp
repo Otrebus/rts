@@ -29,7 +29,7 @@ BoundingBoxModel::BoundingBoxModel(real width, real depth, real height)
     };
 
     std::vector<int> triangles;
-    std::vector<Vertex3d> vertices;
+    std::vector<Vertex3> vertices;
 
     for(auto ci : cornerIndices)
     {

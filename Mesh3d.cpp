@@ -13,7 +13,7 @@ Mesh3d::Mesh3d()
         geometryShader = new Shader("geometryShader.geom", GL_GEOMETRY_SHADER);
 }
 
-Mesh3d::Mesh3d(std::vector<Vertex3d> vertices, std::vector<int> triangles, Material* material)
+Mesh3d::Mesh3d(std::vector<Vertex3> vertices, std::vector<int> triangles, Material* material)
 {
     this->material = material;
     this->v = vertices;
@@ -48,7 +48,7 @@ void Mesh3d::init()
 
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex3d)*v.size(), v.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex3)*v.size(), v.data(), GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -68,10 +68,11 @@ void Mesh3d::tearDown()
 {
 }
 
-void Mesh3d::draw()
+void Mesh3d::draw(Material* mat)
 {
+    auto material = mat ? mat : this->material;
     auto s = scene->getShaderProgramManager();
-    auto program = s->getProgram(this->material->getShader(), getGeometryShader(), getVertexShader());
+    auto program = s->getProgram(material->getShader(), getGeometryShader(), getVertexShader());
     scene->setShaderProgram(program);
     program->use();
 
@@ -79,10 +80,11 @@ void Mesh3d::draw()
     glDrawElements(GL_TRIANGLES, nTriangles, GL_UNSIGNED_INT, 0);
 }
 
-void Mesh3d::updateUniforms()
+void Mesh3d::updateUniforms(Material* mat)
 {
+    auto material = mat ? mat : this->material;
     auto s = scene->getShaderProgramManager();
-    auto program = s->getProgram(this->material->getShader(), getGeometryShader(), getVertexShader());
+    auto program = s->getProgram(material->getShader(), getGeometryShader(), getVertexShader());
     scene->setShaderProgram(program);
 
     program->use();
@@ -94,7 +96,7 @@ void Mesh3d::updateUniforms()
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "projectionMatrix"), 1, GL_TRUE, (float*)perspM.m_val);
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "normalMatrix"), 1, GL_TRUE, (float*)getNormalMatrix(matrix).m_val);
 
-    this->material->updateUniforms(scene);
+    material->updateUniforms(scene);
 }
 
 Shader* Mesh3d::getGeometryShader() const

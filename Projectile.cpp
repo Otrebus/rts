@@ -44,7 +44,7 @@ Projectile::Projectile(Vector3 pos, Vector3 dir, Vector3 up, Entity* owner = nul
         };
 
         std::vector<int> triangles;
-        std::vector<Vertex3d> vertices;
+        std::vector<Vertex3> vertices;
 
         for(auto ci : cornerIndices)
         {
@@ -142,8 +142,8 @@ void Projectile::update(real dt)
     velocity += Vector3({ 0, 0, -gravity })*dt;
 }
 
-void Projectile::draw()
+void Projectile::draw(Material* mat)
 {
     projectileModel->updateUniforms();
-    projectileModel->draw();
+    projectileModel->draw(mat);
 }

@@ -4,7 +4,7 @@
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
 
-TerrainMesh::TerrainMesh(std::vector<MeshVertex3d> vertices, std::vector<int> triangles, Material* material)
+TerrainMesh::TerrainMesh(std::vector<MeshVertex3> vertices, std::vector<int> triangles, Material* material)
 {
     this->material = material;
     this->v = vertices;
@@ -27,18 +27,18 @@ void TerrainMesh::init()
 
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(MeshVertex3d) * v.size(), v.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(MeshVertex3) * v.size(), v.data(), GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(MeshVertex3d), (void*)offsetof(MeshVertex3d, pos));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(MeshVertex3), (void*)offsetof(MeshVertex3, pos));
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(MeshVertex3d), (void*)offsetof(MeshVertex3d, normal));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(MeshVertex3), (void*)offsetof(MeshVertex3, normal));
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex3d), (void*)offsetof(MeshVertex3d, tex));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex3), (void*)offsetof(MeshVertex3, tex));
     glEnableVertexAttribArray(2);
 
-    glVertexAttribPointer(3, 1, GL_INT, GL_FALSE, sizeof(MeshVertex3d), (void*)offsetof(MeshVertex3d, selected));
+    glVertexAttribPointer(3, 1, GL_INT, GL_FALSE, sizeof(MeshVertex3), (void*)offsetof(MeshVertex3, selected));
     glEnableVertexAttribArray(3);
 
     glGenBuffers(1, &EBO);
