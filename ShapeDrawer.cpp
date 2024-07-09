@@ -12,7 +12,7 @@ ShapeDrawer::ShapeDrawer()
 void ShapeDrawer::drawArrow(Vector3 pos, Vector3 dir)
 {
 	cylinderModel->setPosition(pos);
-	cylinderModel->setDirection(dir, (pos%Vector3(0.219, 0.182, -0.823)).normalized());
+	cylinderModel->setDirection(dir.normalized(), (dir%Vector3(0.219, 0.182, -0.823)).normalized());
 	cylinderModel->updateUniforms();
 	cylinderModel->draw();
 }
@@ -20,7 +20,7 @@ void ShapeDrawer::drawArrow(Vector3 pos, Vector3 dir)
 
 void ShapeDrawer::loadModels()
 {
-	auto model = createCylinderModel(1.0, 1.0, 10);
+	auto model = createCylinderModel(3.0, 1.0, 10);
 
 	cylinderModel = ModelManager::addModel("cylinder", model);
 	cylinderModel->setScene(scene);

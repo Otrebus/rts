@@ -23,7 +23,7 @@ std::pair<std::vector<Vertex3>, std::vector<int>> buildCylinder(real length, rea
 
 	for(int i = 0; i < N; i++)
 	{
-		auto v = y*std::cos(i*2*pi/N)*radius + z*std::sin(i*2*pi/N)*radius + y*length/2;
+		auto v = y*std::cos(i*2*pi/N)*radius + z*std::sin(i*2*pi/N)*radius + x*length/2;
 		points.push_back(v);
 	}
 
@@ -61,23 +61,23 @@ std::pair<std::vector<Vertex3>, std::vector<int>> buildCylinder(real length, rea
 
 	for(int i = 0; i < N; i++)
 	{
-		indices.push_back(i + 0);
-		indices.push_back(N+i + 0);
-		indices.push_back(i + 1);
+		indices.push_back(i);
+		indices.push_back((i+1)%N);
+		indices.push_back(N+i);
 
-		indices.push_back(N+i + 0);
-		indices.push_back(N+i + 1);
-		indices.push_back(i + 1);
+		indices.push_back(N+i);
+		indices.push_back((i+1)%N);
+		indices.push_back(N+(i+1)%N);
 	}
 
 	for(int i = 0; i < N; i++)
 	{
 		indices.push_back(2*N);
 		indices.push_back(2*N+i);
-		indices.push_back(2*N+i+1);
+		indices.push_back(2*N+(i+1)%N);
 
 		indices.push_back(3*N);
-		indices.push_back(2*N+i+1);
+		indices.push_back(3*N+(i+1)%N);
 		indices.push_back(3*N+i);
 	}
 
