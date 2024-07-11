@@ -18,5 +18,6 @@ public:
     static void setScene(Scene* scene);
 
     static Model3d* cylinderModel;
+    static Model3d* coneModel;
     static Scene* scene;
 };

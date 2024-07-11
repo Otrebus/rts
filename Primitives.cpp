@@ -120,14 +120,24 @@ std::pair<std::vector<Vertex3>, std::vector<int>> buildCone(real length, real ra
 		Vector3 v = points[i];
 		auto n_u = (a%v)%a;
 
-		Vertex3 U(u, n_u, { 0, 0 });
+		Vertex3 U(u, n_u.normalized(), { 0, 0 });
 		vertices.push_back(U);
 	}
 
 	for(int i = 0; i < N; i++)
 	{
-		auto u = points[N+i];
-		Vector3 n_u = { 0, points[N+i].y, points[N+i].z };
+		Vector3 a = points[i] - points[N];
+		Vector3 v = points[i];
+		auto n_u = (a%v)%a;
+
+		Vertex3 U( { length, 0, 0 }, n_u.normalized(), { 0, 0 });
+		vertices.push_back(U);
+	}
+
+	for(int i = 0; i < N; i++)
+	{
+		auto u = points[i];
+		Vector3 n_u = { -1, 0, 0 };
 		Vertex3 U(u, n_u, { 0, 0 });
 		vertices.push_back(U);
 	}
@@ -141,9 +151,9 @@ std::pair<std::vector<Vertex3>, std::vector<int>> buildCone(real length, real ra
 
 	for(int i = 0; i < N; i++)
 	{
-		indices.push_back(N);
-		indices.push_back(N+i);
-		indices.push_back(N+(i+1)%N);
+		indices.push_back(2*N);
+		indices.push_back(2*N+i);
+		indices.push_back(2*N+(i+1)%N);
 	}
 
 	return { vertices, indices };
