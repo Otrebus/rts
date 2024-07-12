@@ -171,3 +171,68 @@ Model3d* createConeModel(real length, real radius, int N)
 
 	return model;
 }
+
+void addSphereVertices(int a, int b, int c, real radius, std::vector<Vector3>& points, std::vector<int>& indices, int N)
+{
+	if(--N < 1)
+	{
+		indices.push_back(a);
+		indices.push_back(b);
+		indices.push_back(c);
+		return;
+	}
+
+	int d = points.size(), e = d+1, f = e+1;
+	points.push_back(((points[a]+points[b])/2).normalized()*radius);
+	points.push_back(((points[b]+points[c])/2).normalized()*radius);
+	points.push_back(((points[c]+points[a])/2).normalized()*radius);
+	addSphereVertices(e, b, d, radius, points, indices, N);
+	addSphereVertices(f, d, a, radius, points, indices, N);
+	addSphereVertices(e, f, c, radius, points, indices, N);
+	addSphereVertices(e, d, f, radius, points, indices, N);
+}
+
+std::pair<std::vector<Vertex3>, std::vector<int>> buildSphere(real radius, int N)
+{
+	auto a = Vector3(std::cos(0_deg)*std::cos(30_deg)/std::cos(60_deg), std::sin(0_deg)*std::cos(30_deg)/std::cos(60_deg), std::sqrt(1- std::cos(30_deg)/std::cos(60_deg)*std::cos(30_deg)/std::cos(60_deg)));
+	auto b = Vector3(std::cos(120_deg)*std::cos(30_deg)/std::cos(60_deg), std::sin(120_deg)*std::cos(30_deg)/std::cos(60_deg), std::sqrt(1- std::cos(30_deg)/std::cos(60_deg)*std::cos(30_deg)/std::cos(60_deg)));
+	auto c = Vector3(std::cos(240_deg)*std::cos(30_deg), std::sin(240_deg)*std::cos(30_deg), std::sin(30_deg));
+	auto d = Vector3(0, 0, -1);
+
+	std::cout << a.length() << b.length() << c.length() << d.length() << std::endl;
+
+	std::cout << (a-b).length() << std::endl;
+	std::cout << (b-c).length() << std::endl;
+	std::cout << (c-d).length() << std::endl;
+	std::cout << (d-a).length() << std::endl;
+	std::cout << (d-b).length() << std::endl;
+	std::cout << (a-c).length() << std::endl;
+
+	std::vector<Vector3> points = { a*radius, b*radius, c*radius, d*radius };
+	std::vector<int> indices;
+
+	addSphereVertices(0, 1, 2, radius, points, indices, N);
+	addSphereVertices(0, 2, 3, radius, points, indices, N);
+	addSphereVertices(3, 2, 1, radius, points, indices, N);
+	addSphereVertices(0, 3, 1, radius, points, indices, N);
+
+	std::vector<Vertex3> vertices;
+
+	for(auto& p : points)
+		vertices.push_back( { p, p.normalized(), { 0, 0 } });
+
+	return { vertices, indices };
+}
+
+Model3d* createSphereModel(real radius, int N)
+{
+    auto material = new LambertianMaterial({ 0, 0.8, 0.1 });
+
+	auto [vertices, triangles] = buildSphere(radius, N);
+
+	auto model = new Model3d();
+    Mesh3d* mesh = new Mesh3d(vertices, triangles, material);
+    model->addMesh(*mesh);
+
+	return model;
+}

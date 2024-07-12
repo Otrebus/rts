@@ -284,7 +284,8 @@ int main()
 
         avgFps = ((9*avgFps + 1/dt))/10;
         
-        ShapeDrawer::drawArrow(Vector3(1, 1, 20), Vector3(1, 1, 0));
+        //ShapeDrawer::drawArrow(Vector3(1, 1, 20), Vector3(1, 1, 0));
+        ShapeDrawer::drawArrow(Vector3(0, 0, 20), Vector3(1, 0, 0));
 
         drawText(realToString(avgFps, 3), { 0.80, 0.90 }, 0.03, { 0, 0.8, 0 });
         cameraControl.update(dt);

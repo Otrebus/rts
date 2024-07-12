@@ -15,10 +15,14 @@ void ShapeDrawer::drawArrow(Vector3 pos, Vector3 dir)
 	cylinderModel->setDirection(dir.normalized(), (dir%Vector3(0.219, 0.182, -0.823)).normalized());
 	cylinderModel->updateUniforms();
 	cylinderModel->draw();*/
-	coneModel->setPosition(pos);
+	/*coneModel->setPosition(pos);
 	coneModel->setDirection(dir.normalized(), (dir%Vector3(0.219, 0.182, -0.823)).normalized());
 	coneModel->updateUniforms();
-	coneModel->draw();
+	coneModel->draw();*/
+	sphereModel->setPosition(pos);
+	sphereModel->setDirection(dir.normalized(), Vector3(0, 0, 1));
+	sphereModel->updateUniforms();
+	sphereModel->draw();
 }
 
 
@@ -31,6 +35,10 @@ void ShapeDrawer::loadModels()
 	coneModel = ModelManager::addModel("cone", createConeModel(3.0, 1.0, 100));
 	coneModel->setScene(scene);
 	coneModel->init();
+
+	sphereModel = ModelManager::addModel("sphere", createSphereModel(10.0, 1));
+	sphereModel->setScene(scene);
+	sphereModel->init();
 }
 
 void ShapeDrawer::setScene(Scene* scene)
@@ -40,4 +48,5 @@ void ShapeDrawer::setScene(Scene* scene)
 
 Model3d* ShapeDrawer::cylinderModel = nullptr;
 Model3d* ShapeDrawer::coneModel = nullptr;
+Model3d* ShapeDrawer::sphereModel = nullptr;
 Scene* ShapeDrawer::scene = nullptr;

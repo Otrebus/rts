@@ -19,5 +19,6 @@ public:
 
     static Model3d* cylinderModel;
     static Model3d* coneModel;
+    static Model3d* sphereModel;
     static Scene* scene;
 };
