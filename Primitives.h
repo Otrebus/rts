@@ -4,3 +4,4 @@
 Model3d* createCylinderModel(real length, real radius, int N);
 Model3d* createConeModel(real length, real radius, int N);
 Model3d* createSphereModel(real radius, int N);
+Model3d* createBoxModel(real length, real width, real height);

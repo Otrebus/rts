@@ -194,19 +194,11 @@ void addSphereVertices(int a, int b, int c, real radius, std::vector<Vector3>& p
 
 std::pair<std::vector<Vertex3>, std::vector<int>> buildSphere(real radius, int N)
 {
-	auto a = Vector3(std::cos(0_deg)*std::cos(30_deg)/std::cos(60_deg), std::sin(0_deg)*std::cos(30_deg)/std::cos(60_deg), std::sqrt(1- std::cos(30_deg)/std::cos(60_deg)*std::cos(30_deg)/std::cos(60_deg)));
-	auto b = Vector3(std::cos(120_deg)*std::cos(30_deg)/std::cos(60_deg), std::sin(120_deg)*std::cos(30_deg)/std::cos(60_deg), std::sqrt(1- std::cos(30_deg)/std::cos(60_deg)*std::cos(30_deg)/std::cos(60_deg)));
-	auto c = Vector3(std::cos(240_deg)*std::cos(30_deg), std::sin(240_deg)*std::cos(30_deg), std::sin(30_deg));
+	auto u = 2*sqrt(2)/3, v = sqrt(2)/sqrt(3), w = sqrt(2)/3, t = 1/3.0;
+	auto a = Vector3(u, 0, t);
+	auto b = Vector3(-w, v, t);
+	auto c = Vector3(-w, -v, t);
 	auto d = Vector3(0, 0, -1);
-
-	std::cout << a.length() << b.length() << c.length() << d.length() << std::endl;
-
-	std::cout << (a-b).length() << std::endl;
-	std::cout << (b-c).length() << std::endl;
-	std::cout << (c-d).length() << std::endl;
-	std::cout << (d-a).length() << std::endl;
-	std::cout << (d-b).length() << std::endl;
-	std::cout << (a-c).length() << std::endl;
 
 	std::vector<Vector3> points = { a*radius, b*radius, c*radius, d*radius };
 	std::vector<int> indices;
@@ -229,6 +221,59 @@ Model3d* createSphereModel(real radius, int N)
     auto material = new LambertianMaterial({ 0, 0.8, 0.1 });
 
 	auto [vertices, triangles] = buildSphere(radius, N);
+
+	auto model = new Model3d();
+    Mesh3d* mesh = new Mesh3d(vertices, triangles, material);
+    model->addMesh(*mesh);
+
+	return model;
+}
+
+std::pair<std::vector<Vertex3>, std::vector<int>> buildBox(real length, real width, real height)
+{
+	real w = length, d = width, h = height;
+    std::vector<Vector3> c = {
+        { -w/2, -d/2, -h/2 }, // bottom-front-left
+        {  w/2, -d/2, -h/2 }, // bottom-front-right
+        {  w/2, -d/2,  h/2 }, // top-front-right
+        { -w/2, -d/2,  h/2 }, // top-front-left
+        { -w/2,  d/2, -h/2 }, // bottom-back-left
+        {  w/2,  d/2, -h/2 }, // bottom-back-right
+        {  w/2,  d/2,  h/2 }, // top-back-right
+        { -w/2,  d/2,  h/2 }  // top-back-left
+    };
+
+    std::vector<std::vector<int>> cornerIndices = {
+        { 0, 1, 2, 3 },
+        { 1, 5, 6, 2 },
+        { 4, 7, 6, 5 },
+        { 0, 3, 7, 4 },
+        { 2, 6, 7, 3 },
+        { 0, 4, 5, 1 }
+    };
+
+    std::vector<int> triangles;
+    std::vector<Vertex3> vertices;
+
+    for(auto ci : cornerIndices)
+    {
+        int t1[3] = { 0, 1, 2 }, t2[3] = { 0, 2, 3 };
+
+        int j = vertices.size();
+        for(int i = 0; i < 4; i++)
+            vertices.push_back({ c[ci[i]], calcNormal(c[ci[0]], c[ci[1]], c[ci[2]]), { 0, 0 } });
+        triangles.insert(triangles.end(), { j, j+1, j+2 });
+        triangles.insert(triangles.end(), { j, j+2, j+3 });
+    }
+
+	return { vertices, triangles };
+}
+
+Model3d* createBoxModel(real length, real width, real height)
+{
+    auto material = new LambertianMaterial({ 0, 0.8, 0.1 });
+
+	auto [vertices, triangles] = buildBox(length, width, height);
 
 	auto model = new Model3d();
     Mesh3d* mesh = new Mesh3d(vertices, triangles, material);

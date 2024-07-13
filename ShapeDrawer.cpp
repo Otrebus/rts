@@ -36,7 +36,7 @@ void ShapeDrawer::loadModels()
 	coneModel->setScene(scene);
 	coneModel->init();
 
-	sphereModel = ModelManager::addModel("sphere", createSphereModel(10.0, 1));
+	sphereModel = ModelManager::addModel("sphere", createSphereModel(10.0, 5));
 	sphereModel->setScene(scene);
 	sphereModel->init();
 }
