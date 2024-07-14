@@ -28,7 +28,8 @@
 + "TODO: these vectors before normalization can be 0"
 + "TODO: is b in the right direction?"
 + "Select all"-doubleclick
-- When clicking move on inadmissible terrain, place movement marker somewhere closer
++ When clicking move on inadmissible terrain, place movement marker somewhere closer
+- Rename depth to width throughout in terms of dimensions
 + Make camera toggle and not reset and have a specific reset button
 - Check if checking for release input checks that release can be both startStart and stateEnd, check
 + Path straightening doesn't seem perfect

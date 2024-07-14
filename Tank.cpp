@@ -1,4 +1,3 @@
-#include "BoundingBoxModel.h"
 #include "Entity.h"
 #include "GeometryUtils.h"
 #include "Math.h"
@@ -100,7 +99,6 @@ void Tank::loadModels()
 
     auto height = h*ratio;
     auto depth = d*ratio;
-    tankBoundingBoxModel = new BoundingBoxModel(width, depth, height);
     tankBoundingBox = BoundingBox(Vector3(-width/2, -depth/2, -height/2), Vector3(width/2, depth/2, height/2));
 
     body->init();
@@ -130,10 +128,6 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, d
     lastFired = -inf;
 
     boundingBox = tankBoundingBox;
-    boundingBoxModel = tankBoundingBoxModel;
-
-    boundingBoxModel->setPosition(pos);
-    boundingBoxModel->setDirection(dir, up);
 
     selectionMarkerMesh = new SelectionMarkerMesh(this);
 
@@ -181,7 +175,6 @@ void Tank::init(Scene* scene)
     turret->setScene(scene);
     gun->setScene(scene);
     destinationLine.init(scene);
-    boundingBoxModel->setScene(scene);
     //destinationLine.init(scene);
     destinationLine.setColor(Vector3(0.2, 0.7, 0.1));
     destinationLine.setInFront(true);
@@ -200,7 +193,6 @@ void Tank::updateUniforms()
     body->updateUniforms();
     turret->updateUniforms();
     gun->updateUniforms();
-    boundingBoxModel->updateUniforms();
     selectionMarkerMesh->updateUniforms();
 }
 
@@ -271,11 +263,12 @@ void Tank::draw(Material* mat)
     {
         if(Unit* enemyTarget = dynamic_cast<Unit*>(scene->getEntity(enemyTargetId)))
         {
-            auto bb = BoundingBoxModel(0.5, 0.5, 0.5);
+            // TODO: draw shape
+            /*auto bb = BoundingBoxModel(0.5, 0.5, 0.5);
             bb.setPosition(enemyTarget->getPosition() + Vector3(0, 0, 1));
             bb.setScene(scene);
             bb.init();
-            bb.draw();
+            bb.draw();*/
         }
     }
 }
@@ -302,7 +295,6 @@ void Tank::setPosition(Vector3 pos)
 {
     this->pos = pos;
     body->setPosition(pos);
-    boundingBoxModel->setPosition(pos);
 }
 
 
@@ -311,7 +303,6 @@ void Tank::setDirection(Vector3 dir, Vector3 up)
     this->dir = dir;
     this->up = up;
     body->setDirection(dir, up);
-    boundingBoxModel->setDirection(dir, up);
 }
 
 
@@ -655,5 +646,4 @@ bool Tank::canTurretAbsoluteTarget(Vector3 target)
 
 
 real Tank::gunLength = 1.0f;
-Model3d* Tank::tankBoundingBoxModel = nullptr;
 BoundingBox Tank::tankBoundingBox = BoundingBox();

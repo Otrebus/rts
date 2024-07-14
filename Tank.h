@@ -8,7 +8,6 @@
 
 class Model3d;
 class Scene;
-class BoundingBoxModel;
 class Line3d;
 
 

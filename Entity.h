@@ -60,7 +60,7 @@ public:
     int id;
 
     // TODO: are these used? width seems to be zero
-    real width, height, depth;
+    //real width, height, depth;
 
     Vector2 geoPos, geoDir, geoVelocity;
 

@@ -1,5 +1,4 @@
 #include "Entity.h"
-#include "BoundingBoxModel.h"
 #include "Entity.h"
 #include "GeometryUtils.h"
 #include "Math.h"
@@ -17,7 +16,7 @@
 #include "TankWreck.h"
 
 
-TankWreck::TankWreck(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Entity(pos, dir, up, width, height, depth)
+TankWreck::TankWreck(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Entity(pos, dir, up)
 {
     body = ModelManager::instantiateModel("wreckbody");
     turret = ModelManager::instantiateModel("wreckturret");

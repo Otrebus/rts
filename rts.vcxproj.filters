@@ -145,9 +145,6 @@
     <ClCompile Include="Unit.cpp">
       <Filter>Source files\Entities\Entities</Filter>
     </ClCompile>
-    <ClCompile Include="BoundingBoxModel.cpp">
-      <Filter>Source files\Entities\Models</Filter>
-    </ClCompile>
     <ClCompile Include="BoundingBox.cpp">
       <Filter>Source files\Math</Filter>
     </ClCompile>
@@ -305,9 +302,6 @@
     </ClInclude>
     <ClInclude Include="Unit.h">
       <Filter>Source files\Entities\Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="BoundingBoxModel.h">
-      <Filter>Source files\Entities\Models</Filter>
     </ClInclude>
     <ClInclude Include="BoundingBox.h">
       <Filter>Source files\Math</Filter>

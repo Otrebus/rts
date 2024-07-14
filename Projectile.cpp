@@ -20,8 +20,8 @@ Projectile::Projectile(Vector3 pos, Vector3 dir, Vector3 up, Entity* owner = nul
 {
     if(!ModelManager::hasModel("projectile"))
     {
-        depth = height = 0.03;
-        width = 0.10;
+        real depth = 0.03, height = 0.03;
+        real width = 0.10;
         real w = width, d = depth, h = height;
         std::vector<Vector3> c = {
             { -w/2, -d/2, -h/2 }, // bottom-front-left

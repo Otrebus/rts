@@ -1,5 +1,4 @@
 #define NOMINMAX
-#include "BoundingBoxModel.h"
 #include "Entity.h"
 #include "LambertianMaterial.h"
 #include "Line.h"
