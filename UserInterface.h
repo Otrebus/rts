@@ -54,7 +54,7 @@ public:
 
     bool selectingAdditional;
     bool intersecting;
-    Unit* movingUnit;
+    int movingUnit;
 
     std::vector<Vector3> drawTarget;
 

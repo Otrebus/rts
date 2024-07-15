@@ -10,28 +10,24 @@
 #include "Ray.h"
 #include "SelectionMarkerMesh.h"
 #include "Terrain.h"
-#include "Vertex3d.h"
-#include <array>
-#include <vector>
-#include "TankWreck.h"
 
 
 Projectile::Projectile(Vector3 pos, Vector3 dir, Vector3 up, Entity* owner = nullptr) : Entity(pos, dir, up), owner(owner)
 {
     if(!ModelManager::hasModel("projectile"))
     {
-        real depth = 0.03, height = 0.03;
-        real width = 0.10;
-        real w = width, d = depth, h = height;
+        real width = 0.03, height = 0.03;
+        real length = 0.10;
+        real l = length, w = width, h = height;
         std::vector<Vector3> c = {
-            { -w/2, -d/2, -h/2 }, // bottom-front-left
-            {  w/2, -d/2, -h/2 }, // bottom-front-right
-            {  w/2, -d/2,  h/2 }, // top-front-right
-            { -w/2, -d/2,  h/2 }, // top-front-left
-            { -w/2,  d/2, -h/2 }, // bottom-back-left
-            {  w/2,  d/2, -h/2 }, // bottom-back-right
-            {  w/2,  d/2,  h/2 }, // top-back-right
-            { -w/2,  d/2,  h/2 }  // top-back-left
+            { -l/2, -w/2, -h/2 }, // bottom-front-left
+            {  l/2, -w/2, -h/2 }, // bottom-front-right
+            {  l/2, -w/2,  h/2 }, // top-front-right
+            { -l/2, -w/2,  h/2 }, // top-front-left
+            { -l/2,  w/2, -h/2 }, // bottom-back-left
+            {  l/2,  w/2, -h/2 }, // bottom-back-right
+            {  l/2,  w/2,  h/2 }, // top-back-right
+            { -l/2,  w/2,  h/2 }  // top-back-left
         };
 
         std::vector<std::vector<int>> cornerIndices = {

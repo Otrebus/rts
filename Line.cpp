@@ -21,11 +21,9 @@ Line::Line(const std::vector<Vector3>& vertices)
     }
 }
 
-
 Line3d::Line3d()
 {
 }
-
 
 Line3d::~Line3d()
 {

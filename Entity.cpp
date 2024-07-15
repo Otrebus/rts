@@ -14,7 +14,7 @@
 #include <vector>
 
 
-Entity::Entity(Vector3 pos, Vector3 dir, Vector3 up, real height, real width, real depth) : pos(pos), dir(dir), up(up), velocity({ 0, 0, 0 })
+Entity::Entity(Vector3 pos, Vector3 dir, Vector3 up) : pos(pos), dir(dir), up(up), velocity({ 0, 0, 0 })
 {
 }
 
@@ -85,13 +85,13 @@ void Entity::plant(const Terrain& terrain)
     auto z = Vector3(0, 0, 1).normalized();
 
     auto height = (boundingBox.c2.z-boundingBox.c1.z)/2;
-    auto width = (boundingBox.c2.x-boundingBox.c1.x)/2;
-    auto depth = (boundingBox.c2.y-boundingBox.c1.y)/2;
+    auto length = (boundingBox.c2.x-boundingBox.c1.x)/2;
+    auto width = (boundingBox.c2.y-boundingBox.c1.y)/2;
 
-    auto a = geoPos.to3() + x*width + y*depth;
-    auto b = geoPos.to3() - x*width + y*depth;
-    auto c = geoPos.to3() - x*width - y*depth;
-    auto d = geoPos.to3() + x*width - y*depth;
+    auto a = geoPos.to3() + x*length + y*width;
+    auto b = geoPos.to3() - x*length + y*width;
+    auto c = geoPos.to3() - x*length - y*width;
+    auto d = geoPos.to3() + x*length - y*width;
 
     auto ah = terrain.getElevation(a.x, a.y);
     auto bh = terrain.getElevation(b.x, b.y);

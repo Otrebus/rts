@@ -343,12 +343,12 @@ void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
 
     auto time = glfwGetTime();
 
-    if(movingUnit)
+    if(auto pMovingUnit = scene->getEntity(movingUnit); pMovingUnit)
     {
         auto [x, y] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
 
         auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(x, y));
-        movingUnit->setGeoPosition(pos.to2());
+        pMovingUnit->setGeoPosition(pos.to2());
     }
 
     if(cameraControl->getMode() == Freelook)
@@ -364,9 +364,9 @@ void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
     if(input.stateStart == InputType::MousePress && input.key == GLFW_MOUSE_BUTTON_1 && inputQueue.isKeyHeld(GLFW_KEY_LEFT_CONTROL))
     {
         auto [x, y] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
-        auto e = getUnit(scene->getCamera()->getViewRay(x, y), units);
+        auto e = dynamic_cast<Entity*>(getUnit(scene->getCamera()->getViewRay(x, y), units));
         if(e)
-            movingUnit = e;
+            movingUnit = e->getId();
     }
 
     if(input.stateStart == InputType::MousePress && input.key == GLFW_MOUSE_BUTTON_1 && !inputQueue.isKeyHeld(GLFW_KEY_LEFT_CONTROL))
@@ -413,7 +413,7 @@ void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
         selectState = NotSelecting;
         setCursor(GLFW_ARROW_CURSOR);
 
-        movingUnit = nullptr;
+        movingUnit = 0;
     }
     if(input.stateStart == InputType::MousePosition)
     {

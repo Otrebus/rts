@@ -21,7 +21,7 @@ class Material;
 class Entity
 {
 public:
-    Entity(Vector3 pos, Vector3 dir, Vector3 up, real width = 0.3, real height = 0.3, real depth = 0.3);
+    Entity(Vector3 pos, Vector3 dir, Vector3 up);
     virtual ~Entity();
 
     void drawBoundingBox();

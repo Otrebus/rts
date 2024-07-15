@@ -134,9 +134,9 @@ int main()
         }
     }
 
-    for(int y = 0; y < 2; y++)
+    for(int y = 0; y < 1; y++)
     {
-        for(int x = 0; x < 2; x++)
+        for(int x = 0; x < 1; x++)
         {
             auto enemy = new Tank({ 170.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
             enemy->setEnemy(true);

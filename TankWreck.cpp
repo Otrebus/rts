@@ -65,7 +65,7 @@ void TankWreck::loadModels()
     ModelManager::addModel("wreckturret", turret);
     ModelManager::addModel("wreckbarrel", gun);
 
-    real width = 1;
+    real length = 1;
 
     BoundingBox bb;
 
@@ -91,7 +91,7 @@ void TankWreck::loadModels()
     auto w = (bb.c2.x - bb.c1.x);
     auto d = (bb.c2.y - bb.c1.y);
     auto h = (bb.c2.z - bb.c1.z);
-    auto ratio = width/w;
+    auto ratio = length/w;
 
     for(auto model : { body, turret, gun })
     {
@@ -113,7 +113,7 @@ void TankWreck::loadModels()
             for(auto& v : ((Mesh3d*)mesh)->v)
             {
                 v.pos -= Vector3((bb.c2.x + bb.c1.x)/2, (bb.c2.y + bb.c1.y)/2, (bb.c2.z + bb.c1.z)/2);
-                v.pos *= width/w;
+                v.pos *= length/w;
             }
         }
     }
@@ -135,8 +135,8 @@ void TankWreck::loadModels()
     gunLength = gunMaxX - gunMinX;
 
     auto height = h*ratio;
-    auto depth = d*ratio;
-    tankWreckBoundingBox = BoundingBox(Vector3(-width/2, -depth/2, -height/2), Vector3(width/2, depth/2, height/2));
+    auto width = d*ratio;
+    tankWreckBoundingBox = BoundingBox(Vector3(-length/2, -width/2, -height/2), Vector3(length/2, width/2, height/2));
 
     body->init();
     gun->init();
