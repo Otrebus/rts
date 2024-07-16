@@ -427,7 +427,6 @@ void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
     }
     else if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_2)
     {
-        std::cout << "drawtarget size is " << drawTarget.size() << std::endl;
         if(drawTarget.size() < 3)
         {
             bool found = false;

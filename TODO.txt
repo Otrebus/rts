@@ -40,7 +40,7 @@
 - Make scene singleton
 - Setting terrainMesh to non-pointer (living in Terrain) exposes bug in mesh memory management
 - Attack movement type
-- MovingUnit (ctrl-click) crashes if unit is destroyed
++ MovingUnit (ctrl-click) crashes if unit is destroyed
 * Shooting:
   + Target direction of gun should be relative
   + Set absolute gun direction

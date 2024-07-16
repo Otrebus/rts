@@ -53,9 +53,7 @@ private:
 
     TerrainMesh* terrainMesh;
 
-    TerrainMesh* createFlatMesh(std::string fileName);
-    TerrainMesh* createMesh(std::string fileName);
-    TerrainMesh* createTexturedMesh(std::string fileName);
+    TerrainMesh* createMesh(std::string fileName, bool textured);
 
     bool isVisible(Vector2 start, Vector2 end) const;
 

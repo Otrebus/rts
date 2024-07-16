@@ -17,11 +17,6 @@ void Terrain::calcMinMax()
     min_R = new real[width];
     min_L = new real[width];
 
-    /*std::fill(max_R, max_R+width, -inf);
-    std::fill(max_L, max_L+width, -inf);
-    std::fill(min_R, min_R+width, inf);
-    std::fill(min_L, min_L+width, inf);*/
-
     for(int x = width-1; x >= 0; x--)
     {
         real max = x < width-1 ? max_R[x+1] : -inf;
@@ -55,7 +50,7 @@ void Terrain::calcMinMax()
     }
 }
 
-TerrainMesh* Terrain::createMesh(std::string fileName)
+TerrainMesh* Terrain::createMesh(std::string fileName, bool textured = false)
 {
     auto [colors, width, height] = readBMP(fileName, false);
     std::vector<MeshVertex3> vertices(width*height);
@@ -110,163 +105,11 @@ TerrainMesh* Terrain::createMesh(std::string fileName)
 
     if(terrainMesh)
         delete terrainMesh;
-    Material* mat = new TerrainMaterial();
+    Material* mat = textured ? (Material*) new TexturedTerrainMaterial() : new TerrainMaterial();
 
     calcMinMax();
 
     return terrainMesh = new TerrainMesh(vertices, triangleIndices, mat);
-}
-
-TerrainMesh* Terrain::createTexturedMesh(std::string fileName)
-{
-    auto [colors, width, height] = readBMP(fileName, false);
-    std::vector<MeshVertex3> vertices(width*height);
-    points.clear();
-    triangleIndices.clear();
-
-    auto H = [&colors, &width, &height](int x, int y)
-    {
-        return colors[width*3*(height-y-1)+x*3]/255.0*width/15;
-    };
-
-    for(int y = 0; y < height; y++)
-    {
-        for(int x = 0; x < width; x++)
-        {
-            real X = x;
-            real Y = y;
-
-            auto fx = x == 0, lx = x == width-1;
-            auto fy = y == 0, ly = y == height-1;
-
-            auto dx = ((!lx ? H(x+1, y) : H(x, y)) - (!fx ? H(x-1, y) : H(x, y)))/((!fx + !lx));
-            auto dy = ((!ly ? H(x, y+1) : H(x, y)) - (!fy ? H(x, y-1) : H(x, y)))/((!fy + !ly));
-            real l = std::sqrt(dx*dx+dy*dy+1);
-            points.push_back(Vector3(X, Y, H(x, y) + 3.0));
-            vertices[width*y+x] = MeshVertex3(X, Y, H(x, y) + 3.0, -dx/l, -dy/l, 1.0/l, x, y);
-            vertices[width*y+x].selected = 0;
-        }
-    }
-    for(int y = 0; y < height-1; y++)
-    {
-        for(int x = 0; x < width-1; x++)
-        {
-            int a = width*y + x;
-            int b = width*y + x+1;
-            int c = width*(y+1) + x+1;
-            int d = width*(y+1) + x;
-            triangleIndices.insert(triangleIndices.end(), { a, c, d, a, b, c });
-            if(!isTriangleAdmissible(points[a], points[b], points[c]))
-                vertices[a].selected = vertices[b].selected = vertices[c].selected = 1;
-            if(!isTriangleAdmissible(points[a], points[c], points[d]))
-                vertices[a].selected = vertices[c].selected = vertices[d].selected = 1;
-        }
-    }
-
-    this->width = width;
-    this->height = height;
-
-    if(!admissiblePoints)
-        admissiblePoints = new bool[width*height];
-    std::fill(admissiblePoints, admissiblePoints + width*height, true);
-    calcAdmissiblePoints();
-
-    if(terrainMesh)
-        delete terrainMesh;
-    Material* mat = new TexturedTerrainMaterial();
-
-    calcMinMax();
-
-    return terrainMesh = new TerrainMesh(vertices, triangleIndices, mat);
-}
-
-TerrainMesh* Terrain::createFlatMesh(std::string fileName)
-{
-    auto [colors, width, height] = readBMP(fileName, false);
-    std::vector<Vector3> vectors(width*height);
-    points.clear();
-    triangleIndices.clear();
-    std::vector<int> triangleIndices2;
-
-    const int nVertices = width*height;
-    std::vector<MeshVertex3> vertices(nVertices);
-
-    auto H = [&colors, &width, &height](int x, int y)
-    {
-        return colors[width*3*(height-y-1)+x*3]/255.0*width/15;
-    };
-
-    for(int y = 0; y < height; y++)
-    {
-        for(int x = 0; x < width; x++)
-        {
-            real X = x;
-            real Y = y;
-
-            auto fx = x == 0, lx = x == width-1;
-            auto fy = y == 0, ly = y == height-1;
-
-            auto dx = ((!lx ? H(x+1, y) : H(x, y)) - (!fx ? H(x-1, y) : H(x, y)))/((!fx + !lx));
-            auto dy = ((!ly ? H(x, y+1) : H(x, y)) - (!fy ? H(x, y-1) : H(x, y)))/((!fy + !ly));
-            real l = std::sqrt(dx*dx+dy*dy+1);
-            points.push_back(Vector3(X, Y, H(x, y) + 3.0));
-            vertices[width*y+x] = MeshVertex3(X, Y, H(x, y) + 3.0, -dx/l, -dy/l, 1.0/l, x, y);
-            vertices[width*y+x].selected = 0;
-        }
-    }
-
-    std::vector<MeshVertex3> vertices2;
-    int j = 0, k = 0;
-    for(int y = 0; y < height-1; y++)
-    {
-        for(int x = 0; x < width-1; x++)
-        {
-            int a = width*y + x;
-            int b = width*y + x+1;
-            int c = width*(y+1) + x+1;
-            int d = width*(y+1) + x;
-
-            auto N1 = (points[b]-points[a])%(points[c]-points[a]);
-            N1.normalize();
-            auto N2 = (points[c]-points[a])%(points[d]-points[a]);
-            N2.normalize();
-
-            for(auto i :{ a, b, c })
-            {
-                triangleIndices2.push_back(vertices2.size());
-                triangleIndices.push_back(i);
-                vertices2.push_back(vertices[i]);
-                vertices2.back().normal = N1;
-                if(!isTriangleAdmissible(points[a], points[b], points[c]))
-                    vertices2.back().selected = 1;
-            }
-            for(auto i :{ a, c, d })
-            {
-                triangleIndices2.push_back(vertices2.size());
-                triangleIndices.push_back(i);
-                vertices2.push_back(vertices[i]);
-                vertices2.back().normal = N2;
-                if(!isTriangleAdmissible(points[a], points[c], points[d]))
-                    vertices2.back().selected = 1;
-            }
-        }
-    }
-
-    this->width = width;
-    this->height = height;
-
-    if(!admissiblePoints)
-        admissiblePoints = new bool[width*height*2];
-    std::fill(admissiblePoints, admissiblePoints + width*height*2, true);
-    calcAdmissiblePoints();
-
-    if(terrainMesh)
-        delete terrainMesh;
-    Material* mat = new TerrainMaterial();
-    
-    calcMinMax();
-
-    return terrainMesh = new TerrainMesh(vertices2, triangleIndices2, mat);
 }
 
 void Terrain::calcAdmissiblePoints()
@@ -406,11 +249,9 @@ Terrain::Terrain(const std::string& fileName, Scene* scene) : fileName(fileName)
 void Terrain::init()
 {
     if(drawMode == Normal)
-        createTexturedMesh(fileName);
+        createMesh(fileName, true);
     else
-        createMesh(fileName);
-    /*if(!ModelManager::hasModel("terrain");
-        terrainModel = ModelManager::addModel("terrain", *terrainMesh);*/
+        createMesh(fileName, false);
     terrainModel = new Model3d(*terrainMesh);
     terrainModel->init();
     terrainModel->setScene(scene);
