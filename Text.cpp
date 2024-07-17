@@ -6,8 +6,6 @@
 #include "ShaderProgram.h"
 #include "Text.h"
 #include "Vector2.h"
-#include <GL/gl3w.h>
-#include <vector>
 
 GLuint VAO, VBO, EBO;
 bool init;

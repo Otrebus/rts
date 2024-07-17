@@ -1,7 +1,4 @@
-#include "Scene.h"
 #include "SelectionDecalMaterial.h"
-#include "Shader.h"
-#include "Vector3.h"
 
 
 SelectionDecalMaterial::SelectionDecalMaterial(Vector3 Kd) : Kd(Kd)

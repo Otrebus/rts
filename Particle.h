@@ -1,7 +1,5 @@
 #pragma once
 
-#define NOMINMAX
-
 #include "Matrix4.h"
 #include "Vector3.h"
 #include <iostream>
@@ -10,8 +8,6 @@
 class Terrain;
 class Input;
 class Ray;
-
-
 
 class Random
 {

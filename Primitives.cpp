@@ -1,6 +1,4 @@
 #include "Primitives.h"
-#include <cmath>
-#include <vector>
 #include "Vertex3d.h"
 #include "Vector3.h"
 #include "Math.h"

@@ -1,15 +1,6 @@
 #include "Entity.h"
-#include "Math.h"
-#include "Matrix4.h"
-#include "Unit.h"
-#include "Utils.h"
-#include "Vector3.h"
-#include <algorithm>
-#include <cmath>
 #include <fstream>
 #include <iomanip>
-#include <tuple>
-#include <vector>
 
 
 std::tuple<int, int, int> vectorToRgb(const Vector3& color)

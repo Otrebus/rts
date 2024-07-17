@@ -1,17 +1,7 @@
-#define NOMINMAX
-#include "Entity.h"
-#include "LambertianMaterial.h"
-#include "Line.h"
-#include "LineMaterial.h"
-#include "LineMesh3d.h"
-#include "Mesh3d.h"
-#include "Model3d.h"
-#include "Ray.h"
 #include "SelectionDecalMaterial.h"
 #include "SelectionMarkerMesh.h"
-#include "Terrain.h"
-#include "Vertex3d.h"
 #include <array>
+#include <cassert>
 #include <vector>
 
 Unit::Unit(Vector3 pos, Vector3 dir, Vector3 up) : Entity(pos, dir, up) {}

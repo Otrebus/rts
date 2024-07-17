@@ -1,22 +1,6 @@
 #pragma once
 
-#define NOMINMAX
-#include "BoundingBox.h"
 #include "Entity.h"
-#include "LineMesh3d.h"
-#include "Mesh3d.h"
-#include "Scene.h"
-#include "ShaderProgram.h"
-#include "Vector3.h"
-#include <GL/gl3w.h>
-#include <GLFW/glfw3.h>
-#include <vector>
-
-class SelectionMarkerMesh;
-class BoundingBoxModel;
-class Model3d;
-class Scene;
-class PathFindingRequest;
 
 class Projectile : public Entity
 {

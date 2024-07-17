@@ -1,11 +1,4 @@
-#include "Camera.h"
-#include "LambertianMaterial.h"
-#include "Model3d.h"
 #include "Parser.h"
-#include "Utils.h"
-#include "Vector2.h"
-#include "Vector3.h"
-#include <vector>
 
 
 bool ModelManager::hasModel(const std::string& identifier)

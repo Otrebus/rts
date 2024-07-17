@@ -1,12 +1,8 @@
 #pragma once
 
 #include "Scene.h"
-#include "ShaderProgram.h"
 #include "Vector2.h"
 #include "Vector3.h"
-#include <GL/gl3w.h>
-#include <GLFW/glfw3.h>
-#include <vector>
 
 
 class Line

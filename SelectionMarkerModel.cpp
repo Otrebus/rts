@@ -1,8 +1,4 @@
 #include "LambertianMaterial.h"
-#include "LineMaterial.h"
-#include "LineMesh3d.h"
-#include "Math.h"
-#include "Scene.h"
 #include "SelectionDecalMaterial.h"
 #include "SelectionMarkerModel.h"
 #include "Tank.h"

@@ -3,19 +3,10 @@
 #include "LambertianMaterial.h"
 #include "Logger.h"
 #include "Model3d.h"
-#include "Utils.h"
 #include "Vector2.h"
 #include "Vector3.h"
 #include <charconv>
 #include <fstream>
-#include <map>
-#include <set>
-#include <stack>
-#include <string>
-#include <tuple>
-#include <tuple>
-#include <unordered_map>
-#include <vector>
 
 class Material;
 class TriangleMesh;

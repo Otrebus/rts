@@ -2,7 +2,6 @@
 #define NOMINMAX
 #include "Shader.h"
 #include "ShaderProgram.h"
-#include "ShaderProgramManager.h"
 #include <unordered_map>
 
 // Shamelessly copied from https://stackoverflow.com/questions/7110301/generic-hash-for-tuples-in-unordered-map-unordered-set

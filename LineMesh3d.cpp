@@ -1,9 +1,4 @@
 #include "LineMesh3d.h"
-#include "Math.h"
-#include "Matrix4.h"
-#include "Vector3.h"
-#include <GL/gl3w.h>
-#include <GLFW/glfw3.h>
 
 LineMesh3d::LineMesh3d()
 {

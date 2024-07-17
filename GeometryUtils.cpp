@@ -1,7 +1,7 @@
 #include "GeometryUtils.h"
 #include "Ray.h"
 #include "Unit.h"
-#include "Utils.h"
+#include <cassert>
 
 
 real intersectRayCircle(Vector2 pos, Vector2 dir, Vector2 c, real radius)

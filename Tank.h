@@ -6,11 +6,6 @@
 #include "Unit.h"
 
 
-class Model3d;
-class Scene;
-class Line3d;
-
-
 class Tank : public Unit
 {
 public:
@@ -102,7 +97,6 @@ public:
     const real gunRecoilRecoveryRate = 0.5f;
 
     Line3d destinationLine;
-    //Line3d enemyLine;
 
 
     static Model3d* tankBoundingBoxModel;

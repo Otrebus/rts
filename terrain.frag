@@ -42,7 +42,7 @@ void main()
     float col = min(line, 1.0);
     FragColor = FragColor - vec4(vec3(col), 0)*0.1;
     if(flatShaded && selected > (1-1e-6))
-        FragColor = vec4(0.8, 0, 0, 1);
+        FragColor = vec4(0.8, 0, 0, 1)*lambertian;
 
     for(int i = 0; i < nLights; i++)
     {

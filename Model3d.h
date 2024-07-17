@@ -1,12 +1,7 @@
 #pragma once
-#include "Camera.h"
-#include "Material.h"
 #include "Matrix4.h"
 #include "Mesh.h"
 #include "Mesh3d.h"
-#include "ShaderProgram.h"
-#include "Vector2.h"
-#include "Vector3.h"
 #include <map>
 
 

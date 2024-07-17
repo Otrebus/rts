@@ -1,8 +1,5 @@
 #include "Math.h"
-#include "Matrix4.h"
 #include "Mesh3d.h"
-#include <GL/gl3w.h>
-#include <GLFW/glfw3.h>
 
 Mesh3d::Mesh3d()
 {

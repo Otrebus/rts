@@ -1,7 +1,5 @@
-#include "InputManager.h"
 #include "Particle.h"
-#include "Ray.h"
-#include <random>
+#include "Math.h"
 
 
 Particle::Particle(const Vector3& pos, const Vector3& color) : pos(pos), color(color), time(0)

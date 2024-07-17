@@ -1,5 +1,3 @@
-#include "Scene.h"
-#include "Shader.h"
 #include "TerrainMaterial.h"
 #include "Vector3.h"
 

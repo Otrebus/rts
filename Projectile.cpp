@@ -1,15 +1,8 @@
-#define NOMINMAX
-#include "Entity.h"
-#include "Line.h"
-#include "LineMaterial.h"
-#include "LineMesh3d.h"
-#include "Mesh3d.h"
-#include "Model3d.h"
 #include "Projectile.h"
 #include "ProjectileMaterial.h"
 #include "Ray.h"
-#include "SelectionMarkerMesh.h"
 #include "Terrain.h"
+#include "Unit.h"
 
 
 Projectile::Projectile(Vector3 pos, Vector3 dir, Vector3 up, Entity* owner = nullptr) : Entity(pos, dir, up), owner(owner)

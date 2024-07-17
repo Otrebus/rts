@@ -1,8 +1,4 @@
 #include "ProjectileMaterial.h"
-#include "Scene.h"
-#include "Shader.h"
-#include "Vector3.h"
-
 
 ProjectileMaterial::ProjectileMaterial(Vector3 Kd) : Kd(Kd)
 {
@@ -10,11 +6,9 @@ ProjectileMaterial::ProjectileMaterial(Vector3 Kd) : Kd(Kd)
         fragmentShader = new Shader("projectileMaterial.frag", GL_FRAGMENT_SHADER);
 }
 
-
 ProjectileMaterial::~ProjectileMaterial()
 {
 }
-
 
 Shader* ProjectileMaterial::getShader()
 {

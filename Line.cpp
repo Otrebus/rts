@@ -1,6 +1,5 @@
 #include "Line.h"
 #include "Math.h"
-#include "Shader.h"
 
 
 Line::Line() : VAO(0), VBO(0)
