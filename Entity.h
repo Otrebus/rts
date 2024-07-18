@@ -1,6 +1,5 @@
 #pragma once
 
-#define NOMINMAX
 #include "BoundingBox.h"
 #include "Utils.h"
 #include "Vector2.h"

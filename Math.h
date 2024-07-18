@@ -2,7 +2,6 @@
 
 #include "Utils.h"
 #include <cmath>
-#include <tuple>
 
 class Vector3;
 class Ray;

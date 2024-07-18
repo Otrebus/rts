@@ -1,6 +1,7 @@
 #include "BoundingBox.h"
 #include "Ray.h"
 #include "Utils.h"
+#include "Vector3.h"
 
 BoundingBox::BoundingBox(const Vector3& c1, const Vector3& c2) : c1(c1), c2(c2)
 {

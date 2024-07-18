@@ -1,5 +1,4 @@
 #pragma once
-#define NOMINMAX
 #include "Shader.h"
 #include "ShaderProgram.h"
 #include <unordered_map>

@@ -1,14 +1,10 @@
 #pragma once
 
-#define NOMINMAX
-#include "Line.h"
 #include "Ray.h"
-#include "Vector2.h"
 
 class Input;
 class Scene;
 class Entity;
-class Ray;
 class CameraControl;
 class Unit;
 

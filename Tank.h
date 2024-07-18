@@ -1,6 +1,5 @@
 #pragma once
 
-#define NOMINMAX
 #include "Line.h"
 #include "Math.h"
 #include "Unit.h"

@@ -1,10 +1,7 @@
-#define NOMINMAX
 #include "Camera.h"
 #include "InputManager.h"
 #include "Terrain.h"
 #include <cmath>
-#include <GL/gl3w.h>
-#include <GLFW/glfw3.h>
 #include <iostream>
 #include <unordered_map>
 

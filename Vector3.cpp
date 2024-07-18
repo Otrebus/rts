@@ -1,7 +1,6 @@
 #include "Matrix4.h"
 #include "Vector2.h"
 #include "Vector3.h"
-#include <iostream>
 
 
 Vector3::Vector3(real x, real y, real z) : x(x), y(y), z(z)

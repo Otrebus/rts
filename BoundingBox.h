@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Utils.h"
 #include "Vector3.h"
 
 class Ray;

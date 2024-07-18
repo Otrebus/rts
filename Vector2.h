@@ -1,8 +1,6 @@
 #pragma once
 
 #include "Utils.h"
-#include <cmath>
-#include <iostream>
 
 class Matrix4;
 

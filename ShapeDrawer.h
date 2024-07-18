@@ -1,10 +1,6 @@
 #pragma once
 
-#define NOMINMAX
-#include "Line.h"
-#include "Ray.h"
-#include "Vector2.h"
-
+class Vector3;
 class Model3d;
 class Scene;
 

@@ -2,10 +2,9 @@
 #define NOMINMAX
 #include "CameraControl.h"
 #include "Terrain.h"
-#include "Utils.h"
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
-#include <Queue>
+#include <queue>
 
 class InputManager;
 

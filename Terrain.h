@@ -1,10 +1,7 @@
 #pragma once
 
-#define NOMINMAX
 #include "Math.h"
 #include "Model3d.h"
-#include "Utils.h"
-#include "Vector2.h"
 #include <deque>
 
 class Ray;

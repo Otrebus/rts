@@ -1,9 +1,5 @@
-
-#include "Terrain.h"
 #include "InputManager.h"
-#include "CameraControl.h"
 #include "UserInterface.h"
-#include "Input.h"
 
 
 void handleInput(const real& prevTime, const real& time, CameraControl& cameraControl, UserInterface& interface, Scene& scene, Terrain& terrain, GLFWwindow* window)

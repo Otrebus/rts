@@ -3,7 +3,6 @@
 #include "Unit.h"
 #include <cassert>
 
-
 real intersectRayCircle(Vector2 pos, Vector2 dir, Vector2 c, real radius)
 {
     auto p0 = pos-c, p1 = dir;

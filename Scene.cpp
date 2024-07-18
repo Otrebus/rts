@@ -1,8 +1,6 @@
 #include "Entity.h"
 #include "Scene.h"
 #include "Unit.h"
-#include <algorithm>
-#include <thread>
 
 class Camera;
 class ShaderProgramManager;

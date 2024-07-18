@@ -1,9 +1,7 @@
 #pragma once
 
-#include "Entity.h"
 #include "Terrain.h"
 #include "Unit.h"
-#include "Utils.h"
 #include <queue>
 
 class PathFindingRequest

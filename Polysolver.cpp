@@ -1,8 +1,6 @@
 #include "Math.h"
 #include "Polysolver.h"
 #include <algorithm>
-#include <array>
-#include <vector>
 
 const int MAX_N = 10;
 

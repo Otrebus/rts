@@ -1,6 +1,4 @@
-#include "InputManager.h"
 #include "PointLight.h"
-#include "Ray.h"
 
 
 PointLight::PointLight(real start)

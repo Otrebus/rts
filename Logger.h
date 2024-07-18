@@ -1,8 +1,7 @@
 #pragma once
 
-#pragma warning( disable : 4996 )
+#pragma warning(disable:4996)
 
-#define LOG_FILENAME "debuglog"
 #define NOMINMAX
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>

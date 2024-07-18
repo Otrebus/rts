@@ -1,10 +1,7 @@
 #pragma once
-#pragma once
-#define NOMINMAX
 
 #include "Matrix4.h"
 #include "Vector3.h"
-#include <iostream>
 
 class Terrain;
 class Input;
@@ -27,6 +24,7 @@ public:
     real getStart();
 
     void update();
+
 protected:
     Vector3 velocity;
     Vector3 pos;

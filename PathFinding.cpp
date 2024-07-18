@@ -3,16 +3,13 @@
 #include <chrono>
 #include <thread>
 
-
 using namespace std::literals::chrono_literals;
-
 
 std::mutex requestMutex;
 std::mutex resultMutex;
 
 std::queue<PathFindingRequest*> requestQueue;
 std::queue<PathFindingRequest*> resultQueue;
-
 
 PriorityQueue::PriorityQueue(int size)
 {

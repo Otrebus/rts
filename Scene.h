@@ -1,14 +1,11 @@
 #pragma once
 
-#define NOMINMAX
 #include "Camera.h"
 #include "Particle.h"
 #include "PointLight.h"
 #include "ShaderProgram.h"
 #include "ShaderProgramManager.h"
-#include <memory>
 #include <unordered_set>
-#include <thread>
 #include <mutex>
 
 class Unit;

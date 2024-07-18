@@ -1,10 +1,7 @@
 #include "Camera.h"
 #include "Math.h"
-#include "Matrix4.h"
-#include "Ray.h"
 #include "Vector2.h"
 #include "Vector3.h"
-#include <tuple>
 
 
 Matrix4 getTranslationMatrix(Vector3 v)
