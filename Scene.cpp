@@ -1,6 +1,7 @@
 #include "Entity.h"
 #include "Scene.h"
 #include "Unit.h"
+#include "Terrain.h"
 
 class Camera;
 class ShaderProgramManager;
@@ -66,6 +67,68 @@ void Scene::removeEntity(Entity* entity)
 {
     deadEntities.insert(entity);
     entityMap.erase(entity->getId());
+}
+
+void Scene::moveEntities(real dt)
+{
+    for(auto entity: entities)
+    {
+        if(!dynamic_cast<Unit*>(entity))
+            continue;
+        auto prePos = entity->pos;
+        auto pos2 = entity->geoPos + entity->geoVelocity*dt;
+
+        Vector2 velocity2 = entity->geoVelocity;
+
+        // Collision detection, against the terrain
+        auto [t, norm] = terrain->intersectCirclePathOcclusion(entity->geoPos, pos2, 0.5);
+        if(!t)
+        {
+            // TODO: sometimes we find ourselves inside a triangle, what do we do then?
+            //       if we blindly go into the if below we will just get stuck. For now
+            //       we push ourselves slightly out of the triangle and hope this will
+            //       resolve things eventually, but this isn't really robust
+            entity->geoPos += norm*0.01f;
+        }
+        auto t2 = (pos2 - entity->geoPos).length();
+        if(t > -inf && t < t2 && entity->geoDir*norm < 0)
+        {
+            assert(t >= 0);
+
+            // A bit hacky, we do another pass to see if we hit anything perpendicularly to the normal as well
+            velocity2 = (entity->geoVelocity*norm.perp())*norm.perp();
+
+            auto pos2 = entity->geoPos + velocity2*dt;
+
+            auto [t, norm] = terrain->intersectCirclePathOcclusion(entity->geoPos, pos2, 0.5);
+            auto t2 = (pos2 - entity->geoPos).length();
+            if(t > -inf && t < t2 && entity->geoDir*norm < 0)
+                velocity2 = { 0, 0 };
+        }
+
+        // TODO: we should still close the distance here
+        auto posNext = entity->geoPos + velocity2*dt;
+
+        // Collision detection, against other units
+        for(auto unit : entity->scene->getEntities())
+        {
+            if(unit != entity)
+            {
+                auto pos1 = entity->geoPos, pos2 = unit->geoPos;
+                if(auto d = (pos1 - pos2).length(); d < 1)
+                {
+                    pos1 += (entity->geoPos-pos2).normalized()*(1-d)/2.f;
+                    pos2 += (pos2-entity->geoPos).normalized()*(1-d)/2.f;
+                }
+                entity->geoPos = pos1;
+                unit->geoPos = pos2;
+            }
+        }
+
+        entity->geoPos = posNext;
+        entity->plant(*terrain);
+        entity->velocity = (entity->pos-prePos)/dt;
+    }
 }
 
 void Scene::updateEntities()

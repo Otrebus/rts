@@ -370,8 +370,6 @@ bool Tank::setBallisticTarget(Unit* enemyTarget)
 
 void Tank::update(real dt)
 {
-    auto prePos = pos;
-
     Unit* closestEnemy = nullptr;
     real closestD = inf;
     for(auto unit : scene->getUnits())
@@ -386,60 +384,7 @@ void Tank::update(real dt)
         }
     }
 
-    auto pos2 = geoPos + geoVelocity*dt;
-
-    Vector2 velocity2 = geoVelocity;
-    bool hitWall = false;
-
-    // Collision detection, against the terrain
-    auto [t, norm] = terrain->intersectCirclePathOcclusion(geoPos, pos2, 0.5);
-    if(!t)
-    {
-        // TODO: sometimes we find ourselves inside a triangle, what do we do then?
-        //       if we blindly go into the if below we will just get stuck. For now
-        //       we push ourselves slightly out of the triangle and hope this will
-        //       resolve things eventually, but this isn't really robust
-        geoPos += norm*0.01f;
-    }
-    auto t2 = (pos2 - geoPos).length();
-    if(t > -inf && t < t2 && geoDir*norm < 0)
-    {
-        assert(t >= 0);
-
-        // A bit hacky, we do another pass to see if we hit anything perpendicularly to the normal as well
-        velocity2 = (geoVelocity*norm.perp())*norm.perp();
-
-        auto pos2 = geoPos + velocity2*dt;
-
-        auto [t, norm] = terrain->intersectCirclePathOcclusion(geoPos, pos2, 0.5);
-        auto t2 = (pos2 - geoPos).length();
-        if(t > -inf && t < t2 && geoDir*norm < 0)
-            velocity2 = { 0, 0 };
-    }
-
-    // TODO: we should still close the distance here
-    auto posNext = geoPos + velocity2*dt;
-
-    // Collision detection, against other units
-    for(auto unit : scene->getEntities())
-    {
-        if(unit != this)
-        {
-            auto pos1 = geoPos, pos2 = unit->geoPos;
-            if(auto d = (pos1 - pos2).length(); d < 1)
-            {
-                pos1 += (geoPos-pos2).normalized()*(1-d)/2.f;
-                pos2 += (pos2-geoPos).normalized()*(1-d)/2.f;
-            }
-            geoPos = pos1;
-            unit->geoPos = pos2;
-        }
-    }
-
-    geoPos = posNext;
-
     velocityTarget = boidCalc();
-
     accelerate(velocityTarget);
 
     auto newDir = geoDir.normalized().rotated(turnRate*dt);
@@ -447,16 +392,13 @@ void Tank::update(real dt)
         newDir = velocityTarget.normalized();
     geoDir = newDir;
 
-    if(!hitWall)
+    geoVelocity = Vector2(geoDir.x, geoDir.y).normalized()*geoVelocity.length();
+    auto velocity1 = geoVelocity;
+    geoVelocity += Vector2(geoDir.x, geoDir.y).normalized()*acceleration*dt;
+    if(velocity1*geoVelocity < 0 && !velocityTarget)
     {
-        geoVelocity = Vector2(geoDir.x, geoDir.y).normalized()*geoVelocity.length();
-        auto velocity1 = geoVelocity;
-        geoVelocity += Vector2(geoDir.x, geoDir.y).normalized()*acceleration*dt;
-        if(velocity1*geoVelocity < 0 && !velocityTarget)
-        {
-            geoVelocity = { 0, 0 };
-            acceleration = 0;
-        }
+        geoVelocity = { 0, 0 };
+        acceleration = 0;
     }
 
     if(geoVelocity.length() > maxSpeed)
@@ -473,9 +415,6 @@ void Tank::update(real dt)
         setCurrentPathfindingRequest(request);
         addPathFindingRequest(request);
     }
-
-    plant(*scene->getTerrain());
-    velocity = (pos-prePos)/dt;
 
     auto enemyTarget = dynamic_cast<Unit*>(scene->getEntity(enemyTargetId));
 

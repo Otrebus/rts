@@ -45,6 +45,7 @@ public:
     void unBorrow(Unit* unit);
 
     void updateUnitList();
+    void moveEntities(real dt);
 
 private:
     std::mutex borrowMutex;

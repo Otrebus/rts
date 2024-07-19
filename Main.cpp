@@ -126,9 +126,9 @@ int main()
 
     //scene.addUnit(new Tank({ 180.480316, 99.7414932, 15.0 }, { 1, 0, 0 }, { 0, 0, 1}, &terrain));
 
-    for(int y = 0; y < 2; y++)
+    for(int y = 0; y < 4; y++)
     {
-        for(int x = 0; x < 2; x++)
+        for(int x = 0; x < 4; x++)
         {
             scene.addEntity(new Tank({ 150.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain));
         }
@@ -200,10 +200,12 @@ int main()
 
         scene.updateEntities();
         scene.updateUnitList();
+        scene.moveEntities(dt);
 
         auto entities = scene.getEntities();
         for(auto& entity : entities)
             entity->update(dt);
+
 
         // TODO: this should be done in some update function or something
         for(auto& light : scene.getLights())
