@@ -150,6 +150,7 @@ std::deque<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinatio
     std::vector<bool> V(width*height, false);
     std::vector<real> C(width*height, inf);
     std::vector<std::pair<int, int>> P(width*height);
+    std::fill(P.begin(), P.end(), std::make_pair(-1, -1 ));
 
     std::pair<int, int> minQi;
     real minQ = inf;
@@ -205,7 +206,7 @@ std::deque<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinatio
 
     std::deque<Vector2> outPath;
 
-    if(C[destX+destY*width] == inf)
+    if(C[destX+destY*width] == inf && minQ < inf)
     {
         destX = minQi.first;
         destY = minQi.second;
@@ -218,7 +219,7 @@ std::deque<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinatio
     {
         auto [x, y] = node;
         result.push_back({ real(x), real(y) });
-        if(x == startX && y == startY)
+        if(x == startX && y == startY || x == -1 && y == -1)
             break;
         node = P[x+y*width];
     }

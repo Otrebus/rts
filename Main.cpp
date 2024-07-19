@@ -126,9 +126,9 @@ int main()
 
     //scene.addUnit(new Tank({ 180.480316, 99.7414932, 15.0 }, { 1, 0, 0 }, { 0, 0, 1}, &terrain));
 
-    for(int y = 0; y < 4; y++)
+    for(int y = 0; y < 9; y++)
     {
-        for(int x = 0; x < 4; x++)
+        for(int x = 0; x < 9; x++)
         {
             scene.addEntity(new Tank({ 150.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain));
         }
