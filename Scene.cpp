@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "Unit.h"
 #include "Terrain.h"
+#include "GeometryUtils.h"
 
 class Camera;
 class ShaderProgramManager;
@@ -69,16 +70,29 @@ void Scene::removeEntity(Entity* entity)
     entityMap.erase(entity->getId());
 }
 
+struct Collision
+{
+    Entity* entity1;
+    Entity* entity2;
+
+    real t;
+    Vector2 normal;
+};
+
+
 void Scene::moveEntities(real dt)
 {
+    if(dt < 0)
+        return;
+
+    real minT = inf;
+    Collision minCol;
+
     for(auto entity: entities)
     {
         if(!dynamic_cast<Unit*>(entity))
             continue;
-        auto prePos = entity->pos;
         auto pos2 = entity->geoPos + entity->geoVelocity*dt;
-
-        Vector2 velocity2 = entity->geoVelocity;
 
         // Collision detection, against the terrain
         auto [t, norm] = terrain->intersectCirclePathOcclusion(entity->geoPos, pos2, 0.5);
@@ -93,21 +107,23 @@ void Scene::moveEntities(real dt)
         auto t2 = (pos2 - entity->geoPos).length();
         if(t > -inf && t < t2 && entity->geoDir*norm < 0)
         {
-            assert(t >= 0);
+            if(t < minT)
+            {
+                minT = t;
+                minCol = Collision { entity, nullptr, t, norm };
+            }
+            //assert(t >= 0);
 
-            // A bit hacky, we do another pass to see if we hit anything perpendicularly to the normal as well
-            velocity2 = (entity->geoVelocity*norm.perp())*norm.perp();
+            //// A bit hacky, we do another pass to see if we hit anything perpendicularly to the normal as well
+            //velocity2 = (entity->geoVelocity*norm.perp())*norm.perp();
 
-            auto pos2 = entity->geoPos + velocity2*dt;
+            //auto pos2 = entity->geoPos + velocity2*dt;
 
-            auto [t, norm] = terrain->intersectCirclePathOcclusion(entity->geoPos, pos2, 0.5);
-            auto t2 = (pos2 - entity->geoPos).length();
-            if(t > -inf && t < t2 && entity->geoDir*norm < 0)
-                velocity2 = { 0, 0 };
+            //auto [t, norm] = terrain->intersectCirclePathOcclusion(entity->geoPos, pos2, 0.5);
+            //auto t2 = (pos2 - entity->geoPos).length();
+            //if(t > -inf && t < t2 && entity->geoDir*norm < 0)
+            //    velocity2 = { 0, 0 };
         }
-
-        // TODO: we should still close the distance here
-        auto posNext = entity->geoPos + velocity2*dt;
 
         // Collision detection, against other units
         for(auto unit : entity->scene->getEntities())
@@ -115,20 +131,44 @@ void Scene::moveEntities(real dt)
             if(unit != entity)
             {
                 auto pos1 = entity->geoPos, pos2 = unit->geoPos;
-                if(auto d = (pos1 - pos2).length(); d < 1)
+                if(auto [t, norm] = intersectCircleCirclePath(pos1, 1, pos2, 1, unit->geoVelocity - entity->geoVelocity); t > -1)
                 {
-                    pos1 += (entity->geoPos-pos2).normalized()*(1-d)/2.f;
-                    pos2 += (pos2-entity->geoPos).normalized()*(1-d)/2.f;
+                    /*pos1 += (entity->geoPos-pos2).normalized()*(1-d)/2.f;
+                    pos2 += (pos2-entity->geoPos).normalized()*(1-d)/2.f;*/
+                    if(minT < t && minT > -inf)
+                    {
+                        minT = t;
+                        minCol = Collision { entity, nullptr, t, norm };
+                    }
                 }
-                entity->geoPos = pos1;
-                unit->geoPos = pos2;
+                /*entity->geoPos = pos1;
+                unit->geoPos = pos2;*/
             }
         }
+    }
+    
+    for(auto entity : entities)
+    {
+        auto prePos = entity->pos;
+        auto posNext = entity->geoPos + entity->geoVelocity*minT;
 
         entity->geoPos = posNext;
         entity->plant(*terrain);
-        entity->velocity = (entity->pos-prePos)/dt;
+        entity->velocity = (entity->pos-prePos)/minT;
+        // also assign geovelocity
     }
+
+    if(minT < inf)
+    {
+        if(minCol.entity2)
+        {
+        }
+        else
+        {
+        }
+    }
+
+    moveEntities(dt-minT);
 }
 
 void Scene::updateEntities()

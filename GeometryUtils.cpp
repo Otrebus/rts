@@ -40,6 +40,13 @@ std::tuple<real, Vector2, real> distPointLine(Vector2 p, Vector2 p1, Vector2 p2)
 }
 
 
+std::pair<real, Vector2> intersectCircleCirclePath(Vector2 p1, real r1, Vector2 p2, real r2, Vector2 dir)
+{
+    auto t = intersectRayCircle(p2, dir, p1, r1+r2);
+    return { t, (p1 - (p2 + dir*t)).normalized() };
+}
+
+
 std::pair<real, Vector2> intersectCircleTrianglePath(Vector2 pos, real radius, Vector2 dir, Vector2 p1, Vector2 p2, Vector2 p3)
 {
     auto pp1 = (p1-p2).perp().normalized(), pp2 = (p2-p3).perp().normalized(), pp3 = (p3-p1).perp().normalized();
