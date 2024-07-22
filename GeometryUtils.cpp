@@ -43,7 +43,7 @@ std::tuple<real, Vector2, real> distPointLine(Vector2 p, Vector2 p1, Vector2 p2)
 std::pair<real, Vector2> intersectCircleCirclePath(Vector2 p1, real r1, Vector2 p2, real r2, Vector2 dir)
 {
     auto t = intersectRayCircle(p2, dir, p1, r1+r2);
-    return { t, (p1 - (p2 + dir*t)).normalized() };
+    return { std::max(0.f, t), ((p2 + dir*t) - p1).normalized() };
 }
 
 

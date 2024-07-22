@@ -435,7 +435,7 @@ void Tank::update(real dt)
         if((turretTarget*turretDir) > 1-1e-6)
         {
             lastFired = time;
-            shoot();
+            //shoot();
             auto light = new PointLight(time);
 
             light->setPos(absMuzzlePos);
@@ -552,7 +552,8 @@ Vector2 Tank::separate()
 
 Vector2 Tank::boidCalc()
 {
-    auto ret = evade() + seek() + avoid() + separate();
+    //auto ret = evade() + seek() + avoid() + separate();
+    auto ret = seek();
     return ret;
 }
 
