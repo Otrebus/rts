@@ -105,7 +105,7 @@ void Scene::moveEntities(real dt)
             entity->geoPos += norm*0.01f;
         }
         auto t2 = (pos2 - entity->geoPos).length();
-        if(t > -inf && t < t2 && entity->geoDir*norm < 0)
+        if(t > -inf && t < t2)
         {
             if(t < minT)
             {
@@ -131,17 +131,18 @@ void Scene::moveEntities(real dt)
             if(unit != entity)
             {
                 auto pos1 = entity->geoPos, pos2 = unit->geoPos;
-                auto dir = unit->geoVelocity - entity->geoVelocity;
+                auto dir = entity->geoVelocity - unit->geoVelocity;
                 if(dir)
                 {
                     auto dirN = dir.normalized();
-                    auto [t, norm] = intersectCircleCirclePath(pos1, 0.5, pos2, 0.5, dirN);
+                    auto [t, norm] = intersectCircleCirclePath(pos2, 0.5, pos1, 0.5, dirN);
                     t = t/dir.length();
+                    auto d = (pos2-pos1).length();
                     
-                    if(t > 0 && t < dt)
+                    if(t >= 0 && t < dt)
                     {
-                        /*pos1 += (entity->geoPos-pos2).normalized()*(1-d)/2.f;
-                        pos2 += (pos2-entity->geoPos).normalized()*(1-d)/2.f;*/
+                        pos1 += (entity->geoPos-pos2).normalized()*(1-d)/2.f;
+                        pos2 += (pos2-entity->geoPos).normalized()*(1-d)/2.f;
 
                         if(t < minT && t > -inf)
                         {
@@ -155,53 +156,65 @@ void Scene::moveEntities(real dt)
             }
         }
     }
+
+    minT = dt; // tmp
+
+    //if(minT < inf)
+    //{
+    //    if(minCol.entity2)
+    //    {
+    //        auto e1 = minCol.entity1, e2 = minCol.entity2;
+    //        auto norm = minCol.normal;
+    //        auto pos1 = e2->geoPos - norm - norm*1e-3;
+    //        auto pos2 = e1->geoPos + norm + norm*1e-3;
+
+    //        /*auto vn1 = (e1->geoVelocity*norm)*norm;
+    //        auto vp1 = e1->geoVelocity - vn1;
+
+    //        auto vn2 = (e2->geoVelocity*norm)*norm;
+    //        auto vp2 = e2->geoVelocity - vn2;
+
+    //        auto vn = (vn1-vn2)/2;
+
+    //        e1->geoVelocity = vn + vp1;
+    //        e2->geoVelocity = vn + vp2;*/
+
+    //        e1->geoPos = pos1;
+    //        e2->geoPos = pos2;
+    //    }
+    //    else
+    //    {
+    //    }
+    //}
     
     for(auto entity : entities)
     { 
         if(!dynamic_cast<Unit*>(entity))
             continue;
+
         auto t = minT < inf ? minT : dt;
-        auto prePos = entity->pos;
+        auto preGeoPos = entity->geoPos;
         auto posNext = entity->geoPos + entity->geoVelocity*t;
 
+        auto n = entity->geoDir.normalized().perp();
+        auto T = entity->geoDir;
+
+        auto perpV = n*(n*entity->geoVelocity);
+
+        if(perpV)
+        {
+            auto pV = std::abs(perpV.length());
+            pV = std::max(0.f, pV - t*2);
+
+            entity->geoVelocity = perpV.normalized()*pV + entity->geoVelocity.length()*T;
+        }
+        
         entity->geoPos = posNext;
         entity->plant(*terrain);
-        entity->velocity = (entity->pos-prePos)/t;
-        // also assign geovelocity
     }
 
-    if(minT < inf)
-    {
-        if(minCol.entity2)
-        {
-            auto e1 = minCol.entity1, e2 = minCol.entity2;
-            auto norm = minCol.normal;
-            auto pos1 = e1->geoPos + e1->geoVelocity*minT + norm*1e-6;
-            auto pos2 = e2->geoPos + e2->geoVelocity*minT - norm*1e-6;
-
-            auto vn1 = (e1->geoVelocity*norm)*norm;
-            auto vp1 = e1->geoVelocity - vn1;
-
-            auto vn2 = (e2->geoVelocity*norm)*norm;
-            auto vp2 = e2->geoVelocity - vn2;
-
-            auto vn = (vn2-vn1)/2;
-
-            auto v = vn1 + vp1;
-
-            e1->geoVelocity = v;
-            e2->geoVelocity = v;
-
-            e1->geoPos = pos1;
-            e2->geoPos = pos2;
-        }
-        else
-        {
-        }
-    }
-
-    if(minT < inf)
-        moveEntities(dt-minT);
+    //if(minT < inf)
+    //    moveEntities(dt-minT);
 }
 
 void Scene::updateEntities()

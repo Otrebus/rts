@@ -392,9 +392,9 @@ void Tank::update(real dt)
         newDir = velocityTarget.normalized();
     geoDir = newDir;
 
-    geoVelocity = Vector2(geoDir.x, geoDir.y).normalized()*geoVelocity.length();
-    auto velocity1 = geoVelocity;
+    auto velocity1 = Vector2(geoDir.x, geoDir.y).normalized()*geoVelocity.length();
     geoVelocity += Vector2(geoDir.x, geoDir.y).normalized()*acceleration*dt;
+
     if(velocity1*geoVelocity < 0 && !velocityTarget)
     {
         geoVelocity = { 0, 0 };
@@ -552,8 +552,8 @@ Vector2 Tank::separate()
 
 Vector2 Tank::boidCalc()
 {
-    //auto ret = evade() + seek() + avoid() + separate();
-    auto ret = seek();
+    auto ret = evade() + seek() + avoid() + separate();
+    //auto ret = seek();
     return ret;
 }
 
