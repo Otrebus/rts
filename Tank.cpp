@@ -552,8 +552,8 @@ Vector2 Tank::separate()
 
 Vector2 Tank::boidCalc()
 {
-    auto ret = evade() + seek() + avoid() + separate();
-    //auto ret = seek();
+    //auto ret = evade() + seek() + avoid() + separate();
+    auto ret = seek();
     return ret;
 }
 
