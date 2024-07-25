@@ -4,7 +4,7 @@
 #include "Vector3.h"
 
 
-Matrix4 getTranslationMatrix(Vector3 v)
+Matrix4 getTranslationMatrix(const Vector3& v)
 {
     return Matrix4(
         1, 0, 0, v.x,
@@ -14,7 +14,7 @@ Matrix4 getTranslationMatrix(Vector3 v)
     );
 }
 
-Matrix4 getDirectionMatrix(Vector3 dir, Vector3 up)
+Matrix4 getDirectionMatrix(const Vector3& dir, const Vector3& up)
 {
     auto u = (up%dir).normalized();
     return Matrix4(
@@ -45,6 +45,15 @@ Matrix4 getNormalMatrix(const Matrix4& m)
     )/det;
 }
 
+Matrix4 getScalingMatrix(const Vector3& scaling)
+{
+    return Matrix4(
+        scaling.x, 0, 0, 0,
+        0, scaling.y, 0, 0,
+        0, 0, scaling.z, 0,
+        0, 0, 0, 1
+    );
+}
 
 const Matrix4 identityMatrix(
     1, 0, 0, 0,

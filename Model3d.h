@@ -41,7 +41,9 @@ public:
     Vector3 getDirection();
     Vector3 getUp();
 
-    Vector3 pos, dir, up;
+    void setSize(Vector3 size);
+
+    Vector3 pos, dir, up, size;
 
     bool cloned;
 };

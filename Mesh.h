@@ -27,6 +27,7 @@ public:
 
     void setDirection(Vector3 dir, Vector3 up);
     void setPosition(Vector3 pos);
+    void setSize(Vector3 size);
 
     Matrix4 getTransformationMatrix();
 
@@ -38,7 +39,7 @@ public:
 
     int nTriangles;
 private:
-    Vector3 dir, up, pos;
+    Vector3 dir, up, pos, size;
     Matrix4 transformationMatrix;
     bool matrixCached;
 };

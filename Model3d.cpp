@@ -171,6 +171,14 @@ void Model3d::setPosition(Vector3 pos)
 }
 
 
+void Model3d::setSize(Vector3 size)
+{
+    this->size = size;
+    for(auto& mesh : meshes)
+        mesh->setSize(pos);
+}
+
+
 void Model3d::setDirection(Vector3 dir, Vector3 up)
 {
     this->dir = dir;

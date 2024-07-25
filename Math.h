@@ -14,9 +14,10 @@ extern const real gravity;
 
 std::tuple<double, double, double> intersectTriangle(const Vector3& v0, const Vector3& v1, const Vector3& v2, const Ray& ray);
 
-Matrix4 getTranslationMatrix(Vector3 v);
-Matrix4 getDirectionMatrix(Vector3 dir, Vector3 up);
+Matrix4 getTranslationMatrix(const Vector3& v);
+Matrix4 getDirectionMatrix(const Vector3& dir, const Vector3& up);
 Matrix4 getNormalMatrix(const Matrix4& m);
+Matrix4 getScalingMatrix(const Vector3& v);
 
 Vector2 resToScreen(real x, real y, int xres, int yres);
 Vector3 calcNormal(Vector3 a, Vector3 b, Vector3 c);

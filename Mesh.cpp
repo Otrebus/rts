@@ -1,7 +1,7 @@
 #include "Math.h"
 #include "Mesh.h"
 
-Mesh::Mesh() : pos({ 0, 0, 0 }), dir({ 1, 0, 0 }), up({ 0, 0, 1 }), matrixCached(false)
+Mesh::Mesh() : pos({ 0, 0, 0 }), dir({ 1, 0, 0 }), up({ 0, 0, 1 }), size({ 1, 1, 1 }), matrixCached(false)
 {
 }
 
@@ -19,6 +19,12 @@ void Mesh::setDirection(Vector3 dir, Vector3 up)
 void Mesh::setPosition(Vector3 pos)
 {
     this->pos = pos;
+    matrixCached = false;
+}
+
+void Mesh::setSize(Vector3 size)
+{
+    this->size = size;
     matrixCached = false;
 }
 
@@ -54,7 +60,8 @@ Matrix4 Mesh::getTransformationMatrix()
 
     auto transM = getTranslationMatrix(getPos());
     auto dirM = getDirectionMatrix(getDir(), getUp());
+    auto sizeM = getScalingMatrix(size);
 
     matrixCached = true;
-    return transformationMatrix = transM*dirM;
+    return transformationMatrix = sizeM*transM*dirM;
 }
