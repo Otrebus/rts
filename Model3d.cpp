@@ -175,7 +175,7 @@ void Model3d::setSize(Vector3 size)
 {
     this->size = size;
     for(auto& mesh : meshes)
-        mesh->setSize(pos);
+        mesh->setSize(size);
 }
 
 

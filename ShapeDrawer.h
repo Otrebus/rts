@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Utils.h"
+
 class Vector3;
 class Model3d;
 class Scene;
@@ -9,7 +11,7 @@ class ShapeDrawer
 public:
     ShapeDrawer();
 
-    static void drawArrow(Vector3 pos, Vector3 dir);
+    static void drawArrow(Vector3 pos, Vector3 dir, real length, real width);
     static void loadModels();
     static void setScene(Scene* scene);
 

@@ -9,7 +9,7 @@ ShapeDrawer::ShapeDrawer()
 }
 
 
-void ShapeDrawer::drawArrow(Vector3 pos, Vector3 dir)
+void ShapeDrawer::drawArrow(Vector3 pos, Vector3 dir, real length, real width)
 {
 	/*cylinderModel->setPosition(pos);
 	cylinderModel->setDirection(dir.normalized(), (dir%Vector3(0.219, 0.182, -0.823)).normalized());
@@ -19,24 +19,29 @@ void ShapeDrawer::drawArrow(Vector3 pos, Vector3 dir)
 	coneModel->setDirection(dir.normalized(), (dir%Vector3(0.219, 0.182, -0.823)).normalized());
 	coneModel->updateUniforms();
 	coneModel->draw();*/
-	sphereModel->setPosition(pos);
-	sphereModel->setDirection(dir.normalized(), Vector3(0, 0, 1));
-	sphereModel->updateUniforms();
-	sphereModel->draw();
+	cylinderModel->setSize(Vector3(length*0.8, width, width));
+	cylinderModel->setDirection(dir.normalized(), Vector3(0, 0, 1));
+	cylinderModel->setPosition(pos);
+	cylinderModel->draw();
+
+	coneModel->setSize(Vector3(length*0.2, width*2.5, width*2.5));
+	coneModel->setDirection(dir.normalized(), Vector3(0, 0, 1));
+	coneModel->setPosition(pos + dir.normalized()*0.8*length);
+	coneModel->draw();
 }
 
 
 void ShapeDrawer::loadModels()
 {
-	cylinderModel = ModelManager::addModel("cylinder", createCylinderModel(3.0, 1.0, 10));
+	cylinderModel = ModelManager::addModel("cylinder", createCylinderModel(1.0, 1.0, 10));
 	cylinderModel->setScene(scene);
 	cylinderModel->init();
 
-	coneModel = ModelManager::addModel("cone", createConeModel(3.0, 1.0, 100));
+	coneModel = ModelManager::addModel("cone", createConeModel(1.0, 1.0, 100));
 	coneModel->setScene(scene);
 	coneModel->init();
 
-	sphereModel = ModelManager::addModel("sphere", createSphereModel(10.0, 5));
+	sphereModel = ModelManager::addModel("sphere", createSphereModel(1.0, 5));
 	sphereModel->setScene(scene);
 	sphereModel->init();
 }

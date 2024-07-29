@@ -63,5 +63,5 @@ Matrix4 Mesh::getTransformationMatrix()
     auto sizeM = getScalingMatrix(size);
 
     matrixCached = true;
-    return transformationMatrix = sizeM*transM*dirM;
+    return transformationMatrix = transM*dirM*sizeM;
 }
