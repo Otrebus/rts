@@ -12,11 +12,13 @@ public:
     ShapeDrawer();
 
     static void drawArrow(Vector3 pos, Vector3 dir, real length, real width);
+    static void drawBox(Vector3 pos, Vector3 dir, real length, real width, real height);
     static void loadModels();
     static void setScene(Scene* scene);
 
     static Model3d* cylinderModel;
     static Model3d* coneModel;
     static Model3d* sphereModel;
+    static Model3d* boxModel;
     static Scene* scene;
 };

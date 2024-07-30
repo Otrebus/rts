@@ -11,14 +11,6 @@ ShapeDrawer::ShapeDrawer()
 
 void ShapeDrawer::drawArrow(Vector3 pos, Vector3 dir, real length, real width)
 {
-	/*cylinderModel->setPosition(pos);
-	cylinderModel->setDirection(dir.normalized(), (dir%Vector3(0.219, 0.182, -0.823)).normalized());
-	cylinderModel->updateUniforms();
-	cylinderModel->draw();*/
-	/*coneModel->setPosition(pos);
-	coneModel->setDirection(dir.normalized(), (dir%Vector3(0.219, 0.182, -0.823)).normalized());
-	coneModel->updateUniforms();
-	coneModel->draw();*/
 	cylinderModel->setSize(Vector3(length*0.8, width, width));
 	cylinderModel->setDirection(dir.normalized(), Vector3(0, 0, 1));
 	cylinderModel->setPosition(pos);
@@ -30,9 +22,20 @@ void ShapeDrawer::drawArrow(Vector3 pos, Vector3 dir, real length, real width)
 	coneModel->draw();
 }
 
+void ShapeDrawer::drawBox(Vector3 pos, Vector3 dir, real length, real width, real height)
+{
+	boxModel->setSize(Vector3(length, width, height));
+	boxModel->setDirection(dir.normalized(), Vector3(0, 0, 1));
+	boxModel->setPosition(pos);
+	boxModel->draw();
+}
 
 void ShapeDrawer::loadModels()
 {
+	boxModel = ModelManager::addModel("box", createBoxModel(1.0, 1.0, 1.0));
+	boxModel->setScene(scene);
+	boxModel->init();
+
 	cylinderModel = ModelManager::addModel("cylinder", createCylinderModel(1.0, 1.0, 10));
 	cylinderModel->setScene(scene);
 	cylinderModel->init();
@@ -54,4 +57,5 @@ void ShapeDrawer::setScene(Scene* scene)
 Model3d* ShapeDrawer::cylinderModel = nullptr;
 Model3d* ShapeDrawer::coneModel = nullptr;
 Model3d* ShapeDrawer::sphereModel = nullptr;
+Model3d* ShapeDrawer::boxModel = nullptr;
 Scene* ShapeDrawer::scene = nullptr;
