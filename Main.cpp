@@ -288,7 +288,13 @@ int main()
         
         //ShapeDrawer::drawArrow(Vector3(1, 1, 20), Vector3(1, 1, 0));
         //ShapeDrawer::drawArrow(Vector3(0, 0, 20), Vector3(1, 1, 0).normalized(), 5.0, 0.2);
-        ShapeDrawer::drawBox(Vector3(0, 0, 20), Vector3(1, 1, 0).normalized(), 1, 4, 9);
+        for(int y = 0; y < 100; y++)
+        {
+            for(int x = 0; x < 100; x++)
+            {
+                ShapeDrawer::drawSphere(Vector3(x, y, 10), 1.5);
+            }
+        }
 
         drawText(realToString(avgFps, 3), { 0.80, 0.90 }, 0.03, { 0, 0.8, 0 });
         cameraControl.update(dt);

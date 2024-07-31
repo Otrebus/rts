@@ -30,6 +30,21 @@ void ShapeDrawer::drawBox(Vector3 pos, Vector3 dir, real length, real width, rea
 	boxModel->draw();
 }
 
+void ShapeDrawer::drawSphere(Vector3 pos, real radius)
+{
+	sphereModel->setSize(Vector3(radius, radius, radius));
+	sphereModel->setPosition(pos);
+	sphereModel->draw();
+}
+
+void ShapeDrawer::drawCylinder(Vector3 pos, Vector3 dir, real length, real radius)
+{
+	cylinderModel->setSize(Vector3(length, radius, radius));
+	cylinderModel->setDirection(dir.normalized(), Vector3(0, 0, 1));
+	cylinderModel->setPosition(pos);
+	cylinderModel->draw();
+}
+
 void ShapeDrawer::loadModels()
 {
 	boxModel = ModelManager::addModel("box", createBoxModel(1.0, 1.0, 1.0));

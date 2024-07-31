@@ -13,6 +13,8 @@ public:
 
     static void drawArrow(Vector3 pos, Vector3 dir, real length, real width);
     static void drawBox(Vector3 pos, Vector3 dir, real length, real width, real height);
+    static void drawSphere(Vector3 pos, real radius);
+    static void drawCylinder(Vector3 pos, Vector3 dir, real length, real radius);
     static void loadModels();
     static void setScene(Scene* scene);
 
