@@ -457,7 +457,8 @@ Vector2 Tank::seek()
 
             if(path.empty())
                 return { 0, 0 };
-            target = path.front();
+            //target = path.front();
+            target = path.back();
 
             // TODO: this could become NaN
             if(!l)

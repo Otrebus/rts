@@ -126,15 +126,15 @@ int main()
 
     //scene.addUnit(new Tank({ 180.480316, 99.7414932, 15.0 }, { 1, 0, 0 }, { 0, 0, 1}, &terrain));
 
-    for(int y = 0; y < 5; y++)
+    for(int y = 0; y < 1; y++)
     {
-        for(int x = 0; x < 5; x++)
+        for(int x = 0; x < 1; x++)
         {
-            scene.addEntity(new Tank({ 155.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain));
+            scene.addEntity(new Tank({ 155.5f+x, 75.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain));
         }
     }
 
-    for(int y = 0; y < 1; y++)
+    /*for(int y = 0; y < 1; y++)
     {
         for(int x = 0; x < 1; x++)
         {
@@ -142,7 +142,7 @@ int main()
             enemy->setEnemy(true);
             scene.addEntity(enemy);
         }
-    }
+    }*/
 
     //for(int y = 0; y < 1; y++)
     //{
@@ -288,13 +288,13 @@ int main()
         
         //ShapeDrawer::drawArrow(Vector3(1, 1, 20), Vector3(1, 1, 0));
         //ShapeDrawer::drawArrow(Vector3(0, 0, 20), Vector3(1, 1, 0).normalized(), 5.0, 0.2);
-        for(int y = 0; y < 100; y++)
+        /*for(int y = 0; y < 100; y++)
         {
             for(int x = 0; x < 100; x++)
             {
                 ShapeDrawer::drawSphere(Vector3(x, y, 10), 1.5);
             }
-        }
+        }*/
 
         drawText(realToString(avgFps, 3), { 0.80, 0.90 }, 0.03, { 0, 0.8, 0 });
         cameraControl.update(dt);

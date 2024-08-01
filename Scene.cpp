@@ -219,7 +219,7 @@ void Scene::moveEntitiesSolid(real dt)
         moveEntities(dt-minT);
 }
 
-void Scene::moveEntitiesSoft(real dt)
+void Scene::moveEntitiesSoft(real dt, int depth)
 {
     if(dt < 0)
         return;
@@ -271,6 +271,20 @@ void Scene::moveEntitiesSoft(real dt)
 
     // TODO: for the colliding object(s), move them t-eps less so they don't actually intersect
     
+    if(minT < inf)
+    {
+        if(minCol.entity2)
+        {
+            auto e1 = minCol.entity1;
+            auto norm = minCol.normal;
+
+            auto vn1 = (e1->geoVelocity*norm)*norm;
+            auto vp1 = e1->geoVelocity - vn1 + norm*0.01;
+
+            e1->geoVelocity = vp1;
+        }
+    }
+
     for(auto entity : entities)
     { 
         if(!dynamic_cast<Unit*>(entity))
@@ -296,12 +310,13 @@ void Scene::moveEntitiesSoft(real dt)
         entity->geoPos = posNext;
         entity->plant(*terrain);
     }
+    moveEntitiesSoft(dt-minT, depth+1);
 }
 
 void Scene::moveEntities(real dt)
 {
     //moveEntitiesSolid(dt);
-    moveEntitiesSoft(dt);
+    moveEntitiesSoft(dt, 1);
 }
 
 void Scene::updateEntities()

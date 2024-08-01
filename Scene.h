@@ -47,7 +47,7 @@ public:
     void updateUnitList();
     void moveEntities(real dt);
     void moveEntitiesSolid(real dt);
-    void moveEntitiesSoft(real dt);
+    void moveEntitiesSoft(real dt, int depth);
 
 private:
     std::mutex borrowMutex;
