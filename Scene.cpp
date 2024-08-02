@@ -198,7 +198,7 @@ void Scene::moveEntitiesSolid(real dt)
         auto preGeoPos = entity->geoPos;
         auto posNext = entity->geoPos + entity->geoVelocity*(t-std::min(1e-6f, t));
 
- /*       auto n = entity->geoDir.normalized().perp();
+        auto n = entity->geoDir.normalized().perp();
         auto T = entity->geoDir;
 
         auto perpV = n*(n*entity->geoVelocity);
@@ -209,7 +209,7 @@ void Scene::moveEntitiesSolid(real dt)
             pV = std::max(0.f, pV - t*2);
 
             entity->geoVelocity = perpV.normalized()*pV + entity->geoVelocity.length()*T;
-        }*/
+        }
         
         entity->geoPos = posNext;
         entity->plant(*terrain);
@@ -242,6 +242,7 @@ void Scene::moveEntitiesSoft(real dt, int depth)
             //       we push ourselves slightly out of the triangle and hope this will
             //       resolve things eventually, but this isn't really robust
             entity->geoPos += norm*0.01f;
+            t = 0.01;
         }
         auto t2 = (pos2 - entity->geoPos).length();
         if(t > -inf && t < t2)
@@ -254,34 +255,35 @@ void Scene::moveEntitiesSoft(real dt, int depth)
         }
 
         // Collision detection, against other units
-        for(auto unit : entity->scene->getEntities())
-        {
-            if(unit != entity)
-            {
-                auto pos1 = entity->geoPos, pos2 = unit->geoPos;
-                auto v = pos2 - pos1;
-                auto d = v.length();
-                pos1 += (entity->geoPos-pos2).normalized()*(1-d);
-                pos2 += (pos2-entity->geoPos).normalized()*(1-d);
-                if(d < 1)
-                    entity->geoPos -= dt*v.normalized()/(std::max(d, 0.3f));
-            }
-        }
+        //for(auto unit : entity->scene->getEntities())
+        //{
+        //    if(unit != entity)
+        //    {
+        //        auto pos1 = entity->geoPos, pos2 = unit->geoPos;
+        //        auto v = pos2 - pos1;
+        //        auto d = v.length();
+        //        pos1 += (entity->geoPos-pos2).normalized()*(1-d);
+        //        pos2 += (pos2-entity->geoPos).normalized()*(1-d);
+        //        if(d < 1)
+        //            entity->geoPos -= dt*v.normalized()/(std::max(d, 0.3f));
+        //    }
+        //}
     }
 
     // TODO: for the colliding object(s), move them t-eps less so they don't actually intersect
-    
     if(minT < inf)
     {
-        if(minCol.entity2)
+        if(minCol.entity1)
         {
             auto e1 = minCol.entity1;
             auto norm = minCol.normal;
 
             auto vn1 = (e1->geoVelocity*norm)*norm;
-            auto vp1 = e1->geoVelocity - vn1 + norm*0.01;
+            auto vp1 = e1->geoVelocity - vn1;
 
-            e1->geoVelocity = vp1;
+            e1->geoPos += norm*0.01;
+            e1->geoVelocity = vp1 + norm*0.00001;
+            std::cout << "Position " << e1->geoPos << " moved towards " << e1->geoVelocity << std::endl;
         }
     }
 
@@ -304,7 +306,7 @@ void Scene::moveEntitiesSoft(real dt, int depth)
             auto pV = std::abs(perpV.length());
             pV = std::max(0.f, pV - t*2);
 
-            entity->geoVelocity = perpV.normalized()*pV + entity->geoVelocity.length()*T;
+            entity->geoVelocity = n*pV + entity->geoVelocity.length()*T;
         }
         
         entity->geoPos = posNext;
