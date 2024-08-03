@@ -561,6 +561,8 @@ bool Terrain::isVisible(Vector2 start, Vector2 end) const
 {
     auto dx = end.x-start.x;
     auto dy = end.y-start.y;
+    if(!dx && !dy)
+        return true;
     if(std::abs(dx) > std::abs(dy))
     {
         if(dx < 0)

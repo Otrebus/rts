@@ -535,6 +535,8 @@ Vector2 Tank::separate()
         if(unit != this)
         {
             auto pos1 = geoPos, pos2 = unit->geoPos;
+            if(pos1 == pos2)
+                continue;
             auto e = (pos1 - pos2);
             auto l = std::max(1.15f, e.length());
             // Ranking units by their address and only having lower-ranked units yield way seems
@@ -553,8 +555,8 @@ Vector2 Tank::separate()
 
 Vector2 Tank::boidCalc()
 {
-    //auto ret = evade() + seek() + avoid() + separate();
-    auto ret = seek();
+    auto ret = evade() + seek() + avoid() + separate();
+    //auto ret = seek();
     return ret;
 }
 

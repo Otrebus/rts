@@ -130,7 +130,7 @@ int main()
     {
         for(int x = 0; x < 5; x++)
         {
-            scene.addEntity(new Tank({ 155.5f+x, 85.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain));
+            scene.addEntity(new Tank({ 165.5f+x, 95.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain));
         }
     }
 

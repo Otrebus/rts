@@ -3,6 +3,7 @@
 #include "Unit.h"
 #include "Terrain.h"
 #include "GeometryUtils.h"
+#include <iomanip>
 
 class Camera;
 class ShaderProgramManager;
@@ -80,145 +81,6 @@ struct Collision
 };
 
 
-void Scene::moveEntitiesSolid(real dt)
-{
-    if(dt < 0)
-        return;
-
-    real minT = inf;
-    Collision minCol;
-
-    for(auto entity: entities)
-    {
-        if(!dynamic_cast<Unit*>(entity))
-            continue;
-        auto pos2 = entity->geoPos + entity->geoVelocity*dt;
-
-        // Collision detection, against the terrain
-        auto [t, norm] = terrain->intersectCirclePathOcclusion(entity->geoPos, pos2, 0.5);
-        if(!t)
-        {
-            // TODO: sometimes we find ourselves inside a triangle, what do we do then?
-            //       if we blindly go into the if below we will just get stuck. For now
-            //       we push ourselves slightly out of the triangle and hope this will
-            //       resolve things eventually, but this isn't really robust
-            entity->geoPos += norm*0.01f;
-        }
-        auto t2 = (pos2 - entity->geoPos).length();
-        if(t > -inf && t < t2)
-        {
-            if(t < minT)
-            {
-                minT = t;
-                minCol = Collision { entity, nullptr, t, norm };
-            }
-            //assert(t >= 0);
-
-            //// A bit hacky, we do another pass to see if we hit anything perpendicularly to the normal as well
-            //velocity2 = (entity->geoVelocity*norm.perp())*norm.perp();
-
-            //auto pos2 = entity->geoPos + velocity2*dt;
-
-            //auto [t, norm] = terrain->intersectCirclePathOcclusion(entity->geoPos, pos2, 0.5);
-            //auto t2 = (pos2 - entity->geoPos).length();
-            //if(t > -inf && t < t2 && entity->geoDir*norm < 0)
-            //    velocity2 = { 0, 0 };
-        }
-
-        // Collision detection, against other units
-        for(auto unit : entity->scene->getEntities())
-        {
-            if(unit != entity)
-            {
-                auto pos1 = entity->geoPos, pos2 = unit->geoPos;
-                auto dir = entity->geoVelocity - unit->geoVelocity;
-                if(dir)
-                {
-                    auto dirN = dir.normalized();
-                    auto [t, norm] = intersectCircleCirclePath(pos2, 0.5, pos1, 0.5, dirN);
-                    t = t/dir.length();
-                    auto d = (pos2-pos1).length();
-                    
-                    if(t >= 0 && t < dt)
-                    {
-                        pos1 += (entity->geoPos-pos2).normalized()*(1-d)/2.f;
-                        pos2 += (pos2-entity->geoPos).normalized()*(1-d)/2.f;
-
-                        if(t < minT && t > -inf)
-                        {
-                            minT = t;
-                            minCol = Collision { entity, unit, t, norm };
-                        }
-                    }
-                    /*entity->geoPos = pos1;
-                    unit->geoPos = pos2;*/
-                }
-            }
-        }
-    }
-
-    //minT = dt; // tmp
-
-    if(minT < inf)
-    {
-        if(minCol.entity2)
-        {
-            auto e1 = minCol.entity1, e2 = minCol.entity2;
-            auto norm = minCol.normal;
-            auto pos1 = e2->geoPos - norm - norm*1e-3;
-            auto pos2 = e1->geoPos + norm + norm*1e-3;
-
-            auto vn1 = (e1->geoVelocity*norm)*norm;
-            auto vp1 = e1->geoVelocity - vn1;
-
-            auto vn2 = (e2->geoVelocity*norm)*norm;
-            auto vp2 = e2->geoVelocity - vn2;
-
-            auto vn = (vn1-vn2)/2;
-
-            e1->geoVelocity = vn;
-            e2->geoVelocity = vn;
-
-            e1->geoPos = pos1;
-            e2->geoPos = pos2;
-        }
-        else
-        {
-        }
-    }
-
-    // TODO: for the colliding object(s), move them t-eps less so they don't actually intersect
-    
-    for(auto entity : entities)
-    { 
-        if(!dynamic_cast<Unit*>(entity))
-            continue;
-
-        auto t = minT < inf ? minT : dt;
-        auto preGeoPos = entity->geoPos;
-        auto posNext = entity->geoPos + entity->geoVelocity*(t-std::min(1e-6f, t));
-
-        auto n = entity->geoDir.normalized().perp();
-        auto T = entity->geoDir;
-
-        auto perpV = n*(n*entity->geoVelocity);
-
-        if(perpV)
-        {
-            auto pV = std::abs(perpV.length());
-            pV = std::max(0.f, pV - t*2);
-
-            entity->geoVelocity = perpV.normalized()*pV + entity->geoVelocity.length()*T;
-        }
-        
-        entity->geoPos = posNext;
-        entity->plant(*terrain);
-    }
-
-    if(minT < inf)
-        moveEntities(dt-minT);
-}
-
 void Scene::moveEntitiesSoft(real dt, int depth)
 {
     if(dt < 0)
@@ -231,46 +93,63 @@ void Scene::moveEntitiesSoft(real dt, int depth)
     {
         if(!dynamic_cast<Unit*>(entity))
             continue;
+        if(!entity->geoVelocity)
+            continue;
+ //       std::cout << "entering " << std::setprecision(10) << entity->geoPos << std::endl;
+ //       std::cout << "geoVelocity is " << std::setprecision(10) << entity->geoVelocity << std::endl;
         auto pos2 = entity->geoPos + entity->geoVelocity*dt;
 
         // Collision detection, against the terrain
         auto [t, norm] = terrain->intersectCirclePathOcclusion(entity->geoPos, pos2, 0.5);
-        if(!t)
+        if(t > -inf && t <= 0)
         {
             // TODO: sometimes we find ourselves inside a triangle, what do we do then?
             //       if we blindly go into the if below we will just get stuck. For now
             //       we push ourselves slightly out of the triangle and hope this will
             //       resolve things eventually, but this isn't really robust
-            entity->geoPos += norm*0.01f;
-            t = 0.01;
+            //__debugbreak();
+            entity->geoPos += norm*0.0001f;
+            
+            auto vn1 = (entity->geoVelocity*norm)*norm;
+            auto vp1 = entity->geoVelocity - vn1;
+
+            entity->geoVelocity = vp1;
+//            std::cout << "inside triangle, moved to " << entity->geoPos << std::endl;
+            continue;
         }
+
+        t = std::max(0.001f, t);
         auto t2 = (pos2 - entity->geoPos).length();
+ //       std::cout << "t and t2 are " << t << " " << t2 << std::endl;
         if(t > -inf && t < t2)
         {
-            if(t < minT)
+            auto T = dt*(t/t2);
+            if(T < minT && T < dt)
             {
-                minT = t;
-                minCol = Collision { entity, nullptr, t, norm };
+                minT = T;
+                minCol = Collision { entity, nullptr, T, norm };
             }
         }
-
-        // Collision detection, against other units
-        //for(auto unit : entity->scene->getEntities())
-        //{
-        //    if(unit != entity)
-        //    {
-        //        auto pos1 = entity->geoPos, pos2 = unit->geoPos;
-        //        auto v = pos2 - pos1;
-        //        auto d = v.length();
-        //        pos1 += (entity->geoPos-pos2).normalized()*(1-d);
-        //        pos2 += (pos2-entity->geoPos).normalized()*(1-d);
-        //        if(d < 1)
-        //            entity->geoPos -= dt*v.normalized()/(std::max(d, 0.3f));
-        //    }
-        //}
     }
 
-    // TODO: for the colliding object(s), move them t-eps less so they don't actually intersect
+    minT *= 0.99;
+
+    for(auto entity : entities)
+    { 
+        if(!dynamic_cast<Unit*>(entity))
+            continue;
+
+        auto t = minT < inf ? minT : dt;
+        auto preGeoPos = entity->geoPos;
+
+        auto posNext = entity->geoPos + t*entity->geoVelocity;
+
+        entity->geoPos = posNext;
+   //     std::cout << std::setprecision(10) << "posNext is " << posNext << std::endl;
+        entity->plant(*terrain);
+   //     std::cout << std::setprecision(10) <<  "postPlant " << entity->geoPos << std::endl;
+    }
+
     if(minT < inf)
     {
         if(minCol.entity1)
@@ -281,20 +160,27 @@ void Scene::moveEntitiesSoft(real dt, int depth)
             auto vn1 = (e1->geoVelocity*norm)*norm;
             auto vp1 = e1->geoVelocity - vn1;
 
-            e1->geoPos += norm*0.01;
-            e1->geoVelocity = vp1 + norm*0.00001;
-            std::cout << "Position " << e1->geoPos << " moved towards " << e1->geoVelocity << std::endl;
+            e1->geoVelocity = vp1;
+      //      std::cout << "Position " << e1->geoPos << " moved towards " << e1->geoVelocity << std::endl;
         }
     }
+
+    moveEntitiesSoft(dt-minT, depth+1);
+}
+
+void Scene::moveEntities(real dt)
+{
+    moveEntitiesSoft(dt, 1);
 
     for(auto entity : entities)
     { 
         if(!dynamic_cast<Unit*>(entity))
             continue;
 
-        auto t = minT < inf ? minT : dt;
+        auto t = dt;
         auto preGeoPos = entity->geoPos;
-        auto posNext = entity->geoPos + entity->geoVelocity*(t-std::min(1e-6f, t));
+
+        auto posNext = entity->geoPos + t*entity->geoVelocity;
 
         auto n = entity->geoDir.normalized().perp();
         auto T = entity->geoDir;
@@ -306,19 +192,21 @@ void Scene::moveEntitiesSoft(real dt, int depth)
             auto pV = std::abs(perpV.length());
             pV = std::max(0.f, pV - t*2);
 
-            entity->geoVelocity = n*pV + entity->geoVelocity.length()*T;
+            entity->geoVelocity = n*pV + T*(entity->geoVelocity*T);
         }
-        
-        entity->geoPos = posNext;
-        entity->plant(*terrain);
+        for(auto entity2 : entities)
+        {
+            if(entity2 == entity)
+                continue;
+            auto r = (entity2->geoPos-entity->geoPos);
+            auto l = r.length();
+            if(l < 1)
+            {
+                entity->geoVelocity -= r*dt;
+                entity2->geoVelocity += r*dt;
+            }
+        }
     }
-    moveEntitiesSoft(dt-minT, depth+1);
-}
-
-void Scene::moveEntities(real dt)
-{
-    //moveEntitiesSolid(dt);
-    moveEntitiesSoft(dt, 1);
 }
 
 void Scene::updateEntities()

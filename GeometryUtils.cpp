@@ -79,21 +79,21 @@ std::pair<real, Vector2> intersectCircleTrianglePath(Vector2 pos, real radius, V
     Vector2 norm;
 
     real t = intersectRaySegment(pos, dir, e11, e12);
-    if(t > 0)
+    if(t >= 0)
         minT = t, norm = pp1;
 
     t = intersectRaySegment(pos, dir, e21, e22);
-    if(t > 0 && t < minT)
+    if(t >= 0 && t < minT)
         minT = t, norm = pp2;
 
     t = intersectRaySegment(pos, dir, e31, e32);
-    if(t > 0 && t < minT)
+    if(t >= 0 && t < minT)
         minT = t, norm = pp3;
 
     t = intersectRayCircle(pos, dir, p1, radius);
 
     // TODO: we probably want different normals here
-    if(t > 0 && t < minT)
+    if(t >= 0 && t < minT)
     {
         minT = t;
         norm = (pos+dir*t-p1).normalized();
@@ -104,7 +104,7 @@ std::pair<real, Vector2> intersectCircleTrianglePath(Vector2 pos, real radius, V
     }
 
     t = intersectRayCircle(pos, dir, p2, radius);
-    if(t > 0 && t < minT)
+    if(t >= 0 && t < minT)
     {
         minT = t;
         norm = (pos+dir*t-p2).normalized();
@@ -115,7 +115,7 @@ std::pair<real, Vector2> intersectCircleTrianglePath(Vector2 pos, real radius, V
     }
 
     t = intersectRayCircle(pos, dir, p3, radius);
-    if(t > 0 && t < minT)
+    if(t >= 0 && t < minT)
     {
         minT = t;
         norm = (pos+dir*t-p3).normalized();
