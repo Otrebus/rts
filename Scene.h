@@ -7,6 +7,7 @@
 #include "ShaderProgramManager.h"
 #include <unordered_set>
 #include <mutex>
+#include <unordered_set>
 
 class Unit;
 
@@ -46,7 +47,7 @@ public:
 
     void updateUnitList();
     void moveEntities(real dt);
-    void moveEntitiesSoft(real dt, int depth);
+    void moveEntitiesSoft(real dt, int depth, std::unordered_set<Entity*>& gliding);
 
 private:
     std::mutex borrowMutex;

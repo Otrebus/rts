@@ -81,7 +81,7 @@ struct Collision
 };
 
 
-void Scene::moveEntitiesSoft(real dt, int depth)
+void Scene::moveEntitiesSoft(real dt, int depth, std::unordered_set<Entity*>& gliding)
 {
     if(dt < 0)
         return;
@@ -95,35 +95,41 @@ void Scene::moveEntitiesSoft(real dt, int depth)
             continue;
         if(!entity->geoVelocity)
             continue;
- //       std::cout << "entering " << std::setprecision(10) << entity->geoPos << std::endl;
- //       std::cout << "geoVelocity is " << std::setprecision(10) << entity->geoVelocity << std::endl;
+        //std::cout << "entering " << std::setprecision(10) << entity->geoPos << std::endl;
+        //std::cout << "geoVelocity is " << std::setprecision(10) << entity->geoVelocity << std::endl;
         auto pos2 = entity->geoPos + entity->geoVelocity*dt;
 
         // Collision detection, against the terrain
-        auto [t, norm] = terrain->intersectCirclePathOcclusion(entity->geoPos, pos2, 0.5);
-        if(t > -inf && t <= 0)
+        auto [t, norm] = terrain->intersectCirclePathOcclusion(entity->geoPos, pos2, 0.51);
+        auto [s, norm2] = terrain->intersectCirclePathOcclusion(entity->geoPos, pos2, 0.50);
+        if(s > -inf && s <= 0)
         {
             // TODO: sometimes we find ourselves inside a triangle, what do we do then?
             //       if we blindly go into the if below we will just get stuck. For now
             //       we push ourselves slightly out of the triangle and hope this will
             //       resolve things eventually, but this isn't really robust
             //__debugbreak();
-            entity->geoPos += norm*0.0001f;
+            entity->geoPos += norm*0.01f;
+            gliding.insert(entity);
             
-            auto vn1 = (entity->geoVelocity*norm)*norm;
-            auto vp1 = entity->geoVelocity - vn1;
+            auto vn1 = (entity->geoVelocity*norm2)*norm2;
+            auto vp1 = entity->geoVelocity - vn1 + norm2*0.1;
 
             entity->geoVelocity = vp1;
-//            std::cout << "inside triangle, moved to " << entity->geoPos << std::endl;
+            //std::cout << "------------------------" << std::endl;
+            //std::cout << "inside triangle, moved to " << entity->geoPos << std::endl;
+
+            //__debugbreak();
             continue;
         }
 
-        t = std::max(0.001f, t);
+        //t = std::max(t, t-0.001f);
         auto t2 = (pos2 - entity->geoPos).length();
- //       std::cout << "t and t2 are " << t << " " << t2 << std::endl;
-        if(t > -inf && t < t2)
+        //std::cout << "t and t2 are " << t << " " << t2 << std::endl;
+        if(t > 0 && t < t2 && entity->geoVelocity*norm < 0)
         {
             auto T = dt*(t/t2);
+            gliding.insert(entity);
             if(T < minT && T < dt)
             {
                 minT = T;
@@ -132,7 +138,7 @@ void Scene::moveEntitiesSoft(real dt, int depth)
         }
     }
 
-    minT *= 0.99;
+    minT *= 0.9;
 
     for(auto entity : entities)
     { 
@@ -145,9 +151,9 @@ void Scene::moveEntitiesSoft(real dt, int depth)
         auto posNext = entity->geoPos + t*entity->geoVelocity;
 
         entity->geoPos = posNext;
-   //     std::cout << std::setprecision(10) << "posNext is " << posNext << std::endl;
+        //std::cout << std::setprecision(10) << "posNext is " << posNext << std::endl;
         entity->plant(*terrain);
-   //     std::cout << std::setprecision(10) <<  "postPlant " << entity->geoPos << std::endl;
+        //std::cout << std::setprecision(10) <<  "postPlant " << entity->geoPos << std::endl;
     }
 
     if(minT < inf)
@@ -161,16 +167,17 @@ void Scene::moveEntitiesSoft(real dt, int depth)
             auto vp1 = e1->geoVelocity - vn1;
 
             e1->geoVelocity = vp1;
-      //      std::cout << "Position " << e1->geoPos << " moved towards " << e1->geoVelocity << std::endl;
+            //std::cout << "Position " << e1->geoPos << " moved towards " << e1->geoVelocity << std::endl;
         }
     }
 
-    moveEntitiesSoft(dt-minT, depth+1);
+    moveEntitiesSoft(dt-minT, depth+1, gliding);
 }
 
 void Scene::moveEntities(real dt)
 {
-    moveEntitiesSoft(dt, 1);
+    std::unordered_set<Entity*> gliding;
+    moveEntitiesSoft(dt, 1, gliding);
 
     for(auto entity : entities)
     { 
@@ -187,10 +194,10 @@ void Scene::moveEntities(real dt)
 
         auto perpV = n*(n*entity->geoVelocity);
 
-        if(perpV)
+        if(!gliding.contains(entity) && perpV)
         {
             auto pV = std::abs(perpV.length());
-            pV = std::max(0.f, pV - t*2);
+            pV = std::max(0.f, pV - 0.5f*t*2);
 
             entity->geoVelocity = n*pV + T*(entity->geoVelocity*T);
         }
@@ -202,8 +209,8 @@ void Scene::moveEntities(real dt)
             auto l = r.length();
             if(l < 1)
             {
-                entity->geoVelocity -= r*dt;
-                entity2->geoVelocity += r*dt;
+                entity->geoVelocity -= r*dt/l;
+                entity2->geoVelocity += r*dt/l;
             }
         }
     }
