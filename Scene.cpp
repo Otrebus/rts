@@ -5,6 +5,8 @@
 #include "GeometryUtils.h"
 #include <iomanip>
 
+#include "ShapeDrawer.h"
+
 class Camera;
 class ShaderProgramManager;
 
@@ -109,6 +111,7 @@ void Scene::moveEntitiesSoft(real dt, int depth, std::unordered_set<Entity*>& gl
             //       we push ourselves slightly out of the triangle and hope this will
             //       resolve things eventually, but this isn't really robust
             //__debugbreak();
+            entity->lastBumped = glfwGetTime();
             entity->geoPos += norm*0.01f;
             gliding.insert(entity);
             
@@ -122,12 +125,19 @@ void Scene::moveEntitiesSoft(real dt, int depth, std::unordered_set<Entity*>& gl
             //__debugbreak();
             continue;
         }
+        ShapeDrawer::drawArrow(entity->getPosition(), entity->geoVelocity.perp().to3(), 1, 0.02, Vector3(1, 0, 0));
 
         //t = std::max(t, t-0.001f);
         auto t2 = (pos2 - entity->geoPos).length();
         //std::cout << "t and t2 are " << t << " " << t2 << std::endl;
+        if(!t)
+        {
+            entity->lastBumped = glfwGetTime();
+            gliding.insert(entity);
+        }
         if(t > 0 && t < t2 && entity->geoVelocity*norm < 0)
         {
+            entity->lastBumped = glfwGetTime();
             auto T = dt*(t/t2);
             gliding.insert(entity);
             if(T < minT && T < dt)
@@ -137,8 +147,6 @@ void Scene::moveEntitiesSoft(real dt, int depth, std::unordered_set<Entity*>& gl
             }
         }
     }
-
-    minT *= 0.9;
 
     for(auto entity : entities)
     { 
@@ -194,12 +202,12 @@ void Scene::moveEntities(real dt)
 
         auto perpV = n*(n*entity->geoVelocity);
 
-        if(!gliding.contains(entity) && perpV)
+        if(glfwGetTime() - entity->lastBumped > 0.3 && perpV)
         {
-            auto pV = std::abs(perpV.length());
-            pV = std::max(0.f, pV - 0.5f*t*2);
-
-            entity->geoVelocity = n*pV + T*(entity->geoVelocity*T);
+            auto pV = perpV.length();
+            pV = std::max(0.f, pV - t*2);
+            //std::cout << "not gliding" << std::endl;
+            entity->geoVelocity = n*pV*sgn(n*entity->geoVelocity) + T*(entity->geoVelocity*T);
         }
         for(auto entity2 : entities)
         {
@@ -209,8 +217,8 @@ void Scene::moveEntities(real dt)
             auto l = r.length();
             if(l < 1)
             {
-                entity->geoVelocity -= r*dt/l;
-                entity2->geoVelocity += r*dt/l;
+                real modifier = std::max(0.0f, 1/(1.0f-entity->getVelocity().length()));
+                entity2->geoVelocity += modifier*r*dt/l;
             }
         }
     }

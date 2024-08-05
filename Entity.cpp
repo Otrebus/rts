@@ -6,7 +6,7 @@
 #include "Vector3.h"
 
 
-Entity::Entity(Vector3 pos, Vector3 dir, Vector3 up) : pos(pos), dir(dir), up(up), velocity({ 0, 0, 0 })
+Entity::Entity(Vector3 pos, Vector3 dir, Vector3 up) : pos(pos), dir(dir), up(up), velocity({ 0, 0, 0 }), lastBumped(0)
 {
 }
 

@@ -69,4 +69,5 @@ public:
     Scene* scene;
 
     bool dead;
+    real lastBumped;
 };

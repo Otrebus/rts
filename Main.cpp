@@ -181,6 +181,9 @@ int main()
         time = glfwGetTime();
         auto dt = time - prevTime;
 
+        glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         handleInput(prevTime, time, cameraControl, interface, scene, terrain, window);
 
         for(auto result = popPathFindingResult(); result; result = popPathFindingResult())
@@ -216,9 +219,6 @@ int main()
             if(light->getColor().length() < 1e-3)
                 scene.removeLight(light);
         }
-
-        glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         terrain.draw();
 

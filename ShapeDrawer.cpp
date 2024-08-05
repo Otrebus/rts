@@ -2,6 +2,7 @@
 #include "Primitives.h"
 #include "Model3d.h"
 #include "Scene.h"
+#include "LambertianMaterial.h"
 
 
 ShapeDrawer::ShapeDrawer()
@@ -9,44 +10,75 @@ ShapeDrawer::ShapeDrawer()
 }
 
 
-void ShapeDrawer::drawArrow(Vector3 pos, Vector3 dir, real length, real width)
+void ShapeDrawer::setDepthTest()
 {
+	depthTestIsEnabled = glIsEnabled(GL_DEPTH_TEST);
+
+    if(inFront)
+        glDisable(GL_DEPTH_TEST);
+}
+
+
+void ShapeDrawer::restoreDepthTest()
+{
+	if(inFront && depthTestIsEnabled)
+		glEnable(GL_DEPTH_TEST);
+}
+
+
+void ShapeDrawer::drawArrow(Vector3 pos, Vector3 dir, real length, real width, Vector3 color)
+{
+	setDepthTest();
+	material->Kd = color;
 	cylinderModel->setSize(Vector3(length*0.8, width, width));
 	cylinderModel->setDirection(dir.normalized(), Vector3(0, 0, 1));
 	cylinderModel->setPosition(pos);
-	cylinderModel->draw();
+	cylinderModel->draw(material);
 
 	coneModel->setSize(Vector3(length*0.2, width*2.5, width*2.5));
 	coneModel->setDirection(dir.normalized(), Vector3(0, 0, 1));
 	coneModel->setPosition(pos + dir.normalized()*0.8*length);
-	coneModel->draw();
+	coneModel->draw(material);
+	restoreDepthTest();
 }
 
-void ShapeDrawer::drawBox(Vector3 pos, Vector3 dir, real length, real width, real height)
+void ShapeDrawer::drawBox(Vector3 pos, Vector3 dir, real length, real width, real height, Vector3 color)
 {
+	setDepthTest();
 	boxModel->setSize(Vector3(length, width, height));
 	boxModel->setDirection(dir.normalized(), Vector3(0, 0, 1));
 	boxModel->setPosition(pos);
-	boxModel->draw();
+	material->Kd = color;
+	boxModel->draw(material);
+	restoreDepthTest();
 }
 
-void ShapeDrawer::drawSphere(Vector3 pos, real radius)
+void ShapeDrawer::drawSphere(Vector3 pos, real radius, Vector3 color)
 {
+	setDepthTest();
 	sphereModel->setSize(Vector3(radius, radius, radius));
 	sphereModel->setPosition(pos);
-	sphereModel->draw();
+	material->Kd = color;
+	sphereModel->draw(material);
+	restoreDepthTest();
 }
 
-void ShapeDrawer::drawCylinder(Vector3 pos, Vector3 dir, real length, real radius)
+void ShapeDrawer::drawCylinder(Vector3 pos, Vector3 dir, real length, real radius, Vector3 color)
 {
+	setDepthTest();
 	cylinderModel->setSize(Vector3(length, radius, radius));
 	cylinderModel->setDirection(dir.normalized(), Vector3(0, 0, 1));
+	material->Kd = color;
 	cylinderModel->setPosition(pos);
-	cylinderModel->draw();
+	cylinderModel->draw(material);
+	restoreDepthTest();
 }
 
 void ShapeDrawer::loadModels()
 {
+	inFront = true;
+	material = new LambertianMaterial();
+
 	boxModel = ModelManager::addModel("box", createBoxModel(1.0, 1.0, 1.0));
 	boxModel->setScene(scene);
 	boxModel->init();
@@ -74,3 +106,6 @@ Model3d* ShapeDrawer::coneModel = nullptr;
 Model3d* ShapeDrawer::sphereModel = nullptr;
 Model3d* ShapeDrawer::boxModel = nullptr;
 Scene* ShapeDrawer::scene = nullptr;
+LambertianMaterial* ShapeDrawer::material = nullptr;
+bool ShapeDrawer::inFront = false;
+bool ShapeDrawer::depthTestIsEnabled = false;
