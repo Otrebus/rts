@@ -5,6 +5,7 @@
 #include "Projectile.h"
 #include "SelectionMarkerMesh.h"
 #include "Tank.h"
+#include "ShapeDrawer.h"
 
 
 void Tank::loadModels()
@@ -545,8 +546,10 @@ Vector2 Tank::separate()
             // TODO: Although if a unit is in the middle of a bunch of units and you try to move
             // it then units of a greater rank won't move aside and it can get stuck, so maybe
             // only apply rank-based precedence if both units have conflicting velocity targets
-            if(l < 1.35)
-                sum += std::min(1.0f/std::pow(l-1, 3.0f), maxSpeed)*e.normalized();
+            if(l < 1.55)
+                sum += std::min(1.0f/std::pow(l-0.245f, 3.0f), maxSpeed)*e.normalized();
+            else
+                sum += std::min(std::max(2-l, 0.0f), maxSpeed)*e.normalized();
         }
     }
     return sum;
@@ -555,9 +558,18 @@ Vector2 Tank::separate()
 
 Vector2 Tank::boidCalc()
 {
-    auto ret = evade() + seek() + avoid() + separate();
-    //auto ret = seek();
-    return ret;
+    auto evade_ = evade(), seek_ = seek(), avoid_ = avoid(), separate_ = separate();
+    
+    if(evade_)
+        ShapeDrawer::drawArrow(pos, evade_.to3(), evade_.length(), 0.02, Vector3(1, 0, 0));
+    if(seek_)
+        ShapeDrawer::drawArrow(pos, seek_.to3(), seek_.length(), 0.02, Vector3(0, 1, 0));
+    if(avoid_)
+        ShapeDrawer::drawArrow(pos, avoid_.to3(), avoid_.length(), 0.02, Vector3(0, 0, 1));
+    if(separate_)
+        ShapeDrawer::drawArrow(pos, separate_.to3(), separate_.length(), 0.02, Vector3(1, 1, 0));
+
+    return evade_ + seek_ + avoid_ + separate_;
 }
 
 

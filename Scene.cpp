@@ -125,7 +125,6 @@ void Scene::moveEntitiesSoft(real dt, int depth, std::unordered_set<Entity*>& gl
             //__debugbreak();
             continue;
         }
-        ShapeDrawer::drawArrow(entity->getPosition(), entity->geoVelocity.perp().to3(), 1, 0.02, Vector3(1, 0, 0));
 
         //t = std::max(t, t-0.001f);
         auto t2 = (pos2 - entity->geoPos).length();

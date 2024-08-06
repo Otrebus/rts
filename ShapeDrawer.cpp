@@ -12,17 +12,20 @@ ShapeDrawer::ShapeDrawer()
 
 void ShapeDrawer::setDepthTest()
 {
-	depthTestIsEnabled = glIsEnabled(GL_DEPTH_TEST);
-
     if(inFront)
-        glDisable(GL_DEPTH_TEST);
+	{
+		glDepthRange(0, 0);
+	}
 }
 
 
 void ShapeDrawer::restoreDepthTest()
 {
-	if(inFront && depthTestIsEnabled)
-		glEnable(GL_DEPTH_TEST);
+	if(inFront)
+	{
+		glDepthRange(0, 1);
+		//glSet(GL_DEPTH_BUFFER_BIT);
+	}
 }
 
 
