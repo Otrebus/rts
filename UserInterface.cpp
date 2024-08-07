@@ -11,6 +11,7 @@
 #include <numeric>
 #include <random>
 #include <ranges>
+#include "LambertianMaterial.h"
 
 
 UserInterface::UserInterface(GLFWwindow* window, Scene* scene, CameraControl* cameraControl) : scene(scene), cameraControl(cameraControl), cursor(nullptr), window(window), lastClickedUnit(nullptr)
@@ -20,6 +21,7 @@ UserInterface::UserInterface(GLFWwindow* window, Scene* scene, CameraControl* ca
     selectState = NotSelecting;
     intersecting = false;
     selectingAdditional = false;
+    console = false;
 }
 
 
@@ -535,6 +537,10 @@ void UserInterface::draw()
         line.setInFront(true);
         line.init(scene);
         line.draw();
+    }
+    if(console)
+    {
+        
     }
 }
 

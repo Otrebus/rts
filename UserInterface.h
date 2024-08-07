@@ -50,12 +50,14 @@ public:
 
     bool selectingAdditional;
     bool intersecting;
+    bool console;
     int movingUnit;
 
     std::vector<Vector3> drawTarget;
 
     real timeClickedUnit;
     Unit* lastClickedUnit;
+    Material* consoleMaterial;
 
     Ray intersectRay;
     GLFWcursor* cursor;

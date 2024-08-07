@@ -69,9 +69,9 @@
 - Reorganize project a bit
 + Gun vibrates ever so slightly
 - Combine Preselected/selected, and selectionstate in userinterface - into bitfields maybe
-- Add terrain/unit visualisations of all sorts (lines, arrows, dots, etc)
++ Add terrain/unit visualisations of all sorts (lines, arrows, dots, etc)
 + Move intersectRayOcclusion etc out of Terrain
-- Modelmanager, getModel vs cloneModel vs createModel vs deleteModel, rework somehow
++ Modelmanager, getModel vs cloneModel vs createModel vs deleteModel, rework somehow
 + Text output like fps counter
   - Signed-distance text?
 - Debug console
