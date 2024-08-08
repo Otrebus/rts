@@ -59,6 +59,7 @@ public:
     Unit* lastClickedUnit;
     Material* consoleMaterial;
 
+
     Ray intersectRay;
     GLFWcursor* cursor;
     GLFWwindow* window;

@@ -365,6 +365,9 @@
     <None Include="texturedTerrain.frag">
       <Filter>Shaders\Fragment shaders</Filter>
     </None>
+    <None Include="consoleShader.vert">
+      <Filter>Shaders\Vertex shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">

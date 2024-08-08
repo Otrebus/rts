@@ -155,6 +155,7 @@
     <ClCompile Include="GeometryUtils.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="LambertianMaterial.cpp" />
+    <None Include="consoleShader.vert" />
     <None Include="line.frag">
       <FileType>Document</FileType>
     </None>

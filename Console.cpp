@@ -1,0 +1,75 @@
+#include "Console.h"
+#include "Scene.h"
+#include "Shader.h"
+
+
+Console::Console(Scene* scene)
+{
+    vertexShader = new Shader("vertexShader.vert", GL_VERTEX_SHADER);
+    geometryShader = new Shader("geometryShader.geom", GL_GEOMETRY_SHADER);
+    fragmentShader = new Shader("lambertian.frag", GL_FRAGMENT_SHADER);
+    this->scene = scene;
+}
+
+Console::~Console()
+{
+    delete material;
+}
+
+void Console::init()
+{
+    std::vector<Vertex3> v = {
+        { -1, -1, 0, 0, 0, 1, 0, 0 },
+        { 1, -1, 0, 0, 0, 1, 0, 0 },
+        { 1, 1, 0, 0, 0, 1, 0, 0 },
+        { -1, 1, 0, 0, 0, 1, 0, 0 }
+    };
+    std::vector<int> triangles = { 0, 1, 2, 0, 2, 3 };
+
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex3)*v.size(), v.data(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6*sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*triangles.size(), triangles.data(), GL_STATIC_DRAW);
+}
+
+
+void Console::draw()
+{
+    auto material = mat ? mat : this->material;
+    auto s = scene->getShaderProgramManager();
+    auto program = s->getProgram(material->getShader(), getGeometryShader(), getVertexShader());
+    scene->setShaderProgram(program);
+
+    program->use();
+
+    auto perspM = scene->getCamera()->getMatrix();
+    auto matrix = getTransformationMatrix();
+
+    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "modelViewMatrix"), 1, GL_TRUE, (float*)matrix.m_val);
+    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "projectionMatrix"), 1, GL_TRUE, (float*)perspM.m_val);
+    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "normalMatrix"), 1, GL_TRUE, (float*)getNormalMatrix(matrix).m_val);
+
+    material->updateUniforms(scene);
+    auto s = scene->getShaderProgramManager();
+    auto program = s->getProgram(fragmentShader, geometryShader, vertexShader);
+    scene->setShaderProgram(program);
+    program->use();
+
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, nTriangles, GL_UNSIGNED_INT, 0);
+}
