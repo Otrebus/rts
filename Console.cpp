@@ -1,7 +1,7 @@
 #include "Console.h"
 #include "Scene.h"
 #include "Shader.h"
-
+#include "Math.h"
 
 Console::Console(Scene* scene)
 {
@@ -50,26 +50,17 @@ void Console::init()
 
 void Console::draw()
 {
-    auto material = mat ? mat : this->material;
-    auto s = scene->getShaderProgramManager();
-    auto program = s->getProgram(material->getShader(), getGeometryShader(), getVertexShader());
-    scene->setShaderProgram(program);
-
-    program->use();
-
-    auto perspM = scene->getCamera()->getMatrix();
-    auto matrix = getTransformationMatrix();
-
-    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "modelViewMatrix"), 1, GL_TRUE, (float*)matrix.m_val);
-    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "projectionMatrix"), 1, GL_TRUE, (float*)perspM.m_val);
-    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "normalMatrix"), 1, GL_TRUE, (float*)getNormalMatrix(matrix).m_val);
-
-    material->updateUniforms(scene);
     auto s = scene->getShaderProgramManager();
     auto program = s->getProgram(fragmentShader, geometryShader, vertexShader);
     scene->setShaderProgram(program);
     program->use();
 
+    auto matrix = identityMatrix;
+
+    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "modelViewMatrix"), 1, GL_TRUE, (float*)matrix.m_val);
+    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "projectionMatrix"), 1, GL_TRUE, (float*)matrix.m_val);
+    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "normalMatrix"), 1, GL_TRUE, (float*)matrix.m_val);
+
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, nTriangles, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }

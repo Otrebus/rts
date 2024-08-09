@@ -21,7 +21,8 @@ UserInterface::UserInterface(GLFWwindow* window, Scene* scene, CameraControl* ca
     selectState = NotSelecting;
     intersecting = false;
     selectingAdditional = false;
-    console = false;
+    showConsole = false;
+    console = new Console(scene);
 }
 
 
@@ -363,6 +364,12 @@ void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
             selectingAdditional = false;
     }
 
+    if(input.stateStart == InputType::KeyPress && input.key == GLFW_KEY_GRAVE_ACCENT)
+    {
+        showConsole = !showConsole;
+        std::cout << "yoyo" << std::endl;
+    }
+
     if(input.stateStart == InputType::MousePress && input.key == GLFW_MOUSE_BUTTON_1 && inputQueue.isKeyHeld(GLFW_KEY_LEFT_CONTROL))
     {
         auto [x, y] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
@@ -538,9 +545,9 @@ void UserInterface::draw()
         line.init(scene);
         line.draw();
     }
-    if(console)
+    if(showConsole)
     {
-        
+        console->draw();
     }
 }
 

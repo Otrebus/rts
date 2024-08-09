@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Ray.h"
+#include "Console.h"
 
 class Input;
 class Scene;
@@ -48,9 +49,11 @@ public:
     Vector2 drawBoxc1, drawBoxc2;
     Scene* scene;
 
+    Console* console;
+
     bool selectingAdditional;
     bool intersecting;
-    bool console;
+    bool showConsole;
     int movingUnit;
 
     std::vector<Vector3> drawTarget;

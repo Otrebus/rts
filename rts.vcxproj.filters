@@ -160,6 +160,9 @@
     <ClCompile Include="ShapeDrawer.cpp">
       <Filter>Source files\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Console.cpp">
+      <Filter>Source files\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -318,6 +321,9 @@
     <ClInclude Include="ShapeDrawer.h">
       <Filter>Source files\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Console.h">
+      <Filter>Source files\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="lambertian.frag">
@@ -364,9 +370,6 @@
     </None>
     <None Include="texturedTerrain.frag">
       <Filter>Shaders\Fragment shaders</Filter>
-    </None>
-    <None Include="consoleShader.vert">
-      <Filter>Shaders\Vertex shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
