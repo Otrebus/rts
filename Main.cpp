@@ -247,7 +247,6 @@ int main()
 
         interface.setResolution(xres, yres);
         cameraControl.setResolution(xres, yres);
-        interface.draw();
 
         std::vector<SerializedParticle> P;
         for(auto particle : scene.getParticles())
@@ -287,6 +286,7 @@ int main()
         avgFps = ((9*avgFps + 1/dt))/10;
 
         drawText(realToString(avgFps, 3), { 0.80, 0.90 }, 0.03, { 0, 0.8, 0 });
+        interface.draw();
         cameraControl.update(dt);
         glfwSwapBuffers(window);
         frames++;

@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "Shader.h"
 #include "Math.h"
+#include "Text.h"
 
 Console::Console(Scene* scene)
 {
@@ -19,8 +20,8 @@ Console::~Console()
 void Console::init()
 {
     std::vector<Vertex3> v = {
-        { -1, -1, 0, 0, 0, 1, 0, 0 },
-        { 1, -1, 0, 0, 0, 1, 0, 0 },
+        { -1, -0, 0, 0, 0, 1, 0, 0 },
+        { 1, -0, 0, 0, 0, 1, 0, 0 },
         { 1, 1, 0, 0, 0, 1, 0, 0 },
         { -1, 1, 0, 0, 0, 1, 0, 0 }
     };
@@ -47,7 +48,6 @@ void Console::init()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*triangles.size(), triangles.data(), GL_STATIC_DRAW);
 }
 
-
 void Console::draw()
 {
     auto s = scene->getShaderProgramManager();
@@ -63,4 +63,6 @@ void Console::draw()
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    drawText("I am text", Vector2(-0.98, 0.1), 0.02, Vector3(0, 1, 0));
 }

@@ -14,7 +14,7 @@ void ShapeDrawer::setDepthTest()
 {
     if(inFront)
 	{
-		glDepthRange(0, 0);
+		glDepthRange(0.00001, 0.00001);
 	}
 }
 

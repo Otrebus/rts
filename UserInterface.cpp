@@ -12,7 +12,8 @@
 #include <random>
 #include <ranges>
 #include "LambertianMaterial.h"
-
+#include <GL/gl3w.h>
+#include <GLFW/glfw3.h>
 
 UserInterface::UserInterface(GLFWwindow* window, Scene* scene, CameraControl* cameraControl) : scene(scene), cameraControl(cameraControl), cursor(nullptr), window(window), lastClickedUnit(nullptr)
 {
@@ -23,6 +24,7 @@ UserInterface::UserInterface(GLFWwindow* window, Scene* scene, CameraControl* ca
     selectingAdditional = false;
     showConsole = false;
     console = new Console(scene);
+    console->init();
 }
 
 
@@ -524,6 +526,12 @@ void UserInterface::setResolution(int xres, int yres)
 
 void UserInterface::draw()
 {
+    GLint depthFunc;
+    glGetIntegerv(GL_DEPTH_FUNC, &depthFunc);
+
+    glDepthFunc(GL_LEQUAL);
+
+	glDepthRange(0, 0);
     if(selectState == DrawingBox)
     {
         Line2d line({
@@ -549,6 +557,7 @@ void UserInterface::draw()
     {
         console->draw();
     }
+    glDepthFunc(depthFunc);
 }
 
 void UserInterface::setCursor(int shape)
