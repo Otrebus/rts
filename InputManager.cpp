@@ -24,6 +24,11 @@ void InputManager::addKeyInput(real time, int key, int state)
 }
 
 
+void InputManager::addCharacterInput(real time, int codepoint)
+{
+    queue.push({ time, QueuedInputType::Character, codepoint, 0, 0, 0, this });
+}
+
 void InputManager::addMouseInput(real time, int key, int state)
 {
     queue.push({ time, QueuedInputType::MouseButton, key, state, 0, 0, this });
@@ -81,6 +86,11 @@ auto keyCallback = [](GLFWwindow* window, int key, int scancode, int action, int
         InputManager::getInstance().addKeyInput(glfwGetTime(), key, action);
 };
 
+auto charCallback = [](GLFWwindow* window, unsigned int codepoint)
+{
+    InputManager::getInstance().addCharacterInput(glfwGetTime(), codepoint);
+};
+
 auto mouseButtonCallback = [](GLFWwindow* window, int button, int action, int mods)
 {
     InputManager::getInstance().addMouseInput(glfwGetTime(), button, action);
@@ -101,6 +111,7 @@ void InputManager::initInput(GLFWwindow* window)
 {
     InputManager::getInstance().setWindow(window);
     glfwSetKeyCallback(window, keyCallback);
+    glfwSetCharCallback(window, charCallback);
     glfwSetMouseButtonCallback(window, mouseButtonCallback);
     glfwSetCursorPosCallback(window, cursorPositionCallback);
     glfwSetScrollCallback(window, scrollCallback);
@@ -184,6 +195,8 @@ std::vector<Input*> InputManager::handleInput(real prevTime, real time)
             inputs.push_back(new Input(queuedInput.posX, queuedInput.posY, 0, InputType::MousePosition, None, queuedInput.time, queuedInput.time));
         else if(queuedInput.type == Scroll)
             inputs.push_back(new Input(queuedInput.posX, queuedInput.posY, 0, InputType::ScrollOffset, None, queuedInput.time, queuedInput.time));
+        else if(queuedInput.type == Character)
+            inputs.push_back(new Input(queuedInput.posX, queuedInput.posY, queuedInput.key, InputType::Char, None, queuedInput.time, queuedInput.time));
         pop();
     }
 

@@ -2,8 +2,10 @@
 
 #include "Material.h"
 #include "Vertex3d.h"
+#include "InputManager.h"
 
 class Scene;
+
 class Shader;
 
 class Console
@@ -23,4 +25,12 @@ public:
 	~Console();
 	void init();
 	void draw();
+
+	
+	void handleInput(const Input& input);
+
+	const real textSize = 0.04;
+	const real bottomPos = 0;
+
+	std::string textInput;
 };

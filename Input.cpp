@@ -9,8 +9,9 @@ void handleInput(const real& prevTime, const real& time, CameraControl& cameraCo
 
     for (auto input : inputs)
     {
-        cameraControl.handleInput(*input);
-        interface.handleInput(*input, scene.getUnits());
+        auto b = interface.handleInput(*input, scene.getUnits());
+        if(!b)
+            cameraControl.handleInput(*input);
 
         if (input->stateStart == InputType::KeyPress && input->key == GLFW_KEY_Z)
         {

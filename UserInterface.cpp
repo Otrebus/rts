@@ -342,11 +342,22 @@ void UserInterface::selectUnit(const Ray& ray, const std::vector<Unit*>& units, 
     }
 }
 
-void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& units)
+bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& units)
 {
     auto& inputQueue = InputManager::getInstance();
 
     auto time = glfwGetTime();
+
+    if(input.stateStart == InputType::KeyPress && input.key == GLFW_KEY_GRAVE_ACCENT)
+    {
+        showConsole = !showConsole;
+    }
+    
+    if(showConsole)
+    {
+        console->handleInput(input);
+        return true;
+    }
 
     if(auto pMovingUnit = scene->getEntity(movingUnit); pMovingUnit)
     {
@@ -357,19 +368,13 @@ void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
     }
 
     if(cameraControl->getMode() == Freelook)
-        return;
+        return false;
 
     if(input.key == GLFW_KEY_LEFT_SHIFT)
     {
         selectingAdditional = (input.stateStart == InputType::KeyPress || input.stateStart == InputType::KeyHold);
         if(input.stateEnd == InputType::KeyRelease)
             selectingAdditional = false;
-    }
-
-    if(input.stateStart == InputType::KeyPress && input.key == GLFW_KEY_GRAVE_ACCENT)
-    {
-        showConsole = !showConsole;
-        std::cout << "yoyo" << std::endl;
     }
 
     if(input.stateStart == InputType::MousePress && input.key == GLFW_MOUSE_BUTTON_1 && inputQueue.isKeyHeld(GLFW_KEY_LEFT_CONTROL))
@@ -514,6 +519,7 @@ void UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
             }
         }
     }
+    return false;
 }
 
 

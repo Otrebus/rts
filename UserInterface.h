@@ -26,7 +26,7 @@ public:
 
     void draw();
 
-    void handleInput(const Input& input, const std::vector<Unit*>& units);
+    bool handleInput(const Input& input, const std::vector<Unit*>& units);
     void setResolution(int xres, int yres);
 
     void selectUnits(std::vector<Unit*> units, bool pre);

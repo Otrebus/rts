@@ -3,6 +3,7 @@
 #include "Shader.h"
 #include "Math.h"
 #include "Text.h"
+#include "InputManager.h"
 
 Console::Console(Scene* scene)
 {
@@ -64,5 +65,29 @@ void Console::draw()
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-    drawText("I am text", Vector2(-0.98, 0.1), 0.02, Vector3(0, 1, 0));
+    std::vector<std::string> rows;
+    rows.push_back("I am text");
+    rows.push_back("gj394539efwhpq38rfff34g34hpnwe;fhu");
+    rows.push_back("I am going to be some sort of text that is something in nature||");
+
+    int i = 1;
+    drawText(textInput, Vector2(-0.98, bottomPos + ++i*textSize*1.05), textSize, Vector3(1, 1, 0));
+    for(auto it = rows.rbegin(); it < rows.rend(); it++)
+    {
+        auto row = *it;
+        drawText(row, Vector2(-0.98, bottomPos + ++i*textSize*1.05), textSize, Vector3(0, 1, 0));
+    }
+}
+
+void Console::handleInput(const Input& input)
+{
+    if(input.stateStart == InputType::KeyPress && input.key == GLFW_KEY_BACKSPACE)
+    {
+        if(textInput.size())
+            textInput.pop_back();
+    }
+    else if(input.stateStart == InputType::Char)
+    {
+        textInput += (char) input.key;
+    }
 }

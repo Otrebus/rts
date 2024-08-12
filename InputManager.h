@@ -10,12 +10,12 @@ class InputManager;
 
 enum InputType
 {
-    None = 0, MouseRelease = 1, MousePress = 2, MouseHold = 4, KeyRelease = 8, KeyPress = 16, KeyHold = 32, MousePosition = 64, ScrollOffset = 128
+    None = 0, MouseRelease = 1, MousePress = 2, MouseHold = 4, KeyRelease = 8, KeyPress = 16, KeyHold = 32, MousePosition = 64, ScrollOffset = 128, Char = 256
 };
 
 enum QueuedInputType
 {
-    KeyboardKey = 1, MouseButton = 2, MousePos = 4, Scroll = 8
+    KeyboardKey = 1, MouseButton = 2, MousePos = 4, Scroll = 8, Character = 16
 };
 
 
@@ -51,6 +51,7 @@ public:
     }
 
     void addKeyInput(real time, int key, int state);
+    void addCharacterInput(real time, int codepoint);
     void addMouseInput(real time, int key, int state);
     void addMousePosition(real time, real x, real y);
     void addScrollOffset(real time, real y);
