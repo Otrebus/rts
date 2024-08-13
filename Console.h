@@ -32,5 +32,9 @@ public:
 	const real textSize = 0.04;
 	const real bottomPos = 0;
 
+	real lastBackspacePress;
+	real backSpaceDelay;
+
 	std::string textInput;
+	std::vector<std::string> rows;
 };

@@ -11,6 +11,12 @@ Console::Console(Scene* scene)
     geometryShader = new Shader("geometryShader.geom", GL_GEOMETRY_SHADER);
     fragmentShader = new Shader("lambertian.frag", GL_FRAGMENT_SHADER);
     this->scene = scene;
+    lastBackspacePress = 0;
+    backSpaceDelay = 0.2;
+
+    rows.push_back("I am text");
+    rows.push_back("gj394539efwhpq38rfff34g34hpnwe;fhu");
+    rows.push_back("I am going to be some sort of text that is something in nature||");
 }
 
 Console::~Console()
@@ -65,11 +71,6 @@ void Console::draw()
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-    std::vector<std::string> rows;
-    rows.push_back("I am text");
-    rows.push_back("gj394539efwhpq38rfff34g34hpnwe;fhu");
-    rows.push_back("I am going to be some sort of text that is something in nature||");
-
     int i = 1;
     drawText(textInput, Vector2(-0.98, bottomPos + ++i*textSize*1.05), textSize, Vector3(1, 1, 0));
     for(auto it = rows.rbegin(); it < rows.rend(); it++)
@@ -81,13 +82,38 @@ void Console::draw()
 
 void Console::handleInput(const Input& input)
 {
-    if(input.stateStart == InputType::KeyPress && input.key == GLFW_KEY_BACKSPACE)
+
+    if(input.key == GLFW_KEY_BACKSPACE)
     {
-        if(textInput.size())
+        if(input.stateStart == InputType::KeyPress && textInput.size())
+        {
+            lastBackspacePress = glfwGetTime();
             textInput.pop_back();
+        }
+        if(input.stateStart == InputType::KeyHold)
+        {
+            std::cout << "hold";
+            if(glfwGetTime() - lastBackspacePress > backSpaceDelay) // TODO: find the actual repetition rate
+            {
+                lastBackspacePress = glfwGetTime();
+                backSpaceDelay = 0.1;
+                if(textInput.size())
+                    textInput.pop_back();
+            }
+        }
+        if(input.stateEnd == InputType::KeyRelease)
+        {
+            backSpaceDelay = 0.25;
+        }
+    }
+    else if(input.key == GLFW_KEY_ENTER && input.stateStart == InputType::KeyPress)
+    {
+        rows.push_back(textInput);
+        textInput = "";
     }
     else if(input.stateStart == InputType::Char)
     {
+        std::cout << input.key << std::endl;
         textInput += (char) input.key;
     }
 }
