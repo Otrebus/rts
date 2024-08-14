@@ -31,14 +31,5 @@ void main()
     vec3 color = Kd * lambertian + ambient;
 
     color = clamp(color, 0.0, 1.0);
-    FragColor = vec4(color, 1.0);
-
-    for(int i = 0; i < nLights; i++)
-    {
-        lightDir = normalize(pointLights[i].position-position);
-        lambertian = max(dot(n, lightDir), 0.0);
-        float d = distance(pointLights[i].position, position);
-  	    FragColor += lambertian*vec4(pointLights[i].color, 1)/(0.1+d*d);
-    }
-
+    FragColor = vec4(color, 0.5);
 }

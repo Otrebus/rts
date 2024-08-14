@@ -351,6 +351,8 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
     if(input.stateStart == InputType::KeyPress && input.key == GLFW_KEY_GRAVE_ACCENT)
     {
         showConsole = !showConsole;
+        console->setOpen(showConsole);
+        return true;
     }
     
     if(showConsole)
@@ -559,7 +561,7 @@ void UserInterface::draw()
         line.init(scene);
         line.draw();
     }
-    if(showConsole)
+    if(console->isVisible())
     {
         console->draw();
     }

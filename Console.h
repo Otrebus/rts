@@ -26,11 +26,20 @@ public:
 	void init();
 	void draw();
 
+	void setOpen(bool open);
+	bool isVisible();
+	real getY();
+	
+	real animStartPos;
+	real animStart;
+
+	bool open;
 	
 	void handleInput(const Input& input);
 
 	const real textSize = 0.04;
 	const real bottomPos = 0;
+	const real animDuration = 0.15;
 
 	real lastBackspacePress;
 	real backSpaceDelay;

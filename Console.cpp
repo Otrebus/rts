@@ -9,10 +9,13 @@ Console::Console(Scene* scene)
 {
     vertexShader = new Shader("vertexShader.vert", GL_VERTEX_SHADER);
     geometryShader = new Shader("geometryShader.geom", GL_GEOMETRY_SHADER);
-    fragmentShader = new Shader("lambertian.frag", GL_FRAGMENT_SHADER);
+    fragmentShader = new Shader("console.frag", GL_FRAGMENT_SHADER);
     this->scene = scene;
     lastBackspacePress = 0;
     backSpaceDelay = 0.2;
+    animStartPos = 0;
+    animStart = -1;
+    open = false;
 
     rows.push_back("I am text");
     rows.push_back("gj394539efwhpq38rfff34g34hpnwe;fhu");
@@ -22,6 +25,27 @@ Console::Console(Scene* scene)
 Console::~Console()
 {
     delete material;
+}
+
+real Console::getY()
+{
+    auto t = (glfwGetTime()-animStart)/animDuration;
+    if(t >= 1)
+        t = 1;
+    return animStartPos + (1 - (t*(t-2)+1))*(real(!open) - animStartPos);
+}
+
+bool Console::isVisible()
+{
+    return open || glfwGetTime() - animStart < animDuration;
+}
+
+void Console::setOpen(bool open)
+{
+    animStartPos = getY();
+    this->open = open;
+
+    animStart = glfwGetTime();
 }
 
 void Console::init()
@@ -57,6 +81,15 @@ void Console::init()
 
 void Console::draw()
 {
+    std::vector<Vertex3> v = {
+        { -1, getY(), 0, 0, 0, 1, 0, 0 },
+        { 1, getY(), 0, 0, 0, 1, 0, 0 },
+        { 1, 1, 0, 0, 0, 1, 0, 0 },
+        { -1, 1, 0, 0, 0, 1, 0, 0 }
+    };
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex3)*sizeof(v), v.data(), GL_STATIC_DRAW);
     auto s = scene->getShaderProgramManager();
     auto program = s->getProgram(fragmentShader, geometryShader, vertexShader);
     scene->setShaderProgram(program);
@@ -68,21 +101,23 @@ void Console::draw()
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "projectionMatrix"), 1, GL_TRUE, (float*)matrix.m_val);
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "normalMatrix"), 1, GL_TRUE, (float*)matrix.m_val);
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     int i = 1;
-    drawText(textInput, Vector2(-0.98, bottomPos + ++i*textSize*1.05), textSize, Vector3(1, 1, 0));
+    drawText(textInput, Vector2(-0.98, getY() + ++i*textSize*1.05), textSize, Vector3(1, 1, 0));
     for(auto it = rows.rbegin(); it < rows.rend(); it++)
     {
         auto row = *it;
-        drawText(row, Vector2(-0.98, bottomPos + ++i*textSize*1.05), textSize, Vector3(0, 1, 0));
+        drawText(row, Vector2(-0.98, getY() + ++i*textSize*1.05), textSize, Vector3(0, 1, 0));
     }
 }
 
 void Console::handleInput(const Input& input)
 {
-
     if(input.key == GLFW_KEY_BACKSPACE)
     {
         if(input.stateStart == InputType::KeyPress && textInput.size())
@@ -96,7 +131,7 @@ void Console::handleInput(const Input& input)
             if(glfwGetTime() - lastBackspacePress > backSpaceDelay) // TODO: find the actual repetition rate
             {
                 lastBackspacePress = glfwGetTime();
-                backSpaceDelay = 0.1;
+                backSpaceDelay = 0.05;
                 if(textInput.size())
                     textInput.pop_back();
             }
@@ -111,7 +146,7 @@ void Console::handleInput(const Input& input)
         rows.push_back(textInput);
         textInput = "";
     }
-    else if(input.stateStart == InputType::Char)
+    else if(input.stateStart == InputType::Char && input.key != '`')
     {
         std::cout << input.key << std::endl;
         textInput += (char) input.key;

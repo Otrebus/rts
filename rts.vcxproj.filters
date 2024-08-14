@@ -371,6 +371,7 @@
     <None Include="texturedTerrain.frag">
       <Filter>Shaders\Fragment shaders</Filter>
     </None>
+    <None Include="console.frag" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">
