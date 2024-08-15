@@ -505,8 +505,8 @@ Vector2 Tank::evade()
 
             auto r = w - (pos2-pos1);
             // TODO: better deduction of time-to-collision (e/v)?
-            if(e*v > 0 && r.length() < 1 && e.length()/v.length() < 2)
-                sum += (v1%r > 1 ? std::min(w.length(), 3.f)*e.normalized().perp() : -std::min(w.length(), 3.f)*e.normalized().perp());
+            if(e*v > 0 && r.length() < 3 && e.length()/v.length() < 4)
+                sum += 5*r.normalized()*(v.length()/e.length());
         }
     }
     return sum;
