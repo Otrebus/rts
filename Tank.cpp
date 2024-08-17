@@ -498,15 +498,35 @@ Vector2 Tank::evade()
         if(unit != this)
         {
             auto pos1 = geoPos, pos2 = unit->geoPos;
-            auto e = (pos2 - pos1);
             auto v1 = geoVelocity, v2 = unit->getGeoVelocity();
-            auto v = v1 - v2;
-            auto w = ((e*v)/v.length2())*v;
+            auto e = pos2 - pos1;
+            auto v = v2 - v1;
 
-            auto r = w - (pos2-pos1);
-            // TODO: better deduction of time-to-collision (e/v)?
-            if(e*v > 0 && r.length() < 3 && e.length()/v.length() < 4)
-                sum += 5*r.normalized()*(v.length()/e.length());
+            if(e*v >= 0)
+                continue;
+
+            auto th = std::acos(-e*v/(e.length()*v.length()));
+            auto y = tan(th)*e.length();
+
+            auto d = (2.f-y);
+            if(d <= 0)
+                continue;
+
+            auto t = d/(e.length()/v.length());
+
+            if(e.length()/v.length() < 3)
+                sum += e.perp().normalized()*d/t;
+
+            //auto pos1 = geoPos, pos2 = unit->geoPos;
+            //auto e = (pos2 - pos1);
+            //auto v1 = geoVelocity, v2 = unit->getGeoVelocity();
+            //auto v = v1 - v2;
+            //auto w = ((e*v)/v.length2())*v;
+
+            //auto r = w - (pos2-pos1);
+            //// TODO: better deduction of time-to-collision (e/v)?
+            //if(e*v > 0 && r.length() < 1 && e.length()/v.length() < 2)
+            //    sum += (v1%r > 1 ? std::min(w.length(), 3.f)*e.normalized().perp() : -std::min(w.length(), 3.f)*e.normalized().perp());
         }
     }
     return sum;

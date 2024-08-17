@@ -563,6 +563,7 @@ void UserInterface::draw()
     }
     if(console->isVisible())
     {
+        std::cout << "visible";
         console->draw();
     }
     glDepthFunc(depthFunc);
