@@ -539,7 +539,10 @@ void UserInterface::draw()
 
     glDepthFunc(GL_LEQUAL);
 
-	glDepthRange(0, 0);
+	GLfloat depthRange[2];
+    glGetFloatv(GL_DEPTH_RANGE, depthRange);
+
+    glDepthRange(0, 0);
     if(selectState == DrawingBox)
     {
         Line2d line({
@@ -567,6 +570,7 @@ void UserInterface::draw()
         console->draw();
     }
     glDepthFunc(depthFunc);
+    glDepthRange(depthRange[0], depthRange[1]);
 }
 
 void UserInterface::setCursor(int shape)
