@@ -505,17 +505,22 @@ Vector2 Tank::evade()
             if(e*v >= 0)
                 continue;
 
-            auto th = std::acos(-e*v/(e.length()*v.length()));
+            auto costh = -e*v/(e.length()*v.length());
+            auto th = std::acos(costh);
             auto y = tan(th)*e.length();
 
             auto d = (2.f-y);
-            if(d <= 0)
+            if(d <= 0 || !v || e.length()/v.length() > 2.5f)
                 continue;
 
-            auto t = d/(e.length()/v.length());
+            auto t = (e.length()/(costh*v.length()));
 
-            if(e.length()/v.length() < 3)
-                sum += e.perp().normalized()*d/t;
+            auto s = e.perp().normalized()*d/t;
+
+            if(v%e > 0)
+                sum += s;
+            else
+                sum -= s;
 
             //auto pos1 = geoPos, pos2 = unit->geoPos;
             //auto e = (pos2 - pos1);
