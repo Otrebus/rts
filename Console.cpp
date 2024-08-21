@@ -5,6 +5,14 @@
 #include "Text.h"
 #include "InputManager.h"
 
+
+ConsoleHistoryEntry::ConsoleHistoryEntry(std::string entry, HistoryType type)
+{
+    this->entry = entry;
+    this->type = type;
+}
+
+
 Console::Console(Scene* scene)
 {
     vertexShader = new Shader("vertexShader.vert", GL_VERTEX_SHADER);
@@ -16,10 +24,6 @@ Console::Console(Scene* scene)
     animStartPos = 0;
     animStart = -1;
     open = false;
-
-    rows.push_back("I am text");
-    rows.push_back("gj394539efwhpq38rfff34g34hpnwe;fhu");
-    rows.push_back("I am going to be some sort of text that is something in nature||");
 }
 
 Console::~Console()
@@ -109,10 +113,10 @@ void Console::draw()
 
     int i = 1;
     drawText(textInput, Vector2(-0.98, getY() + ++i*textSize*1.05), textSize, Vector3(1, 1, 0));
-    for(auto it = rows.rbegin(); it < rows.rend(); it++)
+    for(auto it = history.rbegin(); it < history.rend(); it++)
     {
-        auto row = *it;
-        drawText(row, Vector2(-0.98, getY() + ++i*textSize*1.05), textSize, Vector3(0, 1, 0));
+        Vector3 color = it->type == ConsoleHistoryEntry::Input ? Vector3(0.8, 0.8, 0.8) : Vector3(0.6, 0.6, 0.6);
+        drawText(it->entry, Vector2(-0.98, getY() + ++i*textSize*1.05), textSize, color);
     }
 }
 
@@ -127,7 +131,6 @@ void Console::handleInput(const Input& input)
         }
         if(input.stateStart == InputType::KeyHold)
         {
-            std::cout << "hold";
             if(glfwGetTime() - lastBackspacePress > backSpaceDelay) // TODO: find the actual repetition rate
             {
                 lastBackspacePress = glfwGetTime();
@@ -143,7 +146,8 @@ void Console::handleInput(const Input& input)
     }
     else if(input.key == GLFW_KEY_ENTER && input.stateStart == InputType::KeyPress)
     {
-        rows.push_back(textInput);
+        history.push_back( { textInput, ConsoleHistoryEntry::Input } );
+        history.push_back( { "I am some response to the command", ConsoleHistoryEntry::Output } );
         textInput = "";
     }
     else if(input.stateStart == InputType::Char && input.key != '`')

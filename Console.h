@@ -8,6 +8,18 @@ class Scene;
 
 class Shader;
 
+
+class ConsoleHistoryEntry
+{
+public:
+	enum HistoryType { Input, Output };
+	ConsoleHistoryEntry(std::string, HistoryType);
+
+	std::string entry;
+	HistoryType type;
+};
+
+
 class Console
 {
 public:
@@ -45,5 +57,5 @@ public:
 	real backSpaceDelay;
 
 	std::string textInput;
-	std::vector<std::string> rows;
+	std::vector<ConsoleHistoryEntry> history;
 };
