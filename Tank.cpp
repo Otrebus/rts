@@ -6,10 +6,21 @@
 #include "SelectionMarkerMesh.h"
 #include "Tank.h"
 #include "ShapeDrawer.h"
+#include "ConsoleSettings.h"
+
+
+ConsoleVariable Tank::tankVar("tankVar", 100);
+ConsoleVariable tankVar2("tankVar2", 150);
 
 
 void Tank::loadModels()
 {
+    std::cout << "tankVar is " << tankVar.var << std::endl;
+    std::cout << "tankVar2 is " << tankVar2.var << std::endl;
+
+    ConsoleSettings::setVariable("tankVar", 20);
+    std::cout << "tankVar is now " << tankVar.var << std::endl;
+
     auto body = new Model3d();
     body->readFromFile("tankbody.obj");
 

@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <thread>
 #include "Input.h"
+#include "ConsoleSettings.h"
 
 
 extern bool quitting = false;
@@ -51,6 +52,11 @@ void sizeCallback(GLFWwindow* window, int width, int height)
 
 int main()
 {
+    ConsoleVariable orbo("orbo", 10);
+    std::cout << orbo.var << std::endl;
+    ConsoleSettings::setVariable("orbo", 20);
+    std::cout << orbo.var << std::endl;
+
     std::default_random_engine generator;
     std::uniform_real_distribution<real> dist(0, 1.0f);
 

@@ -3,7 +3,7 @@
 #include "Line.h"
 #include "Math.h"
 #include "Unit.h"
-
+#include "ConsoleSettings.h"
 
 class Tank : public Unit
 {
@@ -97,7 +97,9 @@ public:
 
     Line3d destinationLine;
 
-
     static Model3d* tankBoundingBoxModel;
     static BoundingBox tankBoundingBox;
+
+    static ConsoleVariable tankVar;
 };
+

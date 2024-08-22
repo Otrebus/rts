@@ -163,6 +163,9 @@
     <ClCompile Include="Console.cpp">
       <Filter>Source files\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="ConsoleSettings.cpp">
+      <Filter>Source files\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -322,6 +325,9 @@
       <Filter>Source files\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Console.h">
+      <Filter>Source files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsoleSettings.h">
       <Filter>Source files\Scene</Filter>
     </ClInclude>
   </ItemGroup>
