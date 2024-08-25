@@ -101,5 +101,6 @@ public:
     static BoundingBox tankBoundingBox;
 
     static ConsoleVariable tankVar;
+    static ConsoleVariable boidDebug;
 };
 

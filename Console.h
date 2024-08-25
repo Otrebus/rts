@@ -58,4 +58,8 @@ public:
 
 	std::string textInput;
 	std::vector<ConsoleHistoryEntry> history;
+
+	bool tabbing;
+	std::vector<std::string> completionStrings;
+	int completionIndex;
 };

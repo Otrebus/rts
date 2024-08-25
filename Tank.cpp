@@ -12,6 +12,12 @@
 ConsoleVariable Tank::tankVar("tankVar", 100);
 ConsoleVariable tankVar2("tankVar2", 150);
 
+ConsoleVariable tababa("tababa", 20);
+ConsoleVariable tabbba("tabbba", 20);
+ConsoleVariable tobbba("tobbba", 20);
+ConsoleVariable aabbba("aabbba", 20);
+
+ConsoleVariable Tank::boidDebug("boidDebug", 0);
 
 void Tank::loadModels()
 {
@@ -20,6 +26,11 @@ void Tank::loadModels()
 
     ConsoleSettings::setVariable("tankVar", 20);
     std::cout << "tankVar is now " << tankVar.var << std::endl;
+
+    ConsoleSettings::setVariable("tababa", 20);
+    ConsoleSettings::setVariable("tabbba", 20);
+    ConsoleSettings::setVariable("tobbba", 20);
+    ConsoleSettings::setVariable("aabbba", 20);
 
     auto body = new Model3d();
     body->readFromFile("tankbody.obj");
@@ -596,14 +607,17 @@ Vector2 Tank::boidCalc()
 {
     auto evade_ = evade(), seek_ = seek(), avoid_ = avoid(), separate_ = separate();
     
-    if(evade_)
-        ShapeDrawer::drawArrow(pos, evade_.to3(), evade_.length(), 0.02, Vector3(1, 0, 0));
-    if(seek_)
-        ShapeDrawer::drawArrow(pos, seek_.to3(), seek_.length(), 0.02, Vector3(0, 1, 0));
-    if(avoid_)
-        ShapeDrawer::drawArrow(pos, avoid_.to3(), avoid_.length(), 0.02, Vector3(0, 0, 1));
-    if(separate_)
-        ShapeDrawer::drawArrow(pos, separate_.to3(), separate_.length(), 0.02, Vector3(1, 1, 0));
+    if(boidDebug.var)
+    {
+        if(evade_)
+            ShapeDrawer::drawArrow(pos, evade_.to3(), evade_.length(), 0.02, Vector3(1, 0, 0));
+        if(seek_)
+            ShapeDrawer::drawArrow(pos, seek_.to3(), seek_.length(), 0.02, Vector3(0, 1, 0));
+        if(avoid_)
+            ShapeDrawer::drawArrow(pos, avoid_.to3(), avoid_.length(), 0.02, Vector3(0, 0, 1));
+        if(separate_)
+            ShapeDrawer::drawArrow(pos, separate_.to3(), separate_.length(), 0.02, Vector3(1, 1, 0));
+    }
 
     return evade_ + seek_ + avoid_ + separate_;
 }

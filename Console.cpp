@@ -4,6 +4,7 @@
 #include "Math.h"
 #include "Text.h"
 #include "InputManager.h"
+#include "ConsoleSettings.h"
 
 
 ConsoleHistoryEntry::ConsoleHistoryEntry(std::string entry, HistoryType type)
@@ -24,6 +25,8 @@ Console::Console(Scene* scene)
     animStartPos = 0;
     animStart = -1;
     open = false;
+    completionIndex = 0;
+    tabbing = false;
 }
 
 Console::~Console()
@@ -146,13 +149,50 @@ void Console::handleInput(const Input& input)
     }
     else if(input.key == GLFW_KEY_ENTER && input.stateStart == InputType::KeyPress)
     {
-        history.push_back( { textInput, ConsoleHistoryEntry::Input } );
+        /*history.push_back( { textInput, ConsoleHistoryEntry::Input } );
         history.push_back( { "I am some response to the command", ConsoleHistoryEntry::Output } );
-        textInput = "";
+        textInput = "";*/
+        std::stringstream ss(textInput);
+        std::string varName;
+        real num;
+        ss >> varName;
+        if(!ConsoleSettings::findVariable(varName))
+        {
+            history.push_back( { "Unknown variable \"" + varName + "\"", ConsoleHistoryEntry::Output } );
+        }
+        else if(ss >> num)
+        {
+            ConsoleSettings::setVariable(varName, num);
+        }
+        else
+        {
+            history.push_back( { "Bad assignment", ConsoleHistoryEntry::Output } );
+        }
+
     }
     else if(input.stateStart == InputType::Char && input.key != '`')
     {
         std::cout << input.key << std::endl;
         textInput += (char) input.key;
+    }
+    else if(input.key == GLFW_KEY_TAB && input.stateStart == InputType::KeyPress)
+    {
+        if(!tabbing)
+        {
+            completionStrings = ConsoleSettings::getCompletionStrings(textInput);
+            tabbing = true;
+            completionIndex = 0;
+        }
+        else
+            completionIndex = (completionIndex + 1) % completionStrings.size();
+
+        if(completionStrings.size())
+            textInput = completionStrings[completionIndex];
+        else
+            tabbing = false;
+    }
+    if(input.key != GLFW_KEY_TAB && input.stateStart == InputType::KeyPress)
+    {
+        tabbing = false;
     }
 }
