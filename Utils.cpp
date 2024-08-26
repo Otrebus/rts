@@ -1,6 +1,7 @@
 #include "Entity.h"
 #include <fstream>
 #include <iomanip>
+#include <algorithm>
 
 
 std::tuple<int, int, int> vectorToRgb(const Vector3& color)
@@ -88,4 +89,12 @@ std::string realToString(real num, int significantDigits)
     real d = significantDigits - std::log10(num);
     ss << std::fixed << std::setprecision(std::max(0.f, d)) << num;
     return ss.str();
+}
+
+
+std::string lower(const std::string& str)
+{
+    std::string output(' ', str.size());
+    std::transform(str.begin(), str.end(), output.begin(), [](auto c){ return std::tolower(c); });
+    return output;
 }

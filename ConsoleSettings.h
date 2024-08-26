@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include "Utils.h"
 
 #pragma once
 
@@ -49,7 +50,7 @@ public:
 		std::vector<std::string> output;
 		for(auto& it : getSettings()->keyMap)
 		{
-			if(it.first.starts_with(prefix))
+			if(lower(const_cast<std::string&>(it.first)).starts_with(prefix))
 			{
 				output.push_back(it.first);
 			}

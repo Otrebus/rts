@@ -47,6 +47,7 @@ void main()
     for(int i = 0; i < nLights; i++)
     {
         float d = distance(pointLights[i].position, position);
-  	    FragColor += vec4(pointLights[i].color, 0)/(0.1 + d*d);
+  	    FragColor += vec4(pointLights[i].color, 1)/(0.1 + d*d);
     }
+    FragColor.w = 1;
 }

@@ -58,6 +58,9 @@ public:
 
 	std::string textInput;
 	std::vector<ConsoleHistoryEntry> history;
+	std::vector<std::string> commandHistory;
+	int commandHistorySize;
+	int historyIndex;
 
 	bool tabbing;
 	std::vector<std::string> completionStrings;

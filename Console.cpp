@@ -26,7 +26,9 @@ Console::Console(Scene* scene)
     animStart = -1;
     open = false;
     completionIndex = 0;
+    historyIndex = 1;
     tabbing = false;
+    commandHistorySize = 0;
 }
 
 Console::~Console()
@@ -149,26 +151,30 @@ void Console::handleInput(const Input& input)
     }
     else if(input.key == GLFW_KEY_ENTER && input.stateStart == InputType::KeyPress)
     {
-        /*history.push_back( { textInput, ConsoleHistoryEntry::Input } );
-        history.push_back( { "I am some response to the command", ConsoleHistoryEntry::Output } );
-        textInput = "";*/
-        std::stringstream ss(textInput);
-        std::string varName;
-        real num;
-        ss >> varName;
-        if(!ConsoleSettings::findVariable(varName))
+        if(!textInput.empty())
         {
-            history.push_back( { "Unknown variable \"" + varName + "\"", ConsoleHistoryEntry::Output } );
+            history.push_back( { textInput, ConsoleHistoryEntry::Input });
+            std::stringstream ss(textInput);
+            std::string varName;
+            real num;
+            ss >> varName;
+            if(!ConsoleSettings::findVariable(varName))
+            {
+                history.push_back( { "Unknown variable \"" + varName + "\"", ConsoleHistoryEntry::Output } );
+            }
+            else if(ss >> num)
+            {
+                ConsoleSettings::setVariable(varName, num);
+                history.push_back( { "varName set to " + std::to_string(num), ConsoleHistoryEntry::Output } );
+            }
+            else
+            {
+                history.push_back( { "Bad assignment", ConsoleHistoryEntry::Output } );
+            }
+            if(commandHistory.empty() || commandHistory.back() != textInput)
+                commandHistory.push_back(textInput);
+            textInput = "";
         }
-        else if(ss >> num)
-        {
-            ConsoleSettings::setVariable(varName, num);
-        }
-        else
-        {
-            history.push_back( { "Bad assignment", ConsoleHistoryEntry::Output } );
-        }
-
     }
     else if(input.stateStart == InputType::Char && input.key != '`')
     {
@@ -191,8 +197,35 @@ void Console::handleInput(const Input& input)
         else
             tabbing = false;
     }
+    else if(input.key == GLFW_KEY_UP && input.stateStart == InputType::KeyPress)
+    {
+        if(!commandHistory.empty())
+        {
+            if(historyIndex >= commandHistory.size())
+            {
+                historyIndex = commandHistory.size();
+            }
+            historyIndex = std::max(historyIndex-1, 0);
+            textInput = commandHistory[historyIndex];
+        }
+    }
+    else if(input.key == GLFW_KEY_DOWN && input.stateStart == InputType::KeyPress)
+    {
+        if(!commandHistory.empty())
+        {
+            if(historyIndex < commandHistory.size()-1)
+            {
+                historyIndex++;
+                textInput = commandHistory[historyIndex];
+            }
+        }
+    }
     if(input.key != GLFW_KEY_TAB && input.stateStart == InputType::KeyPress)
     {
         tabbing = false;
+    }
+    if(input.key != GLFW_KEY_UP && input.key != GLFW_KEY_DOWN && input.stateStart == InputType::KeyPress)
+    {
+        historyIndex = history.size();
     }
 }
