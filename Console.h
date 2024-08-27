@@ -63,6 +63,7 @@ public:
 	int historyIndex;
 
 	bool tabbing;
+	bool shifting;
 	std::vector<std::string> completionStrings;
 	int completionIndex;
 };

@@ -29,6 +29,7 @@ Console::Console(Scene* scene)
     historyIndex = 1;
     tabbing = false;
     commandHistorySize = 0;
+    shifting = false;
 }
 
 Console::~Console()
@@ -190,10 +191,10 @@ void Console::handleInput(const Input& input)
             completionIndex = 0;
         }
         else
-            completionIndex = (completionIndex + 1) % completionStrings.size();
+            completionIndex = (completionIndex + (!shifting ? 1 : (completionStrings.size() - 1))) % completionStrings.size();
 
         if(completionStrings.size())
-            textInput = completionStrings[completionIndex];
+            textInput = completionStrings[completionIndex] + " ";
         else
             tabbing = false;
     }
@@ -220,12 +221,17 @@ void Console::handleInput(const Input& input)
             }
         }
     }
-    if(input.key != GLFW_KEY_TAB && input.stateStart == InputType::KeyPress)
+    if(input.key != GLFW_KEY_TAB && input.key != GLFW_KEY_LEFT_SHIFT && input.key != GLFW_KEY_RIGHT_SHIFT && input.stateStart == InputType::KeyPress)
     {
         tabbing = false;
     }
     if(input.key != GLFW_KEY_UP && input.key != GLFW_KEY_DOWN && input.stateStart == InputType::KeyPress)
     {
         historyIndex = history.size();
+    }
+    if(input.key == GLFW_KEY_LEFT_SHIFT || input.key == GLFW_KEY_RIGHT_SHIFT)
+    {
+        shifting = input.stateEnd != InputType::KeyRelease;
+        std::cout << shifting << std::endl;
     }
 }
