@@ -619,7 +619,8 @@ Vector2 Tank::boidCalc()
             ShapeDrawer::drawArrow(pos, separate_.to3(), separate_.length(), 0.02, Vector3(1, 1, 0));
     }
 
-    return evade_ + seek_ + avoid_ + separate_;
+    auto sum = evade_ + seek_ + avoid_ + separate_;
+    return sum;
 }
 
 

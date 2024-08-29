@@ -355,7 +355,7 @@ int drawTexts(GLFWwindow* window, int xres, int yres)
 
 int debugDraw(GLFWwindow* window, int xres, int yres)
 {
-    // return drawCircleTriangle(window, xres, yres);
+    return drawCircleTriangle(window, xres, yres);
     // return drawDecals(window, xres, yres);
-    return drawTexts(window, xres, yres);
+    // return drawTexts(window, xres, yres);
 }

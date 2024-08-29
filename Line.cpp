@@ -110,6 +110,10 @@ Line2d::Line2d(const std::vector<Vector2>& vertices)
 
 Line3d::Line3d(const std::vector<Vector3>& vertices) : Line(vertices)
 {
+    if(!fragmentShader)
+        fragmentShader = new Shader("line.frag", GL_FRAGMENT_SHADER);
+    if(!vertexShader)
+        vertexShader = new Shader("line.vert", GL_VERTEX_SHADER);
 }
 
 Line2d::Line2d()

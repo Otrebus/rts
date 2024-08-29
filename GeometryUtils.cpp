@@ -58,13 +58,13 @@ std::pair<real, Vector2> intersectCircleTrianglePath(Vector2 pos, real radius, V
 
     // First check if we're closer than the radius of the circle to the triangle
     if(auto [t, q, s] = distPointLine(pos, p1, p2); t < radius && s > 0 && s < (p2-p1).length())
-        return { 0, (p1-q).perp().normalized() };
+        return { 0, (p1-p2).perp().normalized() };
 
     if(auto [t, q, s] = distPointLine(pos, p2, p3); t < radius && s > 0 && s < (p3-p2).length())
-        return { 0, (p2-q).perp().normalized() };
+        return { 0, (p2-p3).perp().normalized() };
 
     if(auto [t, q, s] = distPointLine(pos, p3, p1); t < radius && s > 0 && s < (p1-p3).length())
-        return { 0, (p3-q).perp().normalized() };
+        return { 0, (p3-p1).perp().normalized() };
 
     if(auto t = (pos - p1).length(); t < radius)
         return { 0, (pos - p1).normalized() };
