@@ -154,12 +154,14 @@ void Scene::moveEntitiesSoft(real dt, int depth, std::unordered_set<Entity*>& gl
 
         auto t = minT < inf ? minT : dt;
         auto preGeoPos = entity->geoPos;
+        auto prePos = entity->getPosition();
 
         auto posNext = entity->geoPos + t*entity->geoVelocity;
 
         entity->geoPos = posNext;
         //std::cout << std::setprecision(10) << "posNext is " << posNext << std::endl;
         entity->plant(*terrain);
+        entity->setVelocity((entity->getPosition() - prePos)/dt);
         //std::cout << std::setprecision(10) <<  "postPlant " << entity->geoPos << std::endl;
     }
 

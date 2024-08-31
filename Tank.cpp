@@ -279,7 +279,7 @@ void Tank::draw(Material* mat)
     {
         if(Unit* enemyTarget = dynamic_cast<Unit*>(scene->getEntity(enemyTargetId)))
         {
-            // TODO: draw shape
+             //TODO: draw shape
             /*auto bb = BoundingBoxModel(0.5, 0.5, 0.5);
             bb.setPosition(enemyTarget->getPosition() + Vector3(0, 0, 1));
             bb.setScene(scene);
@@ -338,7 +338,7 @@ void Tank::accelerate(Vector2 velocityTarget)
         turnRate = 0;
 
     auto radialAcc = Vector2(-dir.y, dir.x)*turnRate*maxSpeed;
-    auto projAcc = !radialAcc ? std::abs(accelerationTarget*geoDir.normalized()) : radialAcc.length()/(radialAcc.normalized()*accelerationTarget.normalized());
+    auto projAcc = !radialAcc ? accelerationTarget*geoDir.normalized() : radialAcc.length()/(radialAcc.normalized()*accelerationTarget.normalized());
 
     if(projAcc < 1e-6)
     {
@@ -420,6 +420,7 @@ void Tank::update(real dt)
 
     if(velocity1*geoVelocity < 0 && !velocityTarget)
     {
+        // NOTE: if we don't check for velocity1*geoVelocity < 0, then the tanks will back up initially
         geoVelocity = { 0, 0 };
         acceleration = 0;
     }
@@ -439,16 +440,21 @@ void Tank::update(real dt)
         addPathFindingRequest(request);
     }
 
+
     auto enemyTarget = dynamic_cast<Unit*>(scene->getEntity(enemyTargetId));
 
+    if(closestEnemy && (!enemyTarget || closestD*0.95 < (enemyTarget->getPosition()-this->getPosition()).length()))
+    {
+        enemyTargetId = closestEnemy->getId();
+        enemyTarget = (Unit*) scene->getEntity(enemyTargetId);
+    }
+    
     if(!enemyTarget || enemyTarget && (enemyTarget->dead || !setBallisticTarget(enemyTarget)))
     {
         enemyTargetId = 0;
+        enemyTarget = nullptr;
         turretTarget = Vector3(0, 1, 0);
     }
-
-    if(closestEnemy && (!enemyTarget || (closestEnemy->getPosition()-enemyTarget->getPosition()).length() < closestD*0.95))
-        enemyTargetId = closestEnemy->getId();
 
     updateTurret(dt);
 
@@ -458,7 +464,7 @@ void Tank::update(real dt)
         if((turretTarget*turretDir) > 1-1e-6)
         {
             lastFired = time;
-            //shoot();
+            shoot();
             auto light = new PointLight(time);
 
             light->setPos(absMuzzlePos);
