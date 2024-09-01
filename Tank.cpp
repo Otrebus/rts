@@ -337,15 +337,25 @@ void Tank::accelerate(Vector2 velocityTarget)
     else
         turnRate = 0;
 
-    auto radialAcc = Vector2(-dir.y, dir.x)*turnRate*maxSpeed;
-    auto projAcc = !radialAcc ? accelerationTarget*geoDir.normalized() : radialAcc.length()/(radialAcc.normalized()*accelerationTarget.normalized());
+    auto radialAcc = geoDir.perp()*turnRate;
 
-    if(projAcc < 1e-6)
+    auto x = radialAcc;
+    auto v = accelerationTarget;
+    auto ct = !x ? 0 : x.normalized()*v.normalized();
+    auto projAcc = ct ? x.length()*v.normalized()/ct - x : (v*geoDir)*geoDir;
+
+    ShapeDrawer::drawArrow(pos, radialAcc.to3(), radialAcc.length(), 0.02, Vector3(1, 0, 0));
+    ShapeDrawer::drawArrow(pos, projAcc.to3(), projAcc.length(), 0.02, Vector3(0, 1, 0));
+    ShapeDrawer::drawArrow(pos, accelerationTarget.to3(), accelerationTarget.length(), 0.02, Vector3(0, 0, 1));
+
+    if(projAcc*geoDir < 0 && geoDir*geoVelocity <= 0)
     {
         acceleration = 0;
-        return;
     }
-    acceleration = std::max(-maxBreakAcc, std::min(maxForwardAcc, (accelerationTarget.normalized()*projAcc)*geoDir));
+    else
+        acceleration = std::max(-maxBreakAcc, std::min(maxForwardAcc, projAcc*geoDir));
+
+    //ShapeDrawer::drawArrow(pos, geoDir.to3(), acceleration, 0.02, Vector3(1, 1, 1));
 }
 
 void Tank::brake()
@@ -415,13 +425,11 @@ void Tank::update(real dt)
         newDir = velocityTarget.normalized();
     geoDir = newDir;
 
-    auto velocity1 = Vector2(geoDir.x, geoDir.y).normalized()*geoVelocity.length();
-    geoVelocity += Vector2(geoDir.x, geoDir.y).normalized()*acceleration*dt;
+    geoVelocity += geoDir.normalized()*acceleration*dt;
 
-    if(velocity1*geoVelocity < 0 && !velocityTarget)
+    if(!velocityTarget)
     {
         // NOTE: if we don't check for velocity1*geoVelocity < 0, then the tanks will back up initially
-        geoVelocity = { 0, 0 };
         acceleration = 0;
     }
 
@@ -549,6 +557,9 @@ Vector2 Tank::evade()
                 sum += s;
             else
                 sum -= s;
+            
+            // TODO: this sphere draws weirdly
+            ShapeDrawer::drawSphere(pos2.to3(), 1, Vector3(0, 1, 2));
 
             //auto pos1 = geoPos, pos2 = unit->geoPos;
             //auto e = (pos2 - pos1);

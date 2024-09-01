@@ -31,6 +31,8 @@ void ShapeDrawer::restoreDepthTest()
 
 void ShapeDrawer::drawArrow(Vector3 pos, Vector3 dir, real length, real width, Vector3 color)
 {
+	if(!dir)
+		return;
 	setDepthTest();
 	material->Kd = color;
 	cylinderModel->setSize(Vector3(length*0.8, width, width));
