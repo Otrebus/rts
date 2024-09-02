@@ -337,25 +337,17 @@ void Tank::accelerate(Vector2 velocityTarget)
     else
         turnRate = 0;
 
-    auto radialAcc = geoDir.perp()*turnRate;
+    auto radialAcc = geoDir.perp()*turnRate*maxSpeed;
 
     auto x = radialAcc;
     auto v = accelerationTarget;
     auto ct = !x ? 0 : x.normalized()*v.normalized();
     auto projAcc = ct ? x.length()*v.normalized()/ct - x : (v*geoDir)*geoDir;
 
-    ShapeDrawer::drawArrow(pos, radialAcc.to3(), radialAcc.length(), 0.02, Vector3(1, 0, 0));
-    ShapeDrawer::drawArrow(pos, projAcc.to3(), projAcc.length(), 0.02, Vector3(0, 1, 0));
-    ShapeDrawer::drawArrow(pos, accelerationTarget.to3(), accelerationTarget.length(), 0.02, Vector3(0, 0, 1));
-
-    if(projAcc*geoDir < 0 && geoDir*geoVelocity <= 0)
-    {
+    if(projAcc*geoDir < 0 && geoDir*geoVelocity <= 0) // We don't want to reverse at maxBreakAcc
         acceleration = 0;
-    }
     else
         acceleration = std::max(-maxBreakAcc, std::min(maxForwardAcc, projAcc*geoDir));
-
-    //ShapeDrawer::drawArrow(pos, geoDir.to3(), acceleration, 0.02, Vector3(1, 1, 1));
 }
 
 void Tank::brake()
@@ -559,7 +551,7 @@ Vector2 Tank::evade()
                 sum -= s;
             
             // TODO: this sphere draws weirdly
-            ShapeDrawer::drawSphere(pos2.to3(), 1, Vector3(0, 1, 2));
+            ShapeDrawer::drawSphere(pos2.to3(), 1, Vector3(0, 1, 1));
 
             //auto pos1 = geoPos, pos2 = unit->geoPos;
             //auto e = (pos2 - pos1);

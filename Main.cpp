@@ -159,9 +159,9 @@ int main()
     //    }
     //}
 
-    //auto wreck = new TankWreck({ 172.5f, 65.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
-    //wreck->init(&scene);
-    //scene.addEntity(wreck);
+    auto wreck = new TankWreck({ 172.5f, 65.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+    wreck->init(&scene);
+    scene.addEntity(wreck);
     
     scene.updateUnitList();
     for(auto& e : scene.getUnits())
@@ -177,6 +177,8 @@ int main()
 
     ShapeDrawer::setScene(&scene);
     ShapeDrawer::loadModels();
+
+	glDepthRange(0.5, 1);
 
     while(!glfwWindowShouldClose(window))
     {
@@ -215,6 +217,8 @@ int main()
         for(auto& entity : entities)
             entity->update(dt);
 
+        
+        ShapeDrawer::drawSphere(Vector3(160.0f, 50.0f, 3.07f), 1, Vector3(0, 1, 1));
 
         // TODO: this should be done in some update function or something
         for(auto& light : scene.getLights())
