@@ -45,6 +45,11 @@ public:
 		return getSettings()->keyMap.contains(name);
 	}
 
+	static ConsoleVariable* getVariable(std::string name)
+	{
+		return getSettings()->keyMap[name];
+	}
+
 	static std::vector<std::string> getCompletionStrings(std::string prefix)
 	{
 		std::vector<std::string> output;

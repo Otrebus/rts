@@ -156,21 +156,35 @@ void Console::handleInput(const Input& input)
         {
             history.push_back( { textInput, ConsoleHistoryEntry::Input });
             std::stringstream ss(textInput);
-            std::string varName;
-            real num;
+            std::string varName, arg;
+
             ss >> varName;
             if(!ConsoleSettings::findVariable(varName))
             {
                 history.push_back( { "Unknown variable \"" + varName + "\"", ConsoleHistoryEntry::Output } );
             }
-            else if(ss >> num)
+            else if(ss >> arg)
             {
-                ConsoleSettings::setVariable(varName, num);
-                history.push_back( { "varName set to " + std::to_string(num), ConsoleHistoryEntry::Output } );
+                auto ss2 = std::stringstream(arg);
+                int num;
+                if(ss2 >> num)
+                {
+                    if(ss >> arg)
+                        history.push_back( { "Syntax error", ConsoleHistoryEntry::Output });
+                    else
+                    {
+                        ConsoleSettings::setVariable(varName, num);
+                        history.push_back( { varName + " set to " + std::to_string(num), ConsoleHistoryEntry::Output } );
+                    }
+                }
+                else
+                {
+                    history.push_back( { "Syntax error", ConsoleHistoryEntry::Output });
+                }
             }
             else
             {
-                history.push_back( { "Bad assignment", ConsoleHistoryEntry::Output } );
+                history.push_back( { std::to_string(ConsoleSettings::getVariable(varName)->var), ConsoleHistoryEntry::Output } );
             }
             if(commandHistory.empty() || commandHistory.back() != textInput)
                 commandHistory.push_back(textInput);
