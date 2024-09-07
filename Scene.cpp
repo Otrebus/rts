@@ -119,16 +119,10 @@ void Scene::moveEntitiesSoft(real dt, int depth, std::unordered_set<Entity*>& gl
             auto vp1 = entity->geoVelocity - vn1 + norm2*0.1;
 
             entity->geoVelocity = vp1;
-            //std::cout << "------------------------" << std::endl;
-            //std::cout << "inside triangle, moved to " << entity->geoPos << std::endl;
-
-            //__debugbreak();
             continue;
         }
 
-        //t = std::max(t, t-0.001f);
         auto t2 = (pos2 - entity->geoPos).length();
-        //std::cout << "t and t2 are " << t << " " << t2 << std::endl;
         if(!t)
         {
             entity->lastBumped = glfwGetTime();
@@ -159,10 +153,8 @@ void Scene::moveEntitiesSoft(real dt, int depth, std::unordered_set<Entity*>& gl
         auto posNext = entity->geoPos + t*entity->geoVelocity;
 
         entity->geoPos = posNext;
-        //std::cout << std::setprecision(10) << "posNext is " << posNext << std::endl;
         entity->plant(*terrain);
         entity->setVelocity((entity->getPosition() - prePos)/dt);
-        //std::cout << std::setprecision(10) <<  "postPlant " << entity->geoPos << std::endl;
     }
 
     if(minT < inf)
@@ -176,7 +168,6 @@ void Scene::moveEntitiesSoft(real dt, int depth, std::unordered_set<Entity*>& gl
             auto vp1 = e1->geoVelocity - vn1;
 
             e1->geoVelocity = vp1;
-            //std::cout << "Position " << e1->geoPos << " moved towards " << e1->geoVelocity << std::endl;
         }
     }
 
@@ -207,7 +198,6 @@ void Scene::moveEntities(real dt)
         {
             auto pV = perpV.length();
             pV = std::max(0.f, pV - t*2);
-            //std::cout << "not gliding" << std::endl;
             entity->geoVelocity = n*pV*sgn(n*entity->geoVelocity) + T*(entity->geoVelocity*T);
         }
         for(auto entity2 : entities)

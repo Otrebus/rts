@@ -103,9 +103,6 @@ int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
             auto [x, y] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
             r2 = cam.getViewRay(x, y);
 
-            /*Vector3 a(real(startX), real(startY), 0);
-            Vector3 b(real(x), real(y), 0);*/
-
             if(r1.pos == r2.pos)
                 continue;
 

@@ -231,14 +231,14 @@ std::pair<std::vector<Vertex3>, std::vector<int>> buildBox(real length, real wid
 {
 	real w = length, d = width, h = height;
     std::vector<Vector3> c = {
-        { -w/2, -d/2, -h/2 }, // bottom-front-left
-        {  w/2, -d/2, -h/2 }, // bottom-front-right
-        {  w/2, -d/2,  h/2 }, // top-front-right
-        { -w/2, -d/2,  h/2 }, // top-front-left
-        { -w/2,  d/2, -h/2 }, // bottom-back-left
-        {  w/2,  d/2, -h/2 }, // bottom-back-right
-        {  w/2,  d/2,  h/2 }, // top-back-right
-        { -w/2,  d/2,  h/2 }  // top-back-left
+        { -w/2, -d/2, -h/2 },
+        {  w/2, -d/2, -h/2 },
+        {  w/2, -d/2,  h/2 },
+        { -w/2, -d/2,  h/2 },
+        { -w/2,  d/2, -h/2 },
+        {  w/2,  d/2, -h/2 },
+        {  w/2,  d/2,  h/2 },
+        { -w/2,  d/2,  h/2 }
     };
 
     std::vector<std::vector<int>> cornerIndices = {
