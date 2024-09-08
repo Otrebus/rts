@@ -123,7 +123,6 @@ int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
             normalLine.init(&scene);
             normalLine.draw();
 
-
             if(s > -inf && s < inf)
             {
                 auto circle = makeCircle(r1.pos.to2() + (r2.pos-r1.pos).to2().normalized()*s, radius);
@@ -248,14 +247,6 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
             decal->draw();
         }
 
-        //glPolygonOffset(0, 0);
-        //glDisable(GL_BLEND);
-        /*glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-        glStencilMask(0x00);*/
-        //glBlendFunc(GL_ZERO, GL_ONE);
-        //glBlendFuncSeparate(GL_ONE_MINUS_DST_ALPHA, GL_ONE, GL_ZERO, GL_ONE);
-
         glEnable(GL_SAMPLE_SHADING);
         glMinSampleShading(1.0);
 
@@ -350,9 +341,133 @@ int drawTexts(GLFWwindow* window, int xres, int yres)
 }
 
 
+std::vector<bool> calcSigned(std::vector<unsigned char> v, int xres, int yres)
+{
+    std::vector<bool> data(xres*yres);
+    for(int y = 0; y < yres; y++)
+    {
+        for(int x = 0; x < xres*3; x += 3)
+        {
+            data[y*xres+x] = v[y*xres*3+x];
+        }
+    }
+
+    // timus 1976 calculates this exactly and faster
+    for(int y = 0; y < yres; y++)
+    {
+        for(int x = 0; x < xres; x++)
+        {
+            
+        }
+    }
+
+    return data;
+}
+
+
+int drawSigned(GLFWwindow* window, int xres, int yres)
+{
+    InputManager::getInstance().initInput(window);
+    OrthogonalCamera cam({ 0, 0, 1 }, { 0, 0, -1 }, { 0, 1, 0 }, real(xres)/float(yres));
+
+    real time = glfwGetTime();
+
+    ShaderProgramManager shaderProgramManager;
+    Scene scene(&cam, &shaderProgramManager);
+
+    GLuint VAO, VBO, EBO;
+
+    GLuint texture;
+
+    glGenTextures(1, &texture);
+    auto [data, width, height] = readBMP("signsource.bmp");
+
+    std::vector<Vertex3> vs = {
+        {{-0.15, -0.15, 0.0}, {0.0, 0.0, 1.0}, {0, 0}},
+        {{ 0.15, -0.15, 0.0}, {0.0, 0.0, 1.0}, {1, 0}},
+        {{ 0.15,  0.15, 0.0}, {0.0, 0.0, 1.0}, {1, 1}},
+        {{-0.15,  0.15, 0.0}, {0.0, 0.0, 1.0}, {0, 1}}
+    };
+
+    std::vector<int> indices = { 0, 1, 2, 2, 3, 0 };
+
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data.data());
+
+    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex3)*vs.size(), vs.data(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6*sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*indices.size(), indices.data(), GL_STATIC_DRAW);
+
+    Shader* geometryShader = nullptr, *vertexShader = nullptr, *fragmentShader;
+
+    geometryShader = new Shader("geometryShader.geom", GL_GEOMETRY_SHADER);
+    vertexShader = new Shader("vertexShader.vert", GL_VERTEX_SHADER);
+    fragmentShader = new Shader("texture.frag", GL_FRAGMENT_SHADER);
+
+    auto s = scene.getShaderProgramManager();
+    auto program = s->getProgram(fragmentShader, geometryShader, vertexShader);
+    scene.setShaderProgram(program);
+
+    while(!glfwWindowShouldClose(window))
+    {
+        if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+            glfwSetWindowShouldClose(window, true);
+        
+        auto prevTime = time;
+        time = glfwGetTime();
+        auto dt = time - prevTime;
+        
+        glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+     
+        (new LambertianMaterial)->updateUniforms(&scene);
+
+        glUniformMatrix4fv(glGetUniformLocation(program->getId(), "modelViewMatrix"), 1, GL_TRUE, (float*)identityMatrix.m_val);
+        glUniformMatrix4fv(glGetUniformLocation(program->getId(), "projectionMatrix"), 1, GL_TRUE, (float*)identityMatrix.m_val);
+        glUniformMatrix4fv(glGetUniformLocation(program->getId(), "normalMatrix"), 1, GL_TRUE, (float*)identityMatrix.m_val);
+
+        program->use();
+        glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+
+        glfwPollEvents();
+        glfwSwapBuffers(window);
+    }
+
+    glfwTerminate();
+    return 0;
+}
+
+
 int debugDraw(GLFWwindow* window, int xres, int yres)
 {
-    return drawCircleTriangle(window, xres, yres);
+    // return drawCircleTriangle(window, xres, yres);
     // return drawDecals(window, xres, yres);
     // return drawTexts(window, xres, yres);
+    return drawSigned(window, xres, yres);
 }
