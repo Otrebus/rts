@@ -32,6 +32,7 @@
 #include <queue>
 #include <stdio.h>
 #include <thread>
+#include <set>
 
 Line3d makeCircle(Vector2 pos, real radius)
 {
@@ -341,27 +342,99 @@ int drawTexts(GLFWwindow* window, int xres, int yres)
 }
 
 
-std::vector<bool> calcSigned(std::vector<unsigned char> v, int xres, int yres)
+std::vector<real> calcSigned(std::vector<unsigned char> v, int xres, int yres)
 {
+    // timus 1976 calculates this exactly
+    struct vec { int x, y; bool operator<(const vec& v) const { return std::make_pair(v.x, v.y) > std::make_pair(x, y); } };
     std::vector<bool> data(xres*yres);
-    for(int y = 0; y < yres; y++)
-    {
-        for(int x = 0; x < xres*3; x += 3)
-        {
-            data[y*xres+x] = v[y*xres*3+x];
-        }
-    }
+    std::vector<real> cost(xres*yres, inf);
+    std::vector<vec> vecs(xres*yres);
 
-    // timus 1976 calculates this exactly and faster
     for(int y = 0; y < yres; y++)
     {
         for(int x = 0; x < xres; x++)
         {
-            
+            data[y*xres+x] = v[y*xres*3+x*3];
         }
     }
 
-    return data;
+    auto get = [xres, &data] (int x, int y) { return data[y*xres+x]; };
+    auto getCost = [xres, &cost] (int x, int y) -> real& { return cost[y*xres+x]; };
+    auto getVec = [xres, &vecs] (int x, int y) -> vec& { return vecs[y*xres+x]; };
+    auto within = [xres, yres] (int x, int y) { return x >= 0 && y >= 0 && x < xres && y < yres; };
+    auto dist = [] (real x, real y) { return std::sqrt(x*x + y*y); };
+
+    std::set<std::pair<real, vec>> q;
+
+    for(int y = 0; y < yres; y++)
+    {
+        for(int x = 0; x < xres; x++)
+        {
+            if(!get(x, y))
+                continue;
+            auto min = inf;
+            int minx, miny;
+            for(int dx = -1; dx <= 1; dx++)
+            {
+                for(int dy = -1; dy <= 1; dy++)
+                {
+                    if((dx || dy) && within(x+dx, y+dy) && !get(x+dx, y+dy))
+                    {
+                        auto c = dist(dx, dy)/2;
+                        if(getCost(x+dx, y+dy) > c)
+                        {
+                            q.insert({ c, { x+dx, y+dy } });
+                            getVec(x+dx, y+dy) = { dx, dy };
+                            getCost(x+dx, y+dy) = c;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    while(!q.empty())
+    {
+        auto it = q.begin();
+        auto c = it->first;
+        auto p = it->second;
+        q.erase(it);
+        if(c > getCost(p.x, p.y))
+            continue;
+
+        for(int dx = -1; dx <= 1; dx++)
+        {
+            for(int dy = -1; dy <= 1; dy++)
+            {
+                if((dx || dy) && within(p.x+dx, p.y+dy) && !get(p.x+dx, p.y+dy))
+                {
+                    auto v = getVec(p.x, p.y);
+                    vec v2 { v.x+dx, v.y+dy };
+                    if(auto cost = dist(v2.x, v2.y); cost < getCost(p.x+dx, p.y+dy))
+                    {
+                        getCost(p.x+dx, p.y+dy) = cost;
+                        getVec(p.x+dx, p.y+dy) = v2;
+                        q.insert(std::make_pair(cost, vec { p.x+dx, p.y+dy }));
+                    }
+                }
+            }
+        }
+    }
+
+    real min = inf;
+    real max = -inf;
+    for(auto c : cost)
+    {
+        min = std::min(c, min);
+        if(c < inf)
+            max = std::max(c, max);
+    }
+
+    for(auto& c : cost)
+    {
+        c = (c - min)/(max-min);
+    }
+
+    return cost;
 }
 
 
@@ -398,7 +471,16 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data.data());
+    auto v = calcSigned(data, width, height);
+    std::vector<unsigned char> sv;
+    for(auto x : v)
+    {
+        sv.push_back(x*255);
+        sv.push_back(x*255);
+        sv.push_back(x*255);
+    }
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, sv.data());
 
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
