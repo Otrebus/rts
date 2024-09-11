@@ -345,22 +345,24 @@ int drawTexts(GLFWwindow* window, int xres, int yres)
 std::vector<real> calcSigned(std::vector<unsigned char> v, int xres, int yres)
 {
     // timus 1976 calculates this exactly
+    struct vecr { real x, y; bool operator<(const vecr& v) const { return std::make_pair(v.x, v.y) > std::make_pair(x, y); } };
     struct vec { int x, y; bool operator<(const vec& v) const { return std::make_pair(v.x, v.y) > std::make_pair(x, y); } };
     std::vector<bool> data(xres*yres);
-    std::vector<real> cost(xres*yres, inf);
-    std::vector<vec> vecs(xres*yres);
+    std::vector<real> cost(xres*yres);
+    std::vector<vecr> vecs(xres*yres);
 
     for(int y = 0; y < yres; y++)
     {
         for(int x = 0; x < xres; x++)
         {
             data[y*xres+x] = v[y*xres*3+x*3];
+            cost[y*xres+x] = data[y*xres+x] ? -inf : inf;
         }
     }
 
     auto get = [xres, &data] (int x, int y) { return data[y*xres+x]; };
     auto getCost = [xres, &cost] (int x, int y) -> real& { return cost[y*xres+x]; };
-    auto getVec = [xres, &vecs] (int x, int y) -> vec& { return vecs[y*xres+x]; };
+    auto getVec = [xres, &vecs] (int x, int y) -> vecr& { return vecs[y*xres+x]; };
     auto within = [xres, yres] (int x, int y) { return x >= 0 && y >= 0 && x < xres && y < yres; };
     auto dist = [] (real x, real y) { return std::sqrt(x*x + y*y); };
 
@@ -384,7 +386,7 @@ std::vector<real> calcSigned(std::vector<unsigned char> v, int xres, int yres)
                         if(getCost(x+dx, y+dy) > c)
                         {
                             q.insert({ c, { x+dx, y+dy } });
-                            getVec(x+dx, y+dy) = { dx, dy };
+                            getVec(x+dx, y+dy) = { real(dx)/2, real(dy)/2 };
                             getCost(x+dx, y+dy) = c;
                         }
                     }
@@ -408,8 +410,62 @@ std::vector<real> calcSigned(std::vector<unsigned char> v, int xres, int yres)
                 if((dx || dy) && within(p.x+dx, p.y+dy) && !get(p.x+dx, p.y+dy))
                 {
                     auto v = getVec(p.x, p.y);
-                    vec v2 { v.x+dx, v.y+dy };
+                    vecr v2 { v.x+dx, v.y+dy };
                     if(auto cost = dist(v2.x, v2.y); cost < getCost(p.x+dx, p.y+dy))
+                    {
+                        getCost(p.x+dx, p.y+dy) = cost;
+                        getVec(p.x+dx, p.y+dy) = v2;
+                        q.insert(std::make_pair(cost, vec { p.x+dx, p.y+dy }));
+                    }
+                }
+            }
+        }
+    }
+
+    for(int y = 0; y < yres; y++)
+    {
+        for(int x = 0; x < xres; x++)
+        {
+            if(get(x, y))
+                continue;
+            auto min = inf;
+            int minx, miny;
+            for(int dx = -1; dx <= 1; dx++)
+            {
+                for(int dy = -1; dy <= 1; dy++)
+                {
+                    if((dx || dy) && within(x+dx, y+dy) && get(x+dx, y+dy))
+                    {
+                        auto c = -dist(dx, dy)/2;
+                        if(getCost(x+dx, y+dy) < c)
+                        {
+                            q.insert({ c, { x+dx, y+dy } });
+                            getVec(x+dx, y+dy) = { real(dx)/2, real(dy)/2 };
+                            getCost(x+dx, y+dy) = c;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    while(!q.empty())
+    {
+        auto it = q.begin();
+        auto c = it->first;
+        auto p = it->second;
+        q.erase(it);
+        if(c < getCost(p.x, p.y))
+            continue;
+
+        for(int dx = -1; dx <= 1; dx++)
+        {
+            for(int dy = -1; dy <= 1; dy++)
+            {
+                if((dx || dy) && within(p.x+dx, p.y+dy) && get(p.x+dx, p.y+dy))
+                {
+                    auto v = getVec(p.x, p.y);
+                    vecr v2 { v.x+dx, v.y+dy };
+                    if(auto cost = -dist(v2.x, v2.y); cost > getCost(p.x+dx, p.y+dy))
                     {
                         getCost(p.x+dx, p.y+dy) = cost;
                         getVec(p.x+dx, p.y+dy) = v2;
@@ -425,13 +481,15 @@ std::vector<real> calcSigned(std::vector<unsigned char> v, int xres, int yres)
     for(auto c : cost)
     {
         min = std::min(c, min);
-        if(c < inf)
-            max = std::max(c, max);
+        max = std::max(c, max);
     }
 
     for(auto& c : cost)
     {
-        c = (c - min)/(max-min);
+        if(c < 0)
+            c = (50.f + std::max(c, -50.f))/100.f;
+        else
+            c = 0.5f + std::min(50.0f, c)/100;
     }
 
     return cost;
@@ -468,8 +526,8 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     auto v = calcSigned(data, width, height);
     std::vector<unsigned char> sv;
@@ -509,7 +567,7 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
 
     geometryShader = new Shader("geometryShader.geom", GL_GEOMETRY_SHADER);
     vertexShader = new Shader("vertexShader.vert", GL_VERTEX_SHADER);
-    fragmentShader = new Shader("texture.frag", GL_FRAGMENT_SHADER);
+    fragmentShader = new Shader("signShader.frag", GL_FRAGMENT_SHADER);
 
     auto s = scene.getShaderProgramManager();
     auto program = s->getProgram(fragmentShader, geometryShader, vertexShader);

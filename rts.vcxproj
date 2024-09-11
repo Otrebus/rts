@@ -269,6 +269,7 @@
     <None Include="particle.vert" />
     <None Include="projectileMaterial.frag" />
     <None Include="selectionMaterial.frag" />
+    <None Include="signShader.frag" />
     <None Include="terrain.frag" />
     <None Include="terrain.vert" />
     <None Include="texture.frag" />
