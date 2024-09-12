@@ -344,7 +344,6 @@ int drawTexts(GLFWwindow* window, int xres, int yres)
 
 std::vector<real> calcSigned(std::vector<unsigned char> v, int xres, int yres)
 {
-    // timus 1976 calculates this exactly
     struct vecr { real x, y; bool operator<(const vecr& v) const { return std::make_pair(v.x, v.y) > std::make_pair(x, y); } };
     struct vec { int x, y; bool operator<(const vec& v) const { return std::make_pair(v.x, v.y) > std::make_pair(x, y); } };
     std::vector<bool> data(xres*yres);
@@ -374,8 +373,7 @@ std::vector<real> calcSigned(std::vector<unsigned char> v, int xres, int yres)
         {
             if(!get(x, y))
                 continue;
-            auto min = inf;
-            int minx, miny;
+
             for(int dx = -1; dx <= 1; dx++)
             {
                 for(int dy = -1; dy <= 1; dy++)
@@ -428,8 +426,7 @@ std::vector<real> calcSigned(std::vector<unsigned char> v, int xres, int yres)
         {
             if(get(x, y))
                 continue;
-            auto min = inf;
-            int minx, miny;
+
             for(int dx = -1; dx <= 1; dx++)
             {
                 for(int dy = -1; dy <= 1; dy++)
@@ -478,19 +475,20 @@ std::vector<real> calcSigned(std::vector<unsigned char> v, int xres, int yres)
 
     real min = inf;
     real max = -inf;
-    for(auto c : cost)
+    for(auto& c : cost)
     {
         min = std::min(c, min);
         max = std::max(c, max);
+        c = (c + 5.f)/10.f;
     }
 
-    for(auto& c : cost)
+    /*for(auto& c : cost)
     {
         if(c < 0)
-            c = (50.f + std::max(c, -50.f))/100.f;
+            c = (4.f + std::max(c, -2.f))/4.f;
         else
-            c = 0.5f + std::min(50.0f, c)/100;
-    }
+            c = (4.f + std::min(2.0f, c))/4.f;
+    }*/
 
     return cost;
 }
@@ -530,15 +528,25 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     auto v = calcSigned(data, width, height);
-    std::vector<unsigned char> sv;
-    for(auto x : v)
+    std::vector<real> sv;
+    for(int y = 0; y < 64; y++)
     {
-        sv.push_back(x*255);
-        sv.push_back(x*255);
-        sv.push_back(x*255);
+        for(int x = 0; x < 64; x++)
+        {
+            real avg = 0;
+            for(int dx = 0; dx < 16; dx++)
+            {
+                for(int dy = 0; dy < 16; dy++)
+                {
+                    avg += v[(y*16+dy)*1024 + 16*x+dx];
+                }
+            }
+            avg /= 256;
+            sv.push_back(avg);
+        }
     }
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, sv.data());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_FLOAT, sv.data());
 
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
