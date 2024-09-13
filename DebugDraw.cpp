@@ -479,16 +479,15 @@ std::vector<real> calcSigned(std::vector<unsigned char> v, int xres, int yres)
     {
         min = std::min(c, min);
         max = std::max(c, max);
-        c = (c + 5.f)/10.f;
     }
 
-    /*for(auto& c : cost)
+    for(auto& c : cost)
     {
         if(c < 0)
-            c = (4.f + std::max(c, -2.f))/4.f;
+            c = (25.f + std::max(c, -25.f))/50.f;
         else
-            c = (4.f + std::min(2.0f, c))/4.f;
-    }*/
+            c = (25.f + std::min(25.f, c))/50.f;
+    }
 
     return cost;
 }
@@ -527,26 +526,31 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+    auto tm = glfwGetTime();
     auto v = calcSigned(data, width, height);
+    std::cout << "Time taken: " << glfwGetTime() - tm << std::endl;
+
+
     std::vector<real> sv;
     for(int y = 0; y < 64; y++)
     {
         for(int x = 0; x < 64; x++)
         {
             real avg = 0;
-            for(int dx = 0; dx < 16; dx++)
+            for(int dx = 8; dx < 9; dx++)
             {
-                for(int dy = 0; dy < 16; dy++)
+                for(int dy = 8; dy < 9; dy++)
                 {
                     avg += v[(y*16+dy)*1024 + 16*x+dx];
                 }
             }
-            avg /= 256;
+            avg /= 1;
+
             sv.push_back(avg);
         }
     }
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_FLOAT, sv.data());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 64, 64, 0, GL_RED, GL_FLOAT, sv.data());
 
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
