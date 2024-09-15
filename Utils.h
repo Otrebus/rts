@@ -52,3 +52,16 @@ template <typename T, typename ...U> T max(T a, T b, U... c)
 }
 
 std::string realToString(real num, int significantDigits);
+
+template<typename T> T flipVertically(T input, int width)
+{
+    T out;
+    int height = input.size()/width;
+    for(int i = 0; i < input.size(); i++)
+    {
+        int x = i % width;
+        int y = i / width;
+        out.push_back(input[(height-1-y)*width + x]);
+    }
+    return out;
+}
