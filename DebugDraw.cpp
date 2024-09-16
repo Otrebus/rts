@@ -345,7 +345,7 @@ int drawTexts(GLFWwindow* window, int xres, int yres)
 }
 
 
-std::vector<real> calcSigned(std::vector<bool> data, int xres, int yres)
+std::vector<real> calcSigned(std::vector<char> data, int xres, int yres)
 {
     struct vecr { real x, y; bool operator<(const vecr& v) const { return std::make_pair(x, y) < std::make_pair(v.x, v.y); } };
     struct vec { int x, y; bool operator<(const vec& v) const { return std::make_pair(x, y) < std::make_pair(v.x, v.y); } };
@@ -505,65 +505,134 @@ std::vector<real> calcSigned(std::vector<bool> data, int xres, int yres)
 }
 
 
-int drawSigned(GLFWwindow* window, int xres, int yres)
+template<typename T> struct buffer
 {
-    FT_Library library;
-    FT_Face face;
-    auto error = FT_Init_FreeType( &library );
-    if (error)
-    {
-        std::cout << "Error: " << error << std::endl;
+    std::vector<T> data;
+    int width, height;
+    buffer(int width, int height, T val) {
+        this->width = width;
+        this->height = height;
+        data = std::vector<T>(width*height, val);
     }
-    error = FT_New_Face( library,
+
+    buffer(int width, int height) {
+        this->width = width;
+        this->height = height;
+        data = std::vector<T>(width*height);
+    }
+
+    buffer(std::vector<T> data, int width, int height) {
+        this->width = width;
+        this->height = height;
+        this->data = data;
+    }
+
+    T& get(int x, int y)
+    {
+        assert(x < width && x >= 0 && y < height && y >= 0);
+        return data[y*width+x];
+    }
+};
+
+
+std::tuple<std::vector<real>, int, int> makeSdfMap(FT_Library& library)
+{
+    int mapWidth = 1024, mapHeight = 1024;
+    std::vector<real> sdfMap(mapWidth*mapHeight, 50);
+
+    int posX = 0, posY = 0;
+    const int margin = 50;
+
+    FT_Face face;
+    auto error = FT_New_Face( library,
         "Roboto-bold.ttf",
         0,
         &face
     );
     if (error)
-    {
         std::cout << "Error: " << error << std::endl;
-    }
 
     error = FT_Set_Char_Size(
         face,    /* handle to face object         */
         0,       /* char_width in 1/64 of points  */
         116*64,   /* char_height in 1/64 of points */
         320,     /* horizontal device resolution  */
-        320 );   /* vertical device resolution    */
+        320);   /* vertical device resolution    */
+
     if (error)
-    {
         std::cout << "Error: " << error << std::endl;
-    }
 
-    auto glyph_index = FT_Get_Char_Index( face, '&' );
-
-    error = FT_Load_Glyph(
-          face,          /* handle to face object */
-          glyph_index,   /* glyph index           */
-    0 );  /* load flags, see below */
-    FT_Render_Glyph( face->glyph,   /* glyph slot  */
-                     FT_RENDER_MODE_MONO ); /* render mode */
-
-    std::cout << "number of glyphs: " << face->num_glyphs << std::endl;
-
-    FT_GlyphSlot slot = face->glyph;
-    FT_Bitmap bitmap = slot->bitmap;
-    FT_Glyph_Metrics metrics = face->glyph->metrics;
-    std::cout << "Metrics width is: " << metrics.width << std::endl;
-
-    std::cout << "Bitmap pitch is " << bitmap.pitch << std::endl;
-
-    std::vector<bool> data;
-
-    for(int y = 0; y < bitmap.rows; y++)
+    for(char ch = 'a'; ch <= 'd'; ch++)
     {
-        for(int x = 0; x < bitmap.width; x++)
+        auto glyph_index = FT_Get_Char_Index( face, ch );
+
+        error = FT_Load_Glyph(
+              face,          /* handle to face object */
+              glyph_index,   /* glyph index           */
+        0 );  /* load flags, see below */
+        FT_Render_Glyph( face->glyph,   /* glyph slot  */
+                         FT_RENDER_MODE_MONO ); /* render mode */
+
+        std::cout << "number of glyphs: " << face->num_glyphs << std::endl;
+
+        FT_GlyphSlot slot = face->glyph;
+        FT_Bitmap bitmap = slot->bitmap;
+        FT_Glyph_Metrics metrics = face->glyph->metrics;
+        std::cout << "Metrics width is: " << metrics.width << std::endl;
+
+        std::cout << "Bitmap pitch is " << bitmap.pitch << std::endl;
+
+        buffer<char> buf(bitmap.width+margin*2, bitmap.rows+margin*2, false);
+        for(int y = 0; y < bitmap.rows; y++)
         {
-            auto b = x % 8;
-            auto X = x/8;
-            data.push_back(! ((bitmap.buffer[y*bitmap.pitch+X] >> (7-b)) & 1));
+            for(int x = 0; x < bitmap.width; x++)
+            {
+                auto b = x % 8;
+                auto X = x/8;
+                buf.get(margin+x, margin+y) = (((bitmap.buffer[y*bitmap.pitch+X] >> (7-b)) & 1));
+            }
         }
+
+        int charWidth = 24;
+
+        auto v = calcSigned(buf.data, buf.width, buf.height);
+        auto dx = real(buf.width)/charWidth, dy = real(buf.height)/charWidth;
+        auto sBuf = buffer<real>(v, buf.width, buf.height);
+
+        int charHeight = int(1+(dy/dx)*charWidth);
+
+        for(int y = 0; y < charHeight; y++)
+        {
+            for(int x = 0; x < charWidth; x++)
+            {
+                int X = dx*x, Y = dx*y;
+                real xf = dx*x-real(X), yf = dx*y-real(Y);
+                real s = 0;
+                s += yf*(xf*sBuf.get(X, Y) + (1-xf)*sBuf.get(X+1, Y));
+                s += (1-yf)*(xf*sBuf.get(X, Y+1) + (1-xf)*sBuf.get(X+1, Y+1));
+                sdfMap[(posY+y)*mapWidth+x+posX] = s;
+            }
+        }
+
+        if(posX+charWidth > mapWidth)
+        {
+            posY += charHeight;
+            posX = 0;
+        }
+        else
+            posX += charWidth;
     }
+    return { sdfMap, mapWidth, mapHeight };
+}
+
+
+int drawSigned(GLFWwindow* window, int xres, int yres)
+{
+    FT_Library library;
+    FT_Face face;
+    auto error = FT_Init_FreeType( &library );
+    if (error)
+        std::cout << "Error: " << error << std::endl;
 
     InputManager::getInstance().initInput(window);
     OrthogonalCamera cam({ 0, 0, 1 }, { 0, 0, -1 }, { 0, 1, 0 }, real(xres)/float(yres));
@@ -604,15 +673,14 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    auto tm = glfwGetTime();
+    /*auto tm = glfwGetTime();
 
-    auto v = calcSigned(data, bitmap.width, bitmap.rows);
     std::cout << "Time taken: " << glfwGetTime() - tm << std::endl;
 
 
     std::vector<real> sv;
     for(auto x : v)
-        sv.push_back(x);
+        sv.push_back(x);*/
     //for(int y = 0; y < 64; y++)
     //{
     //    for(int x = 0; x < 64; x++)
@@ -631,8 +699,11 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
     //    }
     //}
 
-    sv = flipVertically(sv, bitmap.width);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, bitmap.width, bitmap.rows, 0, GL_RED, GL_FLOAT, sv.data());
+
+    auto [map, sdfWidth, sdfHeight] = makeSdfMap(library);
+    map = flipVertically(map, sdfWidth);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, sdfWidth, sdfHeight, 0, GL_RED, GL_FLOAT, map.data());
 
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
