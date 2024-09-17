@@ -505,23 +505,23 @@ std::vector<real> calcSigned(std::vector<char> data, int xres, int yres)
 }
 
 
-template<typename T> struct buffer
+template<typename T> struct Buffer
 {
     std::vector<T> data;
     int width, height;
-    buffer(int width, int height, T val) {
+    Buffer(int width, int height, T val) {
         this->width = width;
         this->height = height;
         data = std::vector<T>(width*height, val);
     }
 
-    buffer(int width, int height) {
+    Buffer(int width, int height) {
         this->width = width;
         this->height = height;
         data = std::vector<T>(width*height);
     }
 
-    buffer(std::vector<T> data, int width, int height) {
+    Buffer(std::vector<T> data, int width, int height) {
         this->width = width;
         this->height = height;
         this->data = data;
@@ -532,10 +532,23 @@ template<typename T> struct buffer
         assert(x < width && x >= 0 && y < height && y >= 0);
         return data[y*width+x];
     }
+
+    T& get(int x, int y, T overflowValue)
+    {
+        if(!(x < width && x >= 0 && y < height && y >= 0))
+            return overflowValue;
+        return data[y*width+x];
+    }
 };
 
 
-std::tuple<std::vector<real>, int, int> makeSdfMap(FT_Library& library)
+struct SdfGlyph
+{
+    real x1, x2, y1, y2;
+};
+
+
+std::tuple<Buffer<real>, std::map<char, SdfGlyph>> makeSdfMap(FT_Library& library)
 {
     int mapWidth = 1024, mapHeight = 1024;
     std::vector<real> sdfMap(mapWidth*mapHeight, 50);
@@ -556,8 +569,10 @@ std::tuple<std::vector<real>, int, int> makeSdfMap(FT_Library& library)
         face,    /* handle to face object         */
         0,       /* char_width in 1/64 of points  */
         116*64,   /* char_height in 1/64 of points */
-        320,     /* horizontal device resolution  */
-        320);   /* vertical device resolution    */
+        2200,     /* horizontal device resolution  */
+        2200);   /* vertical device resolution    */
+
+    std::map<char, SdfGlyph> glyphMap;
 
     if (error)
         std::cout << "Error: " << error << std::endl;
@@ -577,12 +592,8 @@ std::tuple<std::vector<real>, int, int> makeSdfMap(FT_Library& library)
 
         FT_GlyphSlot slot = face->glyph;
         FT_Bitmap bitmap = slot->bitmap;
-        FT_Glyph_Metrics metrics = face->glyph->metrics;
-        std::cout << "Metrics width is: " << metrics.width << std::endl;
 
-        std::cout << "Bitmap pitch is " << bitmap.pitch << std::endl;
-
-        buffer<char> buf(bitmap.width+margin*2, bitmap.rows+margin*2, false);
+        Buffer<char> buf(bitmap.width+margin*2, bitmap.rows+margin*2, false);
         for(int y = 0; y < bitmap.rows; y++)
         {
             for(int x = 0; x < bitmap.width; x++)
@@ -593,36 +604,57 @@ std::tuple<std::vector<real>, int, int> makeSdfMap(FT_Library& library)
             }
         }
 
-        int charWidth = 24;
+        std::cout << "width: " << bitmap.width << std::endl;
+
+        int charWidth = 50+margin*2;
 
         auto v = calcSigned(buf.data, buf.width, buf.height);
-        auto dx = real(buf.width)/charWidth, dy = real(buf.height)/charWidth;
-        auto sBuf = buffer<real>(v, buf.width, buf.height);
+        auto dw = real(buf.width)/charWidth, dy = real(buf.height)/charWidth;
+        auto sBuf = Buffer<real>(v, buf.width, buf.height);
 
-        int charHeight = int(1+(dy/dx)*charWidth);
+        real charHeight = (dy/dw)*charWidth;
 
-        for(int y = 0; y < charHeight; y++)
+        for(int y = 0; y < int(1+charHeight); y++)
         {
             for(int x = 0; x < charWidth; x++)
             {
-                int X = dx*x, Y = dx*y;
-                real xf = dx*x-real(X), yf = dx*y-real(Y);
+                real X = dw*x + dw/2, Y = dw*y + dw/2;
+                real xf = X-int(X), yf = Y-int(Y);
                 real s = 0;
-                s += yf*(xf*sBuf.get(X, Y) + (1-xf)*sBuf.get(X+1, Y));
-                s += (1-yf)*(xf*sBuf.get(X, Y+1) + (1-xf)*sBuf.get(X+1, Y+1));
+                s += yf*(xf*sBuf.get(X, Y, 50.f) + (1-xf)*sBuf.get(X+1, Y, 50.f));
+                s += (1-yf)*(xf*sBuf.get(X, Y+1, 50.f) + (1-xf)*sBuf.get(X+1, Y+1, 50.f));
                 sdfMap[(posY+y)*mapWidth+x+posX] = s;
             }
         }
 
+        real gmargin = charWidth*real(margin)/buf.width;
+        glyphMap[ch] = SdfGlyph {
+            real(posX)+gmargin,
+            real(posX)+charWidth-gmargin,
+            real(posY)+gmargin,
+            real(posY)+charHeight-gmargin
+        };
+
         if(posX+charWidth > mapWidth)
         {
-            posY += charHeight;
+            posY += int(1+charHeight);
             posX = 0;
         }
         else
             posX += charWidth;
+
     }
-    return { sdfMap, mapWidth, mapHeight };
+
+    for(auto& it : glyphMap)
+    {
+        auto x1 = it.second.x1, x2 = it.second.x2, y1 = it.second.y1, y2 = it.second.y2;
+        it.second.x1 = x1/mapWidth;
+        it.second.x2 = x2/mapWidth;
+        it.second.y1 = (mapHeight-y2)/mapHeight;
+        it.second.y2 = (mapHeight-y1)/mapHeight;
+    }
+
+    return { Buffer<real>(sdfMap, mapWidth, mapHeight), glyphMap };
 }
 
 
@@ -656,13 +688,6 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
             data[y * xres + x] = v[y * xres * 3 + x * 3];
         }
     }*/
-
-    std::vector<Vertex3> vs = {
-        {{-0.55, -0.55, 0.0}, {0.0, 0.0, 1.0}, {0, 0}},
-        {{ 0.55, -0.55, 0.0}, {0.0, 0.0, 1.0}, {1, 0}},
-        {{ 0.55,  0.55, 0.0}, {0.0, 0.0, 1.0}, {1, 1}},
-        {{-0.55,  0.55, 0.0}, {0.0, 0.0, 1.0}, {0, 1}}
-    };
 
     std::vector<int> indices = { 0, 1, 2, 2, 3, 0 };
 
@@ -700,16 +725,24 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
     //}
 
 
-    auto [map, sdfWidth, sdfHeight] = makeSdfMap(library);
-    map = flipVertically(map, sdfWidth);
+    auto [map, glyphMap] = makeSdfMap(library);
+    auto b = flipVertically(map.data, map.width);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, sdfWidth, sdfHeight, 0, GL_RED, GL_FLOAT, map.data());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, map.width, map.height, 0, GL_RED, GL_FLOAT, b.data());
 
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
+
+    
+    std::vector<Vertex3> vs = {
+        {{-0.55, -0.55, 0.0}, {0.0, 0.0, 1.0}, {glyphMap['a'].x1, glyphMap['a'].y1}},
+        {{ 0.55, -0.55, 0.0}, {0.0, 0.0, 1.0}, {glyphMap['a'].x2, glyphMap['a'].y1}},
+        {{ 0.55,  0.55, 0.0}, {0.0, 0.0, 1.0}, {glyphMap['a'].x2, glyphMap['a'].y2}},
+        {{-0.55,  0.55, 0.0}, {0.0, 0.0, 1.0}, {glyphMap['a'].x1, glyphMap['a'].y2}}
+    };
 
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
