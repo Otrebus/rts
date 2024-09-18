@@ -548,7 +548,7 @@ struct SdfGlyph
 };
 
 
-std::tuple<Buffer<real>, std::map<char, SdfGlyph>> makeSdfMap(FT_Library& library)
+std::tuple<Buffer<real>, std::map<char, SdfGlyph>> makeSdfMap(FT_Face& face)
 {
     int mapWidth = 1024, mapHeight = 1024;
     std::vector<real> sdfMap(mapWidth*mapHeight, 50);
@@ -556,28 +556,19 @@ std::tuple<Buffer<real>, std::map<char, SdfGlyph>> makeSdfMap(FT_Library& librar
     int posX = 0, posY = 0;
     const int margin = 50;
 
-    FT_Face face;
-    auto error = FT_New_Face( library,
-        "Roboto-bold.ttf",
-        0,
-        &face
-    );
-    if (error)
-        std::cout << "Error: " << error << std::endl;
-
-    error = FT_Set_Char_Size(
+    auto error = FT_Set_Char_Size(
         face,    /* handle to face object         */
         0,       /* char_width in 1/64 of points  */
         116*64,   /* char_height in 1/64 of points */
-        2200,     /* horizontal device resolution  */
-        2200);   /* vertical device resolution    */
+        220,     /* horizontal device resolution  */
+        220);   /* vertical device resolution    */
 
     std::map<char, SdfGlyph> glyphMap;
 
     if (error)
         std::cout << "Error: " << error << std::endl;
 
-    for(char ch = 'a'; ch <= 'd'; ch++)
+    for(char ch = 'A'; ch <= 'V'; ch+= 'V'-'A')
     {
         auto glyph_index = FT_Get_Char_Index( face, ch );
 
@@ -666,6 +657,14 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
     if (error)
         std::cout << "Error: " << error << std::endl;
 
+    error = FT_New_Face( library,
+        "OpenSans-regular.ttf",
+        0,
+        &face
+    );
+
+
+
     InputManager::getInstance().initInput(window);
     OrthogonalCamera cam({ 0, 0, 1 }, { 0, 0, -1 }, { 0, 1, 0 }, real(xres)/float(yres));
 
@@ -675,6 +674,7 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
     Scene scene(&cam, &shaderProgramManager);
 
     GLuint VAO, VBO, EBO;
+    GLuint VAO2, VBO2, EBO2;
 
     GLuint texture;
 
@@ -725,24 +725,47 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
     //}
 
 
-    auto [map, glyphMap] = makeSdfMap(library);
+    auto [map, glyphMap] = makeSdfMap(face);
     auto b = flipVertically(map.data, map.width);
+
+    //    auto glyph_index = FT_Get_Char_Index(face, 'a');
+    //error = FT_Load_Glyph(
+    //        face,          /* handle to face object */
+    //        glyph_index,   /* glyph index           */
+    //0 );  /* load flags, see below */
+
+    //face->
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, map.width, map.height, 0, GL_RED, GL_FLOAT, b.data());
 
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    auto glyph_index = FT_Get_Char_Index(face, 'A');
+    error = FT_Load_Glyph(
+            face,          /* handle to face object */
+            glyph_index,   /* glyph index           */
+    0 );  /* load flags, see below */
+
+    const real width = 0.1;
+    real widthA = face->glyph->metrics.width;
+    real ratio = real(face->glyph->metrics.height)/real(face->glyph->metrics.width);
+    real height = width*ratio;
+
+    real bear = width*real(face->glyph->metrics.width)/widthA;
+
+    Vector3 pos(0.0, 0.0, 0.0);
+    Vector3 vb(bear, 0.0, 0.0);
+
+    std::vector<Vertex3> vs = {
+        {pos + vb, {0.0, 0.0, 1.0}, {glyphMap['A'].x1, glyphMap['A'].y1}},
+        {pos + vb + Vector3(width, 0, 0), {0.0, 0.0, 1.0}, {glyphMap['A'].x2, glyphMap['A'].y1}},
+        {pos + vb + Vector3(width, height, 0), {0.0, 0.0, 1.0}, {glyphMap['A'].x2, glyphMap['A'].y2}},
+        {pos + vb + Vector3(0, height, 0), {0.0, 0.0, 1.0}, {glyphMap['A'].x1, glyphMap['A'].y2}}
+    };
+
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
-
-    
-    std::vector<Vertex3> vs = {
-        {{-0.55, -0.55, 0.0}, {0.0, 0.0, 1.0}, {glyphMap['a'].x1, glyphMap['a'].y1}},
-        {{ 0.55, -0.55, 0.0}, {0.0, 0.0, 1.0}, {glyphMap['a'].x2, glyphMap['a'].y1}},
-        {{ 0.55,  0.55, 0.0}, {0.0, 0.0, 1.0}, {glyphMap['a'].x2, glyphMap['a'].y2}},
-        {{-0.55,  0.55, 0.0}, {0.0, 0.0, 1.0}, {glyphMap['a'].x1, glyphMap['a'].y2}}
-    };
 
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -759,6 +782,58 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
 
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*indices.size(), indices.data(), GL_STATIC_DRAW);
+
+    pos.x += width*(face->glyph->metrics.horiAdvance)/widthA;
+
+    glyph_index = FT_Get_Char_Index(face, 'V');
+    error = FT_Load_Glyph(
+            face,          /* handle to face object */
+            glyph_index,   /* glyph index           */
+    0 );  /* load flags, see below */
+
+    FT_Vector  kerning;
+
+
+    error = FT_Get_Kerning( face,          /* handle to face object */
+                        FT_Get_Char_Index(face, 'A'),          /* left glyph index      */
+                        FT_Get_Char_Index(face, 'V'),         /* right glyph index     */
+                        FT_KERNING_DEFAULT,  /* kerning mode          */
+                        &kerning );    /* target vector         */
+
+    ratio = real(face->glyph->metrics.height)/real(face->glyph->metrics.width);
+    height = width*real(face->glyph->metrics.height)/widthA;
+    real widthB = width*real(face->glyph->metrics.width)/widthA;
+    bear = width*real(face->glyph->metrics.width)/widthA;
+    vb = { bear, 0, 0 };
+
+    auto kv = Vector3(real(width)*kerning.x/widthA, real(width)*kerning.y/widthA, 0.f);
+
+    std::vector<Vertex3> vs2 = {
+        {pos + kv + vb, {0.0, 0.0, 1.0}, {glyphMap['V'].x1, glyphMap['V'].y1}},
+        {pos + kv + vb + Vector3(widthB, 0.0, 0.0 ), {0.0, 0.0, 1.0}, {glyphMap['V'].x2, glyphMap['V'].y1}},
+        {pos + kv + vb + Vector3(widthB, height, 0), {0.0, 0.0, 1.0}, {glyphMap['V'].x2, glyphMap['V'].y2}},
+        {pos + kv + vb + Vector3(0, height, 0), {0.0, 0.0, 1.0}, {glyphMap['V'].x1, glyphMap['V'].y2}}
+    };
+
+    glGenVertexArrays(1, &VAO2);
+    glBindVertexArray(VAO2);
+
+    glGenBuffers(1, &VBO2);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex3)*vs2.size(), vs2.data(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6*sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    glGenBuffers(1, &EBO2);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*indices.size(), indices.data(), GL_STATIC_DRAW);
 
     Shader* geometryShader = nullptr, *vertexShader = nullptr, *fragmentShader;
@@ -791,6 +866,9 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
 
         program->use();
         glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+
+        glBindVertexArray(VAO2);
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
         glfwPollEvents();

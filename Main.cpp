@@ -40,7 +40,7 @@
 
 extern bool quitting = false;
 
-int xres = 1920, yres = 1080;
+int xres = 1080, yres = 1080;
 
 void sizeCallback(GLFWwindow* window, int width, int height)
 {
