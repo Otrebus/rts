@@ -166,6 +166,9 @@
     <ClCompile Include="DebugDraw.cpp">
       <Filter>Source files\System</Filter>
     </ClCompile>
+    <ClCompile Include="ByteStream.cpp">
+      <Filter>Source files\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -329,6 +332,9 @@
     </ClInclude>
     <ClInclude Include="DebugDraw.h">
       <Filter>Source files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Bytestream.h">
+      <Filter>Source files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

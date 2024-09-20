@@ -556,38 +556,23 @@ std::tuple<Buffer<real>, std::map<char, SdfGlyph>> makeSdfMap(FT_Face& face)
     int posX = 0, posY = 0;
     const int margin = 50;
 
-    auto error = FT_Set_Char_Size(
-        face,    /* handle to face object         */
-        0,       /* char_width in 1/64 of points  */
-        116*64,   /* char_height in 1/64 of points */
-        220,     /* horizontal device resolution  */
-        220);   /* vertical device resolution    */
-
     std::map<char, SdfGlyph> glyphMap;
 
-    if (error)
-        std::cout << "Error: " << error << std::endl;
-
     int rowMaxHeight = 0;
+    int emBoxHeight = 50;
+    FT_Set_Pixel_Sizes(face, 0, emBoxHeight);
 
-    for(unsigned char ch = 32; ch <= 254; ch+= 1)
+    for (unsigned char ch = 32; ch <= 254; ch += 1)
     {
-        auto glyph_index = FT_Get_Char_Index( face, ch );
+        auto glyph_index = FT_Get_Char_Index(face, ch);
 
-        error = FT_Load_Glyph(
-              face,          /* handle to face object */
-              glyph_index,   /* glyph index           */
-        0 );  /* load flags, see below */
-        FT_Render_Glyph( face->glyph,   /* glyph slot  */
-                         FT_RENDER_MODE_MONO ); /* render mode */
-
-        std::cout << "number of glyphs: " << face->num_glyphs << std::endl;
+        FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
+        FT_Render_Glyph(face->glyph, FT_RENDER_MODE_MONO);
 
         FT_GlyphSlot slot = face->glyph;
         FT_Bitmap bitmap = slot->bitmap;
-        
 
-        Buffer<char> buf(bitmap.width+margin*2, bitmap.rows+margin*2, false);
+        Buffer<char> buf(bitmap.width + margin * 2, bitmap.rows + margin * 2, false);
         for(int y = 0; y < bitmap.rows; y++)
         {
             for(int x = 0; x < bitmap.width; x++)
@@ -597,58 +582,47 @@ std::tuple<Buffer<real>, std::map<char, SdfGlyph>> makeSdfMap(FT_Face& face)
                 buf.get(margin+x, margin+y) = (((bitmap.buffer[y*bitmap.pitch+X] >> (7-b)) & 1));
             }
         }
-
+        
         std::cout << "(" << posX << ", " << posY << ")" << std::endl;
 
-        int charHeight = 50+margin*2;
-
         auto v = calcSigned(buf.data, buf.width, buf.height);
-        auto dx = real(buf.width)/charHeight, dw = real(buf.height)/charHeight;
         auto sBuf = Buffer<real>(v, buf.width, buf.height);
 
-        real charWidth = (dx/dw)*charHeight;
+        int charWidth = buf.width;
+        int charHeight = buf.height;
 
-        
-        if(posX+charWidth > mapWidth)
+        if (posX + charWidth > mapWidth)
         {
-            posY += int(1+rowMaxHeight);
+            posY += rowMaxHeight;
             posX = 0;
             rowMaxHeight = 0;
         }
 
-
-        for(int y = 0; y < charHeight; y++)
+        for (int y = 0; y < charHeight; y++)
         {
-            for(int x = 0; x < int(1+charWidth); x++)
+            for (int x = 0; x < charWidth; x++)
             {
-                real X = dw*x + dw/2, Y = dw*y + dw/2;
-                real xf = X-int(X), yf = Y-int(Y);
-                real s = 0;
-                s += yf*(xf*sBuf.get(X, Y, 50.f) + (1-xf)*sBuf.get(X+1, Y, 50.f));
-                s += (1-yf)*(xf*sBuf.get(X, Y+1, 50.f) + (1-xf)*sBuf.get(X+1, Y+1, 50.f));
-                sdfMap[(posY+y)*mapWidth+x+posX] = s;
+                sdfMap[(posY + y) * mapWidth + posX + x] = sBuf.get(x, y, 50.f);
             }
         }
-        
-        rowMaxHeight = std::max(rowMaxHeight, charHeight);
 
-        real gmargin = charWidth*real(margin)/buf.width;
-        glyphMap[ch] = SdfGlyph {
-            real(posX)+gmargin,
-            real(posX)+charWidth-gmargin,
-            real(posY)+gmargin,
-            real(posY)+charHeight-gmargin
+        glyphMap[ch] = SdfGlyph{
+            real(posX + margin),
+            real(posX + charWidth - margin),
+            real(posY + charHeight - margin),
+            real(posY + margin)
         };
+
         posX += charWidth;
+        rowMaxHeight = std::max(rowMaxHeight, charHeight);
     }
 
-    for(auto& it : glyphMap)
+    for (auto& it : glyphMap)
     {
-        auto x1 = it.second.x1, x2 = it.second.x2, y1 = it.second.y1, y2 = it.second.y2;
-        it.second.x1 = x1/mapWidth;
-        it.second.x2 = x2/mapWidth;
-        it.second.y1 = (mapHeight-y2)/mapHeight;
-        it.second.y2 = (mapHeight-y1)/mapHeight;
+        it.second.x1 /= mapWidth;
+        it.second.x2 /= mapWidth;
+        it.second.y1 = (mapHeight - it.second.y1) / (real)mapHeight;
+        it.second.y2 = (mapHeight - it.second.y2) / (real)mapHeight;
     }
 
     return { Buffer<real>(sdfMap, mapWidth, mapHeight), glyphMap };

@@ -143,6 +143,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\temp\gl3w\src\gl3w.c" />
     <ClCompile Include="BoundingBox.cpp" />
+    <ClCompile Include="ByteStream.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraControl.cpp" />
     <ClCompile Include="Console.cpp" />
@@ -206,6 +207,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoundingBox.h" />
+    <ClInclude Include="Bytestream.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraControl.h" />
     <ClInclude Include="Console.h" />
