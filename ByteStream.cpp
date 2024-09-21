@@ -1,4 +1,5 @@
 #include "Bytestream.h"
+#include <filesystem>
 
 Bytestream::Bytestream() : first(0), fail(false)
 {
@@ -8,19 +9,19 @@ Bytestream::~Bytestream()
 {
 }
 
-void Bytestream::SaveToFile(std::string fileName)
+void Bytestream::saveToFile(std::string fileName)
 {
     std::ofstream file;
     file.open(fileName, std::ios::out | std::ios::trunc | std::ios::binary);
-    for(auto byte : data)
-        file.write(&byte, sizeof(char));
+    file.write(data.data(), data.size());
 }
 
-void Bytestream::LoadFromFile(std::string fileName)
+void Bytestream::loadFromFile(std::string fileName)
 {
     std::ifstream file;
     file.open(fileName, std::ios::in | std::ios::binary);
 
-    for(char byte; !file.eof(); data.push_back(byte))
-        file.read(&byte, sizeof(char));
+    auto size = std::filesystem::file_size(fileName);;
+    data.resize(size);
+    file.read(data.data(), size);
 }

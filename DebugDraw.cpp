@@ -5,6 +5,7 @@
 #include "GeometryUtils.h"
 #include "InputManager.h"
 #include "LambertianMaterial.h"
+#include "Bytestream.h"
 #include "Line.h"
 #include "Logger.h"
 #include "Main.h"
@@ -34,6 +35,7 @@
 #include <thread>
 #include <set>
 #include <ft2build.h>
+#include <filesystem>
 #include FT_FREETYPE_H
 
 
@@ -505,23 +507,28 @@ std::vector<real> calcSigned(std::vector<char> data, int xres, int yres)
 }
 
 
-template<typename T> struct Buffer
+template<typename T> struct Buffer2d
 {
     std::vector<T> data;
     int width, height;
-    Buffer(int width, int height, T val) {
+
+    Buffer2d()
+    {
+    }
+
+    Buffer2d(int width, int height, T val) {
         this->width = width;
         this->height = height;
         data = std::vector<T>(width*height, val);
     }
 
-    Buffer(int width, int height) {
+    Buffer2d(int width, int height) {
         this->width = width;
         this->height = height;
         data = std::vector<T>(width*height);
     }
 
-    Buffer(std::vector<T> data, int width, int height) {
+    Buffer2d(std::vector<T> data, int width, int height) {
         this->width = width;
         this->height = height;
         this->data = data;
@@ -548,9 +555,9 @@ struct SdfGlyph
 };
 
 
-std::tuple<Buffer<real>, std::map<char, SdfGlyph>> makeSdfMap(FT_Face& face)
+std::tuple<Buffer2d<real>, std::map<char, SdfGlyph>> makeSdfMap(FT_Face& face)
 {
-    int mapWidth = 2096, mapHeight = 2096;
+    int mapWidth = 2096, mapHeight = 100;
     std::vector<real> sdfMap(mapWidth*mapHeight, 50);
 
     int posX = 0, posY = 0;
@@ -572,7 +579,7 @@ std::tuple<Buffer<real>, std::map<char, SdfGlyph>> makeSdfMap(FT_Face& face)
         FT_GlyphSlot slot = face->glyph;
         FT_Bitmap bitmap = slot->bitmap;
 
-        Buffer<char> buf(bitmap.width + margin * 2, bitmap.rows + margin * 2, false);
+        Buffer2d<char> buf(bitmap.width + margin * 2, bitmap.rows + margin * 2, false);
         for(int y = 0; y < bitmap.rows; y++)
         {
             for(int x = 0; x < bitmap.width; x++)
@@ -586,7 +593,7 @@ std::tuple<Buffer<real>, std::map<char, SdfGlyph>> makeSdfMap(FT_Face& face)
         std::cout << "(" << posX << ", " << posY << ")" << std::endl;
 
         auto v = calcSigned(buf.data, buf.width, buf.height);
-        auto sBuf = Buffer<real>(v, buf.width, buf.height);
+        auto sBuf = Buffer2d<real>(v, buf.width, buf.height);
 
         int charWidth = buf.width;
         int charHeight = buf.height;
@@ -596,6 +603,11 @@ std::tuple<Buffer<real>, std::map<char, SdfGlyph>> makeSdfMap(FT_Face& face)
             posY += rowMaxHeight;
             posX = 0;
             rowMaxHeight = 0;
+        }
+        if(posY + charHeight > mapHeight)
+        {
+            mapHeight *= 2;
+            sdfMap.resize(mapWidth*mapHeight, 50);
         }
 
         for (int y = 0; y < charHeight; y++)
@@ -625,7 +637,47 @@ std::tuple<Buffer<real>, std::map<char, SdfGlyph>> makeSdfMap(FT_Face& face)
         it.second.y2 = (mapHeight - it.second.y2) / (real)mapHeight;
     }
 
-    return { Buffer<real>(sdfMap, mapWidth, mapHeight), glyphMap };
+    return { Buffer2d<real>(sdfMap, mapWidth, mapHeight), glyphMap };
+}
+
+
+void saveSdfMap(std::string fileName, const std::vector<SdfGlyph>& glyphInfos, const Buffer2d<real>& sdfMap)
+{
+    Bytestream b;
+    b << glyphInfos.size();
+    for(auto glyphInfo : glyphInfos)
+        b << glyphInfo.x1 << glyphInfo.x2 << glyphInfo.y1 << glyphInfo.y2;
+    b << sdfMap.width << sdfMap.height;
+    for(auto x : sdfMap.data)
+        b << x;
+    b.saveToFile(fileName);
+}
+
+
+std::pair<Buffer2d<real>, std::map<char, SdfGlyph>> loadSdfMap(std::string fileName)
+{
+    std::map<char, SdfGlyph> glyphMap;
+    Bytestream b;
+    b.loadFromFile(fileName);
+    size_t size;
+    b >> size;
+    unsigned char c = 32;
+    for(int i = 0; i < size; i++)
+    {
+        SdfGlyph glyphInfo;
+        b >> glyphInfo.x1 >> glyphInfo.x2 >> glyphInfo.y1 >> glyphInfo.y2;
+        glyphMap[c++] = glyphInfo;
+    }
+    int width, height;
+    b >> width >> height;
+    Buffer2d<real> buf(width, height);
+    for(int i = 0; i < width*height; i++)
+    {
+        real r;
+        b >> r;
+        buf.data[i] = r;
+    }
+    return { buf, glyphMap };
 }
 
 
@@ -701,10 +753,39 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
     //        sv.push_back(avg);
     //    }
     //}
+    
+    std::string fileName = "glyphmap.glm";
 
+    Buffer2d<real> sdfMap;
+    std::map<char, SdfGlyph> glyphMap;
 
-    auto [map, glyphMap] = makeSdfMap(face);
-    auto b = flipVertically(map.data, map.width);
+    if(!std::filesystem::exists(fileName))
+    {
+        auto [map, gm] = makeSdfMap(face);
+
+        std::vector<SdfGlyph> v;
+        for(auto it : gm)
+        {
+            v.push_back(it.second);
+        }
+
+        auto b = flipVertically(map.data, map.width);
+        map.data = b;
+
+        std::cout << "saving map" << std::endl;
+        saveSdfMap(fileName, v, map);
+
+        sdfMap = map;
+        glyphMap = gm;
+    }
+    else
+    {
+        std::cout << "loading map" << std::endl;
+        auto [map, gm] = loadSdfMap(fileName);
+        sdfMap = map;
+        glyphMap = gm;
+    }
+
 
     //    auto glyph_index = FT_Get_Char_Index(face, 'a');
     //error = FT_Load_Glyph(
@@ -730,7 +811,7 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
     };
 
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, map.width, map.height, 0, GL_RED, GL_FLOAT, b.data());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, sdfMap.width, sdfMap.height, 0, GL_RED, GL_FLOAT, sdfMap.data.data());
 
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

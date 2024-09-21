@@ -5,6 +5,7 @@
 
 # My ignored files k
 screenshot.bmp
+glyphmap.glm
 *.ttf
 
 # User-specific files

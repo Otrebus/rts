@@ -45,8 +45,8 @@ public:
         return *this;
     }
 
-    void SaveToFile(std::string fileName);
-    void LoadFromFile(std::string fileName);
+    void saveToFile(std::string fileName);
+    void loadFromFile(std::string fileName);
 
 private:
     bool fail;
