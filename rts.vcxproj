@@ -143,6 +143,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\temp\gl3w\src\gl3w.c" />
     <ClCompile Include="BoundingBox.cpp" />
+    <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="ByteStream.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraControl.cpp" />
@@ -150,6 +151,7 @@
     <ClCompile Include="ConsoleSettings.cpp" />
     <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="Font.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Primitives.cpp" />
     <ClCompile Include="ShapeDrawer.cpp" />
@@ -207,6 +209,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoundingBox.h" />
+    <ClInclude Include="Buffer.h" />
     <ClInclude Include="Bytestream.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraControl.h" />
@@ -214,6 +217,7 @@
     <ClInclude Include="ConsoleSettings.h" />
     <ClInclude Include="DebugDraw.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="Font.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Primitives.h" />
     <ClInclude Include="ShapeDrawer.h" />

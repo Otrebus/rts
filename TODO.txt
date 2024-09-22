@@ -108,6 +108,7 @@
 - BoundingBoxmodel creates mesh etc in constructor, unlike the others who do it in init, fix?
 - Use subclasses of shader instead of adding shader type to constructor?
 - BMPS are read upside-down
+- nTriangles isn't nTriangles, is it (it's indices?)
 + TODO: this sphere draws weirdly
 - Minimap
 - Buildings/construction

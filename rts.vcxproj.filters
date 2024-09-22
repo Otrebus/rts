@@ -169,6 +169,12 @@
     <ClCompile Include="ByteStream.cpp">
       <Filter>Source files\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="Font.cpp">
+      <Filter>Source files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Buffer.cpp">
+      <Filter>Source files\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -334,6 +340,12 @@
       <Filter>Source files\System</Filter>
     </ClInclude>
     <ClInclude Include="Bytestream.h">
+      <Filter>Source files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Font.h">
+      <Filter>Source files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Buffer.h">
       <Filter>Source files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
