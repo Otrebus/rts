@@ -168,7 +168,7 @@ std::vector<real> calcSigned(std::vector<char> data, int xres, int yres)
 }
 
 
-std::tuple<Buffer2d<real>, std::map<char, GlyphCoords>> makeSdfMap(FT_Face& face)
+std::tuple<Buffer2d<real>, std::map<unsigned char, GlyphCoords>> makeSdfMap(FT_Face& face)
 {
     int mapWidth = 2096, mapHeight = 100;
     std::vector<real> sdfMap(mapWidth*mapHeight, 50);
@@ -176,10 +176,10 @@ std::tuple<Buffer2d<real>, std::map<char, GlyphCoords>> makeSdfMap(FT_Face& face
     int posX = 0, posY = 0;
     const int margin = 50;
 
-    std::map<char, GlyphCoords> glyphMap;
+    std::map<unsigned char, GlyphCoords> glyphMap;
 
     int rowMaxHeight = 0;
-    int emBoxHeight = 50;
+    int emBoxHeight = 2000;
     FT_Set_Pixel_Sizes(face, 0, emBoxHeight);
 
     for (unsigned char ch = 32; ch <= 254; ch += 1)
@@ -207,9 +207,10 @@ std::tuple<Buffer2d<real>, std::map<char, GlyphCoords>> makeSdfMap(FT_Face& face
 
         auto v = calcSigned(buf.data, buf.width, buf.height);
         auto sBuf = Buffer2d<real>(v, buf.width, buf.height);
-
-        int charWidth = buf.width;
-        int charHeight = buf.height;
+        
+        int charHeight = 128;
+        auto dx = real(buf.width)/charHeight, dw = real(buf.height)/charHeight;
+        real charWidth = (dx/dw)*charHeight;
 
         if (posX + charWidth > mapWidth)
         {
@@ -223,19 +224,24 @@ std::tuple<Buffer2d<real>, std::map<char, GlyphCoords>> makeSdfMap(FT_Face& face
             sdfMap.resize(mapWidth*mapHeight, 50);
         }
 
-        for (int y = 0; y < charHeight; y++)
+        for(int y = 0; y < charHeight; y++)
         {
-            for (int x = 0; x < charWidth; x++)
+            for(int x = 0; x < int(1+charWidth); x++)
             {
-                sdfMap[(posY + y) * mapWidth + posX + x] = sBuf.get(x, y, 50.f);
+                real X = dw*x + dw/2, Y = dw*y + dw/2;
+                real xf = X-int(X), yf = Y-int(Y);
+                real s = 0;
+                s += yf*(xf*sBuf.get(X, Y, 50.f) + (1-xf)*sBuf.get(X+1, Y, 50.f));
+                s += (1-yf)*(xf*sBuf.get(X, Y+1, 50.f) + (1-xf)*sBuf.get(X+1, Y+1, 50.f));
+                sdfMap[(posY+y)*mapWidth+x+posX] = s;
             }
         }
 
         glyphMap[ch] = GlyphCoords{
-            real(posX + margin),
-            real(posX + charWidth - margin),
-            real(posY + charHeight - margin),
-            real(posY + margin)
+            real(posX + charWidth*margin/real(buf.width)),
+            real(posX + charWidth - charWidth*margin/real(buf.width)),
+            real(posY + charHeight*margin/real(buf.height)),
+            real(posY + charHeight - charHeight*margin/real(buf.height))
         };
 
         posX += charWidth;
@@ -248,6 +254,7 @@ std::tuple<Buffer2d<real>, std::map<char, GlyphCoords>> makeSdfMap(FT_Face& face
         it.second.x2 /= mapWidth;
         it.second.y1 = (mapHeight - it.second.y1) / (real)mapHeight;
         it.second.y2 = (mapHeight - it.second.y2) / (real)mapHeight;
+        std::swap(it.second.y1, it.second.y2);
     }
 
     return { Buffer2d<real>(sdfMap, mapWidth, mapHeight), glyphMap };
@@ -267,9 +274,9 @@ void saveSdfMap(std::string fileName, const std::vector<GlyphCoords>& glyphInfos
 }
 
 
-std::pair<Buffer2d<real>, std::map<char, GlyphCoords>> loadSdfMap(std::string fileName)
+std::pair<Buffer2d<real>, std::map<unsigned char, GlyphCoords>> loadSdfMap(std::string fileName)
 {
-    std::map<char, GlyphCoords> glyphMap;
+    std::map<unsigned char, GlyphCoords> glyphMap;
     Bytestream b;
     b.loadFromFile(fileName);
     size_t size;
@@ -294,8 +301,9 @@ std::pair<Buffer2d<real>, std::map<char, GlyphCoords>> loadSdfMap(std::string fi
 }
 
 
-Glyph::Glyph(const FT_Face& face, char ch, GlyphCoords glyphCoord)
+Glyph::Glyph(const FT_Face& face, unsigned char ch, GlyphCoords glyphCoord)
 {
+    this->ch = ch;
     if(!vertexShader)
         vertexShader = new Shader("vertexShader.vert", GL_VERTEX_SHADER);
     if(!geometryShader)
@@ -305,22 +313,13 @@ Glyph::Glyph(const FT_Face& face, char ch, GlyphCoords glyphCoord)
 
     auto glyph_index = FT_Get_Char_Index(face, ch);
     FT_Load_Glyph(face, glyph_index, 0);
-
-    const real width = 0.1;
-    real widthA = face->glyph->metrics.width;
-    real ratio = real(face->glyph->metrics.height)/real(face->glyph->metrics.width);
-    real height = width*ratio;
-
-    real bear = width*real(face->glyph->metrics.width)/widthA;
-
-    Vector3 pos(0.0, 0.0, 0.0);
-    Vector3 vb(bear, 0.0, 0.0);
+    auto w = real(face->glyph->metrics.width)/real(face->glyph->metrics.height);
 
     std::vector<Vertex3> vs = {
-        {pos + vb, {0.0, 0.0, 1.0}, {glyphCoord.x1, glyphCoord.y1}},
-        {pos + vb + Vector3(width, 0, 0), {0.0, 0.0, 1.0}, {glyphCoord.x2, glyphCoord.y1}},
-        {pos + vb + Vector3(width, height, 0), {0.0, 0.0, 1.0}, {glyphCoord.x2, glyphCoord.y2}},
-        {pos + vb + Vector3(0, height, 0), {0.0, 0.0, 1.0}, {glyphCoord.x1, glyphCoord.y2}}
+        { { 0.0, 0.0, 0.0 }, {0.0, 0.0, 1.0}, {glyphCoord.x1, glyphCoord.y1}},
+        { { w, 0.0, 0.0 }, {0.0, 0.0, 1.0}, {glyphCoord.x2, glyphCoord.y1}},
+        { { w, 1.0, 0.0 }, {0.0, 0.0, 1.0}, {glyphCoord.x2, glyphCoord.y2}},
+        { { 0.0, 1.0, 0.0 }, {0.0, 0.0, 1.0}, {glyphCoord.x1, glyphCoord.y2}}
     };
 
     std::vector<int> indices = { 0, 1, 2, 2, 3, 0 };
@@ -347,15 +346,37 @@ Glyph::Glyph(const FT_Face& face, char ch, GlyphCoords glyphCoord)
 }
 
 
-void Glyph::draw(Scene& scene)
+void Glyph::draw(Scene& scene, FT_Face face, Vector2 pos, real size)
 {
+    auto glyph_index = FT_Get_Char_Index(face, ch);
+    FT_Set_Char_Size(face, 1000, 0, 1000, 1000);
+    FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
+
+    real H = face->size->metrics.ascender - face->size->metrics.descender;
+    real b = face->glyph->metrics.horiBearingY;
+    real h = face->glyph->metrics.height;
+    real l = face->glyph->metrics.horiBearingX;
+
+    // H should be size tall
+    // X/Y scaling: size*h/H
+
+    auto translationMatrix = getTranslationMatrix(Vector3(pos.x + size*l/H, pos.y -size*h/H -size*(face->size->metrics.ascender - b)/H, 0));
+    auto scalingMatrix = getScalingMatrix(Vector3(size*h/H, size*h/H, 1));
+
+    auto modelViewMatrix = translationMatrix*scalingMatrix;
+
     auto s = scene.getShaderProgramManager();
     auto program = s->getProgram(fragmentShader, geometryShader, vertexShader);
     scene.setShaderProgram(program);
 
+    auto matrix = getScalingMatrix(Vector3(0, 0, 0));
+
     program->use();
+    
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBindVertexArray(VAO);
-    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "modelViewMatrix"), 1, GL_TRUE, (float*)identityMatrix.m_val);
+    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "modelViewMatrix"), 1, GL_TRUE, (float*)modelViewMatrix.m_val);
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "projectionMatrix"), 1, GL_TRUE, (float*)identityMatrix.m_val);
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "normalMatrix"), 1, GL_TRUE, (float*)identityMatrix.m_val);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -364,8 +385,6 @@ void Glyph::draw(Scene& scene)
 
 Font::Font(Scene& scene, std::string fileName)
 {
-    FT_Library library;
-    FT_Face face;
     FT_Init_FreeType(&library);
     FT_New_Face(library, "OpenSans-regular.ttf", 0, &face);
 
@@ -381,7 +400,7 @@ Font::Font(Scene& scene, std::string fileName)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     Buffer2d<real> sdfMap;
-    std::map<char, GlyphCoords> coordMap;
+    std::map<unsigned char, GlyphCoords> coordMap;
 
     fileName = "glyphmap.glm"; // TODO: use actual filename
     if(!std::filesystem::exists(fileName))
@@ -425,15 +444,6 @@ Font::Font(Scene& scene, std::string fileName)
 
         //auto kv = Vector3(real(width)*kerning.x/widthA, real(width)*kerning.y/widthA, 0.f);
 
-    std::vector<Vertex3> vs = {
-        {{ -1, -1, 0 }, {0.0, 0.0, 1.0}, { 0, 0 }},
-        {Vector3(1, -1, 0.0 ), {0.0, 0.0, 1.0}, {1, 0 }},
-        {Vector3(1, 1, 0), {0.0, 0.0, 1.0}, {1, 1}},
-        {Vector3(-1, 1, 0), {0.0, 0.0, 1.0}, {0, 1}}
-    };
-
-
-
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, sdfMap.width, sdfMap.height, 0, GL_RED, GL_FLOAT, sdfMap.data.data());
 
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
@@ -447,12 +457,34 @@ Font::Font(Scene& scene, std::string fileName)
 };
 
 
-void Font::draw(Scene& scene, std::string str)
+Vector2 Font::getAdvance(unsigned char a, unsigned char b, real size)
+{
+    // Assumes sizing is set and there's a face loaded
+    FT_Vector kerning;
+
+    FT_Get_Kerning(
+        face,
+        FT_Get_Char_Index(face, a),
+        FT_Get_Char_Index(face, b),
+        FT_KERNING_DEFAULT,
+        &kerning
+    );
+
+    real H = face->size->metrics.ascender - face->size->metrics.descender;
+    real B = size*face->glyph->metrics.horiAdvance/H;
+
+    return Vector2(B + size*kerning.x/H, 0);
+}
+
+
+void Font::draw(Scene& scene, std::string str, Vector2 pos, real size)
 {
     for(int i = 0; i < str.size(); i++)
     {
+        if(i > 0)
+            pos += getAdvance(str[i-1], str[i], size);
         auto c = glyphMap[str[i]];
-        c->draw(scene);
+        c->draw(scene, face, pos, size);
     }
 }
 

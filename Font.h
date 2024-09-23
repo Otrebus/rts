@@ -17,11 +17,11 @@ struct GlyphCoords
 
 struct Glyph
 {
-    GlyphCoords texCoord;
     GLuint VAO, VBO, EBO;
+    unsigned char ch;
 
-    Glyph(const FT_Face& face, char ch, GlyphCoords glyphCoord);
-    void draw(Scene& scene);
+    Glyph(const FT_Face& face, unsigned char ch, GlyphCoords glyphCoord);
+    void draw(Scene& scene, FT_Face face, Vector2, real);
 
     static Shader* vertexShader;
     static Shader* geometryShader;
@@ -33,10 +33,14 @@ class Font
 {
 public:
     Font(Scene& scene, std::string fileName);
-    void draw(Scene& scene, std::string str);
+    void draw(Scene& scene, std::string str, Vector2 pos, real size);
 
 private:
+    FT_Library library; // Might want to make this one static
+    FT_Face face;
+
+    Vector2 getAdvance(unsigned char a, unsigned char b, real size);
     
     GLuint texture;
-    std::map<char, Glyph*> glyphMap;
+    std::map<unsigned char, Glyph*> glyphMap;
 };

@@ -20,8 +20,8 @@ uniform sampler2D texture1;
 void main()
 {
 	FragColor = texture(texture1, texCoord);
-//    if(FragColor.r > 0.5)
-//        FragColor = vec4(1, 1, 1, 0);
-//    else
-//        FragColor = vec4(0, 0, 0, 0);
+
+    float t = smoothstep(0.5 - 0.25, 0.5 + 0.25, FragColor.r);
+
+    FragColor = vec4(0, 0, 0, 1-t);
 }
