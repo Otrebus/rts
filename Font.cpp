@@ -376,6 +376,7 @@ void Glyph::draw(Scene& scene, FT_Face face, Vector2 pos, real size)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBindVertexArray(VAO);
+    glUniform1f(glGetUniformLocation(program->getId(), "time"), (float)glfwGetTime());
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "modelViewMatrix"), 1, GL_TRUE, (float*)modelViewMatrix.m_val);
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "projectionMatrix"), 1, GL_TRUE, (float*)identityMatrix.m_val);
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "normalMatrix"), 1, GL_TRUE, (float*)identityMatrix.m_val);
@@ -392,6 +393,7 @@ Font::Font(Scene& scene, std::string fileName)
 
     std::vector<int> indices = { 0, 1, 2, 2, 3, 0 };
 
+    // TODO: This should probably be done elsewhere
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);

@@ -361,8 +361,8 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
 
     Font font(scene, "todo");
 
-    glfwWindowHint(GLFW_SAMPLES, 24);
-    glEnable(GL_MULTISAMPLE);
+    /*glfwWindowHint(GLFW_SAMPLES, 24);
+    glEnable(GL_MULTISAMPLE);*/
     
     while(!glfwWindowShouldClose(window))
     {
@@ -376,7 +376,14 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
         glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
      
-        font.draw(scene, "This, is me. Typing something (I wonder if this will look good :)).", { -1, 1 }, 0.05);
+        real size = 0.2;
+        real y = 1;
+        for(int i = 0; i < 20; i++)
+        {
+            font.draw(scene, "This, is me. Typing something (I wonder if this will look good :)).", { -1, y }, size);
+            y -= size*0.8;
+            size -= 0.2/20;
+        }
 
 
         glfwPollEvents();
