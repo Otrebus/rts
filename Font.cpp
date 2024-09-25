@@ -301,8 +301,9 @@ std::pair<Buffer2d<real>, std::map<unsigned char, GlyphCoords>> loadSdfMap(std::
 }
 
 
-Glyph::Glyph(const FT_Face& face, unsigned char ch, GlyphCoords glyphCoord)
+Glyph::Glyph(const FT_Face& face, unsigned char ch, GlyphCoords glyphCoord, GLuint texture)
 {
+    this->texture = texture;
     this->ch = ch;
     if(!vertexShader)
         vertexShader = new Shader("vertexShader.vert", GL_VERTEX_SHADER);
@@ -373,9 +374,12 @@ void Glyph::draw(Scene& scene, FT_Face face, Vector2 pos, real size)
 
     program->use();
     
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBindVertexArray(VAO);
+    glUniform1i(glGetUniformLocation(program->getId(), "texture1"), 0);
     glUniform1f(glGetUniformLocation(program->getId(), "time"), (float)glfwGetTime());
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "modelViewMatrix"), 1, GL_TRUE, (float*)modelViewMatrix.m_val);
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "projectionMatrix"), 1, GL_TRUE, (float*)identityMatrix.m_val);
@@ -393,7 +397,6 @@ Font::Font(Scene& scene, std::string fileName)
 
     std::vector<int> indices = { 0, 1, 2, 2, 3, 0 };
 
-    // TODO: This should probably be done elsewhere
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -453,9 +456,10 @@ Font::Font(Scene& scene, std::string fileName)
 
     for(unsigned char ch = 32; ch < 255; ch++)
     {
-        Glyph* glyph = new Glyph(face, ch, coordMap[ch]);
+        Glyph* glyph = new Glyph(face, ch, coordMap[ch], texture);
         glyphMap[ch] = glyph;
     }
+    glBindTexture(GL_TEXTURE_2D, 0);
 };
 
 

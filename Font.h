@@ -20,12 +20,13 @@ struct Glyph
     GLuint VAO, VBO, EBO;
     unsigned char ch;
 
-    Glyph(const FT_Face& face, unsigned char ch, GlyphCoords glyphCoord);
+    Glyph(const FT_Face& face, unsigned char ch, GlyphCoords glyphCoord, GLuint texture);
     void draw(Scene& scene, FT_Face face, Vector2, real);
 
     static Shader* vertexShader;
     static Shader* geometryShader;
     static Shader* fragmentShader;
+    GLuint texture;
 };
 
 
@@ -40,7 +41,7 @@ private:
     FT_Face face;
 
     Vector2 getAdvance(unsigned char a, unsigned char b, real size);
-    
+
     GLuint texture;
     std::map<unsigned char, Glyph*> glyphMap;
 };
