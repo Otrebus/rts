@@ -41,7 +41,7 @@
 
 extern bool quitting = false;
 
-int xres = 1980, yres = 1080;
+int xres = 1080, yres = 1080;
 
 void sizeCallback(GLFWwindow* window, int width, int height)
 {
@@ -82,8 +82,8 @@ int main()
 
     glfwSetFramebufferSizeCallback(window, sizeCallback);
 
-    //debugDraw(window, xres, yres);
-    //return 0;
+    debugDraw(window, xres, yres);
+    return 0;
 
     glEnable              ( GL_DEBUG_OUTPUT );
     glDebugMessageCallback( MessageCallback, 0 );
@@ -299,7 +299,7 @@ int main()
         avgFps = ((9*avgFps + 1/dt))/10;
 
         //drawText(realToString(avgFps, 3), { 0.80, 0.90 }, 0.03, { 0, 0.8, 0 });
-        font.draw(scene, realToString(avgFps, 3), { 0.8, 0.9 }, 0.03);
+        font.draw(scene, realToString(avgFps, 3), { -0.5, 0.9 }, 0.83);
         interface.draw();
         cameraControl.update(dt);
         glfwSwapBuffers(window);
