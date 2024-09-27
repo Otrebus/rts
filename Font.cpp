@@ -208,8 +208,8 @@ std::tuple<Buffer2d<real>, std::map<unsigned char, GlyphCoords>> makeSdfMap(FT_F
         auto sBuf = Buffer2d<real>(v, buf.width, buf.height);
         
         int charHeight = 128;
-        auto dx = real(buf.width)/charHeight, dw = real(buf.height)/charHeight;
-        real charWidth = (dx/dw)*charHeight;
+        auto dw = real(buf.height)/charHeight;
+        real charWidth = (buf.width/real(buf.height))*charHeight;
 
         if (posX + charWidth > mapWidth)
         {
@@ -241,8 +241,9 @@ std::tuple<Buffer2d<real>, std::map<unsigned char, GlyphCoords>> makeSdfMap(FT_F
             real(posX + charWidth),
             real(posY),
             real(posY + charHeight),
-            margin/real(buf.width),
-            margin/real(buf.height)
+            charWidth/charHeight,
+            margin/real(bitmap.width),
+            margin/real(bitmap.rows)
         };
 
         posX += charWidth;
@@ -266,8 +267,8 @@ void saveSdfMap(std::string fileName, const std::vector<GlyphCoords>& glyphInfos
 {
     Bytestream b;
     b << glyphInfos.size();
-    for(auto glyphInfo : glyphInfos)
-        b << glyphInfo.x1 << glyphInfo.x2 << glyphInfo.y1 << glyphInfo.y2 << glyphInfo.marginX << glyphInfo.marginY;
+    for(auto& glyphInfo : glyphInfos)
+        b << glyphInfo.x1 << glyphInfo.x2 << glyphInfo.y1 << glyphInfo.y2 << glyphInfo.w << glyphInfo.marginX << glyphInfo.marginY;
     b << sdfMap.width << sdfMap.height;
     for(auto x : sdfMap.data)
         b << x;
@@ -286,7 +287,7 @@ std::pair<Buffer2d<real>, std::map<unsigned char, GlyphCoords>> loadSdfMap(std::
     for(int i = 0; i < size; i++)
     {
         GlyphCoords glyphInfo;
-        b >> glyphInfo.x1 >> glyphInfo.x2 >> glyphInfo.y1 >> glyphInfo.y2 >> glyphInfo.marginX >> glyphInfo.marginY;
+        b >> glyphInfo.x1 >> glyphInfo.x2 >> glyphInfo.y1 >> glyphInfo.y2 >> glyphInfo.w >> glyphInfo.marginX >> glyphInfo.marginY;
         glyphMap[c++] = glyphInfo;
     }
     int width, height;
@@ -318,12 +319,11 @@ Glyph::Glyph(const FT_Face& face, unsigned char ch, GlyphCoords glyphCoord, GLui
     auto glyph_index = FT_Get_Char_Index(face, ch);
     FT_Load_Glyph(face, glyph_index, 0);
     //auto w = real(face->glyph->metrics.width)/real(face->glyph->metrics.height);
-    auto w = (glyphCoord.x2 - glyphCoord.x1)/(glyphCoord.y2 - glyphCoord.y1); // TOOD: test
 
     std::vector<Vertex3> vs = {
         { { 0.0, 0.0, 0.0 }, {0.0, 0.0, 1.0}, {glyphCoord.x1, glyphCoord.y1}},
-        { { w, 0.0, 0.0 }, {0.0, 0.0, 1.0}, {glyphCoord.x2, glyphCoord.y1}},
-        { { w, 1.0, 0.0 }, {0.0, 0.0, 1.0}, {glyphCoord.x2, glyphCoord.y2}},
+        { { glyphCoord.w, 0.0, 0.0 }, {0.0, 0.0, 1.0}, {glyphCoord.x2, glyphCoord.y1}},
+        { { glyphCoord.w, 1.0, 0.0 }, {0.0, 0.0, 1.0}, {glyphCoord.x2, glyphCoord.y2}},
         { { 0.0, 1.0, 0.0 }, {0.0, 0.0, 1.0}, {glyphCoord.x1, glyphCoord.y2}}
     };
 
@@ -348,9 +348,6 @@ Glyph::Glyph(const FT_Face& face, unsigned char ch, GlyphCoords glyphCoord, GLui
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*indices.size(), indices.data(), GL_STATIC_DRAW);
-
-    marginX = glyphCoord.marginX;
-    marginY = glyphCoord.marginY;
 }
 
 
@@ -363,6 +360,7 @@ void Glyph::draw(Scene& scene, FT_Face face, Vector2 pos, real size)
     real H = face->size->metrics.ascender - face->size->metrics.descender;
     real b = face->glyph->metrics.horiBearingY;
     real h = face->glyph->metrics.height;
+    real w = face->glyph->metrics.width;
     real l = face->glyph->metrics.horiBearingX;
 
     // H should be size tall
@@ -375,7 +373,7 @@ void Glyph::draw(Scene& scene, FT_Face face, Vector2 pos, real size)
             0
         )
     );
-    auto scalingMatrix = getScalingMatrix(Vector3(size*h/H, size*h/H, 1));
+    auto scalingMatrix = getScalingMatrix(Vector3(size*(1.0+marginY*2)*h/H, size*(1.0+marginY*2)*h/H, 1));
 
     auto modelViewMatrix = translationMatrix*scalingMatrix;
 

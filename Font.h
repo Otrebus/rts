@@ -11,7 +11,7 @@
 
 struct GlyphCoords
 {
-    real x1, x2, y1, y2, marginX, marginY;
+    real x1, x2, y1, y2, w, marginX, marginY;
 };
 
 
@@ -28,7 +28,6 @@ struct Glyph
     static Shader* fragmentShader;
     GLuint texture;
     real marginX, marginY;
-    real height, width;
 };
 
 
