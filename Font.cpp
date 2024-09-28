@@ -4,157 +4,93 @@
 #include "Buffer.h"
 #include "Math.h"
 #include "Bytestream.h"
+#include "PathFinding.h"
 #include <filesystem>
 #include <set>
 
 
 std::vector<real> calcSigned(std::vector<char> data, int xres, int yres)
 {
-    struct vecr { real x, y; bool operator<(const vecr& v) const { return std::make_pair(x, y) < std::make_pair(v.x, v.y); } };
-    struct vec { int x, y; bool operator<(const vec& v) const { return std::make_pair(x, y) < std::make_pair(v.x, v.y); } };
+    struct vec { real x, y; bool operator<(const vec& v) const { return std::make_pair(x, y) < std::make_pair(v.x, v.y); } };
 
-    std::vector<real> cost(xres * yres, inf);
-    std::vector<vecr> vecs(xres * yres);
-    std::vector<char> vis(xres * yres, false);
+    std::vector<real> cost(xres*yres, inf);
+    std::vector<vec> vecs(xres*yres);
+    std::vector<char> vis(xres*yres, false);
 
-    auto get = [xres, &data](int x, int y) { return data[y * xres + x]; };
-    auto getVis = [xres, &vis](int x, int y) -> char& { return vis[y * xres + x]; };
-    auto getCost = [xres, &cost](int x, int y) -> real& { return cost[y * xres + x]; };
-    auto getVec = [xres, &vecs](int x, int y) -> vecr& { return vecs[y * xres + x]; };
+    auto get = [xres, &data](int x, int y) { return data[y*xres+x]; };
+    auto getVis = [xres, &vis](int x, int y) -> char& { return vis[y*xres+x]; };
+    auto getCost = [xres, &cost](int x, int y) -> real& { return cost[y*xres+x]; };
+    auto getVec = [xres, &vecs](int x, int y) -> vec& { return vecs[y*xres+x]; };
     auto within = [xres, yres](int x, int y) { return x >= 0 && y >= 0 && x < xres && y < yres; };
-    auto dist = [](real x, real y) { return std::sqrt(x * x + y * y); };
+    auto dist = [](real x, real y) { return std::sqrt(x*x + y*y); };
 
-    std::set<std::pair<real, vec>> q;
+    PriorityQueue q(xres*yres);
+
+    auto runAdjacent = [&] (int x, int y, auto f, bool b)
+    {
+        for(int dx = -1; dx <= 1; dx++)
+            for(int dy = -1; dy <= 1; dy++)
+                if((dx || dy) && within(x+dx, y+dy))
+                    f(x, y, dx, dy, b);
+    };
+
+    auto seed = [&] (int x, int y, int dx, int dy, bool b)
+    {
+        if(!!get(x+dx, y+dy) == b)
+        {
+            if(auto c = dist(dx, dy)/2; getCost(x+dx, y+dy) > c)
+            {
+                q.decreaseKey((y+dy)*xres + x+dx, c);
+                getVec(x+dx, y+dy) = { real(dx)/2, real(dy)/2 };
+                getCost(x+dx, y+dy) = c;
+            }
+        }
+    };
+
+    auto relax = [&] (int x, int y, int dx, int dy, bool b)
+    {
+        if(!getVis(x+dx, y+dy) && !!get(x+dx, y+dy) == b)
+        {
+            getVis(x, y) = true;
+            auto v = getVec(x, y);
+            vec v2 { v.x+dx, v.y+dy };
+            if(auto cost = dist(v2.x, v2.y); cost < getCost(x+dx, y+dy))
+            {
+                getCost(x+dx, y+dy) = cost;
+                getVec(x+dx, y+dy) = v2;
+                q.insert((y+dy)*xres +x+dx, cost);
+            }
+        }
+    };
 
     for(int y = 0; y < yres; y++)
-    {
         for(int x = 0; x < xres; x++)
-        {
-            if(!get(x, y))
-                continue;
+            if(get(x, y))
+                runAdjacent(x, y, seed, false);
 
-            for(int dx = -1; dx <= 1; dx++)
-            {
-                for(int dy = -1; dy <= 1; dy++)
-                {
-                    if((dx || dy) && within(x+dx, y+dy) && !get(x+dx, y+dy))
-                    {
-                        auto c = dist(dx, dy)/2;
-                        if(getCost(x+dx, y+dy) > c)
-                        {
-                            q.insert({ c, { x+dx, y+dy } });
-                            getVec(x+dx, y+dy) = { real(dx)/2, real(dy)/2 };
-                            getCost(x+dx, y+dy) = c;
-                        }
-                    }
-                }
-            }
-        }
-    }
     while(!q.empty())
     {
-        auto it = q.begin();
-        auto c = it->first;
-        auto p = it->second;
-        q.erase(it);
-
-        
-        if(getVis(p.x, p.y))
-            continue;
-        getVis(p.x, p.y) = true;
-
-        for(int dx = -1; dx <= 1; dx++)
-        {
-            for(int dy = -1; dy <= 1; dy++)
-            {
-                if(within(p.x+dx, p.y+dy) && !getVis(p.x+dx, p.y+dy) && !get(p.x+dx, p.y+dy))
-                {
-                    auto v = getVec(p.x, p.y);
-                    vecr v2 { v.x+dx, v.y+dy };
-                    if(auto cost = dist(v2.x, v2.y); cost < getCost(p.x+dx, p.y+dy))
-                    {
-                        getCost(p.x+dx, p.y+dy) = cost;
-                        getVec(p.x+dx, p.y+dy) = v2;
-                        q.insert(std::make_pair(cost, vec { p.x+dx, p.y+dy }));
-                    }
-                }
-            }
-        }
+        auto p = q.pop();
+        runAdjacent(p%xres, p/xres, relax, false);
     }
 
     std::fill(vis.begin(), vis.end(), false);
 
     for(int y = 0; y < yres; y++)
-    {
         for(int x = 0; x < xres; x++)
-        {
-            if(get(x, y))
-                continue;
+            if(!get(x, y))
+                runAdjacent(x, y, seed, true);
 
-            for(int dx = -1; dx <= 1; dx++)
-            {
-                for(int dy = -1; dy <= 1; dy++)
-                {
-                    if((dx || dy) && within(x+dx, y+dy) && get(x+dx, y+dy))
-                    {
-                        auto c = dist(dx, dy)/2;
-                        if(getCost(x+dx, y+dy) > c)
-                        {
-                            q.insert({ c, { x+dx, y+dy } });
-                            getVec(x+dx, y+dy) = { real(dx)/2, real(dy)/2 };
-                            getCost(x+dx, y+dy) = c;
-                        }
-                    }
-                }
-            }
-        }
-    }
     while(!q.empty())
     {
-        auto it = q.begin();
-        auto c = it->first;
-        auto p = it->second;
-        q.erase(it);
-        
-        if(getVis(p.x, p.y))
-            continue;
-        getVis(p.x, p.y) = true;
-
-        for(int dx = -1; dx <= 1; dx++)
-        {
-            for(int dy = -1; dy <= 1; dy++)
-            {
-                if(within(p.x+dx, p.y+dy) && !getVis(p.x+dx, p.y+dy) && get(p.x+dx, p.y+dy))
-                {
-                    auto v = getVec(p.x, p.y);
-                    vecr v2 { v.x+dx, v.y+dy };
-                    if(auto cost = dist(v2.x, v2.y); cost < getCost(p.x+dx, p.y+dy))
-                    {
-                        getCost(p.x+dx, p.y+dy) = cost;
-                        getVec(p.x+dx, p.y+dy) = v2;
-                        q.insert(std::make_pair(cost, vec { p.x+dx, p.y+dy }));
-                    }
-                }
-            }
-        }
+        auto p = q.pop();
+        runAdjacent(p%xres, p/xres, relax, true);
     }
 
     for(int y = 0; y < yres; y++)
-    {
         for(int x = 0; x < xres; x++)
-        {
             if(getVis(x, y))
-                getCost(x, y) = - getCost(x, y);
-        }
-    }
-
-    real min = inf;
-    real max = -inf;
-    for(auto& c : cost)
-    {
-        min = std::min(c, min);
-        max = std::max(c, max);
-    }
+                getCost(x, y) = -getCost(x, y);
 
     for(auto& c : cost)
     {
@@ -206,7 +142,7 @@ std::tuple<Buffer2d<real>, std::map<unsigned char, GlyphCoords>> makeSdfMap(FT_F
 
         auto v = calcSigned(buf.data, buf.width, buf.height);
         auto sBuf = Buffer2d<real>(v, buf.width, buf.height);
-        
+
         int charHeight = 128;
         auto dw = real(buf.height)/charHeight;
         real charWidth = (buf.width/real(buf.height))*charHeight;
@@ -354,28 +290,27 @@ Glyph::Glyph(const FT_Face& face, unsigned char ch, GlyphCoords glyphCoord, GLui
 void Glyph::draw(Scene& scene, FT_Face face, Vector2 pos, real size)
 {
     auto glyph_index = FT_Get_Char_Index(face, ch);
-    FT_Set_Char_Size(face, 1000, 0, 1000, 1000);
+
     FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
 
-    real H = face->size->metrics.ascender - face->size->metrics.descender;
+    real H = face->units_per_EM;
     real b = face->glyph->metrics.horiBearingY;
     real h = face->glyph->metrics.height;
     real w = face->glyph->metrics.width;
     real l = face->glyph->metrics.horiBearingX;
 
-    // H should be size tall
-    // X/Y scaling: size/H
-
     auto translationMatrix = getTranslationMatrix(
         Vector3(
-            pos.x + size*l/H - marginX*face->glyph->metrics.width*size/H,
-            pos.y -size*h/H -size*(face->size->metrics.ascender - b)/H - h*marginY*size/H,
+            pos.x + size*l/H - marginX*w*size/H,
+            pos.y + size*(-(h-b) - (H-(face->bbox.yMax-face->bbox.yMin)))/H - h*marginY*size/H,
             0
         )
     );
-    auto scalingMatrix = getScalingMatrix(Vector3(size*(1.0+marginY*2)*h/H, size*(1.0+marginY*2)*h/H, 1));
 
-    auto modelViewMatrix = translationMatrix*scalingMatrix;
+    real scale = size*(1.0 + marginY*2)*h/H;
+    auto scalingMatrix = getScalingMatrix(Vector3(scale, scale, 1));
+
+    auto modelViewMatrix = translationMatrix * scalingMatrix;
 
     auto s = scene.getShaderProgramManager();
     auto program = s->getProgram(fragmentShader, geometryShader, vertexShader);
@@ -487,7 +422,7 @@ Vector2 Font::getAdvance(unsigned char a, unsigned char b, real size)
         &kerning
     );
 
-    real H = face->size->metrics.ascender - face->size->metrics.descender;
+    real H = face->units_per_EM;
     real B = size*face->glyph->metrics.horiAdvance/H;
 
     return Vector2(B + size*kerning.x/H, 0);

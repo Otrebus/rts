@@ -381,7 +381,7 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
         for(int i = 0; i < 20; i++)
         {
             font.draw(scene, "This, is me. Typing something (I wonder if this will look good :)).", { -1, y }, size);
-            y -= size*0.8;
+            y -= size;
             size -= 0.2/20;
         }
 
