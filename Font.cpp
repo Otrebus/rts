@@ -106,6 +106,8 @@ std::vector<real> calcSigned(std::vector<char> data, int xres, int yres)
 
 std::tuple<Buffer2d<real>, std::map<unsigned char, GlyphCoords>> makeSdfMap(FT_Face& face)
 {
+    FT_Size size;
+    FT_New_Size(face, &size);
     int mapWidth = 2096, mapHeight = 100;
     std::vector<real> sdfMap(mapWidth*mapHeight, 50);
 
@@ -194,7 +196,8 @@ std::tuple<Buffer2d<real>, std::map<unsigned char, GlyphCoords>> makeSdfMap(FT_F
         it.second.y2 = (mapHeight - it.second.y2) / (real)mapHeight;
         std::swap(it.second.y1, it.second.y2);
     }
-
+    
+    FT_Activate_Size(size);
     return { Buffer2d<real>(sdfMap, mapWidth, mapHeight), glyphMap };
 }
 
@@ -254,7 +257,6 @@ Glyph::Glyph(const FT_Face& face, unsigned char ch, GlyphCoords glyphCoord, GLui
 
     auto glyph_index = FT_Get_Char_Index(face, ch);
     FT_Load_Glyph(face, glyph_index, 0);
-    //auto w = real(face->glyph->metrics.width)/real(face->glyph->metrics.height);
 
     std::vector<Vertex3> vs = {
         { { 0.0, 0.0, 0.0 }, {0.0, 0.0, 1.0}, {glyphCoord.x1, glyphCoord.y1}},
@@ -380,6 +382,8 @@ Font::Font(Scene& scene, std::string fileName)
         sdfMap = map;
         coordMap = gm;
     }
+
+    //FT_Set_Char_Size(face, 0, 0, 0, 0);
 
 
     //    auto glyph_index = FT_Get_Char_Index(face, 'a');

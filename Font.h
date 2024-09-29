@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 #include "Scene.h"
 #include <ft2build.h>
+#include <freetype/ftsizes.h>
 #include FT_FREETYPE_H
 
 
