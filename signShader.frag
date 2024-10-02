@@ -16,7 +16,7 @@ in vec3 normal;
 in vec3 toCam;
 
 uniform sampler2D texture1;
-int k = 6, n = 3;
+int k = 8, n = 2;
 
 float pick(float u, float v)
 {

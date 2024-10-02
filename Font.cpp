@@ -134,7 +134,7 @@ std::tuple<Buffer2d<real>, std::map<unsigned char, GlyphCoords>> makeSdfMap(FT_F
         {
             for(int x = 0; x < bitmap.width; x++)
             {
-                auto b = x % 8;
+                auto b = x%8;
                 auto X = x/8;
                 buf.get(margin+x, margin+y) = (((bitmap.buffer[y*bitmap.pitch+X] >> (7-b)) & 1));
             }
@@ -219,6 +219,8 @@ std::pair<Buffer2d<real>, std::map<unsigned char, GlyphCoords>> loadSdfMap(std::
 {
     std::map<unsigned char, GlyphCoords> glyphMap;
     Bytestream b;
+    if(!std::filesystem::exists(fileName))
+        throw "File does not exist"; // TODO: should work out some better error handling
     b.loadFromFile(fileName);
     size_t size;
     b >> size;
@@ -304,13 +306,13 @@ void Glyph::draw(Scene& scene, FT_Face face, Vector2 pos, real size)
     auto translationMatrix = getTranslationMatrix(
         Vector3(
             pos.x + size*l/H - marginX*w*size/H,
-            pos.y + size*(-(h-b) - (H-(face->bbox.yMax-face->bbox.yMin)))/H - h*marginY*size/H,
-            0
+            pos.y - size + size*(-(h-b) - (H-(face->bbox.yMax-face->bbox.yMin)))/H - h*marginY*size/H,
+            -1
         )
     );
 
     real scale = size*(1.0 + marginY*2)*h/H;
-    auto scalingMatrix = getScalingMatrix(Vector3(scale, scale, 1));
+    auto scalingMatrix = getScalingMatrix(Vector3(scale/scene.getCamera()->getAspectRatio(), scale, 1));
 
     auto modelViewMatrix = translationMatrix * scalingMatrix;
 
@@ -339,7 +341,7 @@ void Glyph::draw(Scene& scene, FT_Face face, Vector2 pos, real size)
 Font::Font(Scene& scene, std::string fileName)
 {
     FT_Init_FreeType(&library);
-    FT_New_Face(library, "OpenSans-regular.ttf", 0, &face);
+    FT_New_Face(library, fileName.c_str(), 0, &face);
 
     glGenTextures(1, &texture);
 
@@ -355,8 +357,8 @@ Font::Font(Scene& scene, std::string fileName)
     Buffer2d<real> sdfMap;
     std::map<unsigned char, GlyphCoords> coordMap;
 
-    fileName = "glyphmap.glm"; // TODO: use actual filename
-    if(!std::filesystem::exists(fileName))
+    auto sdfMapName = fileName + ".glm";
+    if(!std::filesystem::exists(sdfMapName))
     {
         auto [map, gm] = makeSdfMap(face);
 
@@ -369,35 +371,17 @@ Font::Font(Scene& scene, std::string fileName)
         auto b = flipVertically(map.data, map.width);
         map.data = b;
 
-        std::cout << "saving map" << std::endl;
-        saveSdfMap(fileName, v, map);
+        saveSdfMap(sdfMapName, v, map);
 
         sdfMap = map;
         coordMap = gm;
     }
     else
     {
-        std::cout << "loading map" << std::endl;
-        auto [map, gm] = loadSdfMap(fileName);
+        auto [map, gm] = loadSdfMap(sdfMapName);
         sdfMap = map;
         coordMap = gm;
     }
-
-    //FT_Set_Char_Size(face, 0, 0, 0, 0);
-
-
-    //    auto glyph_index = FT_Get_Char_Index(face, 'a');
-    //error = FT_Load_Glyph(
-    //        face,          /* handle to face object */
-    //        glyph_index,   /* glyph index           */
-    //0 );  /* load flags, see below */
-
-    //face->
-
-
-    // tmp added
-
-        //auto kv = Vector3(real(width)*kerning.x/widthA, real(width)*kerning.y/widthA, 0.f);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, sdfMap.width, sdfMap.height, 0, GL_RED, GL_FLOAT, sdfMap.data.data());
 
@@ -413,7 +397,7 @@ Font::Font(Scene& scene, std::string fileName)
 };
 
 
-Vector2 Font::getAdvance(unsigned char a, unsigned char b, real size)
+Vector2 Font::getAdvance(Scene& scene, unsigned char a, unsigned char b, real size)
 {
     // Assumes sizing is set and there's a face loaded
     FT_Vector kerning;
@@ -429,7 +413,7 @@ Vector2 Font::getAdvance(unsigned char a, unsigned char b, real size)
     real H = face->units_per_EM;
     real B = size*face->glyph->metrics.horiAdvance/H;
 
-    return Vector2(B + size*kerning.x/H, 0);
+    return Vector2((B + size*kerning.x/H)/scene.getCamera()->getAspectRatio(), 0);
 }
 
 
@@ -438,7 +422,7 @@ void Font::draw(Scene& scene, std::string str, Vector2 pos, real size)
     for(int i = 0; i < str.size(); i++)
     {
         if(i > 0)
-            pos += getAdvance(str[i-1], str[i], size);
+            pos += getAdvance(scene, str[i-1], str[i], size);
         auto c = glyphMap[str[i]];
         c->draw(scene, face, pos, size);
     }

@@ -21,7 +21,7 @@ void Bytestream::loadFromFile(std::string fileName)
     std::ifstream file;
     file.open(fileName, std::ios::in | std::ios::binary);
 
-    auto size = std::filesystem::file_size(fileName);;
+    auto size = std::filesystem::file_size(fileName);
     data.resize(size);
     file.read(data.data(), size);
 }

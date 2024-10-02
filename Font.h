@@ -42,7 +42,7 @@ private:
     FT_Library library; // Might want to make this one static
     FT_Face face;
 
-    Vector2 getAdvance(unsigned char a, unsigned char b, real size);
+    Vector2 getAdvance(Scene& scene, unsigned char a, unsigned char b, real size);
 
     GLuint texture;
     std::map<unsigned char, Glyph*> glyphMap;

@@ -359,11 +359,8 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
     ShaderProgramManager shaderProgramManager;
     Scene scene(&cam, &shaderProgramManager);
 
-    Font font(scene, "todo");
+    Font font(scene, "OpenSans-Regular.ttf");
 
-    /*glfwWindowHint(GLFW_SAMPLES, 24);
-    glEnable(GL_MULTISAMPLE);*/
-    
     while(!glfwWindowShouldClose(window))
     {
         if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -378,11 +375,11 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
      
         real size = 0.2;
         real y = 1;
-        for(int i = 0; i < 20; i++)
+        for(int i = 0; i < 15; i++)
         {
             font.draw(scene, "This, is me. Typing something (I wonder if this will look good :)).", { -1, y }, size);
             y -= size;
-            size -= 0.2/20;
+            size -= 0.2/15;
         }
 
 
