@@ -18,10 +18,10 @@ in vec3 toCam;
 uniform sampler2D texture1;
 int k = 8, n = 2;
 
-float pick(float u, float v)
+float pick(float u, float v, float du, float dv)
 {
     float t = texture(texture1, vec2(u, v)).r;
-    return smoothstep(0.5 - 0.22, 0.5 + 0.22, t);
+    return smoothstep(0.5 - 100*dv, 0.5 + 100*dv, t);
 }
 
 float get(float x, float y, float du, float dv, float w)
@@ -29,7 +29,7 @@ float get(float x, float y, float du, float dv, float w)
     float l = 0;
     for (int i = 0; i < k; i++)
     {
-        l += pick(x + sin(i*2*3.1415/k)*w*du, y + sin(i*2*3.1415/k)*w*dv);
+        l += pick(x + sin(i*2*3.1415/k)*w*du, y + sin(i*2*3.1415/k)*w*dv, du, dv);
     }
     return l;
 }

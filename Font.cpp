@@ -298,6 +298,7 @@ void Glyph::draw(Scene& scene, FT_Face face, Vector2 pos, real size)
     FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
 
     real H = face->units_per_EM;
+    real a = face->ascender;
     real b = face->glyph->metrics.horiBearingY;
     real h = face->glyph->metrics.height;
     real w = face->glyph->metrics.width;
@@ -305,8 +306,8 @@ void Glyph::draw(Scene& scene, FT_Face face, Vector2 pos, real size)
 
     auto translationMatrix = getTranslationMatrix(
         Vector3(
-            pos.x + size*l/H - marginX*w*size/H,
-            pos.y - size + size*(-(h-b) - (H-(face->bbox.yMax-face->bbox.yMin)))/H - h*marginY*size/H,
+            pos.x - marginX*w*size/H + l*size/H,
+            pos.y - size*h/H - size*(face->ascender-b)/H - marginY*h*size/H,
             -1
         )
     );
