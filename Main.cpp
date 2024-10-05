@@ -82,8 +82,8 @@ int main()
 
     glfwSetFramebufferSizeCallback(window, sizeCallback);
 
-    debugDraw(window, xres, yres);
-    return 0;
+    //debugDraw(window, xres, yres);
+    //return 0;
 
     glEnable              ( GL_DEBUG_OUTPUT );
     glDebugMessageCallback( MessageCallback, 0 );
@@ -299,7 +299,7 @@ int main()
         avgFps = ((9*avgFps + 1/dt))/10;
 
         //drawText(realToString(avgFps, 3), { 0.80, 0.90 }, 0.03, { 0, 0.8, 0 });
-        font.draw(scene, realToString(avgFps, 3), { 0, 1 }, 0.53);
+        font.draw(scene, realToString(avgFps, 3), { 0.952, 0.98 }, 0.035, Vector3(0.2, 0.9, 0.2));
         interface.draw();
         cameraControl.update(dt);
         glfwSwapBuffers(window);

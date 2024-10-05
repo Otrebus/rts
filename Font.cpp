@@ -291,7 +291,7 @@ Glyph::Glyph(const FT_Face& face, unsigned char ch, GlyphCoords glyphCoord, GLui
 }
 
 
-void Glyph::draw(Scene& scene, FT_Face face, Vector2 pos, real size)
+void Glyph::draw(Scene& scene, FT_Face face, Vector2 pos, real size, Vector3 color)
 {
     auto glyph_index = FT_Get_Char_Index(face, ch);
 
@@ -306,8 +306,8 @@ void Glyph::draw(Scene& scene, FT_Face face, Vector2 pos, real size)
 
     auto translationMatrix = getTranslationMatrix(
         Vector3(
-            pos.x - marginX*w*size/H + l*size/H,
-            pos.y - size*h/H - size*(face->ascender-b)/H - marginY*h*size/H,
+            pos.x - marginX*w*size/H + l*size/H/scene.getCamera()->getAspectRatio(),
+            pos.y - size*h/H - size*(a-b)/H - marginY*h*size/H,
             -1
         )
     );
@@ -332,6 +332,8 @@ void Glyph::draw(Scene& scene, FT_Face face, Vector2 pos, real size)
     glBindVertexArray(VAO);
     glUniform1i(glGetUniformLocation(program->getId(), "texture1"), 0);
     glUniform1f(glGetUniformLocation(program->getId(), "time"), (float)glfwGetTime());
+    glUniform1f(glGetUniformLocation(program->getId(), "margin"), marginY);
+    glUniform3f(glGetUniformLocation(program->getId(), "color"), color.x, color.y, color.z);
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "modelViewMatrix"), 1, GL_TRUE, (float*)modelViewMatrix.m_val);
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "projectionMatrix"), 1, GL_TRUE, (float*)identityMatrix.m_val);
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "normalMatrix"), 1, GL_TRUE, (float*)identityMatrix.m_val);
@@ -418,14 +420,14 @@ Vector2 Font::getAdvance(Scene& scene, unsigned char a, unsigned char b, real si
 }
 
 
-void Font::draw(Scene& scene, std::string str, Vector2 pos, real size)
+void Font::draw(Scene& scene, std::string str, Vector2 pos, real size, Vector3 color)
 {
     for(int i = 0; i < str.size(); i++)
     {
         if(i > 0)
             pos += getAdvance(scene, str[i-1], str[i], size);
         auto c = glyphMap[str[i]];
-        c->draw(scene, face, pos, size);
+        c->draw(scene, face, pos, size, color);
     }
 }
 

@@ -22,7 +22,7 @@ struct Glyph
     unsigned char ch;
 
     Glyph(const FT_Face& face, unsigned char ch, GlyphCoords glyphCoord, GLuint texture);
-    void draw(Scene& scene, FT_Face face, Vector2, real);
+    void draw(Scene& scene, FT_Face face, Vector2, real, Vector3 color);
 
     static Shader* vertexShader;
     static Shader* geometryShader;
@@ -36,7 +36,7 @@ class Font
 {
 public:
     Font(Scene& scene, std::string fileName);
-    void draw(Scene& scene, std::string str, Vector2 pos, real size);
+    void draw(Scene& scene, std::string str, Vector2 pos, real size, Vector3 color=Vector3(0, 0, 0));
 
 private:
     FT_Library library; // Might want to make this one static
