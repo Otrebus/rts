@@ -5,7 +5,7 @@
 #include "InputManager.h"
 
 class Scene;
-
+class Font;
 class Shader;
 
 
@@ -28,7 +28,7 @@ public:
 	Shader* fragmentShader;
 
 	Material* material;
-
+	Font* font;
 	Scene* scene;
 
 	GLuint VBO, VAO, EBO;
