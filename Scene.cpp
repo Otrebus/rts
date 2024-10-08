@@ -97,8 +97,6 @@ void Scene::moveEntitiesSoft(real dt, int depth, std::unordered_set<Entity*>& gl
             continue;
         if(!entity->geoVelocity)
             continue;
-        //std::cout << "entering " << std::setprecision(10) << entity->geoPos << std::endl;
-        //std::cout << "geoVelocity is " << std::setprecision(10) << entity->geoVelocity << std::endl;
         auto pos2 = entity->geoPos + entity->geoVelocity*dt;
 
         // Collision detection, against the terrain

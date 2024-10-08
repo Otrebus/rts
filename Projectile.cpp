@@ -62,7 +62,6 @@ Projectile::Projectile(Vector3 pos, Vector3 dir, Vector3 up, Entity* owner = nul
 
 Projectile::~Projectile()
 {
-    std::cout << "deleting" << std::endl;
     ModelManager::deleteModel("projectile", projectileModel);
 }
 

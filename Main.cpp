@@ -53,11 +53,6 @@ void sizeCallback(GLFWwindow* window, int width, int height)
 
 int main()
 {
-    ConsoleVariable orbo("orbo", 10);
-    std::cout << orbo.var << std::endl;
-    ConsoleSettings::setVariable("orbo", 20);
-    std::cout << orbo.var << std::endl;
-
     std::default_random_engine generator;
     std::uniform_real_distribution<real> dist(0, 1.0f);
 
@@ -135,36 +130,36 @@ int main()
 
     //scene.addUnit(new Tank({ 180.480316, 99.7414932, 15.0 }, { 1, 0, 0 }, { 0, 0, 1}, &terrain));
 
-    for(int y = 0; y < 1; y++)
+    for(int y = 0; y < 3; y++)
     {
-        for(int x = 0; x < 1; x++)
+        for(int x = 0; x < 3; x++)
         {
             scene.addEntity(new Tank({ 165.5f-x, 95.15f-y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain));
         }
     }
 
-    //for(int y = 0; y < 1; y++)
-    //{
-    //    for(int x = 0; x < 1; x++)
-    //    {
-    //        auto enemy = new Tank({ 170.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
-    //        enemy->setEnemy(true);
-    //        scene.addEntity(enemy);
-    //    }
-    //}
+    for(int y = 0; y < 3; y++)
+    {
+        for(int x = 0; x < 3; x++)
+        {
+            auto enemy = new Tank({ 170.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+            enemy->setEnemy(true);
+            scene.addEntity(enemy);
+        }
+    }/*
 
-    //for(int y = 0; y < 1; y++)
-    //{
-    //    for(int x = 0; x < 1; x++)
-    //    {
-    //        auto enemy = new Tank({ 170.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
-    //        scene.addUnit(enemy);
-    //    }
-    //}
+    for(int y = 0; y < 1; y++)
+    {
+        for(int x = 0; x < 1; x++)
+        {
+            auto enemy = new Tank({ 170.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+            scene.addUnit(enemy);
+        }
+    }*/
 
-    auto wreck = new TankWreck({ 172.5f, 65.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
-    wreck->init(&scene);
-    scene.addEntity(wreck);
+    //auto wreck = new TankWreck({ 172.5f, 65.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+    //wreck->init(&scene);
+    //scene.addEntity(wreck);
     
     scene.updateUnitList();
     for(auto& e : scene.getUnits())
@@ -219,9 +214,6 @@ int main()
         auto entities = scene.getEntities();
         for(auto& entity : entities)
             entity->update(dt);
-
-        
-        ShapeDrawer::drawSphere(Vector3(160.0f, 50.0f, 3.07f), 1, Vector3(0, 1, 1));
 
         // TODO: this should be done in some update function or something
         for(auto& light : scene.getLights())

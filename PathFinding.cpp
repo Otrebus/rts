@@ -226,8 +226,6 @@ std::deque<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinatio
 
     std::reverse(result.begin(), result.end());
     outPath = terrain->straightenPath(result.begin(), result.end());
-    //outPath = result;
-    //std::cout << "Constructed path in " << glfwGetTime() - time << std::endl;
 
     return outPath;
 }

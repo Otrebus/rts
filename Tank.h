@@ -97,7 +97,6 @@ public:
 
     Line3d destinationLine;
 
-    static Model3d* tankBoundingBoxModel;
     static BoundingBox tankBoundingBox;
 
     static ConsoleVariable tankVar;

@@ -332,7 +332,6 @@ Vector3 Terrain::getNormal(real x, real y) const
 void Terrain::setDrawMode(DrawMode d)
 {
     drawMode = d;
-    std::cout << "Setting drawmode " << drawMode << std::endl;
     if(drawMode == DrawMode::Normal || drawMode == DrawMode::Grid)
     {
         tearDown();

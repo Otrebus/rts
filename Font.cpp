@@ -140,8 +140,6 @@ std::tuple<Buffer2d<real>, std::map<unsigned char, GlyphCoords>> makeSdfMap(FT_F
             }
         }
         
-        std::cout << "(" << posX << ", " << posY << ")" << std::endl;
-
         auto v = calcSigned(buf.data, buf.width, buf.height);
         auto sBuf = Buffer2d<real>(v, buf.width, buf.height);
 

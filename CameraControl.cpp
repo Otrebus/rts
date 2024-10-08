@@ -170,8 +170,6 @@ void CameraControl::handleInput(const Input& input)
     {
         auto [x, y] = resToScreen(prevX, prevY, xres, yres);
 
-        std::cout << input.posY << std::endl;
-
         auto zoomDir = cam->getViewRay(x, y);
         auto dir = -(input.posY)*(zoomDir.dir.normalized())*(moveSlow ? 0.5f : 5.f);
         movementImpulses.push_back(MovementImpulse(glfwGetTime(), 0.2f, dir));

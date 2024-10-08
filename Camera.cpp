@@ -29,7 +29,6 @@ Matrix4 PerspectiveCamera::getMatrix()
 {
     if(matrixCached)
         return viewMatrix;
-    float pi = 3.141592653589793;
     float a = std::tan(deg(fov/2));
     float n = -0.3, f = -500.0;
 

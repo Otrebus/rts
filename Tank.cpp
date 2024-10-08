@@ -8,30 +8,10 @@
 #include "ShapeDrawer.h"
 #include "ConsoleSettings.h"
 
-
-ConsoleVariable Tank::tankVar("tankVar", 100);
-ConsoleVariable tankVar2("tankVar2", 150);
-
-ConsoleVariable tababa("tababa", 20);
-ConsoleVariable tabbba("tabbba", 20);
-ConsoleVariable tobbba("tobbba", 20);
-ConsoleVariable aabbba("aabbba", 20);
-
 ConsoleVariable Tank::boidDebug("boidDebug", 0);
 
 void Tank::loadModels()
 {
-    std::cout << "tankVar is " << tankVar.var << std::endl;
-    std::cout << "tankVar2 is " << tankVar2.var << std::endl;
-
-    ConsoleSettings::setVariable("tankVar", 20);
-    std::cout << "tankVar is now " << tankVar.var << std::endl;
-
-    ConsoleSettings::setVariable("tababa", 20);
-    ConsoleSettings::setVariable("tabbba", 20);
-    ConsoleSettings::setVariable("tobbba", 20);
-    ConsoleSettings::setVariable("aabbba", 20);
-
     auto body = new Model3d();
     body->readFromFile("tankbody.obj");
 
@@ -160,7 +140,6 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, d
 
 Tank::~Tank()
 {
-    std::cout << "deleting tank";
 }
 
 
@@ -460,7 +439,6 @@ void Tank::update(real dt)
 
     if(enemyTarget && time - lastFired > fireInterval)
     {
-        std::cout << turretTarget*turretDir << std::endl;
         if((turretTarget*turretDir) > 1-1e-6)
         {
             lastFired = time;
@@ -549,20 +527,6 @@ Vector2 Tank::evade()
                 sum += s;
             else
                 sum -= s;
-            
-            // TODO: this sphere draws weirdly
-            ShapeDrawer::drawSphere(pos2.to3(), 1, Vector3(0, 1, 1));
-
-            //auto pos1 = geoPos, pos2 = unit->geoPos;
-            //auto e = (pos2 - pos1);
-            //auto v1 = geoVelocity, v2 = unit->getGeoVelocity();
-            //auto v = v1 - v2;
-            //auto w = ((e*v)/v.length2())*v;
-
-            //auto r = w - (pos2-pos1);
-            //// TODO: better deduction of time-to-collision (e/v)?
-            //if(e*v > 0 && r.length() < 1 && e.length()/v.length() < 2)
-            //    sum += (v1%r > 1 ? std::min(w.length(), 3.f)*e.normalized().perp() : -std::min(w.length(), 3.f)*e.normalized().perp());
         }
     }
     return sum;

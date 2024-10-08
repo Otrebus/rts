@@ -196,7 +196,6 @@ void Console::handleInput(const Input& input)
     }
     else if(input.stateStart == InputType::Char && input.key != '`')
     {
-        std::cout << input.key << std::endl;
         textInput += (char) input.key;
     }
     else if(input.key == GLFW_KEY_TAB && input.stateStart == InputType::KeyPress)
@@ -249,6 +248,5 @@ void Console::handleInput(const Input& input)
     if(input.key == GLFW_KEY_LEFT_SHIFT || input.key == GLFW_KEY_RIGHT_SHIFT)
     {
         shifting = input.stateEnd != InputType::KeyRelease;
-        std::cout << shifting << std::endl;
     }
 }
