@@ -18,7 +18,6 @@ Entity::~Entity()
 
 void Entity::drawBoundingBox()
 {
-    boundingBoxModel->draw();
 }
 
 
@@ -107,14 +106,10 @@ void Entity::plant(const Terrain& terrain)
 void Entity::setPosition(Vector3 pos)
 {
     this->pos = pos;
-    if(boundingBoxModel)
-        boundingBoxModel->setPosition(pos);
 }
 
 void Entity::setDirection(Vector3 dir, Vector3 up)
 {
-    if(boundingBoxModel)
-        boundingBoxModel->setDirection(dir, up);
     this->dir = dir;
     this->up = up;
 }

@@ -32,9 +32,7 @@ protected:
     Vector3 absTurDir;
     Vector3 absTurPos;
     Vector3 absMuzzlePos;
-    static Model3d* tankWreckBoundingBoxModel;
     static BoundingBox tankWreckBoundingBox;
 };
 
-static Model3d* tankWreckBoundingBoxModel;
 static BoundingBox tankWreckBoundingBox;

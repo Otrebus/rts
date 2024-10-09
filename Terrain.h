@@ -31,6 +31,9 @@ private:
     int pickedTriangle;
     int width, height;
 
+    GLuint ssbo;
+
+
     real* max_R;
     real* min_R;
 

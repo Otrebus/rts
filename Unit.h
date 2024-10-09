@@ -4,7 +4,6 @@
 #include <deque>
 
 class SelectionMarkerMesh;
-class BoundingBoxModel;
 class Model3d;
 class Scene;
 class PathFindingRequest;

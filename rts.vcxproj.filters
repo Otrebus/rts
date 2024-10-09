@@ -172,9 +172,6 @@
     <ClCompile Include="Font.cpp">
       <Filter>Source files\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Buffer.cpp">
-      <Filter>Source files\Utils</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">

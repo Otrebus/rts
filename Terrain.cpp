@@ -255,6 +255,27 @@ void Terrain::init()
     terrainModel = new Model3d(*terrainMesh);
     terrainModel->init();
     terrainModel->setScene(scene);
+
+    // Initialize the SSBO (in C++ OpenGL code)
+    glGenBuffers(1, &ssbo);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+
+    int numCells = 2 + width*height;
+    std::vector<int> fogData(numCells, 0);
+
+    fogData[0] = width;
+    fogData[1] = height;
+    for(int y = 0; y < height; y++)
+    {
+        for(int x = 0; x < width; x++)
+        {
+            if((x-100)*(x-100) + (y-100)*(y-100) < 25)
+                fogData[2+y*width+x] = 1;
+        }
+    }
+
+    glBufferData(GL_SHADER_STORAGE_BUFFER, fogData.size() * sizeof(int), fogData.data(), GL_STATIC_DRAW);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
 }
 
 void Terrain::tearDown()

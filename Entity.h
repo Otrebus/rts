@@ -7,7 +7,6 @@
 
 class SelectionMarkerMesh;
 class BoundingBox;
-class BoundingBoxModel;
 class Model3d;
 class Scene;
 class PathFindingRequest;
@@ -64,7 +63,6 @@ public:
     // position is on teh ground
     Vector2 geoPos, geoDir, geoVelocity;
 
-    Model3d* boundingBoxModel;
     BoundingBox boundingBox;
 
     Scene* scene;

@@ -253,19 +253,6 @@ void Tank::draw(Material* mat)
 
     if(selected && path.size() > 0)
         destinationLine.draw();
-
-    if(selected)
-    {
-        if(Unit* enemyTarget = dynamic_cast<Unit*>(scene->getEntity(enemyTargetId)))
-        {
-             //TODO: draw shape
-            /*auto bb = BoundingBoxModel(0.5, 0.5, 0.5);
-            bb.setPosition(enemyTarget->getPosition() + Vector3(0, 0, 1));
-            bb.setScene(scene);
-            bb.init();
-            bb.draw();*/
-        }
-    }
 }
 
 

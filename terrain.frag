@@ -19,6 +19,13 @@ flat in int selected;
 
 uniform bool flatShaded = false;
 
+
+layout(std430, binding = 0) buffer FogDataBuffer {
+    int width;
+    int height;
+    int fogData[];
+};
+
 void main()
 {
     vec3 n = flatShaded ? N_g : N_s;
@@ -50,4 +57,7 @@ void main()
   	    FragColor += vec4(pointLights[i].color, 1)/(0.1 + d*d);
     }
     FragColor.w = 1;
+
+    if(fogData[width*int(position.y) + int(position.x)] == 1)
+        FragColor = vec4(0, 0, 0, 1);
 }

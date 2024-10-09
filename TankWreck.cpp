@@ -187,5 +187,4 @@ void TankWreck::updateUniforms()
 }
 
 real TankWreck::gunLength = 1.0f;
-Model3d* TankWreck::tankWreckBoundingBoxModel = nullptr;
 BoundingBox TankWreck::tankWreckBoundingBox = BoundingBox();
