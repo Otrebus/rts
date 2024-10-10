@@ -484,13 +484,22 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
 
     else if((input.stateStart == InputType::MousePress || input.stateStart == InputType::MouseHold) && input.key == GLFW_MOUSE_BUTTON_2)
     {
-        bool anySelected = std::ranges::any_of(units, [](auto unit) { return unit->isSelected(); });
-        if(anySelected)
+        if(inputQueue.isKeyHeld(GLFW_KEY_LEFT_CONTROL))
         {
             auto [x, y] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
             auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(x, y));
-            if(drawTarget.empty() || (drawTarget.back() - pos).length() > 0.1)
-                drawTarget.push_back(pos);
+            scene->getTerrain()->setFog(pos.x, pos.y, true);
+        }
+        else
+        {
+            bool anySelected = std::ranges::any_of(units, [](auto unit) { return unit->isSelected(); });
+            if(anySelected)
+            {
+                auto [x, y] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
+                auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(x, y));
+                if(drawTarget.empty() || (drawTarget.back() - pos).length() > 0.1)
+                    drawTarget.push_back(pos);
+            }
         }
     }
 

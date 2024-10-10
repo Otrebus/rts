@@ -260,8 +260,9 @@ void Terrain::init()
     glGenBuffers(1, &ssbo);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
 
-    int numCells = 2 + width*height;
-    std::vector<int> fogData(numCells, 0);
+    int numCells = width*height;
+    std::vector<int> fogData(2+width*height, 0);
+    fogOfWar = std::vector<int>(width*height);
 
     fogData[0] = width;
     fogData[1] = height;
@@ -270,7 +271,10 @@ void Terrain::init()
         for(int x = 0; x < width; x++)
         {
             if((x-100)*(x-100) + (y-100)*(y-100) < 25)
+            {
                 fogData[2+y*width+x] = 1;
+                fogOfWar[y*width+x] = true;
+            }
         }
     }
 
@@ -363,6 +367,13 @@ void Terrain::setDrawMode(DrawMode d)
 Terrain::DrawMode Terrain::getDrawMode() const
 {
     return drawMode;
+}
+
+void Terrain::setFog(int x, int y, bool b)
+{
+    fogOfWar[y*width+x] = b;
+    int data = b;
+    glBufferSubData(GL_SHADER_STORAGE_BUFFER, sizeof(int)*(2+y*width+x), 1, &data);
 }
 
 std::pair<Vector3, Vector3> Terrain::getBoundingBox() const

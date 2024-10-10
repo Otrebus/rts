@@ -58,6 +58,49 @@ void main()
     }
     FragColor.w = 1;
 
-    if(fogData[width*int(position.y) + int(position.x)] == 1)
+    int x = int(position.x), y = int(position.y);
+
+    if(fogData[y*width+x] == 1)
+    {
         FragColor = vec4(0, 0, 0, 1);
+        return;
+    }
+
+    int fogR = x < width-1 ? fogData[y*width+x+1] : 0;
+    int fogU = y > 0 ? fogData[(y+1)*width+x] : 0;
+    int fogL = x > 0 ? fogData[y*width+x-1] : 0;
+    int fogD = y < height-1 ? fogData[(y-1)*width+x] : 0;
+
+    if(fogR == 1)
+    {
+        if(fract(position.x) > 0.5 && fract(position.y) > 0.5)
+        {
+            if(fogU == 1)
+            {
+                float r = fract(distance(vec2(0.5, 0.5), vec2(fract(position.x), fract(position.y))));
+                float t = smoothstep(0.3, 0.5, r);
+                FragColor = FragColor*vec4(1-t, 1-t, 1-t, 1);
+            }
+        }
+        else
+        {
+            float t = smoothstep(0.8, 1.0, fract(position.x));
+            FragColor = FragColor*vec4(1-t, 1-t, 1-t, 1);
+        }
+    }
+    if(fogU == 1)
+    {
+        float t = smoothstep(0.8, 1.0, fract(position.y));
+        FragColor = FragColor*vec4(1-t, 1-t, 1-t, 1);
+    }
+    if(fogL == 1)
+    {
+        float t = smoothstep(0.0, 0.2, fract(position.x));
+        FragColor = FragColor*vec4(t, t, t, 1);
+    }
+    if(fogD == 1)
+    {
+        float t = smoothstep(0.0, 0.2, fract(position.y));
+        FragColor = FragColor*vec4(t, t, t, 1);
+    }
 }
