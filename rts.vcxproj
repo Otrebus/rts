@@ -155,7 +155,6 @@
     <ClCompile Include="Primitives.cpp" />
     <ClCompile Include="ShapeDrawer.cpp" />
     <ClCompile Include="TankWreck.cpp" />
-    <ClCompile Include="Text.cpp" />
     <ClCompile Include="GeometryUtils.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="LambertianMaterial.cpp" />
@@ -221,7 +220,6 @@
     <ClInclude Include="Primitives.h" />
     <ClInclude Include="ShapeDrawer.h" />
     <ClInclude Include="TankWreck.h" />
-    <ClInclude Include="Text.h" />
     <ClInclude Include="GeometryUtils.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="LambertianMaterial.h" />

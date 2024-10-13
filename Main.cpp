@@ -21,7 +21,6 @@
 #include "ShaderProgramManager.h"
 #include "Tank.h"
 #include "Terrain.h"
-#include "Text.h"
 #include "TextureMaterial.h"
 #include "UserInterface.h"
 #include "Utils.h"

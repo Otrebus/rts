@@ -88,9 +88,6 @@
     <ClCompile Include="Vector4.cpp">
       <Filter>Source files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Text.cpp">
-      <Filter>Source files\Utils</Filter>
-    </ClCompile>
     <ClCompile Include="TexturedTerrainMaterial.cpp">
       <Filter>Source files\Materials</Filter>
     </ClCompile>
@@ -257,9 +254,6 @@
     </ClInclude>
     <ClInclude Include="Vector4.h">
       <Filter>Source files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Text.h">
-      <Filter>Source files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="TexturedTerrainMaterial.h">
       <Filter>Source files\Materials</Filter>
