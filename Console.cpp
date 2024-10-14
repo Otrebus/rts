@@ -2,7 +2,6 @@
 #include "Scene.h"
 #include "Shader.h"
 #include "Math.h"
-#include "Text.h"
 #include "InputManager.h"
 #include "ConsoleSettings.h"
 #include "Font.h"
