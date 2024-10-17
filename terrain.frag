@@ -82,7 +82,7 @@ void main()
     int fogLL = x > 0 ? fogData[y*width+x-2] : 0;
     int fogDD = y < height-2 ? fogData[(y-2)*width+x] : 0;
 
-    float D_a = 0.0, D_b = 0.5;
+    float D_a = 0.0, D_b = 0.7;
 
     // Edges
 
@@ -132,8 +132,12 @@ void main()
     {
         if(fogU == 0 && fogD == 0)
         {
-            float t = smoothstep(D_a, D_b, 1-fract(position.x));
-            FragColor = FragColor*vec4(t, t, t, 1);
+            float X = 1 - D_b, Y = 1 - D_b - (1-sqrt(2.0)*D_b);
+            if(fogDD == 0 || fy > Y - Y/(1-X)*(fx-X))
+            {
+                float t = smoothstep(D_a, D_b, 1-fract(position.x));
+                FragColor = FragColor*vec4(t, t, t, 1);
+            }
         }
         if(fogD == 1)
         {
@@ -299,9 +303,14 @@ void main()
     }
     if(fogDR == 1 && fogR == 1 && fogDD == 1)
     {
-        float r = sqrt(2.0)*(fy+1-fx)/2;
-        float t = smoothstep(D_a, D_b, r);
-        FragColor = FragColor*vec4(t, t, t, 1);
+        float X = 1 - D_b, Y = 1 - D_b - (1-sqrt(2.0)*D_b);
+
+        if(fy < Y - Y/(1-X)*(fx-X))
+        {
+            float r = sqrt(2.0)*(fy+1-fx)/2;
+            float t = smoothstep(D_a, D_b, r);
+            FragColor = FragColor*vec4(t, t, t, 1);
+        }
     }
 
     if(fogUR == 1 && fogU == 1 && fogRR == 1)
