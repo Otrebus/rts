@@ -85,17 +85,20 @@ void main()
     float D_a = 0.0, D_b = 0.7;
 
     // Edges
-
     if(fogU == 1)
     {
+        // Edge is horizontal
         if(fogR == 0 && fogL == 0)
         {
-            if(((fogUL == 0 || fogLL == 0) || fx > (sqrt(2.0)-1.0)*(1-fy)) && (fogUR == 0 || fogRR == 0 || -fx > -1+(sqrt(2.0)-1.0)*(1-fy)))
+            // Don't go all the way if we have an inner 45 degree edge
+            if((fogUL == 0 || fogLL == 0 || fx > (sqrt(2.0)-1.0)*(1-fy)) && (fogUR == 0 || fogRR == 0 || -fx > -1+(sqrt(2.0)-1.0)*(1-fy)))
             {
                 float t = smoothstep(D_a, D_b, 1.0-fract(position.y));
                 FragColor = FragColor*vec4(t, t, t, 1);
             }
         }
+
+        // Edge is diagonal edge
         if(fogR == 1)
         {
             float r = sqrt(2.0)*((1-fx) - fy)/2;
@@ -156,18 +159,20 @@ void main()
         }        
     }
 
-    // Corners
-
+    // Outer corners
     if(fogUR == 1 && fogR == 0 && fogU == 0)
     {
+        // Half the corner
         if(fx > fy)
         {
+            // 90 degree bend
             if(fogRR == 0)
             {
                 float r = distance(vec2(1.0, 1.0), vec2(fx, fy));
                 float t = smoothstep(D_a, D_b, r);
                 FragColor = FragColor*vec4(t, t, t, 1);
             }
+            // 45 degree bend
             else
             {
                 float r = sqrt(2.0)*((1-fx) - (fy-1))/2;
@@ -291,79 +296,54 @@ void main()
         }
     }
 
-    if(fogDL == 1 && fogD == 1 && fogLL == 1)
+    // Inner 45 degree edges    
+    if(fogDL == 1 && fogD == 1 && fogLL == 1 && -fx > (1-sqrt(2.0))*fy)
     {
-        if(-fx > (1-sqrt(2.0))*fy)
-        {
-            float r = sqrt(2.0)*(fy + fx)/2;
-            float t = smoothstep(D_a, D_b, r);
-            FragColor = FragColor*vec4(t, t, t, 1);
-        }
+        float r = sqrt(2.0)*(fy + fx)/2;
+        float t = smoothstep(D_a, D_b, r);
+        FragColor = FragColor*vec4(t, t, t, 1);
     }
-    if(fogDR == 1 && fogD == 1 && fogRR == 1)
+    if(fogDR == 1 && fogD == 1 && fogRR == 1 && fx > 1-fy*(sqrt(2.0)-1))
     {
-        if(fx > 1-fy*(sqrt(2.0)-1))
-        {
-            float r = sqrt(2.0)*(fy-(fx-1))/2;
-            float t = smoothstep(D_a, D_b, r);
-            FragColor = FragColor*vec4(t, t, t, 1);
-        }
+        float r = sqrt(2.0)*(fy-(fx-1))/2;
+        float t = smoothstep(D_a, D_b, r);
+        FragColor = FragColor*vec4(t, t, t, 1);
     }
 
-    if(fogUR == 1 && fogR == 1 && fogUU == 1)
+    if(fogUR == 1 && fogR == 1 && fogUU == 1 && fy > 1-(1-sqrt(2.0))*(fx-1))
     {
-        if(fy > 1-(1-sqrt(2.0))*(fx-1))
-        {
-            float r = sqrt(2.0)*((1-fx) - (fy-1))/2;
-            float t = smoothstep(D_a, D_b, r);
-            FragColor = FragColor*vec4(t, t, t, 1);
-        }
+        float r = sqrt(2.0)*((1-fx) - (fy-1))/2;
+        float t = smoothstep(D_a, D_b, r);
+        FragColor = FragColor*vec4(t, t, t, 1);
     }
-    if(fogDR == 1 && fogR == 1 && fogDD == 1)
+    if(fogDR == 1 && fogR == 1 && fogDD == 1 && fy < (1-sqrt(2.0))*(fx-1))
     {
-        if(fy < (1-sqrt(2.0))*(fx-1))
-        {
-            float r = sqrt(2.0)*(fy+1-fx)/2;
-            float t = smoothstep(D_a, D_b, r);
-            FragColor = FragColor*vec4(t, t, t, 1);
-        }
+        float r = sqrt(2.0)*(fy+1-fx)/2;
+        float t = smoothstep(D_a, D_b, r);
+        FragColor = FragColor*vec4(t, t, t, 1);
     }
-
-    if(fogUR == 1 && fogU == 1 && fogRR == 1)
+    if(fogUR == 1 && fogU == 1 && fogRR == 1 && -fx < -1+(sqrt(2.0)-1.0)*(1-fy))
     {
-        if(-fx < -1+(sqrt(2.0)-1.0)*(1-fy))
-        {
-            float r = sqrt(2.0)*((1-fx) - (fy-1))/2;
-            float t = smoothstep(D_a, D_b, r);
-            FragColor = FragColor*vec4(t, t, t, 1);
-        }
+        float r = sqrt(2.0)*((1-fx) - (fy-1))/2;
+        float t = smoothstep(D_a, D_b, r);
+        FragColor = FragColor*vec4(t, t, t, 1);
     }
-    if(fogUL == 1 && fogU == 1 && fogLL == 1)
+    if(fogUL == 1 && fogU == 1 && fogLL == 1 && fx < (sqrt(2.0)-1.0)*(1-fy))
     {
-        if(fx < (sqrt(2.0)-1.0)*(1-fy))
-        {
-            float r = sqrt(2.0)*(fx - fy + 1)/2;
-            float t = smoothstep(D_a, D_b, r);
-            FragColor = FragColor*vec4(t, t, t, 1);
-        }
+        float r = sqrt(2.0)*(fx - fy + 1)/2;
+        float t = smoothstep(D_a, D_b, r);
+        FragColor = FragColor*vec4(t, t, t, 1);
     }
-
-    if(fogUL == 1 && fogL == 1 && fogUU == 1)
+    if(fogUL == 1 && fogL == 1 && fogUU == 1 && fy > 1-fx*(sqrt(2.0)-1))
     {
-        if(fy > 1-fx*(sqrt(2.0)-1))
-        {
-            float r = sqrt(2.0)*(fx - (fy-1))/2;
-            float t = smoothstep(D_a, D_b, r);
-            FragColor = FragColor*vec4(t, t, t, 1);
-        }
+        float r = sqrt(2.0)*(fx - (fy-1))/2;
+        float t = smoothstep(D_a, D_b, r);
+        FragColor = FragColor*vec4(t, t, t, 1);
     }
-    if(fogDL == 1 && fogL == 1 && fogDD == 1)
+    if(fogDL == 1 && fogL == 1 && fogDD == 1 && fy < fx*(sqrt(2.0)-1))
     {
-        if(fy < fx*(sqrt(2.0)-1))
-        {
-            float r = sqrt(2.0)*(fy + fx)/2;
-            float t = smoothstep(D_a, D_b, r);
-            FragColor = FragColor*vec4(t, t, t, 1);
-        }
+        float r = sqrt(2.0)*(fy + fx)/2;
+        float t = smoothstep(D_a, D_b, r);
+        FragColor = FragColor*vec4(t, t, t, 1);
     }
 }

@@ -224,6 +224,31 @@ int main()
                 scene.removeLight(light);
         }
 
+        for(int y = 0; y < terrain.getHeight(); y++)
+        {
+            for(int x = 0; x < terrain.getWidth(); x++)
+            {
+                terrain.setFog(x, y, 1);
+            }
+        }
+
+        // Extremely slow way of doing this, mostly for illustration
+        for(int y = 0; y < terrain.getHeight(); y++)
+        {
+            for(int x = 0; x < terrain.getWidth(); x++)
+            {
+                for(auto& unit : scene.getUnits())
+                {
+                    int dx = unit->getPosition().x - x;
+                    int dy = unit->getPosition().y - y;
+                    if(dx*dx + dy*dy < 64)
+                    {
+                        terrain.setFog(x, y, 0);
+                    }
+                }
+            }
+        }
+
         terrain.draw();
 
         //for(auto& unit : scene.getUnits())
