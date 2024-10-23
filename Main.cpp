@@ -30,6 +30,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <queue>
+#include <unordered_set>
 #include <random>
 #include <stdio.h>
 #include <thread>
@@ -177,6 +178,15 @@ int main()
 
 	glDepthRange(0.5, 1);
 
+    
+    for(int y = 0; y < terrain.getHeight(); y++)
+    {
+        for(int x = 0; x < terrain.getWidth(); x++)
+        {
+            terrain.setFog(x, y, 1);
+        }
+    }
+
     while(!glfwWindowShouldClose(window))
     {
         if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -206,9 +216,24 @@ int main()
             delete result;
         }
 
+        std::unordered_set<int> fovUpdate;
+        const auto fogR = 8;
+
         scene.updateEntities();
         scene.updateUnitList();
         scene.moveEntities(dt);
+
+        for(auto& unit : scene.getUnits())
+        {
+            auto pos = unit->getPosition();
+            for(auto x = std::max(0, int(pos.x) - fogR); x <= std::min(int(pos.x) + fogR, terrain.getWidth()-1); x++)
+            {
+                for(auto y = std::max(0, int(pos.y) - fogR); y <= std::min(int(pos.y) + fogR, terrain.getHeight()-1); y++)
+                {
+                    fovUpdate.insert(y*terrain.getWidth() + x);
+                }
+            }
+        }
 
         auto entities = scene.getEntities();
         for(auto& entity : entities)
@@ -224,27 +249,19 @@ int main()
                 scene.removeLight(light);
         }
 
-        for(int y = 0; y < terrain.getHeight(); y++)
+        for(auto pos : fovUpdate)
         {
-            for(int x = 0; x < terrain.getWidth(); x++)
-            {
-                terrain.setFog(x, y, 1);
-            }
-        }
+            int y = pos/terrain.getWidth();
+            int x = pos%terrain.getWidth();
+            terrain.setFog(x, y, 1);
 
-        // Extremely slow way of doing this, mostly for illustration
-        for(int y = 0; y < terrain.getHeight(); y++)
-        {
-            for(int x = 0; x < terrain.getWidth(); x++)
+            for(auto& unit : scene.getUnits())
             {
-                for(auto& unit : scene.getUnits())
+                int dx = int(unit->getPosition().x) - x;
+                int dy = int(unit->getPosition().y) - y;
+                if(dx*dx + dy*dy < fogR*fogR)
                 {
-                    int dx = unit->getPosition().x - x;
-                    int dy = unit->getPosition().y - y;
-                    if(dx*dx + dy*dy < 64)
-                    {
-                        terrain.setFog(x, y, 0);
-                    }
+                    terrain.setFog(x, y, 0);
                 }
             }
         }
