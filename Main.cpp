@@ -216,7 +216,7 @@ int main()
             delete result;
         }
 
-        std::unordered_set<int> fovUpdate;
+        std::unordered_map<int, Unit*> fovUpdate;
         const auto fogR = 8;
 
         scene.updateEntities();
@@ -230,7 +230,7 @@ int main()
             {
                 for(auto y = std::max(0, int(pos.y) - fogR); y <= std::min(int(pos.y) + fogR, terrain.getHeight()-1); y++)
                 {
-                    fovUpdate.insert(y*terrain.getWidth() + x);
+                    fovUpdate[y*terrain.getWidth() + x] = unit;
                 }
             }
         }
@@ -249,20 +249,33 @@ int main()
                 scene.removeLight(light);
         }
 
-        for(auto pos : fovUpdate)
+        for(auto p : fovUpdate)
         {
-            int y = pos/terrain.getWidth();
-            int x = pos%terrain.getWidth();
-            terrain.setFog(x, y, 1);
-
-            for(auto& unit : scene.getUnits())
+            auto check = [&] (Unit* unit, int x, int y)
             {
                 int dx = int(unit->getPosition().x) - x;
                 int dy = int(unit->getPosition().y) - y;
                 if(dx*dx + dy*dy < fogR*fogR)
                 {
                     terrain.setFog(x, y, 0);
+                    return true;
                 }
+                return false;
+            };
+              
+            auto pos = p.first;
+            int y = pos/terrain.getWidth();
+            int x = pos%terrain.getWidth();
+
+            terrain.setFog(x, y, 1);
+
+            if(check(p.second, x, y))
+                continue;
+
+            for(auto& unit : scene.getUnits())
+            {
+                if(check(unit, x, y))
+                    break;
             }
         }
 
