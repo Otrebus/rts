@@ -112,6 +112,7 @@ void Projectile::update(real dt)
     }
 
     setPosition(pos + velocity*dt -Vector3(0, 0, gravity)*dt*dt*0.5f);
+    setGeoPosition(pos.to2());
     setDirection(velocity.normalized(), ((velocity%up%velocity).normalized()));
 
     auto p2 = pos;

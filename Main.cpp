@@ -225,6 +225,8 @@ int main()
 
         for(auto& unit : scene.getUnits())
         {
+            if(unit->isEnemy())
+                continue;
             auto pos = unit->getPosition();
             for(auto x = std::max(0, int(pos.x) - fogR); x <= std::min(int(pos.x) + fogR, terrain.getWidth()-1); x++)
             {
@@ -289,8 +291,12 @@ int main()
 
         for(auto& entity : scene.getEntities())
         {
-            entity->updateUniforms();
-            entity->draw();
+            auto pos = entity->getGeoPosition();
+            if(!terrain.getDrawMode() == Terrain::DrawMode::Grid || !terrain.getFog(pos.x, pos.y))
+            {
+                entity->updateUniforms();
+                entity->draw();
+            }
         }
 
         glPolygonOffset(-1.0, -1.0);
@@ -311,7 +317,7 @@ int main()
         for(auto particle : scene.getParticles())
         {
             particle->update(dt);
-            if(particle->isAlive())
+            if(particle->isAlive() && (!terrain.getDrawMode() == Terrain::DrawMode::Grid || !terrain.getFog(particle->getPos().x, particle->getPos().y)))
                 P.push_back(particle->serialize());
         }
         std::sort(P.begin(), P.end(), [&scene](const auto p1, const auto& p2) { return (p1.pos-scene.getCamera()->getPos()).length2() > (p2.pos-scene.getCamera()->getPos()).length2(); });

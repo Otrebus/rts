@@ -76,6 +76,7 @@ public:
         return result;
     }
     void setFog(int x, int y, bool b);
+    bool getFog(int x, int y) const;
     std::pair<real, Vector2> intersectRayOcclusion(Vector2 pos, Vector2 dir) const;
     std::pair<real, Vector2> intersectCirclePathOcclusion(Vector2 pos, Vector2 pos2, real radius) const;
     void init();

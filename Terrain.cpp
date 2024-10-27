@@ -365,6 +365,13 @@ void Terrain::setFog(int x, int y, bool b)
     glBufferSubData(GL_SHADER_STORAGE_BUFFER, sizeof(int)*(2+y*width+x), 1, &data);
 }
 
+bool Terrain::getFog(int x, int y) const
+{
+    if(x < 0 || x >= width || y < 0 || y >= height)
+        return true;
+    return fogOfWar[y*width+x];
+}
+
 std::pair<Vector3, Vector3> Terrain::getBoundingBox() const
 {
     return { { 0.f, 0.f, width/10.0f }, { real(width), real(height), width/10.0f } };
