@@ -62,6 +62,18 @@ void TerrainMesh::updateUniforms()
     this->material->updateUniforms(scene);
 }
 
+void TerrainMesh::draw(Material* mat) // TODO: might not be necessary to overload this
+{
+    auto material = mat ? mat : this->material;
+    auto s = scene->getShaderProgramManager();
+    auto program = s->getProgram(material->getShader(), getGeometryShader(), getVertexShader());
+    scene->setShaderProgram(program);
+    program->use();
+
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, nTriangles, GL_UNSIGNED_INT, 0);
+}
+
 Shader* TerrainMesh::getVertexShader() const
 {
     return terrainVertexShader;

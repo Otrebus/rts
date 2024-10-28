@@ -4,10 +4,12 @@
 #include "TerrainMaterial.h"
 #include "TerrainMesh.h"
 #include <array>
+#include "FogOfWarMaterial.h"
 #include "TexturedTerrainMaterial.h"
 
 Terrain::Terrain() : admissiblePoints(nullptr)
 {
+    fowMaterial = new FogOfWarMaterial();
 }
 
 void Terrain::calcMinMax()
@@ -244,6 +246,7 @@ Terrain::Terrain(const std::string& fileName, Scene* scene) : fileName(fileName)
     init();
     pickedTriangle = -1;
     scene->setTerrain(this);
+    fowMaterial = new FogOfWarMaterial();
 };
 
 void Terrain::init()
@@ -284,6 +287,14 @@ void Terrain::draw()
         ((TerrainMesh*)(terrainModel->getMeshes()[0]))->setFlat(drawMode == DrawMode::Flat);
     terrainModel->updateUniforms();
     terrainModel->draw();
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDepthFunc(GL_LEQUAL);
+    terrainModel->draw(fowMaterial);
+    glDisable(GL_BLEND);
+    glDepthFunc(GL_LESS);
+
     if(drawMode != DrawMode::Grid)
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }

@@ -169,6 +169,9 @@
     <ClCompile Include="Font.cpp">
       <Filter>Source files\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="FogOfWarMaterial.cpp">
+      <Filter>Source files\Materials</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -339,6 +342,9 @@
     <ClInclude Include="Buffer.h">
       <Filter>Source files\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="FogOfWarMaterial.h">
+      <Filter>Source files\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="lambertian.frag">
@@ -358,9 +364,6 @@
     </None>
     <None Include="line.vert">
       <Filter>Shaders\Vertex shaders</Filter>
-    </None>
-    <None Include="terrain.frag">
-      <Filter>Shaders\Fragment shaders</Filter>
     </None>
     <None Include="terrain.vert">
       <Filter>Shaders\Vertex shaders</Filter>
@@ -390,6 +393,12 @@
       <Filter>Shaders\Fragment shaders</Filter>
     </None>
     <None Include="console.frag">
+      <Filter>Shaders\Fragment shaders</Filter>
+    </None>
+    <None Include="fowShader.frag">
+      <Filter>Shaders\Fragment shaders</Filter>
+    </None>
+    <None Include="terrain.frag">
       <Filter>Shaders\Fragment shaders</Filter>
     </None>
   </ItemGroup>

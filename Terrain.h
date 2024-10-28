@@ -4,9 +4,11 @@
 #include "Model3d.h"
 #include <deque>
 
+
 class Ray;
 class Scene;
 class TerrainMesh;
+class FogOfWarMaterial;
 
 class Terrain
 {
@@ -25,6 +27,7 @@ public:
 
 private:
     Model3d* terrainModel;
+    FogOfWarMaterial* fowMaterial;
     Scene* scene;
     DrawMode drawMode;
     std::string fileName;
