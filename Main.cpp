@@ -219,9 +219,6 @@ int main()
         std::unordered_map<int, Unit*> fovUpdate;
         const auto fogR = 8;
 
-        scene.updateEntities();
-        scene.updateUnitList();
-        scene.moveEntities(dt);
 
         for(auto& unit : scene.getUnits())
         {
@@ -236,6 +233,10 @@ int main()
                 }
             }
         }
+
+        scene.updateEntities();
+        scene.updateUnitList();
+        scene.moveEntities(dt);
 
         auto entities = scene.getEntities();
         for(auto& entity : entities)
@@ -257,7 +258,7 @@ int main()
             {
                 int dx = int(unit->getPosition().x) - x;
                 int dy = int(unit->getPosition().y) - y;
-                if(dx*dx + dy*dy < fogR*fogR)
+                if(dx*dx + dy*dy < fogR*fogR && !unit->isEnemy())
                 {
                     terrain.setFog(x, y, 0);
                     return true;
@@ -292,7 +293,7 @@ int main()
         for(auto& entity : scene.getEntities())
         {
             auto pos = entity->getGeoPosition();
-            if(!terrain.getDrawMode() == Terrain::DrawMode::Grid || !terrain.getFog(pos.x, pos.y))
+            if(!terrain.getFog(pos.x, pos.y))
             {
                 entity->updateUniforms();
                 entity->draw();
