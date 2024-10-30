@@ -111,10 +111,11 @@
 - readBMP returns a padded buffer - but the width that's returned is the width of the bmp, not including padding, should that work in general?
 + nTriangles isn't nTriangles, is it (it's indices?)
 + TODO: this sphere draws weirdly
-- Boiddebug yellow (separate) going crazy when friendly tank drives near enemy tanks
++ Boiddebug yellow (separate) going crazy when friendly tank drives near enemy tanks
+- Figure out some better way of dealing with types of units instead of doing dynamic_cast
 - Fog of war
   + Rendering fog of war
-  - Not updating correctly when friendly unit dies next to enemy tanks
+  + Not updating correctly when friendly unit dies next to enemy tanks
   - Hiding invisible stuff properly
   - Have it affect decisions like shooting etc
 - Command queuing

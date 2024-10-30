@@ -265,7 +265,7 @@ int main()
                 }
                 return false;
             };
-              
+
             auto pos = p.first;
             int y = pos/terrain.getWidth();
             int x = pos%terrain.getWidth();
