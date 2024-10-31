@@ -172,6 +172,7 @@ int main()
     int frames = 0;
     real frameTime = 0;
     real avgFps = 0;
+    real prevFogOfWar = Terrain::fogOfWarEnabled.var;
 
     ShapeDrawer::setScene(&scene);
     ShapeDrawer::loadModels();
@@ -216,20 +217,34 @@ int main()
             delete result;
         }
 
+        if(prevFogOfWar != Terrain::fogOfWarEnabled.var)
+        {
+            for(auto y = 0; y < terrain.getHeight(); y++)
+            {
+                for(auto x = 0; x < terrain.getWidth(); x++)
+                {
+                    terrain.setFog(x, y, 0);
+                }
+            }
+        }
+
         std::unordered_map<int, Unit*> fovUpdate;
         const auto fogR = 8;
-
 
         for(auto& unit : scene.getUnits())
         {
             if(unit->isEnemy())
                 continue;
             auto pos = unit->getPosition();
-            for(auto x = std::max(0, int(pos.x) - fogR); x <= std::min(int(pos.x) + fogR, terrain.getWidth()-1); x++)
+
+            if(Terrain::fogOfWarEnabled.var)
             {
-                for(auto y = std::max(0, int(pos.y) - fogR); y <= std::min(int(pos.y) + fogR, terrain.getHeight()-1); y++)
+                for(auto x = std::max(0, int(pos.x) - fogR); x <= std::min(int(pos.x) + fogR, terrain.getWidth()-1); x++)
                 {
-                    fovUpdate[y*terrain.getWidth() + x] = unit;
+                    for(auto y = std::max(0, int(pos.y) - fogR); y <= std::min(int(pos.y) + fogR, terrain.getHeight()-1); y++)
+                    {
+                        fovUpdate[y*terrain.getWidth() + x] = unit;
+                    }
                 }
             }
         }
@@ -252,33 +267,36 @@ int main()
                 scene.removeLight(light);
         }
 
-        for(auto p : fovUpdate)
+        if(Terrain::fogOfWarEnabled.var)
         {
-            auto check = [&] (Unit* unit, int x, int y)
+            for(auto p : fovUpdate)
             {
-                int dx = int(unit->getPosition().x) - x;
-                int dy = int(unit->getPosition().y) - y;
-                if(dx*dx + dy*dy < fogR*fogR && !unit->isEnemy())
+                auto check = [&] (Unit* unit, int x, int y)
                 {
-                    terrain.setFog(x, y, 0);
-                    return true;
+                    int dx = int(unit->getPosition().x) - x;
+                    int dy = int(unit->getPosition().y) - y;
+                    if(dx*dx + dy*dy < fogR*fogR && !unit->isEnemy())
+                    {
+                        terrain.setFog(x, y, 0);
+                        return true;
+                    }
+                    return false;
+                };
+
+                auto pos = p.first;
+                int y = pos/terrain.getWidth();
+                int x = pos%terrain.getWidth();
+
+                terrain.setFog(x, y, 1);
+
+                if(check(p.second, x, y))
+                    continue;
+
+                for(auto& unit : scene.getUnits())
+                {
+                    if(check(unit, x, y))
+                        break;
                 }
-                return false;
-            };
-
-            auto pos = p.first;
-            int y = pos/terrain.getWidth();
-            int x = pos%terrain.getWidth();
-
-            terrain.setFog(x, y, 1);
-
-            if(check(p.second, x, y))
-                continue;
-
-            for(auto& unit : scene.getUnits())
-            {
-                if(check(unit, x, y))
-                    break;
             }
         }
 
@@ -293,7 +311,7 @@ int main()
         for(auto& entity : scene.getEntities())
         {
             auto pos = entity->getGeoPosition();
-            if(!terrain.getFog(pos.x, pos.y))
+            if(!Terrain::fogOfWarEnabled.var || !terrain.getFog(pos.x, pos.y))
             {
                 entity->updateUniforms();
                 entity->draw();
@@ -318,7 +336,7 @@ int main()
         for(auto particle : scene.getParticles())
         {
             particle->update(dt);
-            if(particle->isAlive() && (!terrain.getDrawMode() == Terrain::DrawMode::Grid || !terrain.getFog(particle->getPos().x, particle->getPos().y)))
+            if(particle->isAlive() && (!terrain.getDrawMode() == Terrain::DrawMode::Grid || !Terrain::fogOfWarEnabled.var || !terrain.getFog(particle->getPos().x, particle->getPos().y)))
                 P.push_back(particle->serialize());
         }
         std::sort(P.begin(), P.end(), [&scene](const auto p1, const auto& p2) { return (p1.pos-scene.getCamera()->getPos()).length2() > (p2.pos-scene.getCamera()->getPos()).length2(); });
@@ -376,6 +394,7 @@ int main()
             }
             glUniform1i(glGetUniformLocation(program->getId(), std::format("nLights", i).c_str()), scene.getLights().size());
         }
+        prevFogOfWar = Terrain::fogOfWarEnabled.var;
     }
 
     quitting = true;

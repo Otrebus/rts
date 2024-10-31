@@ -3,6 +3,7 @@
 #include "Math.h"
 #include "Model3d.h"
 #include <deque>
+#include "ConsoleSettings.h"
 
 
 class Ray;
@@ -25,6 +26,7 @@ public:
     const Vector3& getPoint(int x, int y) const; // same
     bool isAdmissible(int x, int y) const;
 
+    static ConsoleVariable fogOfWarEnabled;
 private:
     Model3d* terrainModel;
     FogOfWarMaterial* fowMaterial;

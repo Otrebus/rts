@@ -6,6 +6,9 @@
 #include <array>
 #include "FogOfWarMaterial.h"
 #include "TexturedTerrainMaterial.h"
+#include "ConsoleSettings.h"
+
+ConsoleVariable Terrain::fogOfWarEnabled("fogOfWar", 1);
 
 Terrain::Terrain() : admissiblePoints(nullptr)
 {
@@ -288,12 +291,27 @@ void Terrain::draw()
     terrainModel->updateUniforms();
     terrainModel->draw();
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ZERO, GL_SRC_ALPHA);
-    glDepthFunc(GL_LEQUAL);
-    terrainModel->draw(fowMaterial);
-    glDisable(GL_BLEND);
-    glDepthFunc(GL_LESS);
+    if(fogOfWarEnabled.var)
+    {
+        GLint curDepthFun;
+        GLboolean curBlend;
+
+        GLint curSrc, curDst;
+
+        glGetIntegerv(GL_DEPTH_FUNC, &curDepthFun);
+        glGetBooleanv(GL_BLEND, &curBlend);
+        glGetIntegerv(GL_BLEND_SRC_RGB, &curSrc);
+        glGetIntegerv(GL_BLEND_DST_RGB, &curDst);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ZERO, GL_SRC_ALPHA);
+        glDepthFunc(GL_LEQUAL);
+        terrainModel->draw(fowMaterial);
+        if(!curBlend)
+            glDisable(GL_BLEND);
+        glDepthFunc(curDepthFun);
+        glBlendFunc(curSrc, curDst);
+    }
 
     if(drawMode != DrawMode::Grid)
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
