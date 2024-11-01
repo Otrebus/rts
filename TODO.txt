@@ -116,7 +116,7 @@
 - Fog of war
   + Rendering fog of war
   + Not updating correctly when friendly unit dies next to enemy tanks
-  - Hiding invisible stuff properly
+  + Hiding invisible stuff properly
   - Have it affect decisions like shooting etc
 - Command queuing
 - Improve collisions further

@@ -370,7 +370,13 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
     }
 
     if(cameraControl->getMode() == Freelook)
+    {
+        // TODO: is there some better way of resetting everything when going into freelook?
+        selectingAdditional = false;
+        selectState = NotSelecting;
+        setCursor(GLFW_ARROW_CURSOR);
         return false;
+    }
 
     if(input.key == GLFW_KEY_LEFT_SHIFT)
     {

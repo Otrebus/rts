@@ -97,10 +97,6 @@ std::pair<real, Vector2> intersectCircleTrianglePath(Vector2 pos, real radius, V
     {
         minT = t;
         norm = (pos+dir*t-p1).normalized();
-        /*if((pos-p1)*(pp1) > 0)
-            norm = pp1;
-        else
-            norm = pp2;*/
     }
 
     t = intersectRayCircle(pos, dir, p2, radius);
@@ -108,10 +104,6 @@ std::pair<real, Vector2> intersectCircleTrianglePath(Vector2 pos, real radius, V
     {
         minT = t;
         norm = (pos+dir*t-p2).normalized();
-        /*if((pos-p2)*(pp2) > 0)
-            norm = pp2;
-        else
-            norm = pp1;*/
     }
 
     t = intersectRayCircle(pos, dir, p3, radius);
@@ -119,10 +111,6 @@ std::pair<real, Vector2> intersectCircleTrianglePath(Vector2 pos, real radius, V
     {
         minT = t;
         norm = (pos+dir*t-p3).normalized();
-        /*if((pos-p3)*(pp3) > 0)
-            norm = pp3;
-        else
-            norm = pp2;*/
     }
 
     return { minT, norm };

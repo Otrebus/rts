@@ -400,9 +400,6 @@ Vector2 expectVtCoordinate(Parser& parser)
  */
 std::vector<Token> tokenize(std::ifstream& file, std::string& str)
 {
-    //Timer t1;
-    //t1.Reset();
-
     // Before tokenizing, remove any comments
     int i = 0;
     for(std::string ln; !file.eof(); str += '\n')
@@ -428,26 +425,26 @@ std::vector<Token> tokenize(std::ifstream& file, std::string& str)
             v.push_back(token);
         };
 
-        // Skips every character until the next token
+    // Skips every character until the next token
     auto skipspace = [&p, &str]()
         {
             while(p < str.length() && str[p] == ' ' || str[p] == '\t')
                 p++;
         };
 
-        // Returns current character in the string
+    // Returns current character in the string
     auto peek = [&p, &str]() -> char
         {
             return p < str.size() ? str[p] : 0;
         };
 
-        // Advances to the next character in the string
+    // Advances to the next character in the string
     auto next = [&p, &str]() -> char
         {
             return p < str.size() ? str[p++] : 0;
         };
 
-        // Optionally advances to the next character in the string if the given character matches
+    // Optionally advances to the next character in the string if the given character matches
     auto accept = [&p, &str](char c) -> bool
         {
             return (p < str.size() && str[p] == c) ? ++p : false;
@@ -502,6 +499,5 @@ std::vector<Token> tokenize(std::ifstream& file, std::string& str)
             throw ParseException(std::string("Couldn't parse character: \"") + peek() + "\"");
     }
     addToken(Token::Eof, str.size(), str.size());
-    //logger.Box(std::to_string(t1.GetTime()));
     return v;
 }
