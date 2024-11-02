@@ -302,12 +302,6 @@ int main()
 
         terrain.draw();
 
-        //for(auto& unit : scene.getUnits())
-        //{
-        //    unit->updateUniforms();
-        //    unit->draw();
-        //}
-
         for(auto& entity : scene.getEntities())
         {
             auto pos = entity->getGeoPosition();
@@ -336,7 +330,7 @@ int main()
         for(auto particle : scene.getParticles())
         {
             particle->update(dt);
-            if(particle->isAlive() && (!terrain.getDrawMode() == Terrain::DrawMode::Grid || !Terrain::fogOfWarEnabled.var || !terrain.getFog(particle->getPos().x, particle->getPos().y)))
+            if(particle->isAlive() && (!Terrain::fogOfWarEnabled.var || !terrain.getFog(particle->getPos().x, particle->getPos().y)))
                 P.push_back(particle->serialize());
         }
         std::sort(P.begin(), P.end(), [&scene](const auto p1, const auto& p2) { return (p1.pos-scene.getCamera()->getPos()).length2() > (p2.pos-scene.getCamera()->getPos()).length2(); });
@@ -369,7 +363,6 @@ int main()
 
         avgFps = ((9*avgFps + 1/dt))/10;
 
-        //drawText(realToString(avgFps, 3), { 0.80, 0.90 }, 0.03, { 0, 0.8, 0 });
         font.draw(scene, realToString(avgFps, 3), { 0.952, 0.98 }, 0.035, Vector3(0.2, 0.9, 0.2));
         interface.draw();
         cameraControl.update(dt);

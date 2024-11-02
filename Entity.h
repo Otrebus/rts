@@ -60,7 +60,7 @@ public:
     // The geographical position is not quite the same as the position of the tank projected
     // onto the xy plane, because e.g. if the tank is on a slope, the 3d position is the center
     // of its mass which is a little bit along the normal of the ground whereas the geographical
-    // position is on teh ground
+    // position is on the ground
     Vector2 geoPos, geoDir, geoVelocity;
 
     BoundingBox boundingBox;

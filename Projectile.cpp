@@ -7,6 +7,7 @@
 
 Projectile::Projectile(Vector3 pos, Vector3 dir, Vector3 up, Entity* owner = nullptr) : Entity(pos, dir, up), owner(owner)
 {
+    // TODO: replace this with the generic box model that we have
     if(!ModelManager::hasModel("projectile"))
     {
         real width = 0.03, height = 0.03;
