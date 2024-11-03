@@ -7,6 +7,7 @@
 #include "Tank.h"
 #include "ShapeDrawer.h"
 #include "ConsoleSettings.h"
+#include "FogOfWarMaterial.h"
 
 ConsoleVariable Tank::boidDebug("boidDebug", 0);
 
@@ -109,6 +110,9 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, d
     body = ModelManager::instantiateModel("tankbody");
     turret = ModelManager::instantiateModel("tankturret");
     gun = ModelManager::instantiateModel("tankbarrel");
+
+    if(!fowMaterial)
+        fowMaterial = new FogOfWarMaterial();
 
     turretDir = Vector3(1, 1, 0).normalized();
 
@@ -248,8 +252,27 @@ void Tank::draw(Material* mat)
     destinationLine.setVertices(P);
 
     body->draw(mat);
-
     drawTurret(mat);
+
+    GLint curDepthFun;
+    GLboolean curBlend;
+
+    GLint curSrc, curDst;
+
+    glGetIntegerv(GL_DEPTH_FUNC, &curDepthFun);
+    glGetBooleanv(GL_BLEND, &curBlend);
+    glGetIntegerv(GL_BLEND_SRC_RGB, &curSrc);
+    glGetIntegerv(GL_BLEND_DST_RGB, &curDst);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ZERO, GL_SRC_ALPHA);
+    glDepthFunc(GL_LEQUAL);
+    body->draw(fowMaterial);
+    drawTurret(fowMaterial);
+    if(!curBlend)
+        glDisable(GL_BLEND);
+    glDepthFunc(curDepthFun);
+    glBlendFunc(curSrc, curDst);
 
     if(selected && path.size() > 0)
         destinationLine.draw();
@@ -606,3 +629,4 @@ bool Tank::canTurretAbsoluteTarget(Vector3 target)
 
 real Tank::gunLength = 1.0f;
 BoundingBox Tank::tankBoundingBox = BoundingBox();
+Material* Tank::fowMaterial = nullptr;

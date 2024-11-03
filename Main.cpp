@@ -157,9 +157,9 @@ int main()
         }
     }*/
 
-    //auto wreck = new TankWreck({ 172.5f, 65.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
-    //wreck->init(&scene);
-    //scene.addEntity(wreck);
+    auto wreck = new TankWreck({ 167.5f, 85.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+    wreck->init(&scene);
+    scene.addEntity(wreck);
     
     scene.updateUnitList();
     for(auto& e : scene.getUnits())

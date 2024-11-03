@@ -101,5 +101,7 @@ public:
 
     static ConsoleVariable tankVar;
     static ConsoleVariable boidDebug;
+
+    static Material* fowMaterial;
 };
 
