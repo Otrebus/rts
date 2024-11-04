@@ -35,7 +35,7 @@ void main()
 
     if(fogData[y*width+x] == 1)
     {
-        FragColor = vec4(0, 0, 0, 1.0-fowAlpha);
+        FragColor = vec4(1.0-fowAlpha, 1.0-fowAlpha, 1.0-fowAlpha, 0);
         return;
     }
 
@@ -288,5 +288,5 @@ void main()
         float r = sqrt(2.0)*(fy + fx)/2;
         t *= smoothstep(D_a, D_b, r);
     }
-    FragColor = vec4(0, 0, 0, 1-fowAlpha+fowAlpha*t);
+    FragColor = vec4(1-fowAlpha+fowAlpha*t, 1-fowAlpha+fowAlpha*t, 1-fowAlpha+fowAlpha*t, max(0, min(1, t)) );
 }

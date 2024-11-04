@@ -244,19 +244,8 @@ void Tank::updateTurret(real dt)
 
 void Tank::draw(Material* mat)
 {
-    std::vector<Vector3> P;
-    // TODO: slow
-    P.push_back(getPosition());
-    for(auto p : path)
-        P.push_back({ p.x, p.y, terrain->getElevation(p.x, p.y) });
-    destinationLine.setVertices(P);
-
-    body->draw(mat);
-    drawTurret(mat);
-
     GLint curDepthFun;
     GLboolean curBlend;
-
     GLint curSrc, curDst;
 
     glGetIntegerv(GL_DEPTH_FUNC, &curDepthFun);
@@ -264,11 +253,25 @@ void Tank::draw(Material* mat)
     glGetIntegerv(GL_BLEND_SRC_RGB, &curSrc);
     glGetIntegerv(GL_BLEND_DST_RGB, &curDst);
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ZERO, GL_SRC_ALPHA);
-    glDepthFunc(GL_LEQUAL);
+    std::vector<Vector3> P;
+    // TODO: slow
+    P.push_back(getPosition());
+    for(auto p : path)
+        P.push_back({ p.x, p.y, terrain->getElevation(p.x, p.y) });
+    destinationLine.setVertices(P);
+    
+    glBlendFuncSeparate(GL_ZERO, GL_ONE, GL_ONE, GL_ZERO);
+
     body->draw(fowMaterial);
     drawTurret(fowMaterial);
+
+    glDepthFunc(GL_LEQUAL);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
+
+    body->draw(mat);
+    drawTurret(mat);
+
     if(!curBlend)
         glDisable(GL_BLEND);
     glDepthFunc(curDepthFun);

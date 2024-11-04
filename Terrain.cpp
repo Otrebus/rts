@@ -304,7 +304,8 @@ void Terrain::draw()
         glGetIntegerv(GL_BLEND_DST_RGB, &curDst);
 
         glEnable(GL_BLEND);
-        glBlendFunc(GL_ZERO, GL_SRC_ALPHA);
+        //glBlendFunc(GL_ZERO, GL_SRC_COLOR);
+        glBlendFuncSeparate(GL_ZERO, GL_SRC_COLOR, GL_ONE, GL_ZERO);
         glDepthFunc(GL_LEQUAL);
         terrainModel->draw(fowMaterial);
         if(!curBlend)

@@ -33,6 +33,7 @@ protected:
     Vector3 absTurPos;
     Vector3 absMuzzlePos;
     static BoundingBox tankWreckBoundingBox;
+    static Material* fowMaterial;
 };
 
 static BoundingBox tankWreckBoundingBox;

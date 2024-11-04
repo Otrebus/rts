@@ -2,10 +2,14 @@
 #include "LambertianMaterial.h"
 #include "Model3d.h"
 #include "TankWreck.h"
+#include "FogOfWarMaterial.h"
 
 
 TankWreck::TankWreck(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Entity(pos, dir, up)
 {
+    if(!fowMaterial)
+        fowMaterial = new FogOfWarMaterial();
+
     body = ModelManager::instantiateModel("wreckbody");
     turret = ModelManager::instantiateModel("wreckturret");
     gun = ModelManager::instantiateModel("wreckbarrel");
@@ -156,14 +160,37 @@ void TankWreck::drawTurret(Material* mat)
     gun->setDirection(absGunDir, absGunUp);
     gun->setPosition(absGunPos);
 
-    turret->draw();
-    gun->draw();
+    turret->draw(mat);
+    gun->draw(mat);
 }
 
 void TankWreck::draw(Material* mat)
 {
+    GLint curDepthFun;
+    GLboolean curBlend;
+    GLint curSrc, curDst;
+
+    glGetIntegerv(GL_DEPTH_FUNC, &curDepthFun);
+    glGetBooleanv(GL_BLEND, &curBlend);
+    glGetIntegerv(GL_BLEND_SRC_RGB, &curSrc);
+    glGetIntegerv(GL_BLEND_DST_RGB, &curDst);
+    
+    glBlendFuncSeparate(GL_ZERO, GL_ONE, GL_ONE, GL_ZERO);
+
+    body->draw(fowMaterial);
+    drawTurret(fowMaterial);
+
+    glDepthFunc(GL_LEQUAL);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
+
     body->draw(mat);
     drawTurret(mat);
+
+    if(!curBlend)
+        glDisable(GL_BLEND);
+    glDepthFunc(curDepthFun);
+    glBlendFunc(curSrc, curDst);
 }
 
 void TankWreck::update(real dt)
@@ -188,3 +215,4 @@ void TankWreck::updateUniforms()
 
 real TankWreck::gunLength = 1.0f;
 BoundingBox TankWreck::tankWreckBoundingBox = BoundingBox();
+Material* TankWreck::fowMaterial = nullptr;

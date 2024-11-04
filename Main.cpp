@@ -305,11 +305,8 @@ int main()
         for(auto& entity : scene.getEntities())
         {
             auto pos = entity->getGeoPosition();
-            if(!Terrain::fogOfWarEnabled.var || !terrain.getFog(pos.x, pos.y))
-            {
-                entity->updateUniforms();
-                entity->draw();
-            }
+            entity->updateUniforms();
+            entity->draw();
         }
 
         glPolygonOffset(-1.0, -1.0);
