@@ -120,7 +120,7 @@ void Console::draw()
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     int i = 1;
-    font->draw(*scene, textInput, Vector2(-0.98, getY() + ++i*textSize*1.05), textSize, Vector3(1, 1, 0));
+    font->draw(*scene, textInput + "|", Vector2(-0.98, getY() + ++i*textSize*1.05), textSize, Vector3(1, 1, 0));
     for(auto it = history.rbegin(); it < history.rend(); it++)
     {
         Vector3 color = it->type == ConsoleHistoryEntry::Input ? Vector3(0.8, 0.8, 0.8) : Vector3(0.6, 0.6, 0.6);

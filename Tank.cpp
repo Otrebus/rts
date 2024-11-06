@@ -452,7 +452,12 @@ void Tank::update(real dt)
 
     if(enemyTarget && time - lastFired > fireInterval)
     {
-        if((turretTarget*turretDir) > 1-1e-6)
+        bool isInFog = false;
+        // TODO: the way we handle enemy fog of war isn't correct and needs an update when
+        // we have separate fow for player and enemy
+        auto p = (enemyTarget->isEnemy() ? enemyTarget : this)->getGeoPosition();
+        isInFog = scene->getTerrain()->getFog(p.x, p.y);
+        if(!isInFog && scene->getTerrain()->fogOfWarEnabled.var && (turretTarget*turretDir) > 1-1e-6)
         {
             lastFired = time;
             shoot();
