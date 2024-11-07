@@ -101,7 +101,7 @@ void Console::draw()
     };
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex3)*sizeof(v), v.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex3)*v.size(), v.data(), GL_STATIC_DRAW);
     auto s = scene->getShaderProgramManager();
     auto program = s->getProgram(fragmentShader, geometryShader, vertexShader);
     scene->setShaderProgram(program);
