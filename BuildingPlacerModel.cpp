@@ -1,17 +1,16 @@
 #include "LambertianMaterial.h"
-#include "SelectionDecalMaterial.h"
-#include "SelectionMarkerModel.h"
+#include "BuildingPlacerModel.h"
 #include "Tank.h"
 #include "Terrain.h"
 
 
-SelectionMarkerModel::SelectionMarkerModel(Entity* tank)
+BuildingPlacerModel::BuildingPlacerModel(Entity* tank)
 {
     this->tank = tank;
 }
 
 
-std::pair<std::vector<Vertex3>, std::vector<int>> SelectionMarkerModel::calcVertices(Scene* scene)
+std::pair<std::vector<Vertex3>, std::vector<int>> BuildingPlacerModel::calcVertices(Scene* scene)
 {
     auto tankPos = tank->getPosition();
 
@@ -42,7 +41,7 @@ std::pair<std::vector<Vertex3>, std::vector<int>> SelectionMarkerModel::calcVert
 }
 
 
-void SelectionMarkerModel::init(Scene* scene)
+void BuildingPlacerModel::init(Scene* scene)
 {
     auto [vs, triangles] = calcVertices(scene);
 
@@ -55,7 +54,7 @@ void SelectionMarkerModel::init(Scene* scene)
     decalMesh->setScene(scene);
 }
 
-void SelectionMarkerModel::update()
+void BuildingPlacerModel::update()
 {
     auto [vs, triangles] = calcVertices(meshes[0]->scene);
     meshes[0]->v = vs;

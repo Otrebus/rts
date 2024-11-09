@@ -4,11 +4,11 @@
 
 class Tank;
 
-class SelectionMarkerModel : public Model3d
+class BuildingPlacerModel : public Model3d
 {
 
 public:
-    SelectionMarkerModel(Entity* tank);
+    BuildingPlacerModel(Entity* tank);
 
     std::pair<std::vector<Vertex3>, std::vector<int>> calcVertices(Scene* scene);
 

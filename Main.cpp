@@ -178,7 +178,6 @@ int main()
     ShapeDrawer::loadModels();
 
 	glDepthRange(0.5, 1);
-
     
     for(int y = 0; y < terrain.getHeight(); y++)
     {
