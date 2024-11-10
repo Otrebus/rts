@@ -12,6 +12,7 @@
 #include <random>
 #include <ranges>
 #include "LambertianMaterial.h"
+#include "BuildingPlacerMesh.h"
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
 
@@ -20,6 +21,8 @@ UserInterface::UserInterface(GLFWwindow* window, Scene* scene, CameraControl* ca
     drawBoxc1 = { 0, 0 };
     drawBoxc2 = { 0, 0 };
     selectState = NotSelecting;
+    buildingPlacingState = NotPlacingBuilding;
+    buildingPlacerMesh = nullptr;
     intersecting = false;
     selectingAdditional = false;
     showConsole = false;
@@ -378,6 +381,27 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
         return false;
     }
 
+    if(input.key == GLFW_KEY_B)
+    {
+        buildingPlacingState = buildingPlacingState == PlacingBuilding ? NotPlacingBuilding : PlacingBuilding;
+        if(buildingPlacingState == PlacingBuilding)
+        {
+            if(!buildingPlacerMesh)
+            {
+                buildingPlacerMesh = new BuildingPlacerMesh(scene, 2, 3);
+                buildingPlacerMesh->init();
+            }
+        }
+    }
+
+    if(buildingPlacerMesh)
+    {
+        auto [px, py] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
+
+        auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
+        buildingPlacerMesh->update(pos.x, pos.y);
+    }
+
     if(input.key == GLFW_KEY_LEFT_SHIFT)
     {
         selectingAdditional = (input.stateStart == InputType::KeyPress || input.stateStart == InputType::KeyHold);
@@ -549,6 +573,11 @@ void UserInterface::setResolution(int xres, int yres)
 
 void UserInterface::draw()
 {
+    if(buildingPlacingState == PlacingBuilding)
+    {
+        buildingPlacerMesh->updateUniforms();
+        buildingPlacerMesh->draw();
+    }
     GLint depthFunc;
     glGetIntegerv(GL_DEPTH_FUNC, &depthFunc);
 

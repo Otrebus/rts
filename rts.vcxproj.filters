@@ -172,6 +172,12 @@
     <ClCompile Include="FogOfWarMaterial.cpp">
       <Filter>Source files\Materials</Filter>
     </ClCompile>
+    <ClCompile Include="BuildingPlacerMesh.cpp">
+      <Filter>Source files\Entities\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="BuildingPlacerMaterial.cpp">
+      <Filter>Source files\Materials</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -345,6 +351,12 @@
     <ClInclude Include="FogOfWarMaterial.h">
       <Filter>Source files\Materials</Filter>
     </ClInclude>
+    <ClInclude Include="BuildingPlacerMesh.h">
+      <Filter>Source files\Entities\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="BuildingPlacerMaterial.h">
+      <Filter>Source files\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="lambertian.frag">
@@ -399,6 +411,9 @@
       <Filter>Shaders\Fragment shaders</Filter>
     </None>
     <None Include="terrain.frag">
+      <Filter>Shaders\Fragment shaders</Filter>
+    </None>
+    <None Include="buildingPlacerMaterial.frag">
       <Filter>Shaders\Fragment shaders</Filter>
     </None>
   </ItemGroup>

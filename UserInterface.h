@@ -3,6 +3,7 @@
 #include "Ray.h"
 #include "Console.h"
 
+class BuildingPlacerMesh;
 class Input;
 class Scene;
 class Entity;
@@ -17,6 +18,11 @@ enum SelectState
 enum CommandState
 {
     NotCommanding, Moving, Attacking
+};
+
+enum BuildingPlacingState
+{
+    NotPlacingBuilding, PlacingBuilding
 };
 
 class UserInterface
@@ -46,6 +52,7 @@ public:
     int mouseX, mouseY;
     enum SelectState selectState;
     enum CommandState commandState;
+    enum BuildingPlacingState buildingPlacingState;
     Vector2 drawBoxc1, drawBoxc2;
     Scene* scene;
 
@@ -62,6 +69,7 @@ public:
     Unit* lastClickedUnit;
     Material* consoleMaterial;
 
+    BuildingPlacerMesh* buildingPlacerMesh;
 
     Ray intersectRay;
     GLFWcursor* cursor;

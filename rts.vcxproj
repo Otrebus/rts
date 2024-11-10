@@ -143,6 +143,8 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\temp\gl3w\src\gl3w.c" />
     <ClCompile Include="BoundingBox.cpp" />
+    <ClCompile Include="BuildingPlacerMaterial.cpp" />
+    <ClCompile Include="BuildingPlacerMesh.cpp" />
     <ClCompile Include="ByteStream.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraControl.cpp" />
@@ -159,6 +161,7 @@
     <ClCompile Include="GeometryUtils.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="LambertianMaterial.cpp" />
+    <None Include="buildingPlacerMaterial.frag" />
     <None Include="console.frag" />
     <None Include="fowShader.frag" />
     <None Include="line.frag">
@@ -210,6 +213,8 @@
   <ItemGroup>
     <ClInclude Include="BoundingBox.h" />
     <ClInclude Include="Buffer.h" />
+    <ClInclude Include="BuildingPlacerMaterial.h" />
+    <ClInclude Include="BuildingPlacerMesh.h" />
     <ClInclude Include="Bytestream.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraControl.h" />
