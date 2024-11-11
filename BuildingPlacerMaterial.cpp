@@ -4,7 +4,7 @@
 BuildingPlacerMaterial::BuildingPlacerMaterial(Vector3 Kd) : Kd(Kd)
 {
     if(!fragmentShader)
-        fragmentShader = new Shader("selectionMaterial.frag", GL_FRAGMENT_SHADER);
+        fragmentShader = new Shader("buildingPlacerMaterial.frag", GL_FRAGMENT_SHADER);
 }
 
 

@@ -18,7 +18,6 @@ void BuildingPlacerMesh::init()
     v = vs;
     this->triangles = triangles;
     this->material = material;
-    Mesh3d::init();
 
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
@@ -48,9 +47,10 @@ std::pair<std::vector<Vertex3>, std::vector<int>> BuildingPlacerMesh::calcVertic
     {
         for(int x = 0; x <= width; x++)
         {
-            auto pos = scene->getTerrain()->getPoint(x, y);
+            auto X = float(xpos)+x, Y = float(ypos)+y;
+            auto pos = scene->getTerrain()->getPoint(X, Y);
             pos.z += 0.01;
-            vs.push_back({ float(xpos)+x, float(ypos)+y, pos.z, 0, 0, 1, real(x), real(y) });
+            vs.push_back({ pos.x, pos.y, pos.z, 0, 0, 1, real(pos.x), real(pos.y) });
         }
     }
 
@@ -61,7 +61,7 @@ std::pair<std::vector<Vertex3>, std::vector<int>> BuildingPlacerMesh::calcVertic
         for(int x = 0; x < width; x++)
         {
             int i1 = y*(width+1)+x, i2 = y*(width+1)+x+1, i3 = (y+1)*(width+1)+x+1, i4 = (y+1)*(width+1) + x;
-            triangles.insert(triangles.end(), { i1, i2, i3, i1, i3, i4 });
+            triangles.insert(triangles.end(), { i1, i3, i2, i1, i4, i3 });
         }
     }
     return { vs, triangles };
