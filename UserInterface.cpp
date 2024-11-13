@@ -381,7 +381,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
         return false;
     }
 
-    if(input.key == GLFW_KEY_B)
+    if(input.key == GLFW_KEY_B && input.stateStart == InputType::KeyPress)
     {
         buildingPlacingState = buildingPlacingState == PlacingBuilding ? NotPlacingBuilding : PlacingBuilding;
         if(buildingPlacingState == PlacingBuilding)
@@ -417,7 +417,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
             movingUnit = e->getId();
     }
 
-    if(input.stateStart == InputType::MousePress && input.key == GLFW_MOUSE_BUTTON_1 && !inputQueue.isKeyHeld(GLFW_KEY_LEFT_CONTROL))
+    if(input.stateStart == InputType::MousePress && input.key == GLFW_MOUSE_BUTTON_1 && !inputQueue.isKeyHeld(GLFW_KEY_LEFT_CONTROL) && buildingPlacingState != PlacingBuilding)
     {
         selectState = Clicking;
         drawBoxc1 = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
@@ -470,7 +470,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
 
         drawBoxc2 = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
 
-        if(selectState == Clicking && (drawBoxc1-drawBoxc2).length() > 0.02)
+        if(selectState == Clicking && (drawBoxc1-drawBoxc2).length() > 0.02 && buildingPlacingState != PlacingBuilding)
             selectState = DrawingBox;
     }
     else if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_2)
@@ -573,11 +573,6 @@ void UserInterface::setResolution(int xres, int yres)
 
 void UserInterface::draw()
 {
-    if(buildingPlacingState == PlacingBuilding)
-    {
-        buildingPlacerMesh->updateUniforms();
-        buildingPlacerMesh->draw();
-    }
     GLint depthFunc;
     glGetIntegerv(GL_DEPTH_FUNC, &depthFunc);
 
@@ -587,6 +582,12 @@ void UserInterface::draw()
     glGetFloatv(GL_DEPTH_RANGE, depthRange);
 
     glDepthRange(0, 0);
+    if(buildingPlacingState == PlacingBuilding)
+    {
+        buildingPlacerMesh->updateUniforms();
+        buildingPlacerMesh->draw();
+    }
+    
     if(selectState == DrawingBox)
     {
         Line2d line({
@@ -595,7 +596,7 @@ void UserInterface::draw()
             { drawBoxc2.x, drawBoxc2.y, },
             { drawBoxc1.x, drawBoxc2.y, },
             { drawBoxc1.x, drawBoxc1.y, }
-                    });
+        });
         line.setColor(Vector3(0.2, 0.7, 0.1));
         line.init(scene);
         line.draw();

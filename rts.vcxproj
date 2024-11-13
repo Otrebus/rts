@@ -143,6 +143,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\temp\gl3w\src\gl3w.c" />
     <ClCompile Include="BoundingBox.cpp" />
+    <ClCompile Include="Building.cpp" />
     <ClCompile Include="BuildingPlacerMaterial.cpp" />
     <ClCompile Include="BuildingPlacerMesh.cpp" />
     <ClCompile Include="ByteStream.cpp" />
@@ -213,6 +214,7 @@
   <ItemGroup>
     <ClInclude Include="BoundingBox.h" />
     <ClInclude Include="Buffer.h" />
+    <ClInclude Include="Building.h" />
     <ClInclude Include="BuildingPlacerMaterial.h" />
     <ClInclude Include="BuildingPlacerMesh.h" />
     <ClInclude Include="Bytestream.h" />

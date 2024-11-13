@@ -178,6 +178,9 @@
     <ClCompile Include="BuildingPlacerMaterial.cpp">
       <Filter>Source files\Materials</Filter>
     </ClCompile>
+    <ClCompile Include="Building.cpp">
+      <Filter>Source files\Entities\Entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -356,6 +359,9 @@
     </ClInclude>
     <ClInclude Include="BuildingPlacerMaterial.h">
       <Filter>Source files\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Building.h">
+      <Filter>Source files\Entities\Entities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
