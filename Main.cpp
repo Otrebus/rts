@@ -37,6 +37,7 @@
 #include "Input.h"
 #include "ConsoleSettings.h"
 #include "Font.h"
+#include "Building.h"
 
 
 extern bool quitting = false;

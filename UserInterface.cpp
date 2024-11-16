@@ -8,6 +8,7 @@
 #include "Tank.h"
 #include "Unit.h"
 #include "UserInterface.h"
+#include "Building.h"
 #include <numeric>
 #include <random>
 #include <ranges>
@@ -392,6 +393,11 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
                 buildingPlacerMesh->init();
             }
         }
+        else
+        {
+            delete buildingPlacerMesh;
+            buildingPlacerMesh = nullptr;
+        }
     }
 
     if(buildingPlacerMesh)
@@ -417,12 +423,21 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
             movingUnit = e->getId();
     }
 
-    if(input.stateStart == InputType::MousePress && input.key == GLFW_MOUSE_BUTTON_1 && !inputQueue.isKeyHeld(GLFW_KEY_LEFT_CONTROL) && buildingPlacingState != PlacingBuilding)
+    if(input.stateStart == InputType::MousePress && input.key == GLFW_MOUSE_BUTTON_1 && !inputQueue.isKeyHeld(GLFW_KEY_LEFT_CONTROL))
     {
-        selectState = Clicking;
-        drawBoxc1 = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
-        drawBoxc2 = drawBoxc1;
-        setCursor(GLFW_CROSSHAIR_CURSOR);
+        if(buildingPlacingState != PlacingBuilding)
+        {
+            selectState = Clicking;
+            drawBoxc1 = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
+            drawBoxc2 = drawBoxc1;
+            setCursor(GLFW_CROSSHAIR_CURSOR);
+        }
+        else
+        {
+            auto [px, py] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
+            auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
+            scene->addEntity(new Building(Vector3(int(pos.x), int(pos.y), pos.z), 2, 3));
+        }
     }
     if(selectState == DrawingBox)
     {
