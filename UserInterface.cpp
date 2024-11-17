@@ -405,7 +405,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
         auto [px, py] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
 
         auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
-        buildingPlacerMesh->update(pos.x, pos.y);
+        buildingPlacerMesh->update(pos.x, pos.y, Building::isAdmissible(pos.x, pos.y, 2, 3, scene));
     }
 
     if(input.key == GLFW_KEY_LEFT_SHIFT)
@@ -436,7 +436,8 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
         {
             auto [px, py] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
             auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
-            scene->addEntity(new Building(Vector3(int(pos.x), int(pos.y), pos.z), 2, 3));
+            if(Building::isAdmissible(pos.x, pos.y, 2, 3, scene))
+                scene->addEntity(new Building(Vector3(int(pos.x), int(pos.y), pos.z), 2, 3));
         }
     }
     if(selectState == DrawingBox)

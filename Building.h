@@ -15,6 +15,7 @@ public:
 
     void draw(Material* mat);
     void update(real dt);
+    static bool isAdmissible(int x, int y, int length, int width, Scene* scene);
 
     int length, width;
 };

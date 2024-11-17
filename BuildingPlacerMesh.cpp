@@ -67,7 +67,7 @@ std::pair<std::vector<Vertex3>, std::vector<int>> BuildingPlacerMesh::calcVertic
     return { vs, triangles };
 }
 
-void BuildingPlacerMesh::update(int xpos, int ypos)
+void BuildingPlacerMesh::update(int xpos, int ypos, bool allowed)
 {
     auto [vs, triangles] = calcVertices(scene, xpos, ypos);
     v = vs;
@@ -78,5 +78,7 @@ void BuildingPlacerMesh::update(int xpos, int ypos)
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*triangles.size(), triangles.data(), GL_STREAM_DRAW);
+
+    ((BuildingPlacerMaterial*)material)->Kd = allowed ? Vector3(0, 0.8, 0.1) : Vector3(0.8, 0, 0.1);
     nTriangles = triangles.size();
 }

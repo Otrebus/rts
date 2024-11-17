@@ -49,6 +49,11 @@ std::vector<Unit*> Scene::getUnits() const
     return units;
 }
 
+std::vector<Building*> Scene::getBuildings() const
+{
+    return buildings;
+}
+
 void Scene::setEntities(std::vector<Entity*> entities)
 {
     this->entities = std::vector(entities.begin(), entities.end());
@@ -210,6 +215,17 @@ void Scene::moveEntities(real dt)
                 entity2->geoVelocity += modifier*r*dt/l;
             }
         }
+        for(auto building : buildings)
+        {
+            auto bpos = building->getGeoPosition();
+            auto c = Vector2(bpos.x + real(building->length)/2, bpos.y + real(building->width)/2);
+            auto dx = entity->geoPos.x - c.x;
+            auto dy = entity->geoPos.y - c.y;
+            if(std::abs(dx)-0.5 < real(building->length)/2 && std::abs(dy)-0.5 < real(building->width)/2)
+            {
+                entity->geoVelocity += dt*Vector2(1/dx, 1/dy);
+            }
+        }
     }
 }
 
@@ -237,11 +253,14 @@ void Scene::updateEntities()
 
 void Scene::updateUnitList()
 {
-    units.clear();
+    units.clear(); 
+    buildings.clear(); // TODO: either this function should be renamed or this should be moved to another function
     for(auto e : entities)
     {
         if(auto p = dynamic_cast<Unit*>(e); p)
             units.push_back(p);
+        if(auto p = dynamic_cast<Building*>(e); p)
+            buildings.push_back(p);
     }
 }
 

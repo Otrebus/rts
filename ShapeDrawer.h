@@ -22,6 +22,8 @@ public:
     static void setDepthTest();
     static void restoreDepthTest();
 
+    static void setInFront(bool);
+
     static Model3d* cylinderModel;
     static Model3d* coneModel;
     static Model3d* sphereModel;

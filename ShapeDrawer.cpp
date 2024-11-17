@@ -114,6 +114,11 @@ void ShapeDrawer::setScene(Scene* scene)
 	ShapeDrawer::scene = scene;
 }
 
+void ShapeDrawer::setInFront(bool inFront)
+{
+	ShapeDrawer::inFront = inFront;
+}
+
 Model3d* ShapeDrawer::cylinderModel = nullptr;
 Model3d* ShapeDrawer::coneModel = nullptr;
 Model3d* ShapeDrawer::sphereModel = nullptr;

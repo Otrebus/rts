@@ -10,7 +10,7 @@ public:
 
     std::pair<std::vector<Vertex3>, std::vector<int>> calcVertices(Scene* scene, int xpos, int ypos);
 
-    void update(int xpos, int ypos);
+    void update(int xpos, int ypos, bool allowed);
 
     void init();
 private:

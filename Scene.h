@@ -8,6 +8,7 @@
 #include <unordered_set>
 #include <mutex>
 #include <unordered_set>
+#include "Building.h"
 
 class Unit;
 
@@ -24,6 +25,7 @@ public:
     Terrain* getTerrain() const;
 
     std::vector<Unit*> getUnits() const;
+    std::vector<Building*> getBuildings() const;
 
     void setEntities(std::vector<Entity*> entities);
     const std::vector<Entity*>& getEntities() const;
@@ -57,6 +59,9 @@ private:
 
     std::vector<Entity*> entities;
     std::unordered_set<Entity*> deadEntities;
+
+    std::vector<Building*> buildings;
+    std::unordered_set<Building*> deadBuildings;
 
     std::vector<PointLight*> lights;
     std::unordered_set<PointLight*> deadLights;
