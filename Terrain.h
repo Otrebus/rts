@@ -4,6 +4,7 @@
 #include "Model3d.h"
 #include <deque>
 #include "ConsoleSettings.h"
+#include <unordered_set>
 
 
 class Ray;
@@ -22,9 +23,11 @@ public:
         Flat = 3
     };
 
+    void calcAdmissiblePoint(int x, int y);
     std::pair<int, int> getClosestAdmissible(Vector2 v) const; // TODO: temp public
     const Vector3& getPoint(int x, int y) const; // same
     bool isAdmissible(int x, int y) const;
+    void updateAdmissiblePoints();
 
     static ConsoleVariable fogOfWarEnabled;
 private:
@@ -49,6 +52,8 @@ private:
 
     std::vector<Vector3> points;
     std::vector<int> triangleIndices;
+
+    std::unordered_set<int> buildingPoints;
 
     Terrain();
 

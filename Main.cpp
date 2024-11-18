@@ -301,6 +301,7 @@ int main()
         }
 
         terrain.draw();
+        terrain.updateAdmissiblePoints();
 
         for(auto& entity : scene.getEntities())
         {

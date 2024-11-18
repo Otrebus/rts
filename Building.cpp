@@ -15,7 +15,7 @@ void Building::draw(Material* mat = nullptr)
 {
     real height = 2.0;
     ShapeDrawer::setInFront(false);
-    ShapeDrawer::drawBox(Vector3(int(pos.x), pos.y, pos.z) + Vector3(real(length)/2, real(width)/2, real(height)/2), Vector3(1, 0, 0), length, width, height);
+    ShapeDrawer::drawBox(Vector3(int(pos.x), pos.y, pos.z) + Vector3(real(length)/2, real(width)/2, real(height)/2), Vector3(1, 0, 0), length, width, height, Vector3(0.7, 0.7, 0.7));
 }
 
 
