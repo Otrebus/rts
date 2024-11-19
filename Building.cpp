@@ -25,13 +25,19 @@ void Building::update(real dt)
 }
 
 
+bool Building::within(int posX, int posY, int length, int width)
+{
+    bool withinX = pos.x < posX + length && pos.x + length > posX;
+    bool withinY = pos.y < posY + width && pos.y + width > posY;
+    return withinX && withinY;
+}
+
+
 bool Building::isAdmissible(int posX, int posY, int length, int width, Scene* scene)
 {
     for(auto building : scene->getBuildings())
     {
-        bool withinX = building->pos.x < posX + length && building->pos.x + building->length > posX;
-        bool withinY = building->pos.y < posY + width && building->pos.y + building->width > posY;
-        if(withinX && withinY)
+        if(building->within(posX, posY, length, width))
             return false;
     }
     return true;

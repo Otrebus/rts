@@ -178,6 +178,12 @@ void Terrain::updateAdmissiblePoints()
             }
         }
     }
+
+    for(auto p : buildingPoints)
+        admissiblePoints[p] = true;
+    for(auto p : currentBuildingPoints)
+        admissiblePoints[p] = true;
+
     for(auto p : buildingPoints)
     {
         if(!currentBuildingPoints.contains(p))

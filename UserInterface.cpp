@@ -438,6 +438,16 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
             auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
             if(Building::isAdmissible(pos.x, pos.y, 2, 3, scene))
                 scene->addEntity(new Building(Vector3(int(pos.x), int(pos.y), pos.z), 2, 3));
+            else
+            {
+                for(auto building : scene->getBuildings())
+                {
+                    if(building->within(int(pos.x), int(pos.y), 2, 3))
+                    {
+                        scene->removeEntity(building);
+                    }
+                }
+            }
         }
     }
     if(selectState == DrawingBox)

@@ -186,7 +186,6 @@ void Tank::init(Scene* scene)
     selectionMarkerMesh->init();
 }
 
-
 void Tank::updateUniforms()
 {
     body->updateUniforms();
@@ -194,7 +193,6 @@ void Tank::updateUniforms()
     gun->updateUniforms();
     selectionMarkerMesh->updateUniforms();
 }
-
 
 void Tank::drawTurret(Material* mat)
 {
