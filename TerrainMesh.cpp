@@ -62,6 +62,13 @@ void TerrainMesh::updateUniforms()
     this->material->updateUniforms(scene);
 }
 
+void TerrainMesh::updateSelected(int i, bool b)
+{
+    int data = int(b);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferSubData(GL_ARRAY_BUFFER, i * sizeof(MeshVertex3) + offsetof(MeshVertex3, selected), sizeof(data), &data);
+}
+
 void TerrainMesh::draw(Material* mat) // TODO: might not be necessary to overload this
 {
     auto material = mat ? mat : this->material;

@@ -23,7 +23,7 @@ public:
         Flat = 3
     };
 
-    void calcAdmissiblePoint(int x, int y);
+    void recalcAdmissiblePoint(int x, int y);
     std::pair<int, int> getClosestAdmissible(Vector2 v) const; // TODO: temp public
     const Vector3& getPoint(int x, int y) const; // same
     bool isAdmissible(int x, int y) const;

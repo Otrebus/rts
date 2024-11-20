@@ -118,35 +118,27 @@ TerrainMesh* Terrain::createMesh(std::string fileName, bool textured = false)
 }
 
 
-void Terrain::calcAdmissiblePoint(int x, int y)
+void Terrain::recalcAdmissiblePoint(int x, int y)
 {
+    admissiblePoints[width*y+x] = true;
+    if(!isTriangleAdmissible(x, y, x+1, y, x+1, y+1) ||
+       !isTriangleAdmissible(x-1, y-1, x, y-1, x, y) ||
+       !isTriangleAdmissible(x-1, y, x, y, x, y+1) ||
 
-    auto p1 = getPoint(x, y);
-    auto p2 = getPoint(x+1, y);
-    auto p3 = getPoint(x+1, y+1);
-    auto p = getPoint(x, y+1);
-    if(!isTriangleAdmissible(x, y, x+1, y, x+1, y+1))
+       !isTriangleAdmissible(x, y, x+1, y+1, x, y+1) || 
+       !isTriangleAdmissible(x, y-1, x+1, y, x, y) ||
+       !isTriangleAdmissible(x-1, y-1, x, y, x-1, y)
+    )
     {
         admissiblePoints[width*y+x] = false;
-        admissiblePoints[width*y+x+1] = false;
-        admissiblePoints[width*(y+1)+x+1] = false;
-
-    }
-    if(!isTriangleAdmissible(x, y, x+1, y+1, x, y+1))
-    {
-        admissiblePoints[width*y+x] = false;
-        admissiblePoints[width*(y+1)+x+1] = false;
-        admissiblePoints[width*(y+1)+x] = false;
+        return;
     }
     for(auto building : scene->getBuildings())
     {
-        for(int y = 0; y <= building->width; y++)
+        if(x < building->pos.x + building->length && x > building->pos.x && y < building->pos.y + building->width && y > building->pos.y)
         {
-            for(int x = 0; x <= building->length; x++)
-            {
-                int X = building->pos.x + x, Y = building->pos.y + y;
-                admissiblePoints[width*Y+X] = false;
-            }
+            admissiblePoints[width*y+x] = false;
+            return;
         }
     }
 }
@@ -158,11 +150,37 @@ void Terrain::calcAdmissiblePoints()
     {
         for(int y = 0; y < height-1; y++)
         {
-            calcAdmissiblePoint(x, y);
+            auto p1 = getPoint(x, y);
+            auto p2 = getPoint(x+1, y);
+            auto p3 = getPoint(x+1, y+1);
+            auto p = getPoint(x, y+1);
+            if(!isTriangleAdmissible(x, y, x+1, y, x+1, y+1))
+            {
+                admissiblePoints[width*y+x] = false;
+                admissiblePoints[width*y+x+1] = false;
+                admissiblePoints[width*(y+1)+x+1] = false;
+
+            }
+            if(!isTriangleAdmissible(x, y, x+1, y+1, x, y+1))
+            {
+                admissiblePoints[width*y+x] = false;
+                admissiblePoints[width*(y+1)+x+1] = false;
+                admissiblePoints[width*(y+1)+x] = false;
+            }
+            for(auto building : scene->getBuildings())
+            {
+                for(int y = 0; y <= building->width; y++)
+                {
+                    for(int x = 0; x <= building->length; x++)
+                    {
+                        int X = building->pos.x + x, Y = building->pos.y + y;
+                        admissiblePoints[width*Y+X] = false;
+                    }
+                }
+            }
         }
     }
 }
-
 
 void Terrain::updateAdmissiblePoints()
 {
@@ -186,17 +204,13 @@ void Terrain::updateAdmissiblePoints()
 
     for(auto p : buildingPoints)
     {
-        if(!currentBuildingPoints.contains(p))
-        {
-            calcAdmissiblePoint(p%width, p/width);
-        }
+        recalcAdmissiblePoint(p%width, p/width);
+        terrainMesh->updateSelected(p, false);
     }
     for(auto p : currentBuildingPoints)
     {
-        if(!buildingPoints.contains(p))
-        {
-            calcAdmissiblePoint(p%width, p/width);
-        }
+        recalcAdmissiblePoint(p%width, p/width);
+        terrainMesh->updateSelected(p, false);
     }
     buildingPoints = currentBuildingPoints;
 }
