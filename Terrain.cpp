@@ -135,7 +135,7 @@ void Terrain::recalcAdmissiblePoint(int x, int y)
     }
     for(auto building : scene->getBuildings())
     {
-        if(x < building->pos.x + building->length && x > building->pos.x && y < building->pos.y + building->width && y > building->pos.y)
+        if(x <= building->pos.x + building->length && x >= building->pos.x && y <= building->pos.y + building->width && y >= building->pos.y)
         {
             admissiblePoints[width*y+x] = false;
             return;
@@ -187,9 +187,9 @@ void Terrain::updateAdmissiblePoints()
     std::unordered_set<int> currentBuildingPoints;
     for(auto building : scene->getBuildings())
     {
-        for(int y = 0; y < building->width; y++)
+        for(int y = 0; y <= building->width; y++)
         {
-            for(int x = 0; x < building->length; x++)
+            for(int x = 0; x <= building->length; x++)
             {
                 int X = building->pos.x + x, Y = building->pos.y + y;
                 currentBuildingPoints.insert(Y*width+X);
@@ -205,12 +205,12 @@ void Terrain::updateAdmissiblePoints()
     for(auto p : buildingPoints)
     {
         recalcAdmissiblePoint(p%width, p/width);
-        terrainMesh->updateSelected(p, false);
+        terrainMesh->updateSelected(p, !admissiblePoints[p]);
     }
     for(auto p : currentBuildingPoints)
     {
         recalcAdmissiblePoint(p%width, p/width);
-        terrainMesh->updateSelected(p, false);
+        terrainMesh->updateSelected(p, !admissiblePoints[p]);
     }
     buildingPoints = currentBuildingPoints;
 }
