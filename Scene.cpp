@@ -215,7 +215,7 @@ void Scene::moveEntities(real dt)
                 entity2->geoVelocity += modifier*r*dt/l;
             }
         }
-        for(auto building : buildings)
+        /*for(auto building : buildings)
         {
             auto bpos = building->getGeoPosition();
             auto c = Vector2(bpos.x + real(building->length)/2, bpos.y + real(building->width)/2);
@@ -225,7 +225,7 @@ void Scene::moveEntities(real dt)
             {
                 entity->geoVelocity += dt*Vector2(1/dx, 1/dy);
             }
-        }
+        }*/
     }
 }
 

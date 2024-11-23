@@ -389,7 +389,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
         {
             if(!buildingPlacerMesh)
             {
-                buildingPlacerMesh = new BuildingPlacerMesh(scene, 2, 3);
+                buildingPlacerMesh = new BuildingPlacerMesh(scene, 3, 4);
                 buildingPlacerMesh->init();
             }
         }
@@ -405,7 +405,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
         auto [px, py] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
 
         auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
-        buildingPlacerMesh->update(pos.x, pos.y, Building::isAdmissible(pos.x, pos.y, 2, 3, scene));
+        buildingPlacerMesh->update(pos.x, pos.y, Building::canBePlaced(pos.x, pos.y, 3, 4, scene));
     }
 
     if(input.key == GLFW_KEY_LEFT_SHIFT)
@@ -436,13 +436,22 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
         {
             auto [px, py] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
             auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
-            if(Building::isAdmissible(pos.x, pos.y, 2, 3, scene))
-                scene->addEntity(new Building(Vector3(int(pos.x), int(pos.y), pos.z), 2, 3));
+            if(Building::canBePlaced(pos.x, pos.y, 3, 4, scene))
+            {
+                std::vector<int> footprint = {
+                    1, 0, 0, 1,
+                    1, 0, 0, 1,
+                    1, 0, 0, 1,
+                    1, 1, 1, 1,
+                    1, 1, 1, 1
+                };
+                scene->addEntity(new Building(Vector3(int(pos.x), int(pos.y), pos.z), 3, 4, footprint));
+            }
             else
             {
                 for(auto building : scene->getBuildings())
                 {
-                    if(building->within(int(pos.x), int(pos.y), 2, 3))
+                    if(building->buildingWithin(int(pos.x), int(pos.y), 3, 4))
                     {
                         scene->removeEntity(building);
                     }

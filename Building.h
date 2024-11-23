@@ -10,13 +10,16 @@
 class Building : public Entity
 {
 public:
-    Building(Vector3 pos, int length, int width);
+    Building(Vector3 pos, int length, int width, std::vector<int> footprint);
     virtual ~Building();
 
-    bool within(int posX, int posY, int length, int width);
+    bool buildingWithin(int posX, int posY, int length, int width);
+    bool pointWithinFootprint(int posX, int posY);
     void draw(Material* mat);
     void update(real dt);
-    static bool isAdmissible(int x, int y, int length, int width, Scene* scene);
+    static bool canBePlaced(int x, int y, int length, int width, Scene* scene);
+
+    std::vector<int> footprint;
 
     int length, width;
 };

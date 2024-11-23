@@ -135,7 +135,7 @@ void Terrain::recalcAdmissiblePoint(int x, int y)
     }
     for(auto building : scene->getBuildings())
     {
-        if(x <= building->pos.x + building->length && x >= building->pos.x && y <= building->pos.y + building->width && y >= building->pos.y)
+        if(building->pointWithinFootprint(x, y))
         {
             admissiblePoints[width*y+x] = false;
             return;
@@ -174,7 +174,8 @@ void Terrain::calcAdmissiblePoints()
                     for(int x = 0; x <= building->length; x++)
                     {
                         int X = building->pos.x + x, Y = building->pos.y + y;
-                        admissiblePoints[width*Y+X] = false;
+                        if(building->pointWithinFootprint(X, Y))
+                            admissiblePoints[width*Y+X] = false;
                     }
                 }
             }
