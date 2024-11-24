@@ -26,6 +26,12 @@ layout(std430, binding = 0) buffer FogDataBuffer {
     int fogData[];
 };
 
+layout(std430, binding = 1) buffer AdmissibleDataBuffer {
+    int admissibleWidth;
+    int admissibleHeight;
+    int admissibleData[];
+};
+
 void main()
 {
     vec3 n = flatShaded ? N_g : N_s;
@@ -48,8 +54,22 @@ void main()
     float line = min(grid.x, grid.y);
     float col = min(line, 1.0);
     FragColor = FragColor - vec4(vec3(col), 0)*0.1;
-    if(flatShaded && selected > (1-1e-6))
-        FragColor = vec4(0.8, 0, 0, 1)*(0.2+0.8*lambertian);
+//    if(flatShaded && selected > (1-1e-6))
+//        FragColor = vec4(0.8, 0, 0, 1)*(0.2+0.8*lambertian);
+
+    if(flatShaded)
+    {
+        int x = int(p.x);
+        int y = int(p.y);
+        if(admissibleData[width*y+x] == 0 && distance(vec2(p.x, p.y), vec2(x, y)) < 0.1)
+            FragColor = vec4(0.8, 0, 0, 1)*(0.2+0.8*lambertian);
+        if(admissibleData[width*(y+1)+x] == 0 && distance(vec2(p.x, p.y), vec2(x, y+1)) < 0.1)
+            FragColor = vec4(0.8, 0, 0, 1)*(0.2+0.8*lambertian);
+        if(admissibleData[width*y+x+1] == 0 && distance(vec2(p.x, p.y), vec2(x+1, y)) < 0.1)
+            FragColor = vec4(0.8, 0, 0, 1)*(0.2+0.8*lambertian);
+        if(admissibleData[width*(y+1)+x+1] == 0 && distance(vec2(p.x, p.y), vec2(x+1, y+1)) < 0.1)
+            FragColor = vec4(0.8, 0, 0, 1)*(0.2+0.8*lambertian);
+    }
 
     for(int i = 0; i < nLights; i++)
     {

@@ -28,6 +28,7 @@ public:
     const Vector3& getPoint(int x, int y) const; // same
     bool isAdmissible(int x, int y) const;
     void updateAdmissiblePoints();
+    void setAdmissible(int x, int y, bool b);
 
     static ConsoleVariable fogOfWarEnabled;
 private:
@@ -39,8 +40,8 @@ private:
     int pickedTriangle;
     int width, height;
 
-    GLuint ssbo;
-
+    GLuint fogBuffer;
+    GLuint admissibleBuffer;
 
     real* max_R;
     real* min_R;

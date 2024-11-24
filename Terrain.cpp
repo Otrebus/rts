@@ -7,6 +7,7 @@
 #include "FogOfWarMaterial.h"
 #include "TexturedTerrainMaterial.h"
 #include "ConsoleSettings.h"
+#include <algorithm>
 
 ConsoleVariable Terrain::fogOfWarEnabled("fogOfWar", 1);
 
@@ -104,10 +105,6 @@ TerrainMesh* Terrain::createMesh(std::string fileName, bool textured = false)
     this->width = width;
     this->height = height;
 
-    admissiblePoints = new bool[width*height];
-    std::fill(admissiblePoints, admissiblePoints + width*height, true);
-    calcAdmissiblePoints();
-
     if(terrainMesh)
         delete terrainMesh;
     Material* mat = textured ? (Material*) new TexturedTerrainMaterial() : new TerrainMaterial();
@@ -175,10 +172,11 @@ void Terrain::calcAdmissiblePoints()
                     {
                         int X = building->pos.x + x, Y = building->pos.y + y;
                         if(building->pointWithinFootprint(X, Y))
-                            admissiblePoints[width*Y+X] = false;
+                            admissiblePoints[width*y+x] = false;
                     }
                 }
             }
+            setAdmissible(x, y, admissiblePoints[width*y+x]);
         }
     }
 }
@@ -207,11 +205,13 @@ void Terrain::updateAdmissiblePoints()
     {
         recalcAdmissiblePoint(p%width, p/width);
         terrainMesh->updateSelected(p, !admissiblePoints[p]);
+        setAdmissible(p%width, p/width, admissiblePoints[p]);
     }
     for(auto p : currentBuildingPoints)
     {
         recalcAdmissiblePoint(p%width, p/width);
         terrainMesh->updateSelected(p, !admissiblePoints[p]);
+        setAdmissible(p%width, p/width, admissiblePoints[p]);
     }
     buildingPoints = currentBuildingPoints;
 }
@@ -335,11 +335,9 @@ void Terrain::init()
     terrainModel->init();
     terrainModel->setScene(scene);
 
-    // Initialize the SSBO (in C++ OpenGL code)
-    glGenBuffers(1, &ssbo);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+    glGenBuffers(1, &fogBuffer);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, fogBuffer);
 
-    int numCells = width*height;
     std::vector<int> fogData(2+width*height, 1);
     fogOfWar = std::vector<int>(width*height, 1);
 
@@ -347,7 +345,22 @@ void Terrain::init()
     fogData[1] = height;
 
     glBufferData(GL_SHADER_STORAGE_BUFFER, fogData.size() * sizeof(int), fogData.data(), GL_STATIC_DRAW);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, fogBuffer);
+
+    glGenBuffers(1, &admissibleBuffer);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, admissibleBuffer);
+
+    std::vector<int> admissibleData(2+width*height, 1);
+
+    admissibleData[0] = width;
+    admissibleData[1] = height;
+
+    glBufferData(GL_SHADER_STORAGE_BUFFER, admissibleData.size() * sizeof(int), admissibleData.data(), GL_STATIC_DRAW);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, admissibleBuffer);
+
+    admissiblePoints = new bool[width*height];
+    std::fill(admissiblePoints, admissiblePoints + width*height, true);
+    calcAdmissiblePoints();
 }
 
 void Terrain::tearDown()
@@ -461,11 +474,19 @@ Terrain::DrawMode Terrain::getDrawMode() const
     return drawMode;
 }
 
+void Terrain::setAdmissible(int x, int y, bool b)
+{
+    int data = b;
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, admissibleBuffer);
+    glBufferSubData(GL_SHADER_STORAGE_BUFFER, sizeof(int)*(2+y*width+x), 4, &data);
+}
+
 void Terrain::setFog(int x, int y, bool b)
 {
     fogOfWar[y*width+x] = b;
     int data = b;
-    glBufferSubData(GL_SHADER_STORAGE_BUFFER, sizeof(int)*(2+y*width+x), 1, &data);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, fogBuffer);
+    glBufferSubData(GL_SHADER_STORAGE_BUFFER, sizeof(int)*(2+y*width+x), 4, &data);
 }
 
 bool Terrain::getFog(int x, int y) const

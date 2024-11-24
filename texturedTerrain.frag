@@ -24,6 +24,12 @@ uniform sampler2D texture1;
 uniform sampler2D texture2;
 uniform sampler2D texture3;
 
+layout(std430, binding = 0) buffer AdmissibleDataBuffer {
+    int width;
+    int height;
+    int admissibleData[];
+};
+
 vec4 hash4( vec2 p ) {
   return fract(
     sin(vec4(1.0+dot(p,vec2(37.0,17.0)), 
