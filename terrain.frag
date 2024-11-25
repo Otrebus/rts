@@ -19,6 +19,8 @@ flat in int selected;
 
 uniform bool flatShaded = false;
 
+real P = 0.1; // Area overflow of colored admissible areas
+
 
 layout(std430, binding = 0) buffer FogDataBuffer {
     int width;
@@ -31,6 +33,86 @@ layout(std430, binding = 1) buffer AdmissibleDataBuffer {
     int admissibleHeight;
     int admissibleData[];
 };
+
+bool getT(vec2 p)
+{
+    bool tr = (admissibleData[width*(y+1)+(x+1)]);
+    bool tl = (admissibleData[width*(y+1)+x]);
+    bool br = (admissibleData[width*y+x+1]);
+    bool bl = (admissibleData[width*y+x]);
+
+    bool u = tr && tl;
+    bool l = tl && bl;
+    bool r = tr && br;
+    bool d = bl && br;
+
+    bool b = false;
+
+    float y = frac(p.y);
+    float x = frac(p.x);
+
+    if(u && !d)
+    {
+        b = y > 1-r;
+    }
+    else if(d && !u)
+    {
+        return y < r;
+    }
+    else if(u && d)
+    {
+        return y < r && y > 1-r;
+    }
+    else if(l && !r)
+    {
+        return x < r;
+    }
+    else if(r && !l)
+    {
+        return x > 1-r;
+    }
+    else if(r && l)
+    {
+        return x > 1-r;
+    }
+    else if(tl && tr && bl)
+    {
+        return y > x + P*sqrt(2.0);
+    }
+    else if(tl && tr && br)
+    {
+        return y > 1-x + P*sqrt(2.0);
+    }
+    else if(tr && br && bl)
+    {
+        return y < x + P*sqrt(2.0);
+    }
+    else if(br && bl && tl)
+    {
+        return y < 1 - x + P*sqrt(2.0);
+    }
+    else if(tr && bl && tl && br)
+    {
+        return true;
+    }
+    else if(tr)
+    {
+        return distance(vec2(x, y), vec2(1, 1)) < P;
+    }
+    else if(tl)
+    {
+        return distance(vec2(x, y), vec2(0, 1)) < P;
+    }
+    else if(bl)
+    {
+        return distance(vec2(x, y), vec2(0, 0)) < P;
+    }
+    else if(br)
+    {
+        return distance(vec2(x, y), vec2(1, 0)) < P;
+    }
+    return false;
+}
 
 void main()
 {
@@ -61,13 +143,13 @@ void main()
     {
         int x = int(p.x);
         int y = int(p.y);
-        if(admissibleData[width*y+x] == 0 && distance(vec2(p.x, p.y), vec2(x, y)) < 0.1)
+        if(admissibleData[width*y+x] == 0 && distance(vec2(p.x, p.y), vec2(x, y)) < P)
             FragColor = vec4(0.8, 0, 0, 1)*(0.2+0.8*lambertian);
-        if(admissibleData[width*(y+1)+x] == 0 && distance(vec2(p.x, p.y), vec2(x, y+1)) < 0.1)
+        if(admissibleData[width*(y+1)+x] == 0 && distance(vec2(p.x, p.y), vec2(x, y+1)) < P)
             FragColor = vec4(0.8, 0, 0, 1)*(0.2+0.8*lambertian);
-        if(admissibleData[width*y+x+1] == 0 && distance(vec2(p.x, p.y), vec2(x+1, y)) < 0.1)
+        if(admissibleData[width*y+x+1] == 0 && distance(vec2(p.x, p.y), vec2(x+1, y)) < P)
             FragColor = vec4(0.8, 0, 0, 1)*(0.2+0.8*lambertian);
-        if(admissibleData[width*(y+1)+x+1] == 0 && distance(vec2(p.x, p.y), vec2(x+1, y+1)) < 0.1)
+        if(admissibleData[width*(y+1)+x+1] == 0 && distance(vec2(p.x, p.y), vec2(x+1, y+1)) < P)
             FragColor = vec4(0.8, 0, 0, 1)*(0.2+0.8*lambertian);
     }
 
