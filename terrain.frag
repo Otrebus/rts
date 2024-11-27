@@ -143,8 +143,16 @@ void main()
 //    if(flatShaded && selected > (1-1e-6))
 //        FragColor = vec4(0.8, 0, 0, 1)*(0.2+0.8*lambertian);
 
+    for(int i = 0; i < nLights; i++)
+    {
+        float d = distance(pointLights[i].position, position);
+  	    FragColor += vec4(pointLights[i].color, 1)/(0.1 + d*d);
+    }
+
     if(flatShaded)
     {
+        if(getT(p))
+            FragColor = vec4(0.8, 0, 0, 1);    
         int x = int(p.x);
         int y = int(p.y);
         if(admissibleData[width*y+x] == 0 && distance(vec2(p.x, p.y), vec2(x, y)) < P)
@@ -157,14 +165,5 @@ void main()
             FragColor = vec4(0.8, 0, 0, 1)*(0.2+0.8*lambertian);
     }
 
-    for(int i = 0; i < nLights; i++)
-    {
-        float d = distance(pointLights[i].position, position);
-  	    FragColor += vec4(pointLights[i].color, 1)/(0.1 + d*d);
-    }
-    if(getT(p))
-    {
-        FragColor = vec4(0.8, 0, 0, 1);
-    }
     FragColor.w = 1;
 }

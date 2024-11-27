@@ -141,7 +141,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\temp\gl3w\src\gl3w.c" />
     <ClCompile Include="BoundingBox.cpp" />
     <ClCompile Include="Building.cpp" />
     <ClCompile Include="BuildingPlacerMaterial.cpp" />
@@ -155,6 +154,7 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="FogOfWarMaterial.cpp" />
     <ClCompile Include="Font.cpp" />
+    <ClCompile Include="gl3w.c" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Primitives.cpp" />
     <ClCompile Include="ShapeDrawer.cpp" />

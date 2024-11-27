@@ -391,6 +391,10 @@ void Tank::update(real dt)
     {
         if(unit->isEnemy() != enemy && !unit->dead)
         {
+            // TODO: only works for friendly players, enemy tanks will track no matter what and get the jump
+            bool isInFog = scene->getTerrain()->getFog(unit->getGeoPosition().x, unit->getGeoPosition().y) && scene->getTerrain()->fogOfWarEnabled.var;
+            if(isInFog)
+                continue;
             if(auto d = (unit->getPosition() - pos).length(); d < closestD)
             {
                 closestD = d;

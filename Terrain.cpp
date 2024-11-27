@@ -14,6 +14,7 @@ ConsoleVariable Terrain::fogOfWarEnabled("fogOfWar", 1);
 Terrain::Terrain() : admissiblePoints(nullptr)
 {
     fowMaterial = new FogOfWarMaterial();
+    drawMode = Grid;
 }
 
 void Terrain::calcMinMax()
@@ -317,7 +318,7 @@ Vector3 Terrain::intersect(const Ray& ray, real maxT)
     return { inf, inf, inf };
 }
 
-Terrain::Terrain(const std::string& fileName, Scene* scene) : fileName(fileName), scene(scene)
+Terrain::Terrain(const std::string& fileName, Scene* scene) : fileName(fileName), scene(scene), drawMode(Grid)
 {
     init();
     pickedTriangle = -1;
