@@ -30,6 +30,7 @@ void main()
     sel = selected;
 
     vec4 nr;
-    nr = normalMatrix * vec4(aNorm.x, aNorm.y, aNorm.z, 0);
+    nr = normalMatrix*vec4(aNorm.x, aNorm.y, aNorm.z, 0);
+    nr = normalize(nr);
     normal = vec3(nr.x, nr.y, nr.z);
 }
