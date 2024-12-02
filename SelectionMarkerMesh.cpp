@@ -6,10 +6,11 @@
 #include "Terrain.h"
 
 
-SelectionMarkerMesh::SelectionMarkerMesh(Entity* tank)
+SelectionMarkerMesh::SelectionMarkerMesh(Entity* entity, int length, int width) : length(length), width(width)
 {
-    this->tank = tank;
+    this->entity = entity;
     int pass = 0;
+    circular = false;
 }
 
 
@@ -63,28 +64,34 @@ void SelectionMarkerMesh::draw(Material* mat)
 
 std::pair<std::vector<Vertex3>, std::vector<int>> SelectionMarkerMesh::calcVertices(Scene* scene)
 {
-    auto tankPos = tank->getPosition();
+    auto entityPos = entity->getPosition();
 
-    int xc = tankPos.x, yc = tankPos.y;
+    int xc = entityPos.x, yc = entityPos.y;
 
     std::vector<Vertex3> vs;
-    for(int y = yc-1; y < yc+3; y++)
+    for(int y = 0; y <= width; y++)
     {
-        for(int x = xc-1; x < xc+3; x++)
+        for(int x = 0; x <= length; x++)
         {
-            auto pos = scene->getTerrain()->getPoint(x, y);
+            int Y = y + yc-1;
+            int X = x + xc - 1;
+
+            auto pos = scene->getTerrain()->getPoint(X, Y);
             pos.z += 0.01;
-            vs.push_back({ pos.x, pos.y, pos.z, 0, 0, 1, real(x)-tankPos.x, real(y)-tankPos.y });
+            if(circular)
+                vs.push_back({ pos.x, pos.y, pos.z, 0, 0, 1, real(X)-entityPos.x, real(Y)-entityPos.y });
+            else
+                vs.push_back({ pos.x, pos.y, pos.z, 0, 0, 1, real(x), real(y) });
         }
     }
 
     std::vector<int> triangles;
 
-    for(int y = 0; y < 3; y++)
+    for(int y = 0; y < width; y++)
     {
-        for(int x = 0; x < 3; x++)
+        for(int x = 0; x < length; x++)
         {
-            int i1 = y*4+x, i2 = y*4+x+1, i3 = (y+1)*4+x+1, i4 = (y+1)*4 + x;
+            int i1 = y*(length+1)+x, i2 = y*(length+1)+x+1, i3 = (y+1)*(length+1)+x+1, i4 = (y+1)*(length+1) + x;
             triangles.insert(triangles.end(), { i1, i2, i3, i1, i3, i4 });
         }
     }
@@ -96,7 +103,7 @@ void SelectionMarkerMesh::init()
 {
     auto [vs, triangles] = calcVertices(scene);
 
-    auto material = new SelectionDecalMaterial({ 0, 0.8, 0.1 });
+    auto material = new SelectionDecalMaterial({ 0, 0.8, 0.1 }, length, width, circular);
 
     v = vs;
     this->triangles = triangles;
@@ -109,13 +116,13 @@ void SelectionMarkerMesh::init()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex3)*v.size(), v.data(), GL_STREAM_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6*sizeof(float)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(6*sizeof(float)));
     glEnableVertexAttribArray(2);
 
     glGenBuffers(1, &EBO);

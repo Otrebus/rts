@@ -10,8 +10,6 @@ class SelectionMarkerModel : public Model3d
 public:
     SelectionMarkerModel(Entity* tank);
 
-    std::pair<std::vector<Vertex3>, std::vector<int>> calcVertices(Scene* scene);
-
     void update();
 
     void init(Scene* scene);
