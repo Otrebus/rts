@@ -22,11 +22,8 @@ void SelectionDecalMaterial::updateUniforms(Scene* scene)
     glUniform1i(glGetUniformLocation(program->getId(), "length"), length);
     glUniform1i(glGetUniformLocation(program->getId(), "width"), width);
     glUniform1i(glGetUniformLocation(program->getId(), "circular"), int(circular));
-    GLuint kdLocation = glGetUniformLocation(program->getId(), "Kd");
-    glUniform3f(kdLocation, Kd.x, Kd.y, Kd.z);
-
-    GLuint alphaLocation = glGetUniformLocation(program->getId(), "alpha");
-    glUniform1f(alphaLocation, alpha);
+    glUniform3f(glGetUniformLocation(program->getId(), "Kd"), Kd.x, Kd.y, Kd.z);
+    glUniform1f(glGetUniformLocation(program->getId(), "alpha"), alpha);
 }
 
 Material* SelectionDecalMaterial::clone()

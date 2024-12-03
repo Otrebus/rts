@@ -54,9 +54,6 @@ void sizeCallback(GLFWwindow* window, int width, int height)
 
 int main()
 {
-    std::default_random_engine generator;
-    std::uniform_real_distribution<real> dist(0, 1.0f);
-
     if(!glfwInit())
     {
         printf("failed to initialize GLFW.\n");

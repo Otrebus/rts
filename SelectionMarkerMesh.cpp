@@ -21,11 +21,15 @@ void SelectionMarkerMesh::draw(Material* mat)
     auto program = s->getProgram(material->getShader(), getGeometryShader(), getVertexShader());
     scene->setShaderProgram(program);
     program->use();
+    
+    float radius = 1.0;
+    if(!circular)
+        radius = 1.0; // In this case it's the fraction of the full figure
 
     if(pass == 0)
     {
         ((SelectionDecalMaterial*)material)->alpha = 0.89;
-        SelectionDecalMaterial::radius = 0.90;
+        SelectionDecalMaterial::radius = radius - 0.1;
 
         glEnable(GL_BLEND);
         glEnable(GL_POLYGON_OFFSET_FILL);
@@ -34,7 +38,7 @@ void SelectionMarkerMesh::draw(Material* mat)
     else if(pass == 1)
     {
         ((SelectionDecalMaterial*)material)->alpha = 1.0;
-        SelectionDecalMaterial::radius = pre ? 0.95 : 1;
+        SelectionDecalMaterial::radius = pre ? (radius - 0.05) : radius;
 
         glEnable(GL_BLEND);
         glEnable(GL_POLYGON_OFFSET_FILL);
@@ -44,7 +48,7 @@ void SelectionMarkerMesh::draw(Material* mat)
     else if(pass == 2)
     {
         ((SelectionDecalMaterial*)material)->alpha = 1.0;
-        SelectionDecalMaterial::radius = 0.90;
+        SelectionDecalMaterial::radius = radius - 0.1;
 
         glEnable(GL_BLEND);
         glEnable(GL_POLYGON_OFFSET_FILL);
