@@ -18,7 +18,8 @@ Shader* SelectionDecalMaterial::getShader()
 void SelectionDecalMaterial::updateUniforms(Scene* scene)
 {
     auto program = scene->getShaderProgram();
-    glUniform1f(glGetUniformLocation(program->getId(), "radius"), radius);
+    glUniform1f(glGetUniformLocation(program->getId(), "radiusA"), radiusA);
+    glUniform1f(glGetUniformLocation(program->getId(), "radiusB"), radiusB);
     glUniform1i(glGetUniformLocation(program->getId(), "length"), length);
     glUniform1i(glGetUniformLocation(program->getId(), "width"), width);
     glUniform1i(glGetUniformLocation(program->getId(), "circular"), int(circular));
@@ -32,5 +33,6 @@ Material* SelectionDecalMaterial::clone()
 }
 
 Shader* SelectionDecalMaterial::fragmentShader = nullptr;
-real SelectionDecalMaterial::radius = 0;
+real SelectionDecalMaterial::radiusA = 0;
+real SelectionDecalMaterial::radiusB = 0;
 real SelectionDecalMaterial::alpha = 0;

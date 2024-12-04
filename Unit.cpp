@@ -49,7 +49,7 @@ void Unit::drawSelectionDecal(int pass)
 {
     if(selected || preSelected)
     {
-        selectionMarkerMesh->update();
+        selectionMarkerMesh->update(getGeoPosition());
         selectionMarkerMesh->pass = pass;
         if(isEnemy())
             ((SelectionDecalMaterial*)(selectionMarkerMesh->getMaterial()))->Kd = Vector3(0.8, 0, 0);

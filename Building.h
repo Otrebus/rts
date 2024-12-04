@@ -5,9 +5,9 @@
 #include "Utils.h"
 #include "Vector2.h"
 #include "Vector3.h"
-#include "Entity.h"
+#include "Unit.h"
 
-class Building : public Entity
+class Building : public Unit
 {
 public:
     Building(Vector3 pos, int length, int width, std::vector<int> footprint);
@@ -18,6 +18,8 @@ public:
     void draw(Material* mat);
     void update(real dt);
     static bool canBePlaced(int x, int y, int length, int width, Scene* scene);
+
+    Entity* spawnWreck();
 
     std::vector<int> footprint;
 

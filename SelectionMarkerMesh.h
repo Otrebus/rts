@@ -10,18 +10,17 @@ class Scene;
 class SelectionMarkerMesh : public Mesh3d
 {
 public:
-    SelectionMarkerMesh(Entity* entity, int width, int length);
+    SelectionMarkerMesh(int width, int length);
 
     void draw(Material* mat = nullptr);
-    void update();
+    void update(Vector2 pos);
 
     void setSelectionType(bool pre);
 
-    std::pair<std::vector<Vertex3>, std::vector<int>> calcVertices(Scene* scene);
-    void init();
+    std::pair<std::vector<Vertex3>, std::vector<int>> calcVertices(Vector2 pos);
+    void init(Vector2 pos);
 
     int pass;
-    Entity* entity;
     bool pre;
 
     int length, width;

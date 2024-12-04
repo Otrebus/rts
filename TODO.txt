@@ -119,6 +119,7 @@
   + Hiding invisible stuff properly
   + Have it affect decisions like shooting etc
   - Fix fog update when fogOfWar 0 sets back to 1
+- Make tank consts static
 - Make better admissible-terrain-visualizer
 - Combine init/constructor for meshes?
 - Command queuing

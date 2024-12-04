@@ -22,7 +22,8 @@ public:
     static Shader* fragmentShader;
     static GLint kdLoc;
 
-    static real radius;
+    static real radiusA;
+    static real radiusB;
     static real alpha;
 
     int length, width;

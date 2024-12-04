@@ -1,10 +1,19 @@
+#pragma once
+
 #include "Building.h"
 #include "Scene.h"
 #include "ShapeDrawer.h"
+#include "BoundingBox.h"
+#include "SelectionMarkerMesh.h"
 
 
-Building::Building(Vector3 pos, int length, int width, std::vector<int> footprint) : Entity(pos, { 0, 1, 0 }, { 0, 0, 1 }), length(length), width(width), footprint(footprint)
+Building::Building(Vector3 pos, int length, int width, std::vector<int> footprint) : Unit(pos, { 0, 1, 0 }, { 0, 0, 1 }), length(length), width(width), footprint(footprint)
 {
+    geoDir = dir.to2();
+    geoPos = pos.to2();
+    boundingBox = BoundingBox(Vector3(-real(length)/2, -real(width)/2, 0.0), Vector3(real(length)/2, real(width)/2, 2.0));
+
+    selectionMarkerMesh = new SelectionMarkerMesh(3, 3);
 }
 
 Building::~Building()
@@ -55,4 +64,10 @@ bool Building::canBePlaced(int posX, int posY, int length, int width, Scene* sce
             return false;
     }
     return true;
+}
+
+
+Entity* Building::spawnWreck()
+{
+    return nullptr;
 }

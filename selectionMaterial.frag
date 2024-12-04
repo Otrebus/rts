@@ -1,7 +1,8 @@
 #version 450 core
 
 uniform vec3 Kd;
-uniform float radius;
+uniform float radiusA;
+uniform float radiusB;
 uniform int pass;
 uniform float alpha;
 uniform int length, width, circular;
@@ -15,48 +16,51 @@ void main()
     if(circular == 1)
     {
         vec2 t = texCoord;
-        if(t.x*t.x + t.y*t.y < radius*radius)
+        if(t.x*t.x + t.y*t.y < radiusA*radiusA)
             FragColor = vec4(Kd, alpha);
         else
             discard;
     }
     else
     {
-        vec2 t = texCoord - vec2(float(length)/2, float(width)/2);
+        // TODO: I bet stuff like this would be simpler if we used some distance field approach
+        vec2 t = texCoord;
+        float L = float(length);
+        float W = float(width);
+        float R = 0.2;
+        float ir = 1.0-radiusA;
         
-        if(t.x < radius && t.y > width-radius)
+        if(t.x < -radiusA+R && t.y > radiusB-R)
         {
-            if(distance(vec2(t.x, t.y), vec2(radius, width-radius)) < radius)
+            if(distance(vec2(t.x, t.y), vec2(-radiusA+R, radiusB-R)) < R)
                 FragColor = vec4(Kd, alpha);
             else
                 discard;
         }
-        else if(t.x > length-radius && t.y > width-radius)
+        else if(t.x > radiusA-R && t.y > radiusB-R)
         {
-            if(distance(vec2(t.x, t.y), vec2(length-radius, width-radius)) < radius)
+            if(distance(vec2(t.x, t.y), vec2(radiusA-R, radiusB-R)) < R)
                 FragColor = vec4(Kd, alpha);
             else
                 discard;
         }
-        else if(t.x < radius && t.y < radius)
+        else if(t.x > radiusA-R && t.y < -radiusB+R)
         {
-            if(distance(vec2(t.x, t.y), vec2(radius, radius)) < radius)
+            if(distance(vec2(t.x, t.y), vec2(radiusA-R, -radiusB+R)) < R)
                 FragColor = vec4(Kd, alpha);
             else
                 discard;
         }
-        else if(t.x > length-radius && t.y < radius)
+        else if(t.x < -radiusA+R && t.y < -radiusB+R)
         {
-            if(distance(vec2(t.x, t.y), vec2(length-radius, radius)) < radius)
+            if(distance(vec2(t.x, t.y), vec2(-radiusA+R, -radiusB+R)) < R)
                 FragColor = vec4(Kd, alpha);
             else
                 discard;
         }
-        else if(t.x > radius && t.x < float(length)-radius && t.y > radius && t.y < float(width)-radius)
+        else if(t.x > -radiusA && t.x < radiusA && t.y > -radiusB && t.y < radiusB)
             FragColor = vec4(Kd, alpha);
         else
             discard;
     }
-    else
-        discard;
 }

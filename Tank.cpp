@@ -129,7 +129,7 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, d
 
     boundingBox = tankBoundingBox;
 
-    selectionMarkerMesh = new SelectionMarkerMesh(this, 3, 3);
+    selectionMarkerMesh = new SelectionMarkerMesh(1, 1);
 
     pathCalculationInterval = (500 + (rand() % 500))/1000.0f;
 
@@ -183,7 +183,7 @@ void Tank::init(Scene* scene)
     //enemyLine.setInFront(true);
 
     selectionMarkerMesh->setScene(scene);
-    selectionMarkerMesh->init();
+    selectionMarkerMesh->init(pos.to2());
 }
 
 void Tank::updateUniforms()

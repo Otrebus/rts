@@ -6,9 +6,8 @@
 #include "Terrain.h"
 
 
-SelectionMarkerMesh::SelectionMarkerMesh(Entity* entity, int length, int width) : length(length), width(width)
+SelectionMarkerMesh::SelectionMarkerMesh(int length, int width) : length(length), width(width)
 {
-    this->entity = entity;
     int pass = 0;
     circular = false;
 }
@@ -22,14 +21,18 @@ void SelectionMarkerMesh::draw(Material* mat)
     scene->setShaderProgram(program);
     program->use();
     
-    float radius = 1.0;
+    float radiusA = 1.0, radiusB = 1.0;
     if(!circular)
-        radius = 1.0; // In this case it's the fraction of the full figure
+    {
+        radiusA = length;
+        radiusB = width;
+    }
 
     if(pass == 0)
     {
         ((SelectionDecalMaterial*)material)->alpha = 0.89;
-        SelectionDecalMaterial::radius = radius - 0.1;
+        SelectionDecalMaterial::radiusA = radiusA - 0.1;
+        SelectionDecalMaterial::radiusB = radiusB - 0.1;
 
         glEnable(GL_BLEND);
         glEnable(GL_POLYGON_OFFSET_FILL);
@@ -38,7 +41,8 @@ void SelectionMarkerMesh::draw(Material* mat)
     else if(pass == 1)
     {
         ((SelectionDecalMaterial*)material)->alpha = 1.0;
-        SelectionDecalMaterial::radius = pre ? (radius - 0.05) : radius;
+        SelectionDecalMaterial::radiusA = pre ? (radiusA - 0.05) : radiusA;
+        SelectionDecalMaterial::radiusB = pre ? (radiusB - 0.05) : radiusB;
 
         glEnable(GL_BLEND);
         glEnable(GL_POLYGON_OFFSET_FILL);
@@ -48,7 +52,8 @@ void SelectionMarkerMesh::draw(Material* mat)
     else if(pass == 2)
     {
         ((SelectionDecalMaterial*)material)->alpha = 1.0;
-        SelectionDecalMaterial::radius = radius - 0.1;
+        SelectionDecalMaterial::radiusA = radiusA - 0.1;
+        SelectionDecalMaterial::radiusB = radiusB - 0.1;
 
         glEnable(GL_BLEND);
         glEnable(GL_POLYGON_OFFSET_FILL);
@@ -66,36 +71,37 @@ void SelectionMarkerMesh::draw(Material* mat)
 }
 
 
-std::pair<std::vector<Vertex3>, std::vector<int>> SelectionMarkerMesh::calcVertices(Scene* scene)
+std::pair<std::vector<Vertex3>, std::vector<int>> SelectionMarkerMesh::calcVertices(Vector2 pos)
 {
-    auto entityPos = entity->getPosition();
+    auto entityPos = pos;
 
-    int xc = entityPos.x, yc = entityPos.y;
+    int xc = pos.x, yc = pos.y;
 
     std::vector<Vertex3> vs;
-    for(int y = 0; y <= width; y++)
+
+    int W = width + 2;
+    int L = length + 2;
+
+    for(int y = 0; y <= W; y++)
     {
-        for(int x = 0; x <= length; x++)
+        for(int x = 0; x <= L; x++)
         {
-            int Y = y + yc-1;
+            int Y = y + yc - 1;
             int X = x + xc - 1;
 
             auto pos = scene->getTerrain()->getPoint(X, Y);
             pos.z += 0.01;
-            if(circular)
-                vs.push_back({ pos.x, pos.y, pos.z, 0, 0, 1, real(X)-entityPos.x, real(Y)-entityPos.y });
-            else
-                vs.push_back({ pos.x, pos.y, pos.z, 0, 0, 1, real(x), real(y) });
+            vs.push_back({ pos.x, pos.y, pos.z, 0, 0, 1, real(X)-entityPos.x, real(Y)-entityPos.y });
         }
     }
 
     std::vector<int> triangles;
 
-    for(int y = 0; y < width; y++)
+    for(int y = 0; y < W; y++)
     {
-        for(int x = 0; x < length; x++)
+        for(int x = 0; x < L; x++)
         {
-            int i1 = y*(length+1)+x, i2 = y*(length+1)+x+1, i3 = (y+1)*(length+1)+x+1, i4 = (y+1)*(length+1) + x;
+            int i1 = y*(L+1)+x, i2 = y*(L+1)+x+1, i3 = (y+1)*(L+1)+x+1, i4 = (y+1)*(L+1) + x;
             triangles.insert(triangles.end(), { i1, i2, i3, i1, i3, i4 });
         }
     }
@@ -103,11 +109,11 @@ std::pair<std::vector<Vertex3>, std::vector<int>> SelectionMarkerMesh::calcVerti
 }
 
 
-void SelectionMarkerMesh::init()
+void SelectionMarkerMesh::init(Vector2 pos)
 {
-    auto [vs, triangles] = calcVertices(scene);
+    auto [vs, triangles] = calcVertices(pos);
 
-    auto material = new SelectionDecalMaterial({ 0, 0.8, 0.1 }, length, width, circular);
+    auto material = new SelectionDecalMaterial({ 0, 0.8, 0.1 }, length+2, width+2, circular);
 
     v = vs;
     this->triangles = triangles;
@@ -135,9 +141,9 @@ void SelectionMarkerMesh::init()
 }
 
 
-void SelectionMarkerMesh::update()
+void SelectionMarkerMesh::update(Vector2 pos)
 {
-    auto [vs, triangles] = calcVertices(scene);
+    auto [vs, triangles] = calcVertices(pos);
     v = vs;
 
     glBindVertexArray(VAO);

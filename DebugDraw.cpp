@@ -240,7 +240,7 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
 
         checkError();
 
-        SelectionDecalMaterial::radius = 0.15;
+        SelectionDecalMaterial::radiusA = 0.15;
         int i = 1;
 
         glEnable(GL_BLEND);
@@ -261,7 +261,7 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
         glBlendFuncSeparate(GL_ONE, GL_ZERO, GL_ZERO, GL_ONE);
         i = 0;
 
-        SelectionDecalMaterial::radius = 0.17;
+        SelectionDecalMaterial::radiusA = 0.17;
         for(auto& decal : decals)
         {
             glPolygonOffset(-1.0, -1.0);
