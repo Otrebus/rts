@@ -445,7 +445,10 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
                     1, 1, 1, 1,
                     1, 1, 1, 1
                 };
-                scene->addEntity(new Building(Vector3(int(pos.x), int(pos.y), pos.z), 3, 4, footprint));
+                auto building = new Building(Vector3(int(pos.x), int(pos.y), pos.z), 3, 4, footprint);
+                building->init(*scene);
+
+                scene->addEntity(building);
             }
             else
             {

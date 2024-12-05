@@ -29,17 +29,22 @@ void Building::draw(Material* mat = nullptr)
     //ShapeDrawer::drawBox(Vector3(int(pos.x), pos.y, pos.z) + Vector3(real(length)/2, real(width)/2, real(height)/2), Vector3(1, 0, 0), length, width, height, Vector3(0.7, 0.7, 0.7));
 
     // TODO: flip L and W
-    ShapeDrawer::drawBox(Vector3(int(pos.x), pos.y, pos.z) + Vector3(length - real(W)/2, real(width)/2, real(height)*2.0/3/2), Vector3(1, 0, 0), W, width, height*2.0/3, Vector3(0.7, 0.7, 0.7));
-    ShapeDrawer::drawBox(Vector3(int(pos.x), pos.y, pos.z) + Vector3(real(length)/2, width - real(L)/2, real(height)/2), Vector3(1, 0, 0), length-W*2, L, height, Vector3(0.7, 0.7, 0.7));
-    ShapeDrawer::drawBox(Vector3(int(pos.x), pos.y, pos.z) + Vector3(real(W)/2, real(width)/2, real(height)*2.0/3/2), Vector3(1, 0, 0), W, width, height*2.0/3, Vector3(0.7, 0.7, 0.7));
+    ShapeDrawer::drawBox(Vector3(int(pos.x), pos.y, pos.z - real(height)/2) + Vector3(length - real(W)/2, real(width)/2, real(height)*2.0/3/2), Vector3(1, 0, 0), W, width, height*2.0/3, Vector3(0.7, 0.7, 0.7));
+    ShapeDrawer::drawBox(Vector3(int(pos.x), pos.y, pos.z - real(height)/2) + Vector3(real(length)/2, width - real(L)/2, real(height)/2), Vector3(1, 0, 0), length-W*2, L, height, Vector3(0.7, 0.7, 0.7));
+    ShapeDrawer::drawBox(Vector3(int(pos.x), pos.y, pos.z - real(height)/2) + Vector3(real(W)/2, real(width)/2, real(height)*2.0/3/2), Vector3(1, 0, 0), W, width, height*2.0/3, Vector3(0.7, 0.7, 0.7));
 }
 
+void Building::init(Scene& scene)
+{
+    this->setScene(&scene);
+    selectionMarkerMesh->setScene(&scene);
+    selectionMarkerMesh->init(pos.to2());
+}
 
 void Building::update(real dt)
 {
-    geoPos = pos.to2();
+    //geoPos = pos.to2();
 }
-
 
 bool Building::buildingWithin(int posX, int posY, int length, int width)
 {

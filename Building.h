@@ -7,6 +7,10 @@
 #include "Vector3.h"
 #include "Unit.h"
 
+
+class Scene;
+
+
 class Building : public Unit
 {
 public:
@@ -17,6 +21,7 @@ public:
     bool pointWithinFootprint(int posX, int posY);
     void draw(Material* mat);
     void update(real dt);
+    void init(Scene& scene);
     static bool canBePlaced(int x, int y, int length, int width, Scene* scene);
 
     Entity* spawnWreck();
