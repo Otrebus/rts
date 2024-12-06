@@ -13,7 +13,7 @@ Building::Building(Vector3 pos, int length, int width, std::vector<int> footprin
     geoPos = pos.to2();
     boundingBox = BoundingBox(Vector3(-real(length)/2, -real(width)/2, 0.0), Vector3(real(length)/2, real(width)/2, 2.0));
 
-    selectionMarkerMesh = new SelectionMarkerMesh(3, 3);
+    selectionMarkerMesh = new SelectionMarkerMesh(length, width, false);
 }
 
 Building::~Building()
@@ -38,12 +38,13 @@ void Building::init(Scene& scene)
 {
     this->setScene(&scene);
     selectionMarkerMesh->setScene(&scene);
-    selectionMarkerMesh->init(pos.to2());
+    selectionMarkerMesh->init(pos.to2() + Vector2(real(length)/2, real(width)/2));
 }
 
 void Building::update(real dt)
 {
     //geoPos = pos.to2();
+    selectionMarkerMesh->update(pos.to2() + Vector2(real(length)/2, real(width)/2));
 }
 
 bool Building::buildingWithin(int posX, int posY, int length, int width)

@@ -146,7 +146,7 @@ void Scene::moveEntitiesSoft(real dt, int depth, std::unordered_set<Entity*>& gl
 
     for(auto entity : entities)
     { 
-        if(!dynamic_cast<Unit*>(entity))
+        if(!dynamic_cast<Unit*>(entity) || dynamic_cast<Building*>(entity)) // TODO: bad pattern
             continue;
 
         auto t = minT < inf ? minT : dt;
@@ -184,7 +184,7 @@ void Scene::moveEntities(real dt)
 
     for(auto entity : entities)
     { 
-        if(!dynamic_cast<Unit*>(entity))
+        if(!dynamic_cast<Unit*>(entity) || dynamic_cast<Building*>(entity)) // TODO: bad pattern
             continue;
 
         auto t = dt;

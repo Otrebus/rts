@@ -129,7 +129,7 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, d
 
     boundingBox = tankBoundingBox;
 
-    selectionMarkerMesh = new SelectionMarkerMesh(1, 1);
+    selectionMarkerMesh = new SelectionMarkerMesh(1, 1, true);
 
     pathCalculationInterval = (500 + (rand() % 500))/1000.0f;
 

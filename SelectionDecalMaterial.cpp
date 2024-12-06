@@ -1,6 +1,6 @@
 #include "SelectionDecalMaterial.h"
 
-SelectionDecalMaterial::SelectionDecalMaterial(Vector3 Kd, int length, int width, bool circular) : Kd(Kd), length(length), width(width), circular(circular)
+SelectionDecalMaterial::SelectionDecalMaterial(Vector3 Kd, bool circular) : Kd(Kd), circular(circular)
 {
     if(!fragmentShader)
         fragmentShader = new Shader("selectionMaterial.frag", GL_FRAGMENT_SHADER);
@@ -20,8 +20,6 @@ void SelectionDecalMaterial::updateUniforms(Scene* scene)
     auto program = scene->getShaderProgram();
     glUniform1f(glGetUniformLocation(program->getId(), "radiusA"), radiusA);
     glUniform1f(glGetUniformLocation(program->getId(), "radiusB"), radiusB);
-    glUniform1i(glGetUniformLocation(program->getId(), "length"), length);
-    glUniform1i(glGetUniformLocation(program->getId(), "width"), width);
     glUniform1i(glGetUniformLocation(program->getId(), "circular"), int(circular));
     glUniform3f(glGetUniformLocation(program->getId(), "Kd"), Kd.x, Kd.y, Kd.z);
     glUniform1f(glGetUniformLocation(program->getId(), "alpha"), alpha);

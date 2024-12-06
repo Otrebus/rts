@@ -25,8 +25,6 @@ void main()
     {
         // TODO: I bet stuff like this would be simpler if we used some distance field approach
         vec2 t = texCoord;
-        float L = float(length);
-        float W = float(width);
         float R = 0.2;
         float ir = 1.0-radiusA;
         

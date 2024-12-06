@@ -10,7 +10,7 @@ class Scene;
 class SelectionMarkerMesh : public Mesh3d
 {
 public:
-    SelectionMarkerMesh(int width, int length);
+    SelectionMarkerMesh(int width, int length, bool circular);
 
     void draw(Material* mat = nullptr);
     void update(Vector2 pos);
