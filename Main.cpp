@@ -123,8 +123,6 @@ int main()
 
     Tank::loadModels();
     TankWreck::loadModels();
-    
-    Font font(scene, "Roboto-Bold.ttf");
 
     //scene.addUnit(new Tank({ 180.480316, 99.7414932, 15.0 }, { 1, 0, 0 }, { 0, 0, 1}, &terrain));
 
@@ -356,9 +354,7 @@ int main()
         glBindVertexArray(0);
         glDepthMask(GL_TRUE);
 
-        avgFps = ((9*avgFps + 1/dt))/10;
-
-        font.draw(scene, realToString(avgFps, 3), { 0.952, 0.98 }, 0.035, Vector3(0.2, 0.9, 0.2));
+        interface.update(dt);
         interface.draw();
         cameraControl.update(dt);
         glfwSwapBuffers(window);

@@ -2,6 +2,7 @@
 
 #include "Ray.h"
 #include "Console.h"
+#include "Font.h"
 
 class BuildingPlacerMesh;
 class Input;
@@ -44,6 +45,8 @@ public:
 
     void setCursor(int shape);
 
+    void update(real dt);
+
     void moveDrawnUnits(const std::vector<Unit*>& selectedUnits);
 
 //private:
@@ -74,4 +77,12 @@ public:
     Ray intersectRay;
     GLFWcursor* cursor;
     GLFWwindow* window;
+
+    Font* font;
+
+    real fps;
+    Vector2 mouseGeoCoords;
+
+    static ConsoleVariable showFps;
+    static ConsoleVariable showCoordinates;
 };

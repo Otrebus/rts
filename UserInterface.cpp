@@ -12,10 +12,12 @@
 #include <numeric>
 #include <random>
 #include <ranges>
+#include <format>
 #include "LambertianMaterial.h"
 #include "BuildingPlacerMesh.h"
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
+#include "Font.h"
 
 UserInterface::UserInterface(GLFWwindow* window, Scene* scene, CameraControl* cameraControl) : scene(scene), cameraControl(cameraControl), cursor(nullptr), window(window), lastClickedUnit(nullptr)
 {
@@ -29,6 +31,8 @@ UserInterface::UserInterface(GLFWwindow* window, Scene* scene, CameraControl* ca
     showConsole = false;
     console = new Console(scene);
     console->init();
+    font = new Font(*scene, "Roboto-Bold.ttf");
+    fps = -1;
 }
 
 
@@ -510,6 +514,13 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
 
         if(selectState == Clicking && (drawBoxc1-drawBoxc2).length() > 0.02 && buildingPlacingState != PlacingBuilding)
             selectState = DrawingBox;
+
+        if(showCoordinates.var)
+        {
+            auto coords = drawBoxc2;
+            auto ray = scene->getCamera()->getViewRay(coords.x, coords.y);
+            mouseGeoCoords = scene->getTerrain()->intersect(ray).to2();
+        }
     }
     else if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_2)
     {
@@ -609,8 +620,23 @@ void UserInterface::setResolution(int xres, int yres)
 }
 
 
+void UserInterface::update(real dt)
+{
+    fps = fps == -1 ? dt : ((9*fps + 1/dt))/10;
+}
+
+
 void UserInterface::draw()
 {
+    if(showFps.var)
+        font->draw(*scene, realToString(fps, 3), { 0.952, 0.98 }, 0.035, Vector3(0.2, 0.9, 0.2));
+
+    if(showCoordinates.var)
+    {
+        std::stringstream ss;
+        font->draw(*scene, std::format("({:.2f}, {:.2f})", mouseGeoCoords.x, mouseGeoCoords.y), { 0.852, -0.95 }, 0.035, Vector3(0.2, 0.9, 0.2));
+    }
+
     GLint depthFunc;
     glGetIntegerv(GL_DEPTH_FUNC, &depthFunc);
 
@@ -662,3 +688,6 @@ void UserInterface::setCursor(int shape)
     cursor = glfwCreateStandardCursor(shape);
     glfwSetCursor(window, cursor);
 }
+
+ConsoleVariable UserInterface::showFps("showFps", 1);
+ConsoleVariable UserInterface::showCoordinates("showCoordinates", 1);
