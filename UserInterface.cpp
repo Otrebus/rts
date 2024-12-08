@@ -449,7 +449,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
                     1, 1, 1, 1,
                     1, 1, 1, 1
                 };
-                auto building = new Building(Vector3(int(pos.x), int(pos.y), pos.z), 3, 4, footprint);
+                auto building = new Building(int(pos.x), int(pos.y), 3, 4, footprint);
                 building->init(*scene);
 
                 scene->addEntity(building);
@@ -632,10 +632,7 @@ void UserInterface::draw()
         font->draw(*scene, realToString(fps, 3), { 0.952, 0.98 }, 0.035, Vector3(0.2, 0.9, 0.2));
 
     if(showCoordinates.var)
-    {
-        std::stringstream ss;
         font->draw(*scene, std::format("({:.2f}, {:.2f})", mouseGeoCoords.x, mouseGeoCoords.y), { 0.852, -0.95 }, 0.035, Vector3(0.2, 0.9, 0.2));
-    }
 
     GLint depthFunc;
     glGetIntegerv(GL_DEPTH_FUNC, &depthFunc);

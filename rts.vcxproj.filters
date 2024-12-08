@@ -109,9 +109,6 @@
     <ClCompile Include="SelectionMarkerMesh.cpp">
       <Filter>Source files\Entities\Models</Filter>
     </ClCompile>
-    <ClCompile Include="SelectionMarkerModel.cpp">
-      <Filter>Source files\Entities\Models</Filter>
-    </ClCompile>
     <ClCompile Include="Line.cpp">
       <Filter>Source files\Entities\Models</Filter>
     </ClCompile>
@@ -284,9 +281,6 @@
       <Filter>Source files\Entities\Models</Filter>
     </ClInclude>
     <ClInclude Include="Vertex3d.h">
-      <Filter>Source files\Entities\Models</Filter>
-    </ClInclude>
-    <ClInclude Include="SelectionMarkerModel.h">
       <Filter>Source files\Entities\Models</Filter>
     </ClInclude>
     <ClInclude Include="SelectionMarkerMesh.h">

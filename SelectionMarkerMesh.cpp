@@ -6,7 +6,7 @@
 #include "Terrain.h"
 
 
-SelectionMarkerMesh::SelectionMarkerMesh(int length, int width, bool circular = false) : length(length), width(width), circular(circular)
+SelectionMarkerMesh::SelectionMarkerMesh(real length, real width, bool circular = false) : length(length), width(width), circular(circular)
 {
     int pass = 0;
 }
@@ -23,8 +23,8 @@ void SelectionMarkerMesh::draw(Material* mat)
     float radiusA = 1.0, radiusB = 1.0;
     if(!circular)
     {
-        radiusA = real(length)/2;
-        radiusB = real(width)/2;
+        radiusA = 0.2 + real(length)/2;
+        radiusB = 0.2 + real(width)/2;
     }
 
     if(pass == 0)
@@ -79,23 +79,15 @@ std::pair<std::vector<Vertex3>, std::vector<int>> SelectionMarkerMesh::calcVerti
     std::vector<Vertex3> vs;
 
     int W, L;
-    if(!circular)
-    {
-        W = width + 2;
-        L = length + 2;
-    }
-    else
-    {
-        W = width*2+1;
-        L = length*2+1;
-    }
+    W = width + 2;
+    L = length + 2;
 
     for(int y = 0; y <= W; y++)
     {
         for(int x = 0; x <= L; x++)
         {
-            int Y = y + yc - 1;
-            int X = x + xc - 1;
+            int Y = y + pos.y - real(width)/2;
+            int X = x + pos.x - real(length)/2;
 
             auto pos = scene->getTerrain()->getPoint(X, Y);
             pos.z += 0.01;

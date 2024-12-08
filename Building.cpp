@@ -5,15 +5,18 @@
 #include "ShapeDrawer.h"
 #include "BoundingBox.h"
 #include "SelectionMarkerMesh.h"
+#include "Terrain.h"
 
 
-Building::Building(Vector3 pos, int length, int width, std::vector<int> footprint) : Unit(pos, { 0, 1, 0 }, { 0, 0, 1 }), length(length), width(width), footprint(footprint)
+Building::Building(int x, int y, int length, int width, std::vector<int> footprint) : Unit(pos, { 1, 0, 0 }, { 0, 0, 1 }), length(length), width(width), footprint(footprint)
 {
+    real height = 2.0;
     geoDir = dir.to2();
+    pos = Vector3(x+real(length)/2, y+real(width)/2, 0);
     geoPos = pos.to2();
-    boundingBox = BoundingBox(Vector3(-real(length)/2, -real(width)/2, 0.0), Vector3(real(length)/2, real(width)/2, 2.0));
+    boundingBox = BoundingBox(Vector3(-real(length)/2, -real(width)/2, -real(height)/2), Vector3(real(length)/2, real(width)/2, real(height)/2));
 
-    selectionMarkerMesh = new SelectionMarkerMesh(length, width, false);
+    selectionMarkerMesh = new SelectionMarkerMesh(length+0.2, width+0.2, false);
 }
 
 Building::~Building()
@@ -29,22 +32,56 @@ void Building::draw(Material* mat = nullptr)
     //ShapeDrawer::drawBox(Vector3(int(pos.x), pos.y, pos.z) + Vector3(real(length)/2, real(width)/2, real(height)/2), Vector3(1, 0, 0), length, width, height, Vector3(0.7, 0.7, 0.7));
 
     // TODO: flip L and W
-    ShapeDrawer::drawBox(Vector3(int(pos.x), pos.y, pos.z - real(height)/2) + Vector3(length - real(W)/2, real(width)/2, real(height)*2.0/3/2), Vector3(1, 0, 0), W, width, height*2.0/3, Vector3(0.7, 0.7, 0.7));
-    ShapeDrawer::drawBox(Vector3(int(pos.x), pos.y, pos.z - real(height)/2) + Vector3(real(length)/2, width - real(L)/2, real(height)/2), Vector3(1, 0, 0), length-W*2, L, height, Vector3(0.7, 0.7, 0.7));
-    ShapeDrawer::drawBox(Vector3(int(pos.x), pos.y, pos.z - real(height)/2) + Vector3(real(W)/2, real(width)/2, real(height)*2.0/3/2), Vector3(1, 0, 0), W, width, height*2.0/3, Vector3(0.7, 0.7, 0.7));
+    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(-real(W)/2+real(length)/2, 0, -real(height)/6), Vector3(1, 0, 0), W, width, height*2.0/3, Vector3(0.7, 0.7, 0.7));
+    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(real(W)/2-real(length)/2, 0, -real(height)/6), Vector3(1, 0, 0), W, width, height*2.0/3, Vector3(0.7, 0.7, 0.7));
+
+    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(0, real(width/2) - real(L)/2, 0), Vector3(1, 0, 0), length-W*2, L, height, Vector3(0.7, 0.7, 0.7));
+    //ShapeDrawer::drawBox(Vector3(real(pos.x), real(pos.y), real(pos.z)), Vector3(1, 0, 0), length, width, height, Vector3(0.7, 0.7, 0.7));
+}
+
+void Building::plant(const Terrain& terrain)
+{
+    auto x = Vector3(geoDir.x, geoDir.y, 0).normalized();
+    auto y = Vector3(-geoDir.y, geoDir.x, 0).normalized();
+    auto z = Vector3(0, 0, 1).normalized();
+
+    auto height = (boundingBox.c2.z-boundingBox.c1.z)/2;
+    auto length = (boundingBox.c2.x-boundingBox.c1.x)/2;
+    auto width = (boundingBox.c2.y-boundingBox.c1.y)/2;
+
+    auto a = geoPos.to3() + x*length + y*width;
+    auto b = geoPos.to3() - x*length + y*width;
+    auto c = geoPos.to3() - x*length - y*width;
+    auto d = geoPos.to3() + x*length - y*width;
+
+    auto ah = terrain.getElevation(a.x, a.y);
+    auto bh = terrain.getElevation(b.x, b.y);
+    auto ch = terrain.getElevation(c.x, c.y);
+    auto dh = terrain.getElevation(d.x, d.y);
+
+    Vector3 A = Vector3(a.x, a.y, ah);
+    Vector3 B = Vector3(b.x, b.y, bh);
+    Vector3 C = Vector3(c.x, c.y, ch);
+    Vector3 D = Vector3(d.x, d.y, dh);
+
+    pos = Vector3(geoPos.x, geoPos.y, ((A+B+C+D)/4.f).z + real(height)/2);
+    setPosition(pos);
+    setDirection(dir.normalized(), up.normalized());
 }
 
 void Building::init(Scene& scene)
 {
     this->setScene(&scene);
     selectionMarkerMesh->setScene(&scene);
-    selectionMarkerMesh->init(pos.to2() + Vector2(real(length)/2, real(width)/2));
+    selectionMarkerMesh->init(pos.to2());
+    plant(*scene.getTerrain());
 }
 
 void Building::update(real dt)
 {
     //geoPos = pos.to2();
-    selectionMarkerMesh->update(pos.to2() + Vector2(real(length)/2, real(width)/2));
+    std::cout << pos << std::endl;
+    selectionMarkerMesh->update(pos.to2());
 }
 
 bool Building::buildingWithin(int posX, int posY, int length, int width)

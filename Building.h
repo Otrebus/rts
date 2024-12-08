@@ -14,13 +14,14 @@ class Scene;
 class Building : public Unit
 {
 public:
-    Building(Vector3 pos, int length, int width, std::vector<int> footprint);
+    Building(int x, int y, int length, int width, std::vector<int> footprint);
     virtual ~Building();
 
     bool buildingWithin(int posX, int posY, int length, int width);
     bool pointWithinFootprint(int posX, int posY);
     void draw(Material* mat);
     void update(real dt);
+    void plant(const Terrain& terrain);
     void init(Scene& scene);
     static bool canBePlaced(int x, int y, int length, int width, Scene* scene);
 
