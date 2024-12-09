@@ -94,7 +94,7 @@ bool Building::buildingWithin(int posX, int posY, int length, int width)
 
 bool Building::pointWithinFootprint(int posX, int posY)
 {
-    int x = posX - pos.x, y = posY - pos.y;
+    int x = posX - pos.x + real(length)/2, y = posY - pos.y + real(width)/2;
     return x >= 0 && x <= length && y >= 0 && y <= width && footprint[y*(length+1)+x];
 }
 

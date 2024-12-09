@@ -191,7 +191,7 @@ void Terrain::updateAdmissiblePoints()
         {
             for(int x = 0; x <= building->length; x++)
             {
-                int X = building->pos.x + x, Y = building->pos.y + y;
+                int X = building->pos.x + x - real(building->length)/2, Y = building->pos.y + y - real(building->width)/2;
                 currentBuildingPoints.insert(Y*width+X);
             }
         }
