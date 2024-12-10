@@ -84,10 +84,12 @@ void Building::update(real dt)
     selectionMarkerMesh->update(pos.to2());
 }
 
-bool Building::buildingWithin(int posX, int posY, int length, int width)
+bool Building::buildingWithin(real posX, real posY, int length, int width)
 {
-    bool withinX = pos.x < posX + length && pos.x + length > posX;
-    bool withinY = pos.y < posY + width && pos.y + width > posY;
+    //bool withinX = pos.x - real(this->length)/2 < posX + real(length)/2 && pos.x + real(this->length)/2 > posX - real(length)/2;
+    //bool withinY = pos.y - real(this->width)/2 < posY + real(width)/2 && pos.y + real(this->width)/2 > posY - real(width)/2;
+    bool withinX = 2*pos.x - this->length < 2*posX + length && 2*pos.x + this->length > 2*posX - length;
+    bool withinY = 2*pos.y - this->width < 2*posY + width && 2*pos.y + this->width > 2*posY - width;
     return withinX && withinY;
 }
 
@@ -99,7 +101,7 @@ bool Building::pointWithinFootprint(int posX, int posY)
 }
 
 
-bool Building::canBePlaced(int posX, int posY, int length, int width, Scene* scene)
+bool Building::canBePlaced(real posX, real posY, int length, int width, Scene* scene)
 {
     for(auto building : scene->getBuildings())
     {
