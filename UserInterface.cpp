@@ -409,7 +409,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
         auto [px, py] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
 
         auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
-        buildingPlacerMesh->update(pos.x, pos.y, Building::canBePlaced(pos.x, pos.y, 3, 4, scene));
+        buildingPlacerMesh->update(pos.x, pos.y, Building::canBePlaced(int(pos.x) + 3.0/2, int(pos.y) + 4.0/2, 3, 4, scene));
     }
 
     if(input.key == GLFW_KEY_LEFT_SHIFT)
@@ -440,7 +440,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
         {
             auto [px, py] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
             auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
-            if(Building::canBePlaced(pos.x, pos.y, 3, 4, scene))
+            if(Building::canBePlaced(int(pos.x) + 3.0/2, int(pos.y) + 4.0/2, 3, 4, scene))
             {
                 auto building = new Building(int(pos.x), int(pos.y), 3, 4);
                 building->init(*scene);
@@ -451,7 +451,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
             {
                 for(auto building : scene->getBuildings())
                 {
-                    if(building->buildingWithin(int(pos.x), int(pos.y), 3, 4))
+                    if(building->buildingWithin(int(pos.x) + 3.0/2, int(pos.y) + 4.0/2, 3, 4))
                     {
                         scene->removeEntity(building);
                     }

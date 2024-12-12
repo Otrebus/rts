@@ -17,13 +17,13 @@ public:
     Building(int x, int y, int length, int width);
     virtual ~Building();
 
-    bool buildingWithin(int posX, int posY, int length, int width);
+    bool buildingWithin(real posX, real posY, int length, int width);
     bool pointWithinFootprint(int posX, int posY);
     void draw(Material* mat);
     void update(real dt);
     void plant(const Terrain& terrain);
     void init(Scene& scene);
-    static bool canBePlaced(int x, int y, int length, int width, Scene* scene);
+    static bool canBePlaced(real x, real y, int length, int width, Scene* scene);
 
     static real getAverageElevation(const Terrain& terrain, Vector2 geoPos, Vector2 geoDir);
 
