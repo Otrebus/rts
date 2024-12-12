@@ -8,7 +8,7 @@
 #include "Terrain.h"
 
 
-Building::Building(int x, int y, int length, int width) : Unit(pos, { 1, 0, 0 }, { 0, 0, 1 }), length(length), width(width)
+Building::Building(int x, int y, int length, int width, std::vector<int> footprint) : Unit(pos, { 1, 0, 0 }, { 0, 0, 1 }), length(length), width(width), footprint(footprint)
 {
     real height = 2.0;
     geoDir = dir.to2();
@@ -39,7 +39,7 @@ void Building::draw(Material* mat = nullptr)
     //ShapeDrawer::drawBox(Vector3(real(pos.x), real(pos.y), real(pos.z)), Vector3(1, 0, 0), length, width, height, Vector3(0.7, 0.7, 0.7));
 }
 
-real Building::getAverageElevation(const Terrain& terrain, Vector2 geoPos, Vector2 geoDir)
+real Building::getAverageElevation(const Terrain& terrain)
 {
     auto x = Vector3(geoDir.x, geoDir.y, 0).normalized();
     auto y = Vector3(-geoDir.y, geoDir.x, 0).normalized();
@@ -70,7 +70,7 @@ real Building::getAverageElevation(const Terrain& terrain, Vector2 geoPos, Vecto
 
 void Building::plant(const Terrain& terrain)
 {
-    auto h = getAverageElevation(terrain, geoPos, geoDir);
+    auto h = getAverageElevation(terrain);
     pos = Vector3(geoPos.x, geoPos.y, h);
     setPosition(pos);
     setDirection(dir.normalized(), up.normalized());
@@ -117,7 +117,7 @@ bool Building::canBePlaced(real posX, real posY, int length, int width, Scene* s
             return false;
     }
 
-    auto h = Building::getAverageElevation(*terrain, Vector2(posX+real(length)/2, posY+real(width)/2), Vector2(1, 0));
+    auto h = Building::getAverageElevation(*terrain);
     auto fp = Building::footprint;
         
     for(auto p : fp)
@@ -138,11 +138,3 @@ Entity* Building::spawnWreck()
 {
     return nullptr;
 }
-
-std::vector<int> Building::footprint = {
-    1, 0, 0, 1,
-    1, 0, 0, 1,
-    1, 0, 0, 1,
-    1, 1, 1, 1,
-    1, 1, 1, 1
-};

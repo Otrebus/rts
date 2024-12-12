@@ -409,7 +409,17 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
         auto [px, py] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
 
         auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
-        buildingPlacerMesh->update(pos.x, pos.y, Building::canBePlaced(int(pos.x) + 3.0/2, int(pos.y) + 4.0/2, 3, 4, scene));
+
+        std::vector<int> footprint = {
+            1, 0, 0, 1,
+            1, 0, 0, 1,
+            1, 0, 0, 1,
+            1, 1, 1, 1,
+            1, 1, 1, 1
+        };
+        auto building = new Building(int(pos.x), int(pos.y), 3, 4, footprint);
+        buildingPlacerMesh->update(pos.x, pos.y, building->canBePlaced(int(pos.x) + 3.0/2, int(pos.y) + 4.0/2, 3, 4, scene));
+        delete building;
     }
 
     if(input.key == GLFW_KEY_LEFT_SHIFT)
@@ -440,15 +450,23 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
         {
             auto [px, py] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
             auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
-            if(Building::canBePlaced(int(pos.x) + 3.0/2, int(pos.y) + 4.0/2, 3, 4, scene))
+            std::vector<int> footprint = {
+                    1, 0, 0, 1,
+                    1, 0, 0, 1,
+                    1, 0, 0, 1,
+                    1, 1, 1, 1,
+                    1, 1, 1, 1
+                };
+            auto building = new Building(int(pos.x), int(pos.y), 3, 4, footprint);
+            if(building->canBePlaced(int(pos.x) + 3.0/2, int(pos.y) + 4.0/2, 3, 4, scene))
             {
-                auto building = new Building(int(pos.x), int(pos.y), 3, 4);
                 building->init(*scene);
 
                 scene->addEntity(building);
             }
             else
             {
+                delete building;
                 for(auto building : scene->getBuildings())
                 {
                     if(building->buildingWithin(int(pos.x) + 3.0/2, int(pos.y) + 4.0/2, 3, 4))
