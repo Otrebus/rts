@@ -14,7 +14,7 @@ class Scene;
 class Building : public Unit
 {
 public:
-    Building(int x, int y, int length, int width, std::vector<int> footprint);
+    Building(int x, int y, int length, int width);
     virtual ~Building();
 
     bool buildingWithin(int posX, int posY, int length, int width);
@@ -25,9 +25,11 @@ public:
     void init(Scene& scene);
     static bool canBePlaced(int x, int y, int length, int width, Scene* scene);
 
+    static real getAverageElevation(const Terrain& terrain, Vector2 geoPos, Vector2 geoDir);
+
     Entity* spawnWreck();
 
-    std::vector<int> footprint;
+    static std::vector<int> footprint;
 
-    int length, width;
+    static int length, width;
 };

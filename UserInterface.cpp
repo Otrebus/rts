@@ -442,14 +442,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
             auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
             if(Building::canBePlaced(pos.x, pos.y, 3, 4, scene))
             {
-                std::vector<int> footprint = {
-                    1, 0, 0, 1,
-                    1, 0, 0, 1,
-                    1, 0, 0, 1,
-                    1, 1, 1, 1,
-                    1, 1, 1, 1
-                };
-                auto building = new Building(int(pos.x), int(pos.y), 3, 4, footprint);
+                auto building = new Building(int(pos.x), int(pos.y), 3, 4);
                 building->init(*scene);
 
                 scene->addEntity(building);

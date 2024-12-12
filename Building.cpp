@@ -8,7 +8,7 @@
 #include "Terrain.h"
 
 
-Building::Building(int x, int y, int length, int width, std::vector<int> footprint) : Unit(pos, { 1, 0, 0 }, { 0, 0, 1 }), length(length), width(width), footprint(footprint)
+Building::Building(int x, int y, int length, int width) : Unit(pos, { 1, 0, 0 }, { 0, 0, 1 }), length(length), width(width)
 {
     real height = 2.0;
     geoDir = dir.to2();
@@ -39,7 +39,7 @@ void Building::draw(Material* mat = nullptr)
     //ShapeDrawer::drawBox(Vector3(real(pos.x), real(pos.y), real(pos.z)), Vector3(1, 0, 0), length, width, height, Vector3(0.7, 0.7, 0.7));
 }
 
-void Building::plant(const Terrain& terrain)
+real Building::getAverageElevation(const Terrain& terrain, Vector2 geoPos, Vector2 geoDir)
 {
     auto x = Vector3(geoDir.x, geoDir.y, 0).normalized();
     auto y = Vector3(-geoDir.y, geoDir.x, 0).normalized();
@@ -64,7 +64,14 @@ void Building::plant(const Terrain& terrain)
     Vector3 C = Vector3(c.x, c.y, ch);
     Vector3 D = Vector3(d.x, d.y, dh);
 
-    pos = Vector3(geoPos.x, geoPos.y, ((A+B+C+D)/4.f).z + real(height)/2);
+    auto h = ((A+B+C+D)/4.f).z + real(height)/2;
+    return h;
+}
+
+void Building::plant(const Terrain& terrain)
+{
+    auto h = getAverageElevation(terrain, geoPos, geoDir);
+    pos = Vector3(geoPos.x, geoPos.y, h);
     setPosition(pos);
     setDirection(dir.normalized(), up.normalized());
 }
@@ -101,11 +108,26 @@ bool Building::pointWithinFootprint(int posX, int posY)
 
 bool Building::canBePlaced(int posX, int posY, int length, int width, Scene* scene)
 {
+    auto terrain = scene->getTerrain();
     for(auto building : scene->getBuildings())
     {
         if(building->buildingWithin(posX, posY, length, width))
             return false;
     }
+
+    auto h = Building::getAverageElevation(*terrain, Vector2(posX+real(length)/2, posY+real(width)/2), Vector2(1, 0));
+    auto fp = Building::footprint;
+        
+    for(auto p : fp)
+    {
+        auto x = p%width;
+        auto y = p/width;
+        if(terrain->getElevation(x + posX, y + posY) - h > 0.2) // calculate this better
+        {
+            return false;
+        }
+    }
+
     return true;
 }
 
@@ -114,3 +136,11 @@ Entity* Building::spawnWreck()
 {
     return nullptr;
 }
+
+std::vector<int> Building::footprint = {
+    1, 0, 0, 1,
+    1, 0, 0, 1,
+    1, 0, 0, 1,
+    1, 1, 1, 1,
+    1, 1, 1, 1
+};
