@@ -69,6 +69,16 @@ void TerrainMesh::updateSelected(int i, bool b)
     glBufferSubData(GL_ARRAY_BUFFER, i * sizeof(MeshVertex3) + offsetof(MeshVertex3, selected), sizeof(data), &data);
 }
 
+void TerrainMesh::updateElevation(int i, real h)
+{
+    real data = h; // Assuming `real` is compatible with GL_FLOAT
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+    // Manually calculate offset for pos.z
+    size_t offset = i * sizeof(MeshVertex3) + offsetof(MeshVertex3, pos) + sizeof(real) * 2;
+    glBufferSubData(GL_ARRAY_BUFFER, offset, sizeof(data), &data);
+}
+
 void TerrainMesh::draw(Material* mat) // TODO: might not be necessary to overload this
 {
     auto material = mat ? mat : this->material;

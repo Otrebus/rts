@@ -504,7 +504,16 @@ std::pair<Vector3, Vector3> Terrain::getBoundingBox() const
 
 const Vector3& Terrain::getPoint(int x, int y) const
 {
-    return points[x + y*height];
+    return points[x + y*width];
+}
+
+void Terrain::setElevation(int x, int y, real h)
+{
+    int p = x + y*width;
+    points[p].z = h;
+    ((TerrainMesh*)(terrainModel->getMeshes()[0]))->updateElevation(p, h);
+
+    // TODO: update path finding points
 }
 
 bool Terrain::inBounds(int x, int y) const

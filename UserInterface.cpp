@@ -461,7 +461,6 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
             if(building->canBePlaced(int(pos.x) + 3.0/2, int(pos.y) + 4.0/2, 3, 4, scene))
             {
                 building->init(*scene);
-
                 scene->addEntity(building);
             }
             else

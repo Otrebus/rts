@@ -9,6 +9,7 @@ public:
     ~TerrainMesh();
 
     void updateSelected(int i, bool b);
+    void updateElevation(int i, real height);
 
     static Shader* terrainVertexShader;
 

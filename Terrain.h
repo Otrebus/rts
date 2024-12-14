@@ -23,11 +23,14 @@ public:
         Flat = 3
     };
 
-    void recalcAdmissiblePoint(int x, int y);
     std::pair<int, int> getClosestAdmissible(Vector2 v) const; // TODO: temp public
     const Vector3& getPoint(int x, int y) const; // same
-    bool isAdmissible(int x, int y) const;
+    void setElevation(int x, int y, real h);
+
     void updateAdmissiblePoints();
+    void recalcAdmissiblePoint(int x, int y);
+
+    bool isAdmissible(int x, int y) const;
     void setAdmissible(int x, int y, bool b);
 
     static ConsoleVariable fogOfWarEnabled;

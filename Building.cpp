@@ -41,6 +41,7 @@ void Building::draw(Material* mat = nullptr)
 
 real Building::getAverageElevation(const Terrain& terrain)
 {
+    // This isn't really the total average but the average of the four corners
     auto x = Vector3(geoDir.x, geoDir.y, 0).normalized();
     auto y = Vector3(-geoDir.y, geoDir.x, 0).normalized();
     auto z = Vector3(0, 0, 1).normalized();
@@ -64,7 +65,7 @@ real Building::getAverageElevation(const Terrain& terrain)
     Vector3 C = Vector3(c.x, c.y, ch);
     Vector3 D = Vector3(d.x, d.y, dh);
 
-    auto h = ((A+B+C+D)/4.f).z + real(height)/2;
+    auto h = ((A+B+C+D)/4.f).z;
     return h;
 }
 
@@ -81,7 +82,20 @@ void Building::init(Scene& scene)
     this->setScene(&scene);
     selectionMarkerMesh->setScene(&scene);
     selectionMarkerMesh->init(pos.to2());
-    plant(*scene.getTerrain());
+
+    auto terrain = scene.getTerrain();
+
+    plant(*terrain);
+
+    auto avgH = getAverageElevation(*terrain);
+    for(int x = 0; x <= length; x++)
+    {
+        for(int y = 0; y <= width; y++)
+        {
+            terrain->setElevation(x + pos.x-real(length)/2, y + pos.y-real(width)/2, avgH);
+        }
+    }
+
 }
 
 void Building::update(real dt)
@@ -117,20 +131,26 @@ bool Building::canBePlaced(real posX, real posY, int length, int width, Scene* s
             return false;
     }
 
-    auto h = Building::getAverageElevation(*terrain);
+    auto avgH = getAverageElevation(*terrain);
     auto fp = Building::footprint;
         
-    for(auto p : fp)
+    std::cout << "\n\n\nPosition " << Vector2(posX, posY) << " | " << avgH << std::endl;
+    bool canPlace = true;
+    for(int x = 0; x < length; x++)
     {
-        auto x = p%width;
-        auto y = p/width;
-        if(terrain->getElevation(x + posX, y + posY) - h > 0.2) // calculate this better
+        for(int y = 0; y < width; y++)
         {
-            return false;
+            auto h = terrain->getElevation(x + posX-real(length/2), y + posY-real(width/2));
+            std::cout << h << " ";
+            if(std::abs(h - avgH) > 0.25)
+            {
+                canPlace = false;
+            }
         }
+        std::cout << std::endl;
     }
 
-    return true;
+    return canPlace;
 }
 
 
