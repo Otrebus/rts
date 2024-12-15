@@ -10,12 +10,11 @@
 
 Building::Building(int x, int y, int length, int width, std::vector<int> footprint) : Unit(pos, { 1, 0, 0 }, { 0, 0, 1 }), length(length), width(width), footprint(footprint)
 {
-    real height = 2.0;
+    height = 2.0;
     geoDir = dir.to2();
     pos = Vector3(x+real(length)/2, y+real(width)/2, 0);
     geoPos = pos.to2();
     boundingBox = BoundingBox(Vector3(-real(length)/2, -real(width)/2, -real(height)/2), Vector3(real(length)/2, real(width)/2, real(height)/2));
-
     selectionMarkerMesh = new SelectionMarkerMesh(length+0.2, width+0.2, false);
 }
 
@@ -25,18 +24,12 @@ Building::~Building()
 
 void Building::draw(Material* mat = nullptr)
 {
-    real height = 2.0;
     ShapeDrawer::setInFront(false);
-    real W = 0.1;
-    real L = 1.0;
-    //ShapeDrawer::drawBox(Vector3(int(pos.x), pos.y, pos.z) + Vector3(real(length)/2, real(width)/2, real(height)/2), Vector3(1, 0, 0), length, width, height, Vector3(0.7, 0.7, 0.7));
+    real W = 0.1, L = 1.0;
 
-    // TODO: flip L and W
     ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(-real(W)/2+real(length)/2, 0, -real(height)/6), Vector3(1, 0, 0), W, width, height*2.0/3, Vector3(0.7, 0.7, 0.7));
     ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(real(W)/2-real(length)/2, 0, -real(height)/6), Vector3(1, 0, 0), W, width, height*2.0/3, Vector3(0.7, 0.7, 0.7));
-
     ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(0, real(width/2) - real(L)/2, 0), Vector3(1, 0, 0), length-W*2, L, height, Vector3(0.7, 0.7, 0.7));
-    //ShapeDrawer::drawBox(Vector3(real(pos.x), real(pos.y), real(pos.z)), Vector3(1, 0, 0), length, width, height, Vector3(0.7, 0.7, 0.7));
 }
 
 real Building::getAverageElevation(const Terrain& terrain)
@@ -72,7 +65,7 @@ real Building::getAverageElevation(const Terrain& terrain)
 void Building::plant(const Terrain& terrain)
 {
     auto h = getAverageElevation(terrain);
-    pos = Vector3(geoPos.x, geoPos.y, h);
+    pos = Vector3(geoPos.x, geoPos.y, h+real(height)/2);
     setPosition(pos);
     setDirection(dir.normalized(), up.normalized());
 }
@@ -89,13 +82,8 @@ void Building::init(Scene& scene)
 
     auto avgH = getAverageElevation(*terrain);
     for(int x = 0; x <= length; x++)
-    {
         for(int y = 0; y <= width; y++)
-        {
             terrain->setElevation(x + pos.x-real(length)/2, y + pos.y-real(width)/2, avgH);
-        }
-    }
-
 }
 
 void Building::update(real dt)
@@ -126,10 +114,8 @@ bool Building::canBePlaced(real posX, real posY, int length, int width, Scene* s
 {
     auto terrain = scene->getTerrain();
     for(auto building : scene->getBuildings())
-    {
         if(building->buildingWithin(posX, posY, length, width))
             return false;
-    }
 
     auto avgH = getAverageElevation(*terrain);
     auto fp = Building::footprint;

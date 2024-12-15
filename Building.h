@@ -31,5 +31,5 @@ public:
 
     std::vector<int> footprint;
 
-    int length, width;
+    int length, width, height;
 };

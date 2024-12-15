@@ -23,8 +23,6 @@ public:
 
     real getStart();
 
-    void update();
-
 protected:
     Vector3 velocity;
     Vector3 pos;
