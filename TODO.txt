@@ -121,9 +121,9 @@
   - Fix fog update when fogOfWar 0 sets back to 1
 - Make fog of war apply to buildings and have some more generic handling than the stuff in Tank::draw() if possible
 - Code smell: ((TerrainMesh*)(terrainModel->getMeshes()[0])) etc
-- Bug: mouse scroll at start brings zoom to infinity
++ Bug: mouse scroll at start brings zoom to infinity
 - Make tank consts static
-- Make better admissible-terrain-visualizer
++ Make better admissible-terrain-visualizer
 - Combine init/constructor for meshes?
 - Command queuing
 - Improve collisions further

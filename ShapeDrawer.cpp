@@ -29,13 +29,12 @@ void ShapeDrawer::restoreDepthTest()
 }
 
 
-void ShapeDrawer::drawArrow(Vector3 pos, Vector3 dir, real length, real width, Vector3 color)
+void ShapeDrawer::drawArrow(Vector3 pos, Vector3 dir, real length, real width, Material* material)
 {
 	assert(coneModel); // loadModels must be called first
 	if(!dir)
 		return;
 	setDepthTest();
-	material->Kd = color;
 	cylinderModel->setSize(Vector3(length*0.8, width, width));
 	cylinderModel->setDirection(dir.normalized(), Vector3(0, 0, 1));
 	cylinderModel->setPosition(pos);
@@ -48,7 +47,22 @@ void ShapeDrawer::drawArrow(Vector3 pos, Vector3 dir, real length, real width, V
 	restoreDepthTest();
 }
 
+
+void ShapeDrawer::drawArrow(Vector3 pos, Vector3 dir, real length, real width, Vector3 color)
+{
+	if(color)
+		material->Kd = color;
+	drawArrow(pos, dir, length, width, material);
+}
+
 void ShapeDrawer::drawBox(Vector3 pos, Vector3 dir, real length, real width, real height, Vector3 color)
+{
+	if(color)
+		material->Kd = color;
+	drawBox(pos, dir, length, width, height, material);
+}
+
+void ShapeDrawer::drawBox(Vector3 pos, Vector3 dir, real length, real width, real height, Material* material)
 {
 	assert(boxModel); // loadModels must be called prior
 	if(!dir)
@@ -57,23 +71,35 @@ void ShapeDrawer::drawBox(Vector3 pos, Vector3 dir, real length, real width, rea
 	boxModel->setSize(Vector3(length, width, height));
 	boxModel->setDirection(dir.normalized(), Vector3(0, 0, 1));
 	boxModel->setPosition(pos);
-	material->Kd = color;
 	boxModel->draw(material);
 	restoreDepthTest();
 }
 
 void ShapeDrawer::drawSphere(Vector3 pos, real radius, Vector3 color)
 {
+	if(color)
+		material->Kd = color;
+	drawSphere(pos, radius, material);
+}
+
+void ShapeDrawer::drawSphere(Vector3 pos, real radius, Material* material)
+{
 	assert(sphereModel);  // loadModels must be called previously
 	setDepthTest();
 	sphereModel->setSize(Vector3(radius, radius, radius));
 	sphereModel->setPosition(pos);
-	material->Kd = color;
 	sphereModel->draw(material);
 	restoreDepthTest();
 }
 
 void ShapeDrawer::drawCylinder(Vector3 pos, Vector3 dir, real length, real radius, Vector3 color)
+{
+	if(color)
+		material->Kd = color;
+	drawCylinder(pos, dir, length, radius, material);
+}
+
+void ShapeDrawer::drawCylinder(Vector3 pos, Vector3 dir, real length, real radius, Material* material)
 {
 	assert(cylinderModel);  // loadModels must be invoked erstwhile
 	if(!dir)
@@ -81,7 +107,6 @@ void ShapeDrawer::drawCylinder(Vector3 pos, Vector3 dir, real length, real radiu
 	setDepthTest();
 	cylinderModel->setSize(Vector3(length, radius, radius));
 	cylinderModel->setDirection(dir.normalized(), Vector3(0, 0, 1));
-	material->Kd = color;
 	cylinderModel->setPosition(pos);
 	cylinderModel->draw(material);
 	restoreDepthTest();

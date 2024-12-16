@@ -32,4 +32,6 @@ public:
     std::vector<int> footprint;
 
     int length, width, height;
+    static Material* fowMaterial;
 };
+

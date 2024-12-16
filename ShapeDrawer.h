@@ -6,6 +6,7 @@
 class Model3d;
 class Scene;
 class LambertianMaterial;
+class Material;
 
 class ShapeDrawer
 {
@@ -13,9 +14,17 @@ public:
     ShapeDrawer();
 
     static void drawArrow(Vector3 pos, Vector3 dir, real length, real width, Vector3 color = { 0, 0, 0 });
+    static void drawArrow(Vector3 pos, Vector3 dir, real length, real width, Material* material);
+
     static void drawBox(Vector3 pos, Vector3 dir, real length, real width, real height, Vector3 color = { 0, 0, 0 });
+    static void drawBox(Vector3 pos, Vector3 dir, real length, real width, real height, Material* material);
+
     static void drawSphere(Vector3 pos, real radius, Vector3 color = { 0, 0, 0 });
+    static void drawSphere(Vector3 pos, real radius, Material* material);
+
     static void drawCylinder(Vector3 pos, Vector3 dir, real length, real radius, Vector3 color = { 0, 0, 0 });
+    static void drawCylinder(Vector3 pos, Vector3 dir, real length, real radius, Material* material);
+
     static void loadModels();
     static void setScene(Scene* scene);
 

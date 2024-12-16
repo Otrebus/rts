@@ -166,9 +166,10 @@ void CameraControl::handleInput(const Input& input)
         prevX = input.posX;
         prevY = input.posY;
     }
-    else if(cameraMode != Freelook && input.stateStart == InputType::ScrollOffset)
+    else if(!isnan(prevX) && cameraMode != Freelook && input.stateStart == InputType::ScrollOffset)
     {
         auto [x, y] = resToScreen(prevX, prevY, xres, yres);
+        std::cout << prevX << " " << prevY << std::endl;
 
         auto zoomDir = cam->getViewRay(x, y);
         auto dir = -(input.posY)*(zoomDir.dir.normalized())*(moveSlow ? 0.5f : 5.f);
