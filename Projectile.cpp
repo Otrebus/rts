@@ -87,12 +87,13 @@ void Projectile::setDirection(Vector3 dir, Vector3 up)
 void Projectile::update(real dt)
 {
     auto p1 = pos;
-    auto units = scene->getUnits();
-    for(auto unit : units)
+    auto entities = scene->getEntities();
+    for(auto entity : entities)
     {
-        if(unit->intersectBoundingBox(pos, pos+dt*velocity))
+        if(!dynamic_cast<Projectile*>(entity) && entity->intersectBoundingBox(pos, pos+dt*velocity))
         {
-            if(unit != owner)
+            auto unit = dynamic_cast<Unit*>(entity);
+            if(unit && unit != owner)
             {
                 auto [p, norm] = unit->getBoundingBoxIntersection(pos, pos+dt*velocity);
                 for(int i = 0; i < 150; i++)

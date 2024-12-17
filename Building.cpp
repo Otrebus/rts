@@ -7,6 +7,7 @@
 #include "SelectionMarkerMesh.h"
 #include "Terrain.h"
 #include "FogOfWarMaterial.h"
+#include "BuildingWreck.h"
 
 
 Building::Building(int x, int y, int length, int width, std::vector<int> footprint) : Unit(pos, { 1, 0, 0 }, { 0, 0, 1 }), length(length), width(width), footprint(footprint)
@@ -27,13 +28,6 @@ Building::~Building()
 
 void Building::draw(Material* mat = nullptr)
 {
-    /*ShapeDrawer::setInFront(false);
-    real W = 0.1, L = 1.0;
-
-    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(-real(W)/2+real(length)/2, 0, -real(height)/6), Vector3(1, 0, 0), W, width, height*2.0/3, Vector3(0.7, 0.7, 0.7));
-    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(real(W)/2-real(length)/2, 0, -real(height)/6), Vector3(1, 0, 0), W, width, height*2.0/3, Vector3(0.7, 0.7, 0.7));
-    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(0, real(width/2) - real(L)/2, 0), Vector3(1, 0, 0), length-W*2, L, height, Vector3(0.7, 0.7, 0.7));*/
-
     real W = 0.1, L = 1.0;
 
     GLint curDepthFun;
@@ -121,15 +115,11 @@ void Building::init(Scene& scene)
 
 void Building::update(real dt)
 {
-    //geoPos = pos.to2();
-    std::cout << pos << std::endl;
     selectionMarkerMesh->update(pos.to2());
 }
 
 bool Building::buildingWithin(real posX, real posY, int length, int width)
 {
-    //bool withinX = pos.x - real(this->length)/2 < posX + real(length)/2 && pos.x + real(this->length)/2 > posX - real(length)/2;
-    //bool withinY = pos.y - real(this->width)/2 < posY + real(width)/2 && pos.y + real(this->width)/2 > posY - real(width)/2;
     bool withinX = 2*pos.x - this->length < 2*posX + length && 2*pos.x + this->length > 2*posX - length;
     bool withinY = 2*pos.y - this->width < 2*posY + width && 2*pos.y + this->width > 2*posY - width;
     return withinX && withinY;
@@ -175,7 +165,11 @@ bool Building::canBePlaced(real posX, real posY, int length, int width, Scene* s
 
 Entity* Building::spawnWreck()
 {
-    return nullptr;
+    auto tw = new BuildingWreck(pos, dir, up, length, width, scene->getTerrain());
+    tw->length = length;
+    tw->width = width;
+    tw->init(scene);
+    return tw;
 }
 
 Material* Building::fowMaterial = nullptr;

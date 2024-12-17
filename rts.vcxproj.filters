@@ -176,6 +176,9 @@
       <Filter>Source files\Entities\Entities</Filter>
     </ClCompile>
     <ClCompile Include="gl3w.c" />
+    <ClCompile Include="BuildingWreck.cpp">
+      <Filter>Source files\Entities\Entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -353,6 +356,9 @@
       <Filter>Source files\Materials</Filter>
     </ClInclude>
     <ClInclude Include="Building.h">
+      <Filter>Source files\Entities\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="BuildingWreck.h">
       <Filter>Source files\Entities\Entities</Filter>
     </ClInclude>
   </ItemGroup>

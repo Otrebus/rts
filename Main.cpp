@@ -119,8 +119,6 @@ int main()
     auto particleGeometryShader = new Shader("particle.geom", GL_GEOMETRY_SHADER);
     auto particleVertexShader = new Shader("particle.vert", GL_VERTEX_SHADER);
 
-    auto mat = new LambertianMaterial(Vector3(0.3, 0, 0));
-
     Tank::loadModels();
     TankWreck::loadModels();
 

@@ -145,6 +145,7 @@
     <ClCompile Include="Building.cpp" />
     <ClCompile Include="BuildingPlacerMaterial.cpp" />
     <ClCompile Include="BuildingPlacerMesh.cpp" />
+    <ClCompile Include="BuildingWreck.cpp" />
     <ClCompile Include="ByteStream.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraControl.cpp" />
@@ -216,6 +217,7 @@
     <ClInclude Include="Building.h" />
     <ClInclude Include="BuildingPlacerMaterial.h" />
     <ClInclude Include="BuildingPlacerMesh.h" />
+    <ClInclude Include="BuildingWreck.h" />
     <ClInclude Include="Bytestream.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraControl.h" />
