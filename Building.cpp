@@ -172,4 +172,24 @@ Entity* Building::spawnWreck()
     return tw;
 }
 
+
+std::vector<int> Building::getAbsoluteFootprint()
+{
+    std::vector<int> p;
+    for(int y = 0; y <= width; y++)
+    {
+        for(int x = 0; x <= length; x++)
+        {
+            if(footprint[x*(length+1)+y])
+            {
+                auto X = pos.x - real(length)/2;
+                auto Y = pos.y - real(width)/2;
+                p.push_back((Y+y)*scene->getTerrain()->getWidth()+(X+x));
+            }
+        }
+    }
+    return p;
+}
+
+
 Material* Building::fowMaterial = nullptr;

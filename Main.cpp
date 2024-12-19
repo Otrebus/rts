@@ -216,7 +216,7 @@ int main()
             {
                 for(auto x = 0; x < terrain.getWidth(); x++)
                 {
-                    terrain.setFog(x, y, 0);
+                    terrain.setFog(x, y, Terrain::fogOfWarEnabled.var);
                 }
             }
         }

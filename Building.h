@@ -24,6 +24,7 @@ public:
     void plant(const Terrain& terrain);
     void init(Scene& scene);
     bool canBePlaced(real x, real y, int length, int width, Scene* scene);
+    std::vector<int> getAbsoluteFootprint();
 
     real getAverageElevation(const Terrain& terrain);
 

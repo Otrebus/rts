@@ -392,7 +392,24 @@ void Tank::update(real dt)
         if(unit->isEnemy() != enemy && !unit->dead)
         {
             // TODO: only works for friendly players, enemy tanks will track no matter what and get the jump
-            bool isInFog = scene->getTerrain()->getFog(unit->getGeoPosition().x, unit->getGeoPosition().y) && scene->getTerrain()->fogOfWarEnabled.var;
+
+            // TODO: break this (fow check) into a separate function
+            bool isInFog = false;
+            if(dynamic_cast<Tank*>(unit))
+                isInFog = scene->getTerrain()->getFog(unit->getGeoPosition().x, unit->getGeoPosition().y) && scene->getTerrain()->fogOfWarEnabled.var;
+            else if(Building* building = dynamic_cast<Building*>(unit); building)
+            {
+                int height = scene->getTerrain()->getHeight();
+                int width = scene->getTerrain()->getHeight();
+                for(auto p : building->getAbsoluteFootprint())
+                {
+                    int y = p/width;
+                    int x = p%width;
+                    isInFog = scene->getTerrain()->getFog(x, y) && scene->getTerrain()->fogOfWarEnabled.var;
+                    if(!isInFog)
+                        break;
+                }
+            }
             if(isInFog)
                 continue;
             if(auto d = (unit->getPosition() - pos).length(); d < closestD)
@@ -458,7 +475,21 @@ void Tank::update(real dt)
         // TODO: the way we handle enemy fog of war isn't correct and needs an update when
         // we have separate fow for player and enemy
         auto p = (enemyTarget->isEnemy() ? enemyTarget : this)->getGeoPosition();
-        isInFog = scene->getTerrain()->getFog(p.x, p.y) && scene->getTerrain()->fogOfWarEnabled.var;
+        if(dynamic_cast<Tank*>(enemyTarget))
+            isInFog = scene->getTerrain()->getFog(p.x, p.y) && scene->getTerrain()->fogOfWarEnabled.var;
+        else if(Building* building = dynamic_cast<Building*>(enemyTarget); building)
+        {
+            int height = scene->getTerrain()->getHeight();
+            int width = scene->getTerrain()->getHeight();
+            for(auto p : building->getAbsoluteFootprint())
+            {
+                int y = p/width;
+                int x = p%width;
+                isInFog = scene->getTerrain()->getFog(x, y) && scene->getTerrain()->fogOfWarEnabled.var;
+                if(!isInFog)
+                    break;
+            }
+        }
         if(!isInFog && (turretTarget*turretDir) > 1-1e-6)
         {
             lastFired = time;

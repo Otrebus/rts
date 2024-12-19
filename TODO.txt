@@ -73,7 +73,7 @@
 + Move intersectRayOcclusion etc out of Terrain
 + Modelmanager, getModel vs cloneModel vs createModel vs deleteModel, rework somehow
 + Text output like fps counter
-  - Signed-distance text?
+  + Signed-distance text?
 - Debug console
 + If assigning move target to inadmissible terrain, find closest allowable or handle otherwise
 + Turrets are offset when the tank is on a slope
@@ -112,7 +112,9 @@
 + nTriangles isn't nTriangles, is it (it's indices?)
 + TODO: this sphere draws weirdly
 + Boiddebug yellow (separate) going crazy when friendly tank drives near enemy tanks
+- TODO: break this (fow check) into a separate function
 - Figure out some better way of dealing with types of units instead of doing dynamic_cast (and same with buildings)
+- For buildings, dealing with half-coordinates and hoping the results of floating-point operations is an integer is probably not good
 - Fog of war
   + Rendering fog of war
   + Not updating correctly when friendly unit dies next to enemy tanks

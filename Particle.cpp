@@ -204,7 +204,10 @@ SerializedParticle GroundExplosionParticle::serialize()
 
 UnitHitParticle::UnitHitParticle(Vector3 initialPos, Vector3 normal) : Particle(initialPos, normal)
 {
-    auto right = (normal%Vector3(0, 1, 0)).normalized();
+    auto right = (normal%Vector3(0, 1, 0));
+    if(!right)
+        right = (normal%Vector3(1, 1, 0));
+    right.normalize();
     auto forward = normal%right;
     auto theta = getRandomFloat(0, 2*pi);
     start = getRandomFloat(0, 0.05);
