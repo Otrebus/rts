@@ -46,3 +46,5 @@ PathFindingRequest* popPathFindingResult();
 PathFindingRequest* popPathFindingRequest();
 
 void pathFindingThread();
+
+extern std::mutex pathFindingMutex;

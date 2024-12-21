@@ -86,3 +86,5 @@ public:
     static ConsoleVariable showFps;
     static ConsoleVariable showCoordinates;
 };
+
+void addUnitPathfindingRequest(Unit* unit, Vector3 pos);

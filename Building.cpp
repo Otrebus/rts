@@ -143,21 +143,13 @@ bool Building::canBePlaced(real posX, real posY, int length, int width, Scene* s
     auto avgH = getAverageElevation(*terrain);
     auto fp = Building::footprint;
         
-    std::cout << "\n\n\nPosition " << Vector2(posX, posY) << " | " << avgH << std::endl;
     bool canPlace = true;
+        
+    auto cx = posX-real(length/2), cy = posY-real(width/2);
     for(int x = 0; x < length; x++)
-    {
         for(int y = 0; y < width; y++)
-        {
-            auto h = terrain->getElevation(x + posX-real(length/2), y + posY-real(width/2));
-            std::cout << h << " ";
-            if(std::abs(h - avgH) > 0.25)
-            {
+            if(auto h = terrain->getElevation(x + cx, y + cy); std::abs(h - avgH) > 0.25)
                 canPlace = false;
-            }
-        }
-        std::cout << std::endl;
-    }
 
     return canPlace;
 }

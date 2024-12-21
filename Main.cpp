@@ -7,6 +7,7 @@
 #include "InputManager.h"
 #include "Line.h"
 #include "Logger.h"
+#include "UserInterface.h"
 #include "ShapeDrawer.h"
 #include "Main.h"
 #include "Math.h"

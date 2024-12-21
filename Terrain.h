@@ -30,6 +30,8 @@ public:
     void updateAdmissiblePoints();
     void recalcAdmissiblePoint(int x, int y);
 
+    Scene* getScene() const;
+
     bool isAdmissible(int x, int y) const;
     void setAdmissible(int x, int y, bool b);
 

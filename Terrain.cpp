@@ -8,6 +8,7 @@
 #include "TexturedTerrainMaterial.h"
 #include "ConsoleSettings.h"
 #include <algorithm>
+#include "PathFinding.h"
 
 ConsoleVariable Terrain::fogOfWarEnabled("fogOfWar", 1);
 
@@ -184,6 +185,7 @@ void Terrain::calcAdmissiblePoints()
 
 void Terrain::updateAdmissiblePoints()
 {
+    std::lock_guard<std::mutex> guard(pathFindingMutex);
     std::unordered_set<int> currentBuildingPoints;
     for(auto building : scene->getBuildings())
     {
@@ -761,4 +763,9 @@ int Terrain::getHeight() const
 int Terrain::getWidth() const
 {
     return width;
+}
+
+Scene* Terrain::getScene() const
+{
+    return scene;
 }

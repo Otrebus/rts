@@ -1,5 +1,6 @@
 #include "Main.h"
 #include "PathFinding.h"
+#include "GeometryUtils.h"
 #include <chrono>
 #include <thread>
 
@@ -7,6 +8,7 @@ using namespace std::literals::chrono_literals;
 
 std::mutex requestMutex;
 std::mutex resultMutex;
+std::mutex pathFindingMutex;
 
 std::queue<PathFindingRequest*> requestQueue;
 std::queue<PathFindingRequest*> resultQueue;
@@ -143,6 +145,7 @@ void pathFindingThread()
 
 std::deque<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destination)
 {
+    std::lock_guard<std::mutex> guard(pathFindingMutex);
     auto width = terrain->getWidth(), height = terrain->getHeight();
 
     //auto time = glfwGetTime();
@@ -226,6 +229,5 @@ std::deque<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinatio
 
     std::reverse(result.begin(), result.end());
     outPath = terrain->straightenPath(result.begin(), result.end());
-
     return outPath;
 }

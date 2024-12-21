@@ -458,7 +458,6 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
                     1, 1, 1, 1
                 };
             auto building = new Building(int(pos.x), int(pos.y), 3, 4, footprint);
-            building->setEnemy(true);
             if(building->canBePlaced(int(pos.x) + 3.0/2, int(pos.y) + 4.0/2, 3, 4, scene))
             {
                 building->init(*scene);

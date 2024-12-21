@@ -31,6 +31,19 @@ real intersectRaySegment(Vector2 pos, Vector2 dir, Vector2 p1, Vector2 p2)
     return -inf;
 }
 
+real intersectSegmentSegment(Vector2 r1, Vector2 r2, Vector2 p1, Vector2 p2)
+{
+    auto e = p2 - p1;
+    auto c = r1 - p1;
+    auto f = r2-r1;
+    auto det = (e.x*f.y - f.x*e.y);
+
+    auto s = (c.x*e.y - e.x*c.y)/det;
+    auto t = (c.x*f.y - f.x*c.y)/det;
+    if(t >= 0 && t <= 1 && s >= 0 && s <= 1)
+        return s;
+    return -inf;
+}
 
 std::tuple<real, Vector2, real> distPointLine(Vector2 p, Vector2 p1, Vector2 p2)
 {
