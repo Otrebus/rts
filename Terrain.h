@@ -106,6 +106,8 @@ public:
     real getElevation(real x, real y) const;
     Vector3 getNormal(real x, real y) const;
 
+    std::vector<Vector3> chopLine(Vector2 start, Vector2 end) const;
+
     void calcMinMax();
 
     int getWidth() const;

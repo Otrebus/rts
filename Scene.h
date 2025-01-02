@@ -50,7 +50,8 @@ public:
     void updateUnitList();
     void moveEntities(real dt);
     void moveEntitiesSoft(real dt, int depth, std::unordered_set<Entity*>& gliding);
-
+    
+    std::mutex buildingMutex;
 private:
     std::mutex borrowMutex;
 

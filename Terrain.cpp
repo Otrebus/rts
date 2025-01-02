@@ -185,7 +185,6 @@ void Terrain::calcAdmissiblePoints()
 
 void Terrain::updateAdmissiblePoints()
 {
-    std::lock_guard<std::mutex> guard(pathFindingMutex);
     std::unordered_set<int> currentBuildingPoints;
     for(auto building : scene->getBuildings())
     {
@@ -753,6 +752,45 @@ bool Terrain::isVisible(Vector2 start, Vector2 end) const
         }
     }
     return true;
+}
+
+std::vector<Vector3> Terrain::chopLine(Vector2 start, Vector2 end) const
+{
+    std::vector<Vector3> result = { { start.x, start.y, getElevation(start.x, start.y) } };
+    auto dx = end.x-start.x;
+    auto dy = end.y-start.y;
+    if(!dx && !dy)
+        return {};
+    if(std::abs(dx) > std::abs(dy))
+    {
+        if(dx < 0)
+        {
+            auto t = chopLine(end, start);
+            std::reverse(t.begin(), t.end());
+            return t;
+        }
+        for(int x = std::ceil(start.x); x <= std::floor(end.x); x++)
+        {
+            auto y = start.y + (dy/dx)*(x-start.x);
+            result.push_back( { real(x), y, getElevation(x, y) } );
+        }
+    }
+    else
+    {
+        if(dy < 0)
+        {
+            auto t = chopLine(end, start);
+            std::reverse(t.begin(), t.end());
+            return t;
+        }
+        for(int y = std::ceil(start.y); y <= std::floor(end.y); y++)
+        {
+            auto x = start.x + (dx/dy)*(y-start.y);
+            result.push_back( { x, real(y), getElevation(x, y) } );
+        }
+    }
+    result.push_back( { end.x, end.y, getElevation(end.x, end.y) });
+    return result;
 }
 
 int Terrain::getHeight() const

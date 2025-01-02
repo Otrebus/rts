@@ -115,6 +115,8 @@
 + Bug: sometimes paths go through buildings
 - updateAdmissiblePoints recalculates for every building once per frame; slow?
 - TODO: break this (fow check) into a separate function
+- Make tank performance console vars
+- See pathbug.png (top right from start location)
 - Figure out some better way of dealing with types of units instead of doing dynamic_cast (and same with buildings)
 - For buildings, dealing with half-coordinates and hoping the results of floating-point operations is an integer is probably not good
 - Fog of war

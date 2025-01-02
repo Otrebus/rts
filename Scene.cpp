@@ -87,7 +87,6 @@ struct Collision
     Vector2 normal;
 };
 
-
 void Scene::moveEntitiesSoft(real dt, int depth, std::unordered_set<Entity*>& gliding)
 {
     if(dt < 0)
@@ -255,6 +254,8 @@ void Scene::updateUnitList()
 {
     units.clear(); 
     buildings.clear(); // TODO: either this function should be renamed or this should be moved to another function
+
+    std::lock_guard<std::mutex> guard(buildingMutex);
     for(auto e : entities)
     {
         if(auto p = dynamic_cast<Unit*>(e); p)

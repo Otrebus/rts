@@ -125,23 +125,29 @@ int main()
 
     //scene.addUnit(new Tank({ 180.480316, 99.7414932, 15.0 }, { 1, 0, 0 }, { 0, 0, 1}, &terrain));
 
-    for(int y = 0; y < 3; y++)
-    {
-        for(int x = 0; x < 3; x++)
-        {
-            scene.addEntity(new Tank({ 165.5f-x, 95.15f-y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain));
-        }
-    }
+    //for(int y = 0; y < 3; y++)
+    //{
+    //    for(int x = 0; x < 3; x++)
+    //    {
+    //        scene.addEntity(new Tank({ 165.5f-x, 95.15f-y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain));
+    //    }
+    //}
 
-    for(int y = 0; y < 3; y++)
-    {
-        for(int x = 0; x < 3; x++)
-        {
-            auto enemy = new Tank({ 170.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
-            enemy->setEnemy(true);
-            scene.addEntity(enemy);
-        }
-    }/*
+    
+    auto tank = new Tank({ 215.f, 124.f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+    scene.addEntity(tank);
+
+    //for(int y = 0; y < 3; y++)
+    //{
+    //    for(int x = 0; x < 3; x++)
+    //    {
+    //        auto enemy = new Tank({ 170.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+    //        enemy->setEnemy(true);
+    //        scene.addEntity(enemy);
+    //    }
+    //}
+    
+    /*
 
     for(int y = 0; y < 1; y++)
     {
@@ -295,7 +301,7 @@ int main()
         }
 
         terrain.draw();
-        terrain.updateAdmissiblePoints();
+        //terrain.updateAdmissiblePoints();
 
         for(auto& entity : scene.getEntities())
         {

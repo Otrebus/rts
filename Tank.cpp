@@ -251,12 +251,17 @@ void Tank::draw(Material* mat)
     glGetIntegerv(GL_BLEND_SRC_RGB, &curSrc);
     glGetIntegerv(GL_BLEND_DST_RGB, &curDst);
 
-    std::vector<Vector3> P;
-    // TODO: slow
-    P.push_back(getPosition());
+    std::vector<Vector2> P = { getGeoPosition() };
     for(auto p : path)
-        P.push_back({ p.x, p.y, terrain->getElevation(p.x, p.y) });
-    destinationLine.setVertices(P);
+        P.push_back(p);
+    std::vector<Vector3> S;
+    // TODO: slow
+    for(int i = 0; i+1 < P.size(); i++)
+    {
+        auto pieces = terrain->chopLine(P[i], P[i+1]);
+        S.insert(S.end(), pieces.begin(), pieces.end());
+    }
+    destinationLine.setVertices(S);
     
     glBlendFuncSeparate(GL_ZERO, GL_ONE, GL_ONE, GL_ZERO);
 

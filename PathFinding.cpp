@@ -135,6 +135,8 @@ void pathFindingThread()
         if(p)
         {
             auto t = (p->requester)->scene->getTerrain();
+            std::lock_guard<std::mutex> guard(p->requester->scene->buildingMutex);
+            t->updateAdmissiblePoints();
             auto path = findPath(t, p->requester->geoPos, p->dest);
             p->path = path;
             addPathFindingResult(p);
