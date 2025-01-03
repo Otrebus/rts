@@ -52,7 +52,7 @@ public:
     const real maxRadialAcc = 4;
     const real maxTurnAcc = 2000;
 
-    const real maxSpeed = 2;
+    static ConsoleVariable maxSpeed;
     const real maxForwardAcc = 0.7; // TODO: breakacc vs forwardacc
     const real maxBreakAcc = 3;
 

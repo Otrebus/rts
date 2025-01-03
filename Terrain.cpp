@@ -185,6 +185,7 @@ void Terrain::calcAdmissiblePoints()
 
 void Terrain::updateAdmissiblePoints()
 {
+    std::lock_guard<std::mutex> guard(scene->buildingMutex);
     std::unordered_set<int> currentBuildingPoints;
     for(auto building : scene->getBuildings())
     {
@@ -379,7 +380,7 @@ void Terrain::draw()
     terrainModel->updateUniforms();
     terrainModel->draw();
 
-    if(fogOfWarEnabled.var)
+    if(fogOfWarEnabled.varInt())
     {
         GLint curDepthFun;
         GLboolean curBlend;

@@ -94,13 +94,11 @@ void addPathFindingRequest(PathFindingRequest* request)
     requestQueue.push(request);
 }
 
-
 void addPathFindingResult(PathFindingRequest* request)
 {
     std::lock_guard<std::mutex> guard(resultMutex);
     resultQueue.push(request);
 }
-
 
 PathFindingRequest* popPathFindingRequest()
 {
@@ -111,7 +109,6 @@ PathFindingRequest* popPathFindingRequest()
     requestQueue.pop();
     return request;
 }
-
 
 PathFindingRequest* popPathFindingResult()
 {
@@ -125,7 +122,6 @@ PathFindingRequest* popPathFindingResult()
     return request;
 }
 
-
 void pathFindingThread()
 {
     while(!quitting)
@@ -135,7 +131,6 @@ void pathFindingThread()
         if(p)
         {
             auto t = (p->requester)->scene->getTerrain();
-            std::lock_guard<std::mutex> guard(p->requester->scene->buildingMutex);
             t->updateAdmissiblePoints();
             auto path = findPath(t, p->requester->geoPos, p->dest);
             p->path = path;
@@ -143,7 +138,6 @@ void pathFindingThread()
         }
     }
 }
-
 
 std::deque<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destination)
 {

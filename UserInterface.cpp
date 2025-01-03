@@ -525,7 +525,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
         if(selectState == Clicking && (drawBoxc1-drawBoxc2).length() > 0.02 && buildingPlacingState != PlacingBuilding)
             selectState = DrawingBox;
 
-        if(showCoordinates.var)
+        if(showCoordinates.varInt())
         {
             auto coords = drawBoxc2;
             auto ray = scene->getCamera()->getViewRay(coords.x, coords.y);
@@ -638,10 +638,10 @@ void UserInterface::update(real dt)
 
 void UserInterface::draw()
 {
-    if(showFps.var)
+    if(showFps.varInt())
         font->draw(*scene, realToString(fps, 3), { 0.952, 0.98 }, 0.035, Vector3(0.2, 0.9, 0.2));
 
-    if(showCoordinates.var)
+    if(showCoordinates.varInt())
         font->draw(*scene, std::format("({:.2f}, {:.2f})", mouseGeoCoords.x, mouseGeoCoords.y), { 0.852, -0.95 }, 0.035, Vector3(0.2, 0.9, 0.2));
 
     GLint depthFunc;

@@ -252,10 +252,10 @@ void Scene::updateEntities()
 
 void Scene::updateUnitList()
 {
+    std::lock_guard<std::mutex> guard(buildingMutex);
     units.clear(); 
     buildings.clear(); // TODO: either this function should be renamed or this should be moved to another function
 
-    std::lock_guard<std::mutex> guard(buildingMutex);
     for(auto e : entities)
     {
         if(auto p = dynamic_cast<Unit*>(e); p)

@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include "Utils.h"
+#include <variant>
 
 #pragma once
 
@@ -11,8 +12,16 @@ class ConsoleSettings;
 class ConsoleVariable
 {
 public:
-	int var;
+	std::variant<int, real> var;
+
+	template<typename T> T get()
+	{
+		return std::get<T>(var);
+	}
+	real varReal();
+	int varInt();
 	ConsoleVariable(std::string name, int variable);
+	ConsoleVariable(std::string name, real variable);
 };
 
 
@@ -66,5 +75,3 @@ public:
 
 	static ConsoleSettings* settings;
 };
-
-

@@ -10,6 +10,7 @@
 #include "FogOfWarMaterial.h"
 
 ConsoleVariable Tank::boidDebug("boidDebug", 0);
+ConsoleVariable Tank::maxSpeed("maxSpeed", 2.0f);
 
 void Tank::loadModels()
 {
@@ -332,6 +333,7 @@ void Tank::accelerate(Vector2 velocityTarget)
     else
         turnRate = 0;
 
+    auto maxSpeed = this->maxSpeed.get<real>();
     auto radialAcc = geoDir.perp()*turnRate*maxSpeed;
 
     auto x = radialAcc;
@@ -401,7 +403,7 @@ void Tank::update(real dt)
             // TODO: break this (fow check) into a separate function
             bool isInFog = false;
             if(dynamic_cast<Tank*>(unit))
-                isInFog = scene->getTerrain()->getFog(unit->getGeoPosition().x, unit->getGeoPosition().y) && scene->getTerrain()->fogOfWarEnabled.var;
+                isInFog = scene->getTerrain()->getFog(unit->getGeoPosition().x, unit->getGeoPosition().y) && scene->getTerrain()->fogOfWarEnabled.varInt();
             else if(Building* building = dynamic_cast<Building*>(unit); building)
             {
                 int height = scene->getTerrain()->getHeight();
@@ -410,7 +412,7 @@ void Tank::update(real dt)
                 {
                     int y = p/width;
                     int x = p%width;
-                    isInFog = scene->getTerrain()->getFog(x, y) && scene->getTerrain()->fogOfWarEnabled.var;
+                    isInFog = scene->getTerrain()->getFog(x, y) && scene->getTerrain()->fogOfWarEnabled.varInt();
                     if(!isInFog)
                         break;
                 }
@@ -441,6 +443,7 @@ void Tank::update(real dt)
         acceleration = 0;
     }
 
+    auto maxSpeed = this->maxSpeed.get<real>();
     if(geoVelocity.length() > maxSpeed)
         geoVelocity = geoVelocity.normalized()*maxSpeed;
 
@@ -481,7 +484,7 @@ void Tank::update(real dt)
         // we have separate fow for player and enemy
         auto p = (enemyTarget->isEnemy() ? enemyTarget : this)->getGeoPosition();
         if(dynamic_cast<Tank*>(enemyTarget))
-            isInFog = scene->getTerrain()->getFog(p.x, p.y) && scene->getTerrain()->fogOfWarEnabled.var;
+            isInFog = scene->getTerrain()->getFog(p.x, p.y) && scene->getTerrain()->fogOfWarEnabled.varInt();
         else if(Building* building = dynamic_cast<Building*>(enemyTarget); building)
         {
             int height = scene->getTerrain()->getHeight();
@@ -490,7 +493,7 @@ void Tank::update(real dt)
             {
                 int y = p/width;
                 int x = p%width;
-                isInFog = scene->getTerrain()->getFog(x, y) && scene->getTerrain()->fogOfWarEnabled.var;
+                isInFog = scene->getTerrain()->getFog(x, y) && scene->getTerrain()->fogOfWarEnabled.varInt();
                 if(!isInFog)
                     break;
             }
@@ -538,6 +541,7 @@ Vector2 Tank::seek()
                     this->target = Vector3(0, 0, 0);
             }
 
+            auto maxSpeed = this->maxSpeed.get<real>();
             auto speed = maxSpeed;
             if(path.size() == 1)
             {
@@ -616,6 +620,8 @@ Vector2 Tank::separate()
                 continue;
             auto e = (pos1 - pos2);
             auto l = std::max(1.15f, e.length());
+
+            auto maxSpeed = this->maxSpeed.get<real>();
             // Ranking units by their address and only having lower-ranked units yield way seems
             // to give a bit better result when many units try to get through a narrow gap
 
@@ -636,7 +642,7 @@ Vector2 Tank::boidCalc()
 {
     auto evade_ = evade(), seek_ = seek(), avoid_ = avoid(), separate_ = separate();
     
-    if(boidDebug.var)
+    if(boidDebug.varInt())
     {
         if(evade_)
             ShapeDrawer::drawArrow(pos, evade_.to3(), evade_.length(), 0.02, Vector3(1, 0, 0));

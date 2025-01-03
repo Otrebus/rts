@@ -173,7 +173,7 @@ int main()
     int frames = 0;
     real frameTime = 0;
     real avgFps = 0;
-    real prevFogOfWar = Terrain::fogOfWarEnabled.var;
+    real prevFogOfWar = Terrain::fogOfWarEnabled.varInt();
 
     ShapeDrawer::setScene(&scene);
     ShapeDrawer::loadModels();
@@ -217,13 +217,13 @@ int main()
             delete result;
         }
 
-        if(prevFogOfWar != Terrain::fogOfWarEnabled.var)
+        if(prevFogOfWar != Terrain::fogOfWarEnabled.varInt())
         {
             for(auto y = 0; y < terrain.getHeight(); y++)
             {
                 for(auto x = 0; x < terrain.getWidth(); x++)
                 {
-                    terrain.setFog(x, y, Terrain::fogOfWarEnabled.var);
+                    terrain.setFog(x, y, Terrain::fogOfWarEnabled.varInt());
                 }
             }
         }
@@ -237,7 +237,7 @@ int main()
                 continue;
             auto pos = unit->getPosition();
 
-            if(Terrain::fogOfWarEnabled.var)
+            if(Terrain::fogOfWarEnabled.varInt())
             {
                 for(auto x = std::max(0, int(pos.x) - fogR); x <= std::min(int(pos.x) + fogR, terrain.getWidth()-1); x++)
                 {
@@ -267,7 +267,7 @@ int main()
                 scene.removeLight(light);
         }
 
-        if(Terrain::fogOfWarEnabled.var)
+        if(Terrain::fogOfWarEnabled.varInt())
         {
             for(auto p : fovUpdate)
             {
@@ -301,7 +301,6 @@ int main()
         }
 
         terrain.draw();
-        //terrain.updateAdmissiblePoints();
 
         for(auto& entity : scene.getEntities())
         {
@@ -328,7 +327,7 @@ int main()
         for(auto particle : scene.getParticles())
         {
             particle->update(dt);
-            if(particle->isAlive() && (!Terrain::fogOfWarEnabled.var || !terrain.getFog(particle->getPos().x, particle->getPos().y)))
+            if(particle->isAlive() && (!Terrain::fogOfWarEnabled.varInt() || !terrain.getFog(particle->getPos().x, particle->getPos().y)))
                 P.push_back(particle->serialize());
         }
         std::sort(P.begin(), P.end(), [&scene](const auto p1, const auto& p2) { return (p1.pos-scene.getCamera()->getPos()).length2() > (p2.pos-scene.getCamera()->getPos()).length2(); });
@@ -383,7 +382,7 @@ int main()
             }
             glUniform1i(glGetUniformLocation(program->getId(), std::format("nLights", i).c_str()), scene.getLights().size());
         }
-        prevFogOfWar = Terrain::fogOfWarEnabled.var;
+        prevFogOfWar = Terrain::fogOfWarEnabled.varInt();
     }
 
     quitting = true;

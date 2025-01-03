@@ -186,7 +186,7 @@ void Console::handleInput(const Input& input)
             }
             else
             {
-                history.push_back( { std::to_string(ConsoleSettings::getVariable(varName)->var), ConsoleHistoryEntry::Output } );
+                history.push_back( { std::to_string(ConsoleSettings::getVariable(varName)->get<int>()), ConsoleHistoryEntry::Output } );
             }
             if(commandHistory.empty() || commandHistory.back() != textInput)
                 commandHistory.push_back(textInput);
