@@ -14,6 +14,11 @@ class ConsoleVariable
 public:
 	std::variant<int, real> var;
 
+	enum Type
+	{
+		Int, Real
+	} type;
+
 	template<typename T> T get()
 	{
 		return std::get<T>(var);

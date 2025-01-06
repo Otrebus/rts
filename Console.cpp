@@ -168,14 +168,15 @@ void Console::handleInput(const Input& input)
             else if(ss >> arg)
             {
                 auto ss2 = std::stringstream(arg);
-                int num;
+                real num;
                 if(ss2 >> num)
                 {
                     if(ss >> arg)
                         history.push_back( { "Syntax error", ConsoleHistoryEntry::Output });
                     else
                     {
-                        ConsoleSettings::setVariable(varName, num);
+                        auto var = ConsoleSettings::getVariable(varName);
+                        var->var = var->type == var->Int ? int(num) : num;
                         history.push_back( { varName + " set to " + std::to_string(num), ConsoleHistoryEntry::Output } );
                     }
                 }

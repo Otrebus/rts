@@ -5,12 +5,14 @@ ConsoleVariable::ConsoleVariable(std::string name, int variable)
 {
 	var = variable;
 	ConsoleSettings::getSettings()->registerVariable(name, this);
+	type = Type::Int;
 }
 
 ConsoleVariable::ConsoleVariable(std::string name, real variable)
 {
 	var = variable;
 	ConsoleSettings::getSettings()->registerVariable(name, this);
+	type = Type::Real;
 }
 
 real ConsoleVariable::varReal()
