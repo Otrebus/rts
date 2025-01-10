@@ -27,6 +27,8 @@ public:
 	int varInt();
 	ConsoleVariable(std::string name, int variable);
 	ConsoleVariable(std::string name, real variable);
+	ConsoleVariable(std::string name, double variable);
+	ConsoleVariable(std::string name, long double variable);
 };
 
 

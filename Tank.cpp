@@ -10,7 +10,20 @@
 #include "FogOfWarMaterial.h"
 
 ConsoleVariable Tank::boidDebug("boidDebug", 0);
+
 ConsoleVariable Tank::maxSpeed("maxSpeed", 2.0f);
+ConsoleVariable Tank::maxForwardAcc("maxForwardAcc", 0.7f);
+ConsoleVariable Tank::maxBreakAcc("maxBreakAcc", 0.7f);
+
+ConsoleVariable Tank::turretYawRate("turretYawRate", pi/4);
+ConsoleVariable Tank::turretPitchRate("turretPitchRate", 0.25*pi/4);
+
+ConsoleVariable Tank::minTurretPitch("minTurretPitch", -10_deg);
+ConsoleVariable Tank::maxTurretPitch("maxTurretPitch", 90_deg);
+
+ConsoleVariable Tank::bulletSpeed("bulletSpeed", 5.0);
+ConsoleVariable Tank::fireInterval("fireInterval", 1.5);
+
 
 void Tank::loadModels()
 {
@@ -222,6 +235,8 @@ void Tank::updateTurret(real dt)
     absGunUp = (absGunDir%(absTurDir%up)).normalized();
     absMuzzlePos = absGunPos + absGunDir*gunLength;
 
+    auto turretYawRate = this->turretYawRate.get<real>();
+
     if(std::abs(std::acos(u*v)) < dt*turretYawRate)
         u = v;
     else
@@ -230,6 +245,8 @@ void Tank::updateTurret(real dt)
     auto targetTheta = std::max(std::asin(-0.1f), std::asin(turretTarget.z));
     auto turretTheta = std::asin(turretDir.z);
     real theta;
+
+    auto turretPitchRate = this->turretPitchRate.get<real>();
 
     if(std::abs(targetTheta - turretTheta) < dt*turretPitchRate)
         theta = targetTheta;
@@ -289,6 +306,7 @@ void Tank::draw(Material* mat)
 void Tank::shoot()
 {
     auto p = new Projectile(absMuzzlePos, absGunDir, absTurUp, this);
+    auto bulletSpeed = this->bulletSpeed.get<real>();
     p->setVelocity(absGunDir.normalized()*bulletSpeed + velocity);
     p->init(scene);
     scene->addEntity(p);
@@ -334,12 +352,17 @@ void Tank::accelerate(Vector2 velocityTarget)
         turnRate = 0;
 
     auto maxSpeed = this->maxSpeed.get<real>();
+    auto maxForwardAcc = this->maxForwardAcc.get<real>();
+    auto maxBreakAcc = this->maxBreakAcc.get<real>();
+
     auto radialAcc = geoDir.perp()*turnRate*maxSpeed;
 
     auto x = radialAcc;
     auto v = accelerationTarget;
     auto ct = !x ? 0 : x.normalized()*v.normalized();
     auto projAcc = ct ? x.length()*v.normalized()/ct - x : (v*geoDir)*geoDir;
+
+    std::cout << (projAcc*geoDir) << std::endl;
 
     if(projAcc*geoDir < 0 && geoDir*geoVelocity <= 0) // We don't want to reverse at maxBreakAcc
         acceleration = 0;
@@ -350,6 +373,7 @@ void Tank::accelerate(Vector2 velocityTarget)
 void Tank::brake()
 {
     turnRate = 0;
+    auto maxBreakAcc = this->maxBreakAcc.get<real>();
     acceleration = -maxBreakAcc;
 }
 
@@ -365,6 +389,8 @@ bool Tank::setBallisticTarget(Unit* enemyTarget)
     auto g = Vector3(0, 0, -gravity);
     auto v = enemyTarget->velocity - velocity;
     auto p = enemyTarget->pos - absMuzzlePos; // NOTE: this isn't quite right
+
+    auto bulletSpeed = this->bulletSpeed.get<real>();
 
     ld t4 = g*g/4;
     ld t3 = -v*g;
@@ -476,6 +502,8 @@ void Tank::update(real dt)
     }
 
     updateTurret(dt);
+
+    auto fireInterval = this->fireInterval.get<real>();
 
     if(enemyTarget && time - lastFired > fireInterval)
     {
@@ -672,6 +700,9 @@ bool Tank::canTurretAbsoluteTarget(Vector3 target)
     assert(target.to2());
     target.normalize();
     turretTarget = rebaseOrtho(target, dir%up, dir, up);
+
+    auto minTurretPitch = this->minTurretPitch.get<real>();
+    auto maxTurretPitch = this->maxTurretPitch.get<real>();
 
     if(turretTarget.z < std::asin(minTurretPitch) || turretTarget.z > std::asin(maxTurretPitch))
         return false;

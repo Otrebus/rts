@@ -126,6 +126,7 @@
   + Have it affect decisions like shooting etc
   - Fix fog update when fogOfWar 0 sets back to 1
 - Make fog of war apply to buildings and have some more generic handling than the stuff in Tank::draw() if possible
+- Bug: Setting fogofwar to 0 and then switching to textured terrain makes tanks invisible forever
 - Code smell: ((TerrainMesh*)(terrainModel->getMeshes()[0])) etc
 + Bug: mouse scroll at start brings zoom to infinity
 - Make tank consts static

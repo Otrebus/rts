@@ -176,7 +176,10 @@ void Console::handleInput(const Input& input)
                     else
                     {
                         auto var = ConsoleSettings::getVariable(varName);
-                        var->var = var->type == var->Int ? int(num) : num;
+                        if(var->type == var->Int)
+                            var->var = int(num);
+                        else
+                            var->var = num;
                         history.push_back( { varName + " set to " + std::to_string(num), ConsoleHistoryEntry::Output } );
                     }
                 }

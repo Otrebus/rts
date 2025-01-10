@@ -53,17 +53,24 @@ public:
     const real maxTurnAcc = 2000;
 
     static ConsoleVariable maxSpeed;
-    const real maxForwardAcc = 0.7; // TODO: breakacc vs forwardacc
-    const real maxBreakAcc = 3;
+    static ConsoleVariable maxForwardAcc;
+    static ConsoleVariable maxBreakAcc;
+    //const real maxBreakAcc = 3;
 
-    const real turretYawRate = pi/4;
-    const real turretPitchRate = 0.25*pi/4;
+    //const real turretYawRate = pi/4;
+    //const real turretPitchRate = 0.25*pi/4;
 
-    const real minTurretPitch = -10_deg;
-    const real maxTurretPitch = 90_deg; // Exaggerated for now
+    //const real minTurretPitch = -10_deg;
+    //const real maxTurretPitch = 90_deg; // Exaggerated for now
 
-    const real bulletSpeed = 5;
-    const real fireInterval = 1.5;
+    static ConsoleVariable bulletSpeed;
+    static ConsoleVariable fireInterval;
+
+    static ConsoleVariable turretYawRate;
+    static ConsoleVariable turretPitchRate;
+
+    static ConsoleVariable minTurretPitch;
+    static ConsoleVariable maxTurretPitch;
 
     real lastFired;
 
