@@ -94,7 +94,7 @@ std::string realToString(real num, int significantDigits)
 
 std::string lower(const std::string& str)
 {
-    std::string output(' ', str.size());
+    std::string output(str.size(), ' ');
     std::transform(str.begin(), str.end(), output.begin(), [](auto c){ return std::tolower(c); });
     return output;
 }

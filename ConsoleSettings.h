@@ -4,6 +4,7 @@
 #include <algorithm>
 #include "Utils.h"
 #include <variant>
+#include <iostream>
 
 #pragma once
 
@@ -56,7 +57,7 @@ public:
 		getSettings()->keyMap[name]->var = var;
 	}
 
-	static bool findVariable(std::string name)
+	static bool hasVariable(std::string name)
 	{
 		return getSettings()->keyMap.contains(name);
 	}
@@ -70,12 +71,8 @@ public:
 	{
 		std::vector<std::string> output;
 		for(auto& it : getSettings()->keyMap)
-		{
-			if(lower(const_cast<std::string&>(it.first)).starts_with(prefix))
-			{
+			if(lower(it.first).starts_with(lower(prefix)))
 				output.push_back(it.first);
-			}
-		}
 		std::sort(output.begin(), output.end());
 		return output;
 	}

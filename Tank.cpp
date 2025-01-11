@@ -362,8 +362,6 @@ void Tank::accelerate(Vector2 velocityTarget)
     auto ct = !x ? 0 : x.normalized()*v.normalized();
     auto projAcc = ct ? x.length()*v.normalized()/ct - x : (v*geoDir)*geoDir;
 
-    std::cout << (projAcc*geoDir) << std::endl;
-
     if(projAcc*geoDir < 0 && geoDir*geoVelocity <= 0) // We don't want to reverse at maxBreakAcc
         acceleration = 0;
     else

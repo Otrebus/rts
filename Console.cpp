@@ -161,7 +161,7 @@ void Console::handleInput(const Input& input)
             std::string varName, arg;
 
             ss >> varName;
-            if(!ConsoleSettings::findVariable(varName))
+            if(!ConsoleSettings::hasVariable(varName))
             {
                 history.push_back( { "Unknown variable \"" + varName + "\"", ConsoleHistoryEntry::Output } );
             }
@@ -190,7 +190,13 @@ void Console::handleInput(const Input& input)
             }
             else
             {
-                history.push_back( { std::to_string(ConsoleSettings::getVariable(varName)->get<int>()), ConsoleHistoryEntry::Output } );
+                auto var = ConsoleSettings::getVariable(varName);
+                std::visit(
+                    [&](auto&& value) {
+                        history.push_back({ std::to_string(value), ConsoleHistoryEntry::Output });
+                    },
+                    var->var
+                );
             }
             if(commandHistory.empty() || commandHistory.back() != textInput)
                 commandHistory.push_back(textInput);
@@ -206,6 +212,9 @@ void Console::handleInput(const Input& input)
         if(!tabbing)
         {
             completionStrings = ConsoleSettings::getCompletionStrings(textInput);
+            std::cout << "Completion strings are:" << std::endl;
+            for(auto s : completionStrings)
+                std::cout << s << std::endl;
             tabbing = true;
             completionIndex = 0;
         }
