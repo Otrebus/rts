@@ -55,13 +55,6 @@ public:
     static ConsoleVariable maxSpeed;
     static ConsoleVariable maxForwardAcc;
     static ConsoleVariable maxBreakAcc;
-    //const real maxBreakAcc = 3;
-
-    //const real turretYawRate = pi/4;
-    //const real turretPitchRate = 0.25*pi/4;
-
-    //const real minTurretPitch = -10_deg;
-    //const real maxTurretPitch = 90_deg; // Exaggerated for now
 
     static ConsoleVariable bulletSpeed;
     static ConsoleVariable fireInterval;
@@ -111,4 +104,3 @@ public:
 
     static Material* fowMaterial;
 };
-

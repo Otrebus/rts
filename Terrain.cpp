@@ -409,6 +409,8 @@ void Terrain::draw()
 
 real Terrain::getElevation(real x, real y) const
 {
+    if(x == int(x) && y == int(y))
+        return points[y*width+x].z;
     // TODO: could overflow, check
     // temporary (ha!) hack
     if(y > 0)

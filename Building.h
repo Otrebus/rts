@@ -17,8 +17,10 @@ public:
     Building(int x, int y, int length, int width, std::vector<int> footprint);
     virtual ~Building();
 
-    bool buildingWithin(real posX, real posY, int length, int width);
-    bool pointWithinFootprint(int posX, int posY);
+    bool buildingWithin(real posX, real posY, int length, int width) const;
+    bool pointWithinFootprint(int posX, int posY) const;
+    bool pointWithin(int posX, int posY) const;
+
     void draw(Material* mat);
     void update(real dt);
     void plant(const Terrain& terrain);

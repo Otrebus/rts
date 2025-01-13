@@ -31,7 +31,7 @@
 + When clicking move on inadmissible terrain, place movement marker somewhere closer
 + Rename depth to width throughout in terms of dimensions
 + Make camera toggle and not reset and have a specific reset button
-- Check if checking for release input checks that release can be both startStart and stateEnd, check
+- Check if checking for release input checks that release can be both stateStart and stateEnd, check
 + Path straightening doesn't seem perfect
 + When paint-moving, one end might get two units assigned (with 4 units selected)
 + When path finding results return, the first waypoint of the tank can be right next to it (most noticable at low fps) - replace the first waypoint with the tank position?
@@ -52,6 +52,7 @@
     + Gun recoil
     + Light, smoke, particles
     - Improve hit effect
+    - Add death particles
 + Death animation/corpse
 - Tank textures
 + Friendly/Enemy units
@@ -74,7 +75,7 @@
 + Modelmanager, getModel vs cloneModel vs createModel vs deleteModel, rework somehow
 + Text output like fps counter
   + Signed-distance text?
-- Debug console
++ Debug console
 + If assigning move target to inadmissible terrain, find closest allowable or handle otherwise
 + Turrets are offset when the tank is on a slope
 + Degree suffix (that converts from degrees to radians?)
@@ -129,13 +130,15 @@
 - Bug: Setting fogofwar to 0 and then switching to textured terrain makes tanks invisible forever
 - Code smell: ((TerrainMesh*)(terrainModel->getMeshes()[0])) etc
 + Bug: mouse scroll at start brings zoom to infinity
+- Bug: Opening console with non-English keyboard language types out the console key
 - Make tank consts static
 + Make better admissible-terrain-visualizer
 - Combine init/constructor for meshes?
 - Command queuing
 - Improve collisions further
 - Minimap
-- Buildings/construction
++ Buildings/construction
+  - Use to build new tanks
 - Airplanes
 - Other vehicle types (bots, vehicles)
 - Enemy AI
