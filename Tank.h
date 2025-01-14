@@ -48,9 +48,8 @@ public:
     Model3d* turret;
     Model3d* gun;
 
-    const real maxTurnRate = 1.2*pi/4;
-    const real maxRadialAcc = 4;
-    const real maxTurnAcc = 2000;
+    static ConsoleVariable maxTurnRate;
+    static ConsoleVariable maxRadialAcc;
 
     static ConsoleVariable maxSpeed;
     static ConsoleVariable maxForwardAcc;
@@ -99,7 +98,6 @@ public:
 
     static BoundingBox tankBoundingBox;
 
-    static ConsoleVariable tankVar;
     static ConsoleVariable boidDebug;
 
     static Material* fowMaterial;

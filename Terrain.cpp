@@ -60,58 +60,59 @@ void Terrain::calcMinMax()
 
 TerrainMesh* Terrain::createMesh(std::string fileName, bool textured = false)
 {
-    auto [colors, width, height] = readBMP(fileName, false);
-    std::vector<MeshVertex3> vertices(width*height);
-    points.clear();
-    triangleIndices.clear();
-
-    auto H = [&colors, &width, &height](int x, int y)
+    if(points.empty())
     {
-        return colors[width*3*(height-y-1)+x*3]/255.0*width/15;
-    };
+        auto [colors, width, height] = readBMP(fileName, false);
 
-    for(int y = 0; y < height; y++)
-    {
-        for(int x = 0; x < width; x++)
+        vertices.resize(width*height);
+
+        auto H = [&colors, &width, &height](int x, int y)
         {
-            real X = x;
-            real Y = y;
+            return colors[width*3*(height-y-1)+x*3]/255.0*width/15;
+        };
 
-            auto fx = x == 0, lx = x == width-1;
-            auto fy = y == 0, ly = y == height-1;
-
-            auto dx = ((!lx ? H(x+1, y) : H(x, y)) - (!fx ? H(x-1, y) : H(x, y)))/((!fx + !lx));
-            auto dy = ((!ly ? H(x, y+1) : H(x, y)) - (!fy ? H(x, y-1) : H(x, y)))/((!fy + !ly));
-            real l = std::sqrt(dx*dx+dy*dy+1);
-            points.push_back(Vector3(X, Y, H(x, y) + 3.0));
-            vertices[width*y+x] = MeshVertex3(X, Y, H(x, y) + 3.0, -dx/l, -dy/l, 1.0/l, x, y);
-            vertices[width*y+x].selected = 0;
-        }
-    }
-    for(int y = 0; y < height-1; y++)
-    {
-        for(int x = 0; x < width-1; x++)
+        for(int y = 0; y < height; y++)
         {
-            int a = width*y + x;
-            int b = width*y + x+1;
-            int c = width*(y+1) + x+1;
-            int d = width*(y+1) + x;
-            triangleIndices.insert(triangleIndices.end(), { a, c, d, a, b, c });
-            if(!isTriangleAdmissible(points[a], points[b], points[c]))
-                vertices[a].selected = vertices[b].selected = vertices[c].selected = 1;
-            if(!isTriangleAdmissible(points[a], points[c], points[d]))
-                vertices[a].selected = vertices[c].selected = vertices[d].selected = 1;
+            for(int x = 0; x < width; x++)
+            {
+                real X = x;
+                real Y = y;
+
+                auto fx = x == 0, lx = x == width-1;
+                auto fy = y == 0, ly = y == height-1;
+
+                auto dx = ((!lx ? H(x+1, y) : H(x, y)) - (!fx ? H(x-1, y) : H(x, y)))/((!fx + !lx));
+                auto dy = ((!ly ? H(x, y+1) : H(x, y)) - (!fy ? H(x, y-1) : H(x, y)))/((!fy + !ly));
+                real l = std::sqrt(dx*dx+dy*dy+1);
+                points.push_back(Vector3(X, Y, H(x, y) + 3.0));
+                vertices[width*y+x] = MeshVertex3(X, Y, H(x, y) + 3.0, -dx/l, -dy/l, 1.0/l, x, y);
+                vertices[width*y+x].selected = 0;
+            }
         }
+        for(int y = 0; y < height-1; y++)
+        {
+            for(int x = 0; x < width-1; x++)
+            {
+                int a = width*y + x;
+                int b = width*y + x+1;
+                int c = width*(y+1) + x+1;
+                int d = width*(y+1) + x;
+                triangleIndices.insert(triangleIndices.end(), { a, c, d, a, b, c });
+                if(!isTriangleAdmissible(points[a], points[b], points[c]))
+                    vertices[a].selected = vertices[b].selected = vertices[c].selected = 1;
+                if(!isTriangleAdmissible(points[a], points[c], points[d]))
+                    vertices[a].selected = vertices[c].selected = vertices[d].selected = 1;
+            }
+        }
+
+        this->width = width;
+        this->height = height;
+        calcMinMax();
     }
-
-    this->width = width;
-    this->height = height;
-
     if(terrainMesh)
         delete terrainMesh;
-    Material* mat = textured ? (Material*) new TexturedTerrainMaterial() : new TerrainMaterial();
 
-    calcMinMax();
+    Material* mat = textured ? (Material*) new TexturedTerrainMaterial() : new TerrainMaterial();
 
     return terrainMesh = new TerrainMesh(vertices, triangleIndices, mat);
 }
@@ -515,7 +516,10 @@ void Terrain::setElevation(int x, int y, real h)
 {
     int p = x + y*width;
     points[p].z = h;
+
+    // TODO: update normal
     ((TerrainMesh*)(terrainModel->getMeshes()[0]))->updateElevation(p, h);
+    vertices[x + y*width].pos.z = h;
 
     // TODO: update path finding points
 }

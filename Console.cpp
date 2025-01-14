@@ -203,7 +203,7 @@ void Console::handleInput(const Input& input)
             textInput = "";
         }
     }
-    else if(input.stateStart == InputType::Char && input.key != '`')
+    else if(input.stateStart == InputType::Char && input.key != GLFW_KEY_GRAVE_ACCENT)
     {
         textInput += (char) input.key;
     }

@@ -6,7 +6,6 @@ bool ModelManager::hasModel(const std::string& identifier)
     return templateMap.contains(identifier);
 }
 
-
 Model3d* ModelManager::instantiateModel(const std::string& identifier)
 {
     assert(ModelManager::hasModel(identifier));
@@ -20,12 +19,10 @@ Model3d* ModelManager::instantiateModel(const std::string& identifier)
     return newModel;
 }
 
-
 void ModelManager::deleteModel(const std::string& identifier, Model3d* model)
 {
     delete model; // TODO: superfluous function
 }
-
 
 Model3d* ModelManager::addModel(const std::string& name, Model3d* model)
 {
@@ -34,12 +31,10 @@ Model3d* ModelManager::addModel(const std::string& name, Model3d* model)
     return model;
 }
 
-
 Model3d* ModelManager::getModel(const std::string& name)
 {
     return templateMap[name];
 }
-
 
 struct ObjVertex
 {
@@ -51,7 +46,6 @@ struct ObjVertex
 
     std::vector<ObjTriangle*> triangles;
 };
-
 
 struct ObjTriangle
 {
@@ -66,13 +60,11 @@ struct ObjTriangle
     }
 };
 
-
 Model3d::~Model3d()
 {
     for(auto& mesh : meshes)
         delete mesh;
 }
-
 
 Model3d::Model3d(Mesh3d& mesh)
 {
@@ -155,13 +147,11 @@ void Model3d::draw(Material* mat)
     }
 }
 
-
 void Model3d::updateUniforms(Material* mat)
 {
     for(auto& mesh : meshes)
         mesh->updateUniforms(mat);
 }
-
 
 void Model3d::setPosition(Vector3 pos)
 {
@@ -170,14 +160,12 @@ void Model3d::setPosition(Vector3 pos)
         mesh->setPosition(pos);
 }
 
-
 void Model3d::setSize(Vector3 size)
 {
     this->size = size;
     for(auto& mesh : meshes)
         mesh->setSize(size);
 }
-
 
 void Model3d::setDirection(Vector3 dir, Vector3 up)
 {
@@ -187,12 +175,10 @@ void Model3d::setDirection(Vector3 dir, Vector3 up)
         mesh->setDirection(dir, up);
 }
 
-
 const std::vector<Mesh3d*>& Model3d::getMeshes() const
 {
     return meshes;
 }
-
 
 /**
  * Reads a Wavefront .mtl file.

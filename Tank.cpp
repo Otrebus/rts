@@ -24,6 +24,8 @@ ConsoleVariable Tank::maxTurretPitch("maxTurretPitch", 90_deg);
 ConsoleVariable Tank::bulletSpeed("bulletSpeed", 5.0);
 ConsoleVariable Tank::fireInterval("fireInterval", 1.5);
 
+ConsoleVariable Tank::maxTurnRate("maxTurnRate", 1.2*pi/4);
+ConsoleVariable Tank::maxRadialAcc("maxRadialAcc", 4.f);
 
 void Tank::loadModels()
 {
@@ -377,6 +379,8 @@ void Tank::brake()
 
 void Tank::turn(bool left)
 {
+    auto maxRadialAcc = this->maxRadialAcc.get<float>();
+    auto maxTurnRate = this->maxRadialAcc.get<float>();
     turnRate = std::min(maxTurnRate, maxRadialAcc/velocity.length());
     if(!left)
         turnRate = -turnRate;

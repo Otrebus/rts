@@ -14,6 +14,7 @@ void handleInput(const real& prevTime, const real& time, CameraControl& cameraCo
         {
             cameraControl.handleInput(*input);
 
+            // TODO: put this somewhere else
             if (input->stateStart == InputType::KeyPress && input->key == GLFW_KEY_Z)
             {
                 auto mode = terrain.getDrawMode();

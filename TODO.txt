@@ -115,9 +115,9 @@
 + Boiddebug yellow (separate) going crazy when friendly tank drives near enemy tanks
 + Bug: sometimes paths go through buildings
 - updateAdmissiblePoints recalculates for every building once per frame; slow?
-- TODO: break this (fow check) into a separate function
-- Make tank performance console vars
-- See pathbug.png (top right from start location)
++ TODO: break this (fow check) into a separate function
++ Make tank performance console vars
++ See pathbug.png (top right from start location)
 - Figure out some better way of dealing with types of units instead of doing dynamic_cast (and same with buildings)
 - For buildings, dealing with half-coordinates and hoping the results of floating-point operations is an integer is probably not good
 - Fog of war
@@ -128,10 +128,12 @@
   - Fix fog update when fogOfWar 0 sets back to 1
 - Make fog of war apply to buildings and have some more generic handling than the stuff in Tank::draw() if possible
 - Bug: Setting fogofwar to 0 and then switching to textured terrain makes tanks invisible forever
+- Fix unhandled conditions when a tank is on the edge of the map
 - Code smell: ((TerrainMesh*)(terrainModel->getMeshes()[0])) etc
 + Bug: mouse scroll at start brings zoom to infinity
-- Bug: Opening console with non-English keyboard language types out the console key
-- Make tank consts static
++ Bug: Opening console with non-English keyboard language types out the console key
+- Make terrain changes remain after a) placing a building b) cycling through the terrain
++ Make tank consts static
 + Make better admissible-terrain-visualizer
 - Combine init/constructor for meshes?
 - Command queuing
