@@ -8,6 +8,7 @@
 #include "Terrain.h"
 #include "FogOfWarMaterial.h"
 #include "BuildingWreck.h"
+#include "PathFinding.h"
 
 
 Building::Building(int x, int y, int length, int width, std::vector<int> footprint) : Unit(pos, { 1, 0, 0 }, { 0, 0, 1 }), length(length), width(width), footprint(footprint)
@@ -145,6 +146,18 @@ bool Building::buildingWithin(real posX, real posY, int length, int width) const
     return withinX && withinY;
 }
 
+void Building::produceTank()
+{
+    auto tank = new Tank(pos, dir, up, scene->getTerrain());
+    scene->addEntity(tank);
+    tank->init(scene);
+    PathFindingRequest* request = new PathFindingRequest;
+    request->requester = tank;
+    request->start = getPosition().to2();
+    request->dest = (pos + dir.normalized()*3).to2();
+    tank->setCurrentPathfindingRequest(request);
+    addPathFindingRequest(request);
+}
 
 bool Building::pointWithinFootprint(int posX, int posY) const
 {

@@ -515,6 +515,16 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
 
         movingUnit = 0;
     }
+
+    if(input.stateStart == InputType::KeyPress && input.key == GLFW_KEY_G)
+    {
+        for(auto unit : units)
+        {
+            if(unit->isSelected() && dynamic_cast<Building*>(unit))
+                ((Building*)unit)->produceTank();
+        }
+    }
+
     if(input.stateStart == InputType::MousePosition)
     {
         mouseX = input.posX;

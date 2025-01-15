@@ -21,6 +21,8 @@ public:
     bool pointWithinFootprint(int posX, int posY) const;
     bool pointWithin(int posX, int posY) const;
 
+    void produceTank();
+
     void draw(Material* mat);
     void update(real dt);
     void plant(const Terrain& terrain);
@@ -37,4 +39,3 @@ public:
     int length, width, height;
     static Material* fowMaterial;
 };
-

@@ -380,7 +380,7 @@ void Tank::brake()
 void Tank::turn(bool left)
 {
     auto maxRadialAcc = this->maxRadialAcc.get<float>();
-    auto maxTurnRate = this->maxRadialAcc.get<float>();
+    auto maxTurnRate = this->maxTurnRate.get<float>();
     turnRate = std::min(maxTurnRate, maxRadialAcc/velocity.length());
     if(!left)
         turnRate = -turnRate;

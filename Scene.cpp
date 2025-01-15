@@ -204,7 +204,7 @@ void Scene::moveEntities(real dt)
         }
         for(auto entity2 : entities)
         {
-            if(entity2 == entity)
+            if(entity2 == entity || dynamic_cast<Building*>(entity2))
                 continue;
             auto r = (entity2->geoPos-entity->geoPos);
             auto l = r.length();
