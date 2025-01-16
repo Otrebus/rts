@@ -1,7 +1,9 @@
 #include "GeometryUtils.h"
 #include "Ray.h"
 #include "Unit.h"
+#include "Mesh3d.h"
 #include <cassert>
+#include "Vertex3d.h"
 
 real intersectRayCircle(Vector2 pos, Vector2 dir, Vector2 c, real radius)
 {
@@ -186,4 +188,59 @@ real getArrivalRadius(Vector2 p, const std::vector<Unit*>& units)
             L = M;
     }
     return L;
+}
+
+
+real scalarProj(Vector3 u, Vector3 v)
+{
+    return u*v;
+}
+
+Mesh3d* splitMesh(Mesh3d& mesh, Vector3 pos, Vector3 dir)
+{
+    int num = 0;
+    std::unordered_map<Vertex3, int> vMap;
+    std::vector<int> outTri;
+    std::vector<Vertex3> vOut;
+
+    dir.normalize();
+    for(int i = 0; i < mesh.triangles.size(); i += 3)
+    {
+        std::vector<int> out;
+        auto& tris = mesh.triangles;
+        int T[3] = { tris[i], tris[i+1], tris[i+2] };
+        for(int j = 0; j < 3; j++)
+        {
+            auto u = mesh.v[T[j]], v = mesh.v[T[(j+1)%3]];
+            auto up = scalarProj(dir, (u.pos - pos));
+            auto vp = scalarProj(dir, (v.pos - pos));
+            if(up >= 0)
+            {
+                if(auto it = vMap.find(u); it == vMap.end())
+                    vMap[u] = num++, vOut.push_back(u);
+                out.push_back(vMap[u]);
+            }
+
+            if(vp < 0 && up > 0 || vp > 0 && up < 0)
+            {
+                auto pos = (u.pos*vp + v.pos*up)/(up + vp);
+                auto n = ((u.normal*vp + v.normal*up)/(up + vp)).normalized();
+                auto tex = (u.tex*vp + v.tex*up)/(up + vp);
+
+                auto vx = Vertex3(pos, n, tex);
+
+                if(auto it = vMap.find(vx); it == vMap.end())
+                    vMap[vx] = num++, vOut.push_back(u);
+                out.push_back(vMap[vx]);
+            }
+        }
+        for(int i = 1; i < out.size()-1; i++)
+        {
+            outTri.push_back(out[0]);
+            outTri.push_back(out[i]);
+            outTri.push_back(out[1+i]);
+        }
+    }
+
+    return new Mesh3d(vOut, outTri, mesh.material);
 }
