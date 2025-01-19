@@ -8,6 +8,8 @@
 #include "ShapeDrawer.h"
 #include "ConsoleSettings.h"
 #include "FogOfWarMaterial.h"
+#include "GeometryUtils.h"
+#include "LambertianMaterial.h"
 
 ConsoleVariable Tank::boidDebug("boidDebug", 0);
 
@@ -121,7 +123,7 @@ void Tank::loadModels()
 
 
 // TODO: no need to get terrain since we have scene->getTerrain()
-Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, dir, up), turnRate(0), acceleration(0), terrain(terrain), gunRecoilPos(0.0f)
+Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, dir, up), turnRate(0), acceleration(0), terrain(terrain), gunRecoilPos(0.0f), constructing(false), completion(0.0f)
 {
     body = ModelManager::instantiateModel("tankbody");
     turret = ModelManager::instantiateModel("tankturret");
@@ -212,12 +214,33 @@ void Tank::updateUniforms()
 
 void Tank::drawTurret(Material* mat)
 {
+    Model3d* turret, *gun;
+    if(constructing)
+    {
+        auto z = (boundingBox.c1.z + completion*(boundingBox.c2.z - boundingBox.c1.z));
+        turret = new Model3d(*splitMesh(*this->turret->meshes[0], Vector3(0, 0, z), Vector3(0, 0, 1)));
+        gun = new Model3d(*splitMesh(*this->gun->meshes[0], Vector3(0, 0, z), Vector3(0, 0, 1)));
+        turret->setScene(scene);
+        gun->setScene(scene);
+        turret->init();
+        gun->init();
+    }
+    else
+    {
+        turret = this->turret;
+        gun = this->gun;
+    }
+
     turret->setDirection(absTurDir, absTurUp);
     turret->setPosition(absTurPos);
 
     gun->setDirection(absGunDir, absGunUp);
     gun->setPosition(absGunPos);
 
+    if(constructing)
+    {
+        mat = new LambertianMaterial(Vector3(0, 0, 0.8));
+    }
     turret->draw(mat);
     gun->draw(mat);
 }
@@ -284,6 +307,27 @@ void Tank::draw(Material* mat)
     destinationLine.setVertices(S);
     
     glBlendFuncSeparate(GL_ZERO, GL_ONE, GL_ONE, GL_ZERO);
+    
+    auto z = (boundingBox.c1.z + completion*(boundingBox.c2.z - boundingBox.c1.z));
+
+    std::cout << completion << std::endl;
+    Model3d* body;
+    if(constructing)
+    {
+        std::vector<Mesh3d*> meshes;
+        body = new Model3d();
+        for(auto mesh : this->body->meshes)
+        {
+            auto newMesh = splitMesh(*mesh, Vector3(0, 0, z), Vector3(0, 0, 1));
+            meshes.push_back(newMesh);
+        }
+        for(auto mesh : meshes)
+            body->addMesh(*mesh);
+        body->setScene(scene);
+        body->init();
+    }
+    else
+        body = this->body;
 
     body->draw(fowMaterial);
     drawTurret(fowMaterial);
@@ -420,6 +464,7 @@ bool Tank::setBallisticTarget(Unit* enemyTarget)
 
 void Tank::update(real dt)
 {
+    completion += dt/30;
     Unit* closestEnemy = nullptr;
     real closestD = inf;
     for(auto unit : scene->getUnits())

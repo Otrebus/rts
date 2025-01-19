@@ -196,6 +196,18 @@ real scalarProj(Vector3 u, Vector3 v)
     return u*v;
 }
 
+
+template<> struct std::hash<Vertex3>
+{
+    std::size_t operator()(const Vertex3& v) const noexcept
+    {
+        std::size_t h1 = std::hash<Vector3>()(v.pos);
+        std::size_t h2 = std::hash<Vector2>()(v.tex);
+        std::size_t h3 = std::hash<Vector3>()(v.normal);
+        return h1 ^ (h2 << 1) ^ (h3 << 1);
+    }
+};
+
 Mesh3d* splitMesh(Mesh3d& mesh, Vector3 pos, Vector3 dir)
 {
     int num = 0;
@@ -223,6 +235,8 @@ Mesh3d* splitMesh(Mesh3d& mesh, Vector3 pos, Vector3 dir)
 
             if(vp < 0 && up > 0 || vp > 0 && up < 0)
             {
+                up = std::abs(up);
+                vp = std::abs(vp);
                 auto pos = (u.pos*vp + v.pos*up)/(up + vp);
                 auto n = ((u.normal*vp + v.normal*up)/(up + vp)).normalized();
                 auto tex = (u.tex*vp + v.tex*up)/(up + vp);
@@ -230,11 +244,11 @@ Mesh3d* splitMesh(Mesh3d& mesh, Vector3 pos, Vector3 dir)
                 auto vx = Vertex3(pos, n, tex);
 
                 if(auto it = vMap.find(vx); it == vMap.end())
-                    vMap[vx] = num++, vOut.push_back(u);
+                    vMap[vx] = num++, vOut.push_back(vx);
                 out.push_back(vMap[vx]);
             }
         }
-        for(int i = 1; i < out.size()-1; i++)
+        for(int i = 1; i < ((int)out.size()-1); i++)
         {
             outTri.push_back(out[0]);
             outTri.push_back(out[i]);

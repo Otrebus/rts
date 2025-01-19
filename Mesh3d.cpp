@@ -26,7 +26,7 @@ Mesh3d::Mesh3d(Mesh3d& mesh)
 {
     this->material = mesh.material->clone();
     this->v = mesh.v;
-    //this->triangles = mesh.triangles;
+    this->triangles = mesh.triangles;
     this->nTriangles = mesh.nTriangles;
     this->VAO = mesh.VAO;
     this->VBO = mesh.VBO;

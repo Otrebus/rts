@@ -55,3 +55,15 @@ class ostream;
 
 std::ostream& operator<<(std::ostream& s, const Vector3& v);
 Vector3 operator*(float, const Vector3& v);
+
+template<> struct std::hash<Vector3>
+{
+    std::size_t operator()(const Vector3& v) const
+    {
+        std::size_t hx = std::hash<float>{}(v.x);
+        std::size_t hy = std::hash<float>{}(v.y);
+        std::size_t hz = std::hash<float>{}(v.z);
+
+        return hx ^ (hy << 1) ^ (hz << 2);
+    }
+};

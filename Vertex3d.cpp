@@ -41,3 +41,8 @@ MeshVertex3::MeshVertex3(std::initializer_list<float> list)
     auto tx = *it++, ty = *it++;
     tex = Vector2(tx, ty);
 }
+
+bool Vertex3::operator==(const Vertex3& v) const
+{
+    return pos == v.pos && tex == v.tex && normal == v.normal;
+}

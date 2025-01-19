@@ -52,3 +52,15 @@ public:
 
 std::ostream& operator<<(std::ostream& s, const Vector2& v);
 Vector2 operator*(float, Vector2);
+
+
+template<> struct std::hash<Vector2>
+{
+    std::size_t operator()(const Vector2& v) const
+    {
+        std::size_t hx = std::hash<float>{}(v.x);
+        std::size_t hy = std::hash<float>{}(v.y);
+
+        return hx ^ (hy << 1);
+    }
+};

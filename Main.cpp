@@ -125,19 +125,20 @@ int main()
 
     //scene.addUnit(new Tank({ 180.480316, 99.7414932, 15.0 }, { 1, 0, 0 }, { 0, 0, 1}, &terrain));
 
-    for(int y = 0; y < 3; y++)
-    {
-        for(int x = 0; x < 3; x++)
-        {
-            scene.addEntity(new Tank({ 165.5f-x, 95.15f-y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain));
-        }
-    }
+    //for(int y = 0; y < 3; y++)
+    //{
+    //    for(int x = 0; x < 3; x++)
+    //    {
+    //        scene.addEntity(new Tank({ 165.5f-x, 95.15f-y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain));
+    //    }
+    //}
 
     
-    auto tank = new Tank({ 215.f, 124.f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+    auto tank = new Tank({ 170.5f, 65.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+    tank->constructing = true;
     scene.addEntity(tank);
 
-    for(int y = 0; y < 3; y++)
+    /*for(int y = 0; y < 3; y++)
     {
         for(int x = 0; x < 3; x++)
         {
@@ -145,7 +146,7 @@ int main()
             enemy->setEnemy(true);
             scene.addEntity(enemy);
         }
-    }
+    }*/
     
     /*
 

@@ -10,6 +10,8 @@ struct Vertex3
     Vertex3(std::initializer_list<float> list);
     Vertex3(real x, real y, real z, real nx, real ny, real nz, real tx, real ty);
 
+    bool operator==(const Vertex3& v) const;
+
     Vector3 pos;
     Vector3 normal;
     Vector2 tex;

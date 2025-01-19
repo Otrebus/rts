@@ -101,4 +101,7 @@ public:
     static ConsoleVariable boidDebug;
 
     static Material* fowMaterial;
+
+    bool constructing;
+    real completion;
 };
