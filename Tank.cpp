@@ -215,34 +215,53 @@ void Tank::updateUniforms()
 void Tank::drawTurret(Material* mat)
 {
     Model3d* turret, *gun;
+
+    this->turret->setDirection(absTurDir, absTurUp);
+    this->turret->setPosition(absTurPos);
+
+    this->gun->setDirection(absGunDir, absGunUp);
+    this->gun->setPosition(absGunPos);
+
     if(constructing)
     {
-        auto z = (boundingBox.c1.z + completion*(boundingBox.c2.z - boundingBox.c1.z));
-        turret = new Model3d(*splitMesh(*this->turret->meshes[0], Vector3(0, 0, z), Vector3(0, 0, 1)));
-        gun = new Model3d(*splitMesh(*this->gun->meshes[0], Vector3(0, 0, z), Vector3(0, 0, 1)));
+        mat = new LambertianMaterial(Vector3(0, 0.8, 0));
+        
+        turret = new Model3d(*this->turret);
+        gun = new Model3d(*this->gun);
+        turret->setSize(Vector3(1, 1, 1));
+        gun->setSize(Vector3(1, 1, 1)); // 2x meshes?
+
+        auto turretMatrix = turret->getTransformationMatrix();
+        for(auto mesh : turret->meshes)
+            mesh->transform(turretMatrix);
+
+        auto gunMatrix = gun->getTransformationMatrix();
+        for(auto mesh : gun->meshes)
+            mesh->transform(gunMatrix);
+
+        auto z = boundingBox.c2.z - boundingBox.c1.z;
+        auto p = pos - up*z/2;
+
+        turret = new Model3d(*splitMesh(*turret->meshes[0], p + up*completion, up));
+        gun = new Model3d(*splitMesh(*gun->meshes[0], p + up*completion, up));
+
+        turret->setDirection(Vector3(1, 0, 0), Vector3(0, 0, 1));
+        gun->setDirection(Vector3(1, 0, 0), Vector3(0, 0, 1));
+
         turret->setScene(scene);
         gun->setScene(scene);
+
         turret->init();
         gun->init();
+
+        turret->draw(mat);
+        gun->draw(mat);
     }
     else
     {
-        turret = this->turret;
-        gun = this->gun;
+        this->turret->draw();
+        this->gun->draw();
     }
-
-    turret->setDirection(absTurDir, absTurUp);
-    turret->setPosition(absTurPos);
-
-    gun->setDirection(absGunDir, absGunUp);
-    gun->setPosition(absGunPos);
-
-    if(constructing)
-    {
-        mat = new LambertianMaterial(Vector3(0, 0, 0.8));
-    }
-    turret->draw(mat);
-    gun->draw(mat);
 }
 
 void Tank::updateTurret(real dt)
@@ -310,21 +329,30 @@ void Tank::draw(Material* mat)
     
     auto z = (boundingBox.c1.z + completion*(boundingBox.c2.z - boundingBox.c1.z));
 
-    std::cout << completion << std::endl;
     Model3d* body;
     if(constructing)
     {
-        std::vector<Mesh3d*> meshes;
-        body = new Model3d();
-        for(auto mesh : this->body->meshes)
-        {
-            auto newMesh = splitMesh(*mesh, Vector3(0, 0, z), Vector3(0, 0, 1));
-            meshes.push_back(newMesh);
-        }
-        for(auto mesh : meshes)
-            body->addMesh(*mesh);
+        mat = new LambertianMaterial(Vector3(0, 0.8, 0));
+        
+        body = new Model3d(*this->body);
+        body->setSize(Vector3(1, 1, 1));
+
+        auto bodyMatrix = body->getTransformationMatrix();
+        auto z = boundingBox.c2.z - boundingBox.c1.z;
+        auto p = pos - up*z/2;
+        
+        for(auto mesh : body->meshes)
+            mesh->transform(bodyMatrix);
+        for(auto& mesh : body->meshes)
+            mesh = new Mesh3d(*splitMesh(*mesh, p + up*completion, up));
+
+
+
+        body->setDirection(Vector3(1, 0, 0), Vector3(0, 0, 1));
+
         body->setScene(scene);
         body->init();
+        body->draw(mat);
     }
     else
         body = this->body;
@@ -464,7 +492,7 @@ bool Tank::setBallisticTarget(Unit* enemyTarget)
 
 void Tank::update(real dt)
 {
-    completion += dt/30;
+    completion += dt*0.03;
     Unit* closestEnemy = nullptr;
     real closestD = inf;
     for(auto unit : scene->getUnits())

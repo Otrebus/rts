@@ -106,5 +106,11 @@ Shader* Mesh3d::getVertexShader() const
     return vertexShader;
 }
 
+void Mesh3d::transform(Matrix4 matrix)
+{
+    for(auto& p : v)
+        p.pos *= matrix;
+}
+
 Shader* Mesh3d::vertexShader = nullptr;
 Shader* Mesh3d::geometryShader = nullptr;

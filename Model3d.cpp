@@ -1,4 +1,5 @@
 #include "Parser.h"
+#include "Math.h"
 
 
 bool ModelManager::hasModel(const std::string& identifier)
@@ -91,6 +92,7 @@ Model3d::Model3d(Model3d& model) : cloned(true)
     pos = model.pos;
     dir = model.dir;
     up = model.up;
+    size = model.size;
     for(auto mesh : model.meshes)
         addMesh(*new Mesh3d(*mesh));
 }
@@ -506,5 +508,18 @@ void Model3d::readFromFile(const std::string& file)
     }
 }
 
+Matrix4 Model3d::getTransformationMatrix()
+{
+    auto transM = getTranslationMatrix(pos);
+    auto dirM = getDirectionMatrix(dir, up);
+    auto sizeM = getScalingMatrix(size);
+    return transM*dirM*sizeM;
+}
+
+void Model3d::transform(Matrix4 matrix)
+{
+
+    // TODO: implement
+}
 
 std::unordered_map<std::string, Model3d*> ModelManager::templateMap = std::unordered_map<std::string, Model3d*>();

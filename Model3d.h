@@ -33,6 +33,7 @@ public:
     void addMesh(Mesh3d& mesh);
 
     void updateUniforms(Material* mat = nullptr);
+    void transform(Matrix4 matrix);
 
     void setPosition(Vector3 pos);
     Vector3 getPosition();
@@ -42,6 +43,7 @@ public:
     Vector3 getUp();
 
     void setSize(Vector3 size);
+    Matrix4 getTransformationMatrix();
 
     Vector3 pos, dir, up, size;
 
