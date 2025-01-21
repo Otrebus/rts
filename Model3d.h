@@ -15,7 +15,7 @@ public:
     //Model3d(std::string filename);
     Model3d(Mesh3d& mesh);
     Model3d();
-    Model3d(Model3d& model);
+    Model3d(const Model3d& model);
     virtual ~Model3d();
 
     Model3d& operator= (const Model3d& model);

@@ -105,3 +105,5 @@ public:
     bool constructing;
     real completion;
 };
+
+void splitMesh(Model3d*& body);

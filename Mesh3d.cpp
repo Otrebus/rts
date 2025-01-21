@@ -35,7 +35,6 @@ Mesh3d::Mesh3d(Mesh3d& mesh)
 
 Mesh3d::~Mesh3d()
 {
-    delete material;
 }
 
 void Mesh3d::init()

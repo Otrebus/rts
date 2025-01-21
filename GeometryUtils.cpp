@@ -4,6 +4,7 @@
 #include "Mesh3d.h"
 #include <cassert>
 #include "Vertex3d.h"
+#include "Model3d.h"
 
 real intersectRayCircle(Vector2 pos, Vector2 dir, Vector2 c, real radius)
 {
@@ -257,4 +258,25 @@ Mesh3d* splitMesh(Mesh3d& mesh, Vector3 pos, Vector3 dir)
     }
 
     return new Mesh3d(vOut, outTri, mesh.material);
+}
+
+
+Model3d* splitModel(Model3d& sourceModel, Vector3 pos, Vector3 dir)
+{
+    auto model = new Model3d(sourceModel);
+
+    model->setSize(Vector3(1, 1, 1));
+    auto modelMatrix = model->getTransformationMatrix();
+
+    model->transform(modelMatrix);
+    for (auto& mesh : model->meshes)
+    {
+        auto oldMesh = mesh;
+        mesh = splitMesh(*mesh, pos, dir);
+        delete oldMesh->material;
+        delete oldMesh;
+    }
+
+    model->setDirection(Vector3(1, 0, 0), Vector3(0, 0, 1));
+    return model;
 }

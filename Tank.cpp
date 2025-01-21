@@ -221,32 +221,15 @@ void Tank::drawTurret(Material* mat)
 
     this->gun->setDirection(absGunDir, absGunUp);
     this->gun->setPosition(absGunPos);
+    // TODO: 2x meshes
 
     if(constructing)
     {
-        mat = new LambertianMaterial(Vector3(0, 0.8, 0));
-        
-        turret = new Model3d(*this->turret);
-        gun = new Model3d(*this->gun);
-        turret->setSize(Vector3(1, 1, 1));
-        gun->setSize(Vector3(1, 1, 1)); // 2x meshes?
-
-        auto turretMatrix = turret->getTransformationMatrix();
-        for(auto mesh : turret->meshes)
-            mesh->transform(turretMatrix);
-
-        auto gunMatrix = gun->getTransformationMatrix();
-        for(auto mesh : gun->meshes)
-            mesh->transform(gunMatrix);
-
         auto z = boundingBox.c2.z - boundingBox.c1.z;
         auto p = pos - up*z/2;
 
-        turret = new Model3d(*splitMesh(*turret->meshes[0], p + up*completion, up));
-        gun = new Model3d(*splitMesh(*gun->meshes[0], p + up*completion, up));
-
-        turret->setDirection(Vector3(1, 0, 0), Vector3(0, 0, 1));
-        gun->setDirection(Vector3(1, 0, 0), Vector3(0, 0, 1));
+        auto turret = splitModel(*this->turret, p + up*completion, up);
+        auto gun = splitModel(*this->gun, p + up*completion, up);
 
         turret->setScene(scene);
         gun->setScene(scene);
@@ -254,8 +237,13 @@ void Tank::drawTurret(Material* mat)
         turret->init();
         gun->init();
 
+        mat = new LambertianMaterial(Vector3(0, 0.8, 0));
         turret->draw(mat);
         gun->draw(mat);
+
+        delete turret;
+        delete gun;
+        delete mat;
     }
     else
     {
@@ -333,25 +321,14 @@ void Tank::draw(Material* mat)
     if(constructing)
     {
         mat = new LambertianMaterial(Vector3(0, 0.8, 0));
-        
-        body = new Model3d(*this->body);
-        body->setSize(Vector3(1, 1, 1));
-
-        auto bodyMatrix = body->getTransformationMatrix();
         auto z = boundingBox.c2.z - boundingBox.c1.z;
         auto p = pos - up*z/2;
-        
-        for(auto mesh : body->meshes)
-            mesh->transform(bodyMatrix);
-        for(auto& mesh : body->meshes)
-            mesh = new Mesh3d(*splitMesh(*mesh, p + up*completion, up));
-
-
-
-        body->setDirection(Vector3(1, 0, 0), Vector3(0, 0, 1));
+        auto pp = p + up*completion;
+        body = splitModel(*this->body, pp, up);
 
         body->setScene(scene);
         body->init();
+
         body->draw(mat);
     }
     else
@@ -374,6 +351,12 @@ void Tank::draw(Material* mat)
 
     if(selected && path.size() > 0)
         destinationLine.draw();
+
+    if(constructing)
+    {
+        delete body;
+        delete mat;
+    }
 }
 
 

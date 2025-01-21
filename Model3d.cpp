@@ -87,7 +87,7 @@ Model3d::Model3d() : cloned(false)
 {
 }
 
-Model3d::Model3d(Model3d& model) : cloned(true)
+Model3d::Model3d(const Model3d& model) : cloned(true)
 {
     pos = model.pos;
     dir = model.dir;
@@ -518,8 +518,8 @@ Matrix4 Model3d::getTransformationMatrix()
 
 void Model3d::transform(Matrix4 matrix)
 {
-
-    // TODO: implement
+    for(auto mesh : meshes)
+        mesh->transform(matrix);
 }
 
 std::unordered_map<std::string, Model3d*> ModelManager::templateMap = std::unordered_map<std::string, Model3d*>();
