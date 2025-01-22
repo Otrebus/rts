@@ -62,6 +62,9 @@ void Mesh3d::init()
 
 void Mesh3d::tearDown()
 {
+    glDeleteBuffers(1, &EBO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteVertexArrays(1, &VAO);
 }
 
 void Mesh3d::draw(Material* mat)

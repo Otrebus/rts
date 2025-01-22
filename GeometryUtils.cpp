@@ -263,18 +263,18 @@ Mesh3d* splitMesh(Mesh3d& mesh, Vector3 pos, Vector3 dir)
 
 Model3d* splitModel(Model3d& sourceModel, Vector3 pos, Vector3 dir)
 {
-    auto model = new Model3d(sourceModel);
-
+    auto model = new Model3d();
+    model->pos = sourceModel.pos;
+    model->setDirection(sourceModel.dir, sourceModel.up);
     model->setSize(Vector3(1, 1, 1));
     auto modelMatrix = model->getTransformationMatrix();
 
-    model->transform(modelMatrix);
-    for (auto& mesh : model->meshes)
+    for (auto& mesh : sourceModel.meshes)
     {
-        auto oldMesh = mesh;
-        mesh = splitMesh(*mesh, pos, dir);
-        delete oldMesh->material;
-        delete oldMesh;
+        auto newMesh = new Mesh3d(mesh->v, mesh->triangles, mesh->material);
+        newMesh->transform(modelMatrix);
+        model->addMesh(*splitMesh(*newMesh, pos, dir));
+        delete newMesh;
     }
 
     model->setDirection(Vector3(1, 0, 0), Vector3(0, 0, 1));

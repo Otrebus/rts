@@ -136,7 +136,7 @@
 + Make terrain changes remain after a) placing a building b) cycling through the terrain
 + Make tank consts static
 + Make better admissible-terrain-visualizer
-- TODO: 2x meshes?
++ TODO: 2x meshes?
 - Combine init/constructor for meshes?
 - Command queuing
 - Improve collisions further

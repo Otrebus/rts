@@ -12,11 +12,6 @@ Model3d* ModelManager::instantiateModel(const std::string& identifier)
     assert(ModelManager::hasModel(identifier));
     auto baseModel = templateMap[identifier];
     auto newModel = new Model3d(*baseModel);
-    for(auto mesh : baseModel->meshes)
-    {
-        auto newMesh = new Mesh3d(*mesh);
-        newModel->meshes.push_back(newMesh);
-    }
     return newModel;
 }
 
@@ -74,9 +69,6 @@ Model3d::Model3d(Mesh3d& mesh)
 
 Model3d& Model3d::operator= (const Model3d& model)
 {
-    /*for(auto mesh : meshes)
-        if(!mesh->isTemplate)
-            delete mesh;*/
     meshes.clear();
     for(auto mesh : model.meshes)
         addMesh(*new Mesh3d(*mesh));
@@ -193,7 +185,7 @@ const std::vector<Mesh3d*>& Model3d::getMeshes() const
 std::map<std::string, Material*> Model3d::readMaterialFile(const std::string& matfilestr)
 {
     std::ifstream matfile;
-    matfile.open(matfilestr.c_str(), std::ios::out);
+    matfile.open(matfilestr.c_str(), std::ios::in);
     std::map<std::string, Material*> materials;
 
     if(matfile.fail())
@@ -300,7 +292,7 @@ void Model3d::readFromFile(const std::string& file)
 {
     Material* curmat = nullptr;
     std::ifstream myfile;
-    myfile.open(file.c_str(), std::ios::out);
+    myfile.open(file.c_str(), std::ios::in);
 
     std::map<std::string, Material*> materials;
 

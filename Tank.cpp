@@ -221,7 +221,6 @@ void Tank::drawTurret(Material* mat)
 
     this->gun->setDirection(absGunDir, absGunUp);
     this->gun->setPosition(absGunPos);
-    // TODO: 2x meshes
 
     if(constructing)
     {
@@ -238,17 +237,22 @@ void Tank::drawTurret(Material* mat)
         gun->init();
 
         mat = new LambertianMaterial(Vector3(0, 0.8, 0));
+
         turret->draw(mat);
         gun->draw(mat);
 
+        delete mat;
+
+        turret->tearDown(scene);
+        gun->tearDown(scene);
+
         delete turret;
         delete gun;
-        delete mat;
     }
     else
     {
-        this->turret->draw();
-        this->gun->draw();
+        this->turret->draw(mat);
+        this->gun->draw(mat);
     }
 }
 
@@ -320,16 +324,15 @@ void Tank::draw(Material* mat)
     Model3d* body;
     if(constructing)
     {
-        mat = new LambertianMaterial(Vector3(0, 0.8, 0));
         auto z = boundingBox.c2.z - boundingBox.c1.z;
         auto p = pos - up*z/2;
         auto pp = p + up*completion;
+
+        mat = new LambertianMaterial(Vector3(0.0, 0.8, 0));
+
         body = splitModel(*this->body, pp, up);
-
-        body->setScene(scene);
         body->init();
-
-        body->draw(mat);
+        body->setScene(scene);
     }
     else
         body = this->body;
@@ -354,8 +357,9 @@ void Tank::draw(Material* mat)
 
     if(constructing)
     {
-        delete body;
+        body->tearDown(scene);
         delete mat;
+        delete body;
     }
 }
 
