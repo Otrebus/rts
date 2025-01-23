@@ -103,7 +103,7 @@ public:
     static Material* fowMaterial;
 
     bool constructing;
-    real completion;
+    real constructionProgress;
 };
 
 void splitMesh(Model3d*& body);

@@ -148,7 +148,8 @@ bool Building::buildingWithin(real posX, real posY, int length, int width) const
 
 void Building::produceTank()
 {
-    auto tank = new Tank(pos, dir, up, scene->getTerrain());
+    auto tank = new Tank(pos, -dir.to2().perp().to3(), up, scene->getTerrain());
+    tank->constructing = true;
     scene->addEntity(tank);
     tank->init(scene);
     PathFindingRequest* request = new PathFindingRequest;

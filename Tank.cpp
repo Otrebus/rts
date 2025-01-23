@@ -123,7 +123,7 @@ void Tank::loadModels()
 
 
 // TODO: no need to get terrain since we have scene->getTerrain()
-Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, dir, up), turnRate(0), acceleration(0), terrain(terrain), gunRecoilPos(0.0f), constructing(false), completion(0.0f)
+Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, dir, up), turnRate(0), acceleration(0), terrain(terrain), gunRecoilPos(0.0f), constructing(false), constructionProgress(0.0f)
 {
     body = ModelManager::instantiateModel("tankbody");
     turret = ModelManager::instantiateModel("tankturret");
@@ -224,11 +224,11 @@ void Tank::drawTurret(Material* mat)
 
     if(constructing)
     {
-        auto z = boundingBox.c2.z - boundingBox.c1.z;
-        auto p = pos - up*z/2;
+        auto z = (tankBoundingBox.c2 - tankBoundingBox.c1).z;
+        auto p = pos - z/2*up;
 
-        auto turret = splitModel(*this->turret, p + up*completion, up);
-        auto gun = splitModel(*this->gun, p + up*completion, up);
+        auto turret = splitModel(*this->turret, p + z*up*constructionProgress, -up);
+        auto gun = splitModel(*this->gun, p + z*up*constructionProgress, -up);
 
         turret->setScene(scene);
         gun->setScene(scene);
@@ -319,18 +319,15 @@ void Tank::draw(Material* mat)
     
     glBlendFuncSeparate(GL_ZERO, GL_ONE, GL_ONE, GL_ZERO);
     
-    auto z = (boundingBox.c1.z + completion*(boundingBox.c2.z - boundingBox.c1.z));
-
     Model3d* body;
     if(constructing)
     {
-        auto z = boundingBox.c2.z - boundingBox.c1.z;
-        auto p = pos - up*z/2;
-        auto pp = p + up*completion;
+        auto z = (tankBoundingBox.c2 - tankBoundingBox.c1).z;
+        auto p = pos - z/2*up;
 
         mat = new LambertianMaterial(Vector3(0.0, 0.8, 0));
 
-        body = splitModel(*this->body, pp, up);
+        body = splitModel(*this->body, p + z*up*constructionProgress, -up);
         body->init();
         body->setScene(scene);
     }
@@ -479,7 +476,16 @@ bool Tank::setBallisticTarget(Unit* enemyTarget)
 
 void Tank::update(real dt)
 {
-    completion += dt*0.03;
+    updateTurret(dt);
+    constructionProgress += dt*0.3;
+    if(constructionProgress >= 1.0f)
+    {
+        constructing = false;
+        constructionProgress = 1.0f;
+    }
+    if(constructing)
+        return;
+
     Unit* closestEnemy = nullptr;
     real closestD = inf;
     for(auto unit : scene->getUnits())
@@ -563,7 +569,6 @@ void Tank::update(real dt)
         turretTarget = Vector3(0, 1, 0);
     }
 
-    updateTurret(dt);
 
     auto fireInterval = this->fireInterval.get<real>();
 
