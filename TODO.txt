@@ -137,6 +137,8 @@
 + Make tank consts static
 + Make better admissible-terrain-visualizer
 + TODO: 2x meshes?
+- Camera can strafe through terrain
+- Make turretDir.x along the tank
 - Combine init/constructor for meshes?
 - Command queuing
 - Improve collisions further

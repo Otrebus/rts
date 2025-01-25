@@ -42,17 +42,17 @@ void Building::draw(Material* mat = nullptr)
     
     glBlendFuncSeparate(GL_ZERO, GL_ONE, GL_ONE, GL_ZERO);
 
-    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(-real(W)/2+real(length)/2, 0, -real(height)/6), Vector3(1, 0, 0), W, width, height*2.0/3, fowMaterial);
-    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(real(W)/2-real(length)/2, 0, -real(height)/6), Vector3(1, 0, 0), W, width, height*2.0/3, fowMaterial);
-    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(0, real(width)/2 - real(L)/2, 0), Vector3(1, 0, 0), length-W*2, L, height, fowMaterial);
+    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(-real(W)/2+real(length)/2, 0, -real(height)/6), Vector3(1, 0, 0), up, W, width, height*2.0/3, fowMaterial);
+    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(real(W)/2-real(length)/2, 0, -real(height)/6), Vector3(1, 0, 0), up, W, width, height*2.0/3, fowMaterial);
+    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(0, real(width)/2 - real(L)/2, 0), Vector3(1, 0, 0), up, length-W*2, L, height, fowMaterial);
 
     glDepthFunc(GL_LEQUAL);
     glEnable(GL_BLEND);
     glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
 
-    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(-real(W)/2+real(length)/2, 0, -real(height)/6), Vector3(1, 0, 0), W, width, height*2.0/3, Vector3(0.7, 0.7, 0.7));
-    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(real(W)/2-real(length)/2, 0, -real(height)/6), Vector3(1, 0, 0), W, width, height*2.0/3, Vector3(0.7, 0.7, 0.7));
-    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(0, real(width)/2 - real(L)/2, 0), Vector3(1, 0, 0), length-W*2, L, height, Vector3(0.7, 0.7, 0.7));
+    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(-real(W)/2+real(length)/2, 0, -real(height)/6), Vector3(1, 0, 0), up, W, width, height*2.0/3, Vector3(0.7, 0.7, 0.7));
+    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(real(W)/2-real(length)/2, 0, -real(height)/6), Vector3(1, 0, 0), up, W, width, height*2.0/3, Vector3(0.7, 0.7, 0.7));
+    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(0, real(width)/2 - real(L)/2, 0), Vector3(1, 0, 0), up, length-W*2, L, height, Vector3(0.7, 0.7, 0.7));
 
     if(!curBlend)
         glDisable(GL_BLEND);

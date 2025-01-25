@@ -4,6 +4,7 @@
 #include "Ray.h"
 #include "Terrain.h"
 #include "Vector3.h"
+#include "ShapeDrawer.h"
 
 
 Entity::Entity(Vector3 pos, Vector3 dir, Vector3 up) : pos(pos), dir(dir), up(up), velocity({ 0, 0, 0 }), lastBumped(0)
@@ -18,6 +19,9 @@ Entity::~Entity()
 
 void Entity::drawBoundingBox()
 {
+    auto c2 = boundingBox.c2, c1 = boundingBox.c1;
+    ShapeDrawer::setInFront(false);
+    ShapeDrawer::drawBox(pos, dir, up, c2.x-c1.x, c2.y-c1.y, c2.z-c1.z, nullptr);
 }
 
 

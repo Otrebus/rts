@@ -55,21 +55,21 @@ void ShapeDrawer::drawArrow(Vector3 pos, Vector3 dir, real length, real width, V
 	drawArrow(pos, dir, length, width, material);
 }
 
-void ShapeDrawer::drawBox(Vector3 pos, Vector3 dir, real length, real width, real height, Vector3 color)
+void ShapeDrawer::drawBox(Vector3 pos, Vector3 dir, Vector3 up, real length, real width, real height, Vector3 color)
 {
 	if(color)
 		material->Kd = color;
-	drawBox(pos, dir, length, width, height, material);
+	drawBox(pos, dir, up, length, width, height, material);
 }
 
-void ShapeDrawer::drawBox(Vector3 pos, Vector3 dir, real length, real width, real height, Material* material)
+void ShapeDrawer::drawBox(Vector3 pos, Vector3 dir, Vector3 up, real length, real width, real height, Material* material)
 {
 	assert(boxModel); // loadModels must be called prior
 	if(!dir)
 		return;
 	setDepthTest();
 	boxModel->setSize(Vector3(length, width, height));
-	boxModel->setDirection(dir.normalized(), Vector3(0, 0, 1));
+	boxModel->setDirection(dir.normalized(), up);
 	boxModel->setPosition(pos);
 	boxModel->draw(material);
 	restoreDepthTest();

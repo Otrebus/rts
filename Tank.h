@@ -75,8 +75,8 @@ public:
 
     Vector3 turretTarget; // Relative direction
     Vector3 turretDir; // Relative to forward/up of the tank
-    Vector3 turretPos;
-    Vector3 gunPos;
+    const static Vector3 turretPos;
+    const static Vector3 gunPos;
 
     static real gunLength;
     real gunRecoilPos;
