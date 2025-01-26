@@ -8,6 +8,7 @@ CameraControl::CameraControl(Camera* cam, Terrain* terrain, int xres, int yres) 
 {
     //setAngle(0, 0);
     
+    std::memset(moveDir, 0, sizeof(moveDir));
     auto [p1, p2] = terrain->getBoundingBox();
     terrainPos = (p1 + p2)/2.f;
     terrainPos.z = 0;
@@ -115,6 +116,13 @@ void CameraControl::update(real dt)
         setTerrainPosFromPos();
     }
     movementImpulses = v;
+
+    Vector2 dir(0, 0);
+    dir.x += moveDir[0] + moveDir[1];
+    dir.y += moveDir[2] + moveDir[3];
+    if(dir)
+        move(dir, moveSlow ? dt*0.1 : dt);
+    std::memset(moveDir, 0, sizeof(moveDir));
 }
 
 void CameraControl::handleInput(const Input& input)
@@ -123,15 +131,14 @@ void CameraControl::handleInput(const Input& input)
 
     if(input.stateStart == InputType::KeyPress || input.stateStart == InputType::KeyHold)
     {
-        auto t = input.timeEnd - input.timeStart;
         if(input.key == GLFW_KEY_D)
-            moveForward(moveSlow ? -t*0.1 : -t);
+            moveDir[1] = -1;
         if(input.key == GLFW_KEY_E)
-            moveForward(moveSlow ? t*0.1 : t);
+            moveDir[0] = 1;
         if(input.key == GLFW_KEY_S)
-            moveRight(moveSlow ? -t*0.1 : -t);
+            moveDir[2] = -1;
         if(input.key == GLFW_KEY_F)
-            moveRight(moveSlow ? t*0.1 : t);
+            moveDir[3] = 1;
         if(input.key == GLFW_KEY_LEFT_SHIFT)
             moveSlow = input.stateEnd != InputType::KeyRelease;
     }
@@ -189,6 +196,25 @@ void CameraControl::setAngle(real theta, real phi)
     Vector3 h = f*std::sin(theta) + r*std::cos(theta);
     cam->setDir(up*std::sin(phi) + h*std::cos(phi));
     cam->setUp(up);
+}
+
+
+void CameraControl::move(Vector2 dir, real t)
+{
+    if(cameraMode == Freelook)
+    {
+        auto dDir = (dir.x*cam->getDir() + (dir.y*cam->getDir()%cam->getUp()))*t*100.f;
+        auto w = terrain->intersect({ cam->getPos(), dDir.normalized() });
+        if((w - cam->getPos()).length() < dDir.length() || (w - cam->getPos()).length() < 0.5)
+            cam->setPos(w - dDir.normalized()*0.5f);
+        else
+            cam->setPos(cam->getPos() + dDir);
+    }
+    else
+    {
+        terrainPos += Vector3(dir.y, dir.x, 0.0)*t*100.f;
+        setPosFromTerrainPos();
+    }
 }
 
 

@@ -3,6 +3,7 @@
 #define NOMINMAX
 #include "Utils.h"
 #include "Vector3.h"
+#include "Vector2.h"
 
 class Camera;
 class Terrain;
@@ -45,6 +46,7 @@ class CameraControl
 {
     real prevX = NAN, prevY = NAN; // TODO: make this a vector instead
     real terrainDist;
+    int moveDir[4];
 
     CameraMode cameraMode;
 
@@ -76,6 +78,7 @@ public:
     void update(real dt);
 
     void setAngle(real theta, real phi);
+    void move(Vector2 dir, real t);
     void moveForward(real t);
     void moveRight(real t);
     void changeMode(CameraMode);
