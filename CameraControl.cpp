@@ -205,7 +205,7 @@ void CameraControl::move(Vector2 dir, real t)
     {
         auto dDir = (dir.x*cam->getDir() + (dir.y*cam->getDir()%cam->getUp()))*t*100.f;
         auto w = terrain->intersect({ cam->getPos(), dDir.normalized() });
-        if((w - cam->getPos()).length() < dDir.length() || (w - cam->getPos()).length() < 0.5)
+        if((w - cam->getPos()).length() < dDir.length() || (w - (cam->getPos() + dDir)).length() < 0.5)
             cam->setPos(w - dDir.normalized()*0.5f);
         else
             cam->setPos(cam->getPos() + dDir);

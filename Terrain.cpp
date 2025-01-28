@@ -221,7 +221,42 @@ void Terrain::updateAdmissiblePoints()
 }
 
 
-Vector3 Terrain::intersect(const Ray& ray, real maxT)
+Vector3 Terrain::intersectBrute(const Ray& ray, real maxT)
+{
+    auto minT = inf;
+    Vector3 w;
+    for(int X = 0; X < width - 1; X++)
+    {
+        for(int Y = 0; Y < height - 1; Y++)
+        {
+            auto p1 = getPoint(X, Y);
+            auto p2 = getPoint(X+1, Y);
+            auto p3 = getPoint(X+1, Y+1);
+            auto p4 = getPoint(X, Y+1);
+
+            auto [t, u, v] = intersectTriangle(p1, p2, p3, ray);
+            if(t > 0 && t < minT && t < maxT)
+            {
+                w = ray.pos + ray.dir*real(t);
+                minT = t;
+            }
+
+            auto [t2, u2, v2] = intersectTriangle(p1, p3, p4, ray);
+            if(t2 > 0 && t2 < minT && t2 < maxT)
+            {
+                w = ray.pos + ray.dir*real(t2);
+                minT = t2;
+            }
+        }
+    }
+
+    if(minT <= maxT)
+        return w;
+    return { inf, inf, inf };
+}
+
+
+Vector3 Terrain::intersectFast(const Ray& ray, real maxT)
 {
     real t1 = glfwGetTime();
     auto p = ray.pos, d = ray.dir;
@@ -317,8 +352,19 @@ Vector3 Terrain::intersect(const Ray& ray, real maxT)
         else
             xM = xm--;
     }
-
     return { inf, inf, inf };
+}
+
+Vector3 Terrain::intersect(const Ray& ray, real maxT)
+{
+    auto a = intersectFast(ray, maxT);
+    auto b = intersectBrute(ray, maxT);
+
+    if(a.x == inf && b.x != inf || b.x == inf && a.x != inf)
+        std::cout << "!";
+    else if((a - b).length() > 1e-6)
+        std::cout << "!";
+    return a;
 }
 
 Terrain::Terrain(const std::string& fileName, Scene* scene) : fileName(fileName), scene(scene), drawMode(Grid)

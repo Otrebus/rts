@@ -138,6 +138,7 @@
 + Make better admissible-terrain-visualizer
 + TODO: 2x meshes?
 - Camera can strafe through terrain
+- Debug intersect
 - Make turretDir.x along the tank
 - Combine init/constructor for meshes?
 - Command queuing
