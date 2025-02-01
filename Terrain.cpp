@@ -224,7 +224,7 @@ void Terrain::updateAdmissiblePoints()
 Vector3 Terrain::intersectBrute(const Ray& ray, real maxT)
 {
     auto minT = inf;
-    Vector3 w;
+    Vector3 w = { inf, inf, inf };
     for(int X = 0; X < width - 1; X++)
     {
         for(int Y = 0; Y < height - 1; Y++)
@@ -330,7 +330,15 @@ Vector3 Terrain::intersectFast(const Ray& ray, real maxT)
             yM = height;
         }
 
-        for(int Y = std::max(0.f, std::min(ym, yM)); Y < std::min(height-1, int(std::max(ym, yM)+1)); Y++)
+        auto yMin = std::max(0.f, std::min(ym, yM));
+        auto yMax = std::min(height-1, int(std::max(ym, yM)+1));
+
+        auto yStart = d.y > 0 ? yMin : yMax - 1;
+        auto yEnd = d.y > 0 ? yMax : yMin;
+
+        int dy = d.y > 0 ? 1 : -1;
+
+        for(int Y = yStart; Y != yEnd && Y >= 0 && Y < height; Y += dy)
         {
             auto p1 = getPoint(X, Y);
             auto p2 = getPoint(X+1, Y);
@@ -338,14 +346,15 @@ Vector3 Terrain::intersectFast(const Ray& ray, real maxT)
             auto p4 = getPoint(X, Y+1);
 
             auto [t, u, v] = intersectTriangle(p1, p2, p3, ray);
-            if(t > -inf && t < maxT)
+            auto [t2, u2, v2] = intersectTriangle(p1, p3, p4, ray);
+
+            t = t == -inf ? inf : t;
+            t2 = t2 == -inf ? inf : t2;
+
+            if(t < t2)
                 return ray.pos + ray.dir*real(t);
-            else
-            {
-                auto [t, u, v] = intersectTriangle(p1, p3, p4, ray);
-                if(t > -inf && t < maxT)
-                    return ray.pos + ray.dir*real(t);
-            }
+            else if(t2 != inf)
+                return ray.pos + ray.dir*real(t2);
         }
         if(d.x > 0)
             xm = xM++;
@@ -357,14 +366,7 @@ Vector3 Terrain::intersectFast(const Ray& ray, real maxT)
 
 Vector3 Terrain::intersect(const Ray& ray, real maxT)
 {
-    auto a = intersectFast(ray, maxT);
-    auto b = intersectBrute(ray, maxT);
-
-    if(a.x == inf && b.x != inf || b.x == inf && a.x != inf)
-        std::cout << "!";
-    else if((a - b).length() > 1e-6)
-        std::cout << "!";
-    return a;
+    return intersectFast(ray, maxT);
 }
 
 Terrain::Terrain(const std::string& fileName, Scene* scene) : fileName(fileName), scene(scene), drawMode(Grid)
