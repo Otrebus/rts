@@ -372,7 +372,6 @@ Vector3 Terrain::intersect(const Ray& ray, real maxT)
 Terrain::Terrain(const std::string& fileName, Scene* scene) : fileName(fileName), scene(scene), drawMode(Grid)
 {
     init();
-    pickedTriangle = -1;
     scene->setTerrain(this);
     fowMaterial = new FogOfWarMaterial();
 };
@@ -557,6 +556,7 @@ std::pair<Vector3, Vector3> Terrain::getBoundingBox() const
 
 const Vector3& Terrain::getPoint(int x, int y) const
 {
+    assert(inBounds(x, y));
     return points[x + y*width];
 }
 
@@ -756,7 +756,16 @@ std::pair<real, Vector2> Terrain::intersectCirclePathOcclusion(Vector2 pos, Vect
         for(int dy = -1; dy <= 1; dy++)
         {
             int X = x+dx, Y = y+dy;
+
+            // TODO: intersect against edge of map (was thinking intersectCircleLinePath but maybe
+            //       just having some tall sentinel triangles along the edge is better)
+            if(X > width-2 || X < 1 || Y > height-2 || Y < 1)
+            {
+                return { 0, { 0, 0 } };
+            }
+
             auto p1 = getPoint(X, Y), p2 = getPoint(X+1, Y), p3 = getPoint(X+1, Y+1), p4 = getPoint(X, Y+1);
+
             if(!isTriangleAdmissible(p1, p2, p3))
             {
                 auto [t, norm] = intersectCircleTrianglePath(pos, radius, (pos2-pos).normalized(), p1.to2(), p2.to2(), p3.to2());

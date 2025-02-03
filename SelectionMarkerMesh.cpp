@@ -82,14 +82,23 @@ std::pair<std::vector<Vertex3>, std::vector<int>> SelectionMarkerMesh::calcVerti
     W = width + 2;
     L = length + 2;
 
+    auto terrain = scene->getTerrain();
+    auto W_t = terrain->getWidth();
+    auto H_t = terrain->getHeight();
+
     for(int y = 0; y <= W; y++)
     {
         for(int x = 0; x <= L; x++)
         {
-            int Y = y + pos.y - real(width)/2;
-            int X = x + pos.x - real(length)/2;
+            int Y = std::floor(y + entityPos.y - real(width)/2);
+            int X = std::floor(x + entityPos.x - real(length)/2);
 
-            auto pos = scene->getTerrain()->getPoint(X, Y);
+            int Xc = std::max(0, std::min(W_t-1, X));
+            int Yc = std::max(0, std::min(H_t-1, Y));
+
+            auto pos = terrain->getPoint(Xc, Yc);
+            pos.x = X;
+            pos.y = Y;
             pos.z += 0.01;
             vs.push_back({ pos.x, pos.y, pos.z, 0, 0, 1, real(X)-entityPos.x, real(Y)-entityPos.y });
         }

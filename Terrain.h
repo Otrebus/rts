@@ -42,7 +42,6 @@ private:
     Scene* scene;
     DrawMode drawMode;
     std::string fileName;
-    int pickedTriangle;
     int width, height;
 
     GLuint fogBuffer;

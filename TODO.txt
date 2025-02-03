@@ -126,10 +126,12 @@
   + Not updating correctly when friendly unit dies next to enemy tanks
   + Hiding invisible stuff properly
   + Have it affect decisions like shooting etc
-  - Fix fog update when fogOfWar 0 sets back to 1
+  + Fix fog update when fogOfWar 0 sets back to 1
 + Make fog of war apply to buildings and have some more generic handling than the stuff in Tank::draw() if possible
 - Bug: Setting fogofwar to 0 and then switching to textured terrain makes tanks invisible forever
 - Fix unhandled conditions when a tank is on the edge of the map
+  + Fixed selection mesh
+  - "TODO: intersect against edge of map"
 - Code smell: ((TerrainMesh*)(terrainModel->getMeshes()[0])) etc
 + Bug: mouse scroll at start brings zoom to infinity
 + Bug: Opening console with non-English keyboard language types out the console key
@@ -137,8 +139,9 @@
 + Make tank consts static
 + Make better admissible-terrain-visualizer
 + TODO: 2x meshes?
-- Camera can strafe through terrain
-- Debug intersect
+- Have tanks reverse in certain situations
++ Camera can strafe through terrain
++ Debug intersect
 - Make turretDir.x along the tank
 - Combine init/constructor for meshes?
 - Command queuing
