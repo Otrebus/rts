@@ -131,7 +131,8 @@
 - Bug: Setting fogofwar to 0 and then switching to textured terrain makes tanks invisible forever
 - Fix unhandled conditions when a tank is on the edge of the map
   + Fixed selection mesh
-  - "TODO: intersect against edge of map"
+  + "TODO: intersect against edge of map"
+- Right and top edges of the map show as passable even when they probably aren't
 - Code smell: ((TerrainMesh*)(terrainModel->getMeshes()[0])) etc
 + Bug: mouse scroll at start brings zoom to infinity
 + Bug: Opening console with non-English keyboard language types out the console key

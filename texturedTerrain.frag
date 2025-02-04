@@ -30,9 +30,10 @@ layout(std430, binding = 0) buffer AdmissibleDataBuffer {
     int admissibleData[];
 };
 
-vec4 hash4( vec2 p ) {
+vec4 hash4( vec2 p )
+{
   return fract(
-    sin(vec4(1.0+dot(p,vec2(37.0,17.0)), 
+    sin(vec4(1.0+dot(p,vec2(37.0,17.0)),
               2.0+dot(p,vec2(11.0,47.0)),
               3.0+dot(p,vec2(41.0,29.0)),
               4.0+dot(p,vec2(23.0,31.0))))*103.0);

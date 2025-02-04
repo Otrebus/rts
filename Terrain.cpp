@@ -757,14 +757,19 @@ std::pair<real, Vector2> Terrain::intersectCirclePathOcclusion(Vector2 pos, Vect
         {
             int X = x+dx, Y = y+dy;
 
-            // TODO: intersect against edge of map (was thinking intersectCircleLinePath but maybe
-            //       just having some tall sentinel triangles along the edge is better)
-            if(X > width-2 || X < 1 || Y > height-2 || Y < 1)
+            auto getSentineledPoint = [this] (int x, int y)
             {
-                return { 0, { 0, 0 } };
-            }
+                if(!inBounds(x, y))
+                {
+                    return Vector3(x, y, 1e3);
+                }
+                return getPoint(x, y);
+            };
 
-            auto p1 = getPoint(X, Y), p2 = getPoint(X+1, Y), p3 = getPoint(X+1, Y+1), p4 = getPoint(X, Y+1);
+            auto p1 = getSentineledPoint(X, Y);
+            auto p2 = getSentineledPoint(X+1, Y);
+            auto p3 = getSentineledPoint(X+1, Y+1);
+            auto p4 = getSentineledPoint(X, Y+1);
 
             if(!isTriangleAdmissible(p1, p2, p3))
             {

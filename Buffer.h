@@ -9,19 +9,22 @@ template<typename T> struct Buffer2d
     {
     }
 
-    Buffer2d(int width, int height, T val) {
+    Buffer2d(int width, int height, T val)
+    {
         this->width = width;
         this->height = height;
         data = std::vector<T>(width*height, val);
     }
 
-    Buffer2d(int width, int height) {
+    Buffer2d(int width, int height)
+    {
         this->width = width;
         this->height = height;
         data = std::vector<T>(width*height);
     }
 
-    Buffer2d(std::vector<T> data, int width, int height) {
+    Buffer2d(std::vector<T> data, int width, int height)
+    {
         this->width = width;
         this->height = height;
         this->data = data;

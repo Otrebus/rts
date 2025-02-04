@@ -95,7 +95,7 @@ std::pair<std::vector<Vertex3>, std::vector<int>> SelectionMarkerMesh::calcVerti
 
             int Xc = std::max(0, std::min(W_t-1, X));
             int Yc = std::max(0, std::min(H_t-1, Y));
-
+    
             auto pos = terrain->getPoint(Xc, Yc);
             pos.x = X;
             pos.y = Y;
