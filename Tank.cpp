@@ -134,9 +134,9 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, d
     if(!fowMaterial)
         fowMaterial = new FogOfWarMaterial();
 
-    turretDir = Vector3(0, 1, 0).normalized();
+    turretDir = Vector3(1, 0, 0).normalized();
 
-    turretTarget = Vector3(0, 1, 0).normalized();
+    turretTarget = Vector3(1, 0, 0).normalized();
 
     geoPos = pos.to2();
     geoDir = dir.to2();
@@ -261,13 +261,13 @@ void Tank::updateTurret(real dt)
     gunRecoilPos = std::max(gunRecoilPos - gunRecoilRecoveryRate*dt, 0.0f);
     auto u = turretDir.to2().normalized(), v = turretTarget.to2().normalized();
 
-    absTurPos = pos + (dir*turretPos.y + (dir%up).normalized()*turretPos.x + up*turretPos.z);
+    absTurPos = pos + (dir*turretPos.x + (dir%up).normalized()*turretPos.y + up*turretPos.z);
 
     absTurUp = up;
-    absTurDir = (dir*turretDir.y + (dir%up).normalized()*turretDir.x).normalized();
-    absGunDir = dir*turretDir.y + up*turretDir.z + (dir%up).normalized()*turretDir.x;
+    absTurDir = (dir*turretDir.x + (dir%up).normalized()*turretDir.y).normalized();
+    absGunDir = dir*turretDir.x + up*turretDir.z + (dir%up).normalized()*turretDir.y;
 
-    absGunPos = absTurPos + absTurDir*gunPos.y + (absTurDir%up).normalized()*gunPos.x + gunPos.z*absTurUp - absGunDir*gunRecoilPos;
+    absGunPos = absTurPos + absTurDir*gunPos.x + (absTurDir%up).normalized()*gunPos.y + gunPos.z*absTurUp - absGunDir*gunRecoilPos;
     absGunUp = (absGunDir%(absTurDir%up)).normalized();
     absMuzzlePos = absGunPos + absGunDir*gunLength;
 
@@ -567,7 +567,7 @@ void Tank::update(real dt)
     {
         enemyTargetId = 0;
         enemyTarget = nullptr;
-        turretTarget = Vector3(0, 1, 0);
+        turretTarget = Vector3(1, 0, 0);
     }
 
 
@@ -759,7 +759,7 @@ void Tank::setTurretAbsoluteTarget(Vector3 target)
 {
     assert(target.to2());
     target.normalize();
-    turretTarget = rebaseOrtho(target, dir%up, dir, up);
+    turretTarget = rebaseOrtho(target, dir, dir%up, up);
 }
 
 
@@ -767,7 +767,7 @@ bool Tank::canTurretAbsoluteTarget(Vector3 target)
 {
     assert(target.to2());
     target.normalize();
-    turretTarget = rebaseOrtho(target, dir%up, dir, up);
+    turretTarget = rebaseOrtho(target, dir, dir%up, up);
 
     auto minTurretPitch = this->minTurretPitch.get<real>();
     auto maxTurretPitch = this->maxTurretPitch.get<real>();
@@ -781,5 +781,5 @@ bool Tank::canTurretAbsoluteTarget(Vector3 target)
 real Tank::gunLength = 1.0f;
 BoundingBox Tank::tankBoundingBox = BoundingBox();
 Material* Tank::fowMaterial = nullptr;
-const Vector3 Tank::gunPos = Vector3(0, 0.18, 0);
+const Vector3 Tank::gunPos = Vector3(0.18, 0, 0);
 const Vector3 Tank::turretPos = Vector3(0, 0, 0.18);
