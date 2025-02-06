@@ -348,8 +348,8 @@ Vector3 Terrain::intersectFast(const Ray& ray, real maxT)
             auto [t, u, v] = intersectTriangle(p1, p2, p3, ray);
             auto [t2, u2, v2] = intersectTriangle(p1, p3, p4, ray);
 
-            t = t == -inf ? inf : t;
-            t2 = t2 == -inf ? inf : t2;
+            t = (t == -inf || t > maxT) ? inf : t;
+            t2 = (t2 == -inf || t2 > maxT) ? inf : t2;
 
             if(t < t2)
                 return ray.pos + ray.dir*real(t);
