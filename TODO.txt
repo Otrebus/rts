@@ -149,7 +149,7 @@
 - Improve collisions further
 - Minimap
 + Buildings/construction
-  - Use to build new tanks
+  + Use to build new tanks
 - Airplanes
 - Other vehicle types (bots, vehicles)
 - Enemy AI

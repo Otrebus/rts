@@ -179,6 +179,9 @@
     <ClCompile Include="BuildingWreck.cpp">
       <Filter>Source files\Entities\Entities</Filter>
     </ClCompile>
+    <ClCompile Include="Vehicle.cpp">
+      <Filter>Source files\Entities\Entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -359,6 +362,9 @@
       <Filter>Source files\Entities\Entities</Filter>
     </ClInclude>
     <ClInclude Include="BuildingWreck.h">
+      <Filter>Source files\Entities\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Vehicle.h">
       <Filter>Source files\Entities\Entities</Filter>
     </ClInclude>
   </ItemGroup>

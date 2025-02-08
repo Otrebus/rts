@@ -48,21 +48,21 @@ public:
     Model3d* turret;
     Model3d* gun;
 
-    static ConsoleVariable maxTurnRate;
-    static ConsoleVariable maxRadialAcc;
+    static ConsoleVariable tankMaxTurnRate;
+    static ConsoleVariable tankMaxRadialAcc;
 
-    static ConsoleVariable maxSpeed;
-    static ConsoleVariable maxForwardAcc;
-    static ConsoleVariable maxBreakAcc;
+    static ConsoleVariable tankMaxSpeed;
+    static ConsoleVariable tankMaxForwardAcc;
+    static ConsoleVariable tankMaxBreakAcc;
 
-    static ConsoleVariable bulletSpeed;
-    static ConsoleVariable fireInterval;
+    static ConsoleVariable tankBulletSpeed;
+    static ConsoleVariable tankFireInterval;
 
-    static ConsoleVariable turretYawRate;
-    static ConsoleVariable turretPitchRate;
+    static ConsoleVariable tankTurretYawRate;
+    static ConsoleVariable tankTurretPitchRate;
 
-    static ConsoleVariable minTurretPitch;
-    static ConsoleVariable maxTurretPitch;
+    static ConsoleVariable tankMinTurretPitch;
+    static ConsoleVariable tankMaxTurretPitch;
 
     real lastFired;
 
@@ -105,5 +105,3 @@ public:
     bool constructing;
     real constructionProgress;
 };
-
-void splitMesh(Model3d*& body);
