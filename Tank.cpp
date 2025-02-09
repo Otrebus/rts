@@ -13,21 +13,21 @@
 
 ConsoleVariable Tank::boidDebug("boidDebug", 0);
 
-ConsoleVariable Tank::tankMaxSpeed("tankMaxSpeed", 2.0f);
-ConsoleVariable Tank::tankMaxForwardAcc("tankMaxForwardAcc", 0.7f);
-ConsoleVariable Tank::tankMaxBreakAcc("tankMaxBreakAcc", 0.7f);
+ConsoleVariable Tank::maxSpeed("tankMaxSpeed", 2.0f);
+ConsoleVariable Tank::maxForwardAcc("tankMaxForwardAcc", 0.7f);
+ConsoleVariable Tank::maxBreakAcc("tankMaxBreakAcc", 0.7f);
 
-ConsoleVariable Tank::tankTurretYawRate("tankTurretYawRate", pi/4);
-ConsoleVariable Tank::tankTurretPitchRate("tankTurretPitchRate", 0.25*pi/4);
+ConsoleVariable Tank::turretYawRate("tankTurretYawRate", pi/4);
+ConsoleVariable Tank::turretPitchRate("tankTurretPitchRate", 0.25*pi/4);
 
-ConsoleVariable Tank::tankMinTurretPitch("tankMinTurretPitch", -10_deg);
-ConsoleVariable Tank::tankMaxTurretPitch("tankMaxTurretPitch", 90_deg);
+ConsoleVariable Tank::minTurretPitch("tankMinTurretPitch", -10_deg);
+ConsoleVariable Tank::maxTurretPitch("tankMaxTurretPitch", 90_deg);
 
-ConsoleVariable Tank::tankBulletSpeed("tankBulletSpeed", 5.0);
-ConsoleVariable Tank::tankFireInterval("tankFireInterval", 1.5);
+ConsoleVariable Tank::bulletSpeed("tankBulletSpeed", 5.0);
+ConsoleVariable Tank::fireInterval("tankFireInterval", 1.5);
 
-ConsoleVariable Tank::tankMaxTurnRate("tankMaxTurnRate", 1.2*pi/4);
-ConsoleVariable Tank::tankMaxRadialAcc("tankMaxRadialAcc", 4.f);
+ConsoleVariable Tank::maxTurnRate("tankMaxTurnRate", 1.2*pi/4);
+ConsoleVariable Tank::maxRadialAcc("tankMaxRadialAcc", 4.f);
 
 void Tank::loadModels()
 {
@@ -271,7 +271,7 @@ void Tank::updateTurret(real dt)
     absGunUp = (absGunDir%(absTurDir%up)).normalized();
     absMuzzlePos = absGunPos + absGunDir*gunLength;
 
-    auto turretYawRate = this->tankTurretYawRate.get<real>();
+    auto turretYawRate = this->turretYawRate.get<real>();
 
     if(std::abs(std::acos(u*v)) < dt*turretYawRate)
         u = v;
@@ -282,7 +282,7 @@ void Tank::updateTurret(real dt)
     auto turretTheta = std::asin(turretDir.z);
     real theta;
 
-    auto turretPitchRate = this->tankTurretPitchRate.get<real>();
+    auto turretPitchRate = this->turretPitchRate.get<real>();
 
     if(std::abs(targetTheta - turretTheta) < dt*turretPitchRate)
         theta = targetTheta;
@@ -365,7 +365,7 @@ void Tank::draw(Material* mat)
 void Tank::shoot()
 {
     auto p = new Projectile(absMuzzlePos, absGunDir, absTurUp, this);
-    auto bulletSpeed = this->tankBulletSpeed.get<real>();
+    auto bulletSpeed = this->bulletSpeed.get<real>();
     p->setVelocity(absGunDir.normalized()*bulletSpeed + velocity);
     p->init(scene);
     scene->addEntity(p);
@@ -410,9 +410,9 @@ void Tank::accelerate(Vector2 velocityTarget)
     else
         turnRate = 0;
 
-    auto maxSpeed = this->tankMaxSpeed.get<real>();
-    auto maxForwardAcc = this->tankMaxForwardAcc.get<real>();
-    auto maxBreakAcc = this->tankMaxBreakAcc.get<real>();
+    auto maxSpeed = this->maxSpeed.get<real>();
+    auto maxForwardAcc = this->maxForwardAcc.get<real>();
+    auto maxBreakAcc = this->maxBreakAcc.get<real>();
 
     auto radialAcc = geoDir.perp()*turnRate*maxSpeed;
 
@@ -430,14 +430,14 @@ void Tank::accelerate(Vector2 velocityTarget)
 void Tank::brake()
 {
     turnRate = 0;
-    auto maxBreakAcc = this->tankMaxBreakAcc.get<real>();
+    auto maxBreakAcc = this->maxBreakAcc.get<real>();
     acceleration = -maxBreakAcc;
 }
 
 void Tank::turn(bool left)
 {
-    auto maxRadialAcc = this->tankMaxRadialAcc.get<float>();
-    auto maxTurnRate = this->tankMaxTurnRate.get<float>();
+    auto maxRadialAcc = this->maxRadialAcc.get<float>();
+    auto maxTurnRate = this->maxTurnRate.get<float>();
     turnRate = std::min(maxTurnRate, maxRadialAcc/velocity.length());
     if(!left)
         turnRate = -turnRate;
@@ -449,7 +449,7 @@ bool Tank::setBallisticTarget(Unit* enemyTarget)
     auto v = enemyTarget->velocity - velocity;
     auto p = enemyTarget->pos - absMuzzlePos; // NOTE: this isn't quite right
 
-    auto bulletSpeed = this->tankBulletSpeed.get<real>();
+    auto bulletSpeed = this->bulletSpeed.get<real>();
 
     ld t4 = g*g/4;
     ld t3 = -v*g;
@@ -538,7 +538,7 @@ void Tank::update(real dt)
         acceleration = 0;
     }
 
-    auto maxSpeed = this->tankMaxSpeed.get<real>();
+    auto maxSpeed = this->maxSpeed.get<real>();
     if(geoVelocity.length() > maxSpeed)
         geoVelocity = geoVelocity.normalized()*maxSpeed;
 
@@ -571,7 +571,7 @@ void Tank::update(real dt)
     }
 
 
-    auto fireInterval = this->tankFireInterval.get<real>();
+    auto fireInterval = this->fireInterval.get<real>();
 
     if(enemyTarget && time - lastFired > fireInterval)
     {
@@ -637,7 +637,7 @@ Vector2 Tank::seek()
                     this->target = Vector3(0, 0, 0);
             }
 
-            auto maxSpeed = this->tankMaxSpeed.get<real>();
+            auto maxSpeed = this->maxSpeed.get<real>();
             auto speed = maxSpeed;
             if(path.size() == 1)
             {
@@ -717,7 +717,7 @@ Vector2 Tank::separate()
             auto e = (pos1 - pos2);
             auto l = std::max(1.15f, e.length());
 
-            auto maxSpeed = this->tankMaxSpeed.get<real>();
+            auto maxSpeed = this->maxSpeed.get<real>();
             // Ranking units by their address and only having lower-ranked units yield way seems
             // to give a bit better result when many units try to get through a narrow gap
 
@@ -769,8 +769,8 @@ bool Tank::canTurretAbsoluteTarget(Vector3 target)
     target.normalize();
     turretTarget = rebaseOrtho(target, dir, dir%up, up);
 
-    auto minTurretPitch = this->tankMinTurretPitch.get<real>();
-    auto maxTurretPitch = this->tankMaxTurretPitch.get<real>();
+    auto minTurretPitch = this->minTurretPitch.get<real>();
+    auto maxTurretPitch = this->maxTurretPitch.get<real>();
 
     if(turretTarget.z < std::asin(minTurretPitch) || turretTarget.z > std::asin(maxTurretPitch))
         return false;

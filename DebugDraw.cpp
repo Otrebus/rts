@@ -360,9 +360,81 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
 }
 
 
+int drawIntersectCircles(GLFWwindow* window, int xres, int yres)
+{
+    InputManager::getInstance().initInput(window);
+    OrthogonalCamera cam({ 0, 0, 1 }, { 0, 0, -1 }, { 0, 1, 0 }, real(xres)/float(yres));
+
+    real time = glfwGetTime();
+
+    ShaderProgramManager shaderProgramManager;
+    Scene scene(&cam, &shaderProgramManager);
+
+    bool intersecting = false;
+    real startX, startY;
+    int mouseX, mouseY;
+
+    Ray r1, r2;
+    mouseX = mouseY = 0;
+
+    while(!glfwWindowShouldClose(window))
+    {
+        if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+            glfwSetWindowShouldClose(window, true);
+
+        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        auto prevTime = time;
+        time = glfwGetTime();
+        auto dt = time - prevTime;
+
+        auto inputs = InputManager::getInstance().handleInput(prevTime, time);
+        glfwPollEvents();
+
+        for(auto input : inputs)
+        {
+            if(input->stateStart == MousePosition)
+                mouseX = input->posX, mouseY = input->posY;
+
+            delete input;
+        }
+
+        Vector2 b(0.25, 0.25);
+
+        auto r1 = 0.35;
+        auto r2 = 0.15;
+
+        auto [x, y] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
+        auto line = makeCircle(Vector2(x, y), r1);
+        line.init(&scene);
+        line.draw();
+
+        auto line2 = makeCircle(b, r2);
+        line2.init(&scene);
+        line2.draw();
+
+        auto [p1, p2] = intersectCircleCircle(Vector2(x, y), r1, b, r2);
+
+        auto line3 = makeCircle(p1, 0.02);
+        line3.init(&scene);
+        line3.draw();
+
+        auto line4 = makeCircle(p2, 0.02);
+        line4.init(&scene);
+        line4.draw();
+       
+        glfwSwapBuffers(window);
+    }
+
+    glfwTerminate();
+    return 0;
+}
+
+
 int debugDraw(GLFWwindow* window, int xres, int yres)
 {
     // return drawCircleTriangle(window, xres, yres);
     // return drawDecals(window, xres, yres);
-    return drawSigned(window, xres, yres);
+    // return drawSigned(window, xres, yres);
+    return drawIntersectCircles(window, xres, yres);
 }

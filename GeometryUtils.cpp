@@ -61,6 +61,20 @@ std::pair<real, Vector2> intersectCircleLinePath(Vector2 pos, real radius, Vecto
     return { inf, { inf, inf } }; // TODO: implement
 }
 
+std::pair<Vector2, Vector2> intersectCircleCircle(Vector2 c1, real r1, Vector2 c2, real r2)
+{
+    real d = (c2-c1).length();
+    Vector2 Y = (c2 - c1).perp()/d;
+    Vector2 X = (c2 - c1)/d;
+
+    real x = (d*d + r1*r1 - r2*r2)/(2*d);
+    auto D = r1*r1 - x*x;
+    if(D < 0)
+        return { Vector2(inf, inf), Vector2(inf, inf) };
+    real y = std::sqrt(D);
+    return { c1 + x*X + y*Y, c1 + x*X - y*Y };
+}
+
 
 std::pair<real, Vector2> intersectCircleCirclePath(Vector2 p1, real r1, Vector2 p2, real r2, Vector2 dir)
 {

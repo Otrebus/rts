@@ -48,21 +48,21 @@ public:
     Model3d* turret;
     Model3d* gun;
 
-    static ConsoleVariable tankMaxTurnRate;
-    static ConsoleVariable tankMaxRadialAcc;
+    static ConsoleVariable maxTurnRate;
+    static ConsoleVariable maxRadialAcc;
 
-    static ConsoleVariable tankMaxSpeed;
-    static ConsoleVariable tankMaxForwardAcc;
-    static ConsoleVariable tankMaxBreakAcc;
+    static ConsoleVariable maxSpeed;
+    static ConsoleVariable maxForwardAcc;
+    static ConsoleVariable maxBreakAcc;
 
-    static ConsoleVariable tankBulletSpeed;
-    static ConsoleVariable tankFireInterval;
+    static ConsoleVariable bulletSpeed;
+    static ConsoleVariable fireInterval;
 
-    static ConsoleVariable tankTurretYawRate;
-    static ConsoleVariable tankTurretPitchRate;
+    static ConsoleVariable turretYawRate;
+    static ConsoleVariable turretPitchRate;
 
-    static ConsoleVariable tankMinTurretPitch;
-    static ConsoleVariable tankMaxTurretPitch;
+    static ConsoleVariable minTurretPitch;
+    static ConsoleVariable maxTurretPitch;
 
     real lastFired;
 

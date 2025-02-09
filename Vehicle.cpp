@@ -11,12 +11,12 @@
 #include "GeometryUtils.h"
 #include "LambertianMaterial.h"
 
-ConsoleVariable Vehicle::vehicleMaxSpeed("vehicleMaxSpeed", 2.0f);
-ConsoleVariable Vehicle::vehicleMaxForwardAcc("vehicleMaxForwardAcc", 0.7f);
-ConsoleVariable Vehicle::vehicleMaxBreakAcc("vehicleMaxBreakAcc", 0.7f);
+ConsoleVariable Vehicle::maxSpeed("vehicleMaxSpeed", 2.0f);
+ConsoleVariable Vehicle::maxForwardAcc("vehicleMaxForwardAcc", 0.7f);
+ConsoleVariable Vehicle::maxBreakAcc("vehicleMaxBreakAcc", 0.7f);
 
-ConsoleVariable Vehicle::vehicleMaxTurnAngle("vehicleMaxTurnAngle", 1.2*pi/4);
-ConsoleVariable Vehicle::vehicleMaxRadialAcc("vehicleMaxRadialAcc", 4.f);
+ConsoleVariable Vehicle::turnRadius("vehicleMaxTurnAngle", 1.2*pi/4);
+ConsoleVariable Vehicle::maxRadialAcc("vehicleMaxRadialAcc", 4.f);
 
 // TODO: no need to get terrain since we have scene->getTerrain()
 Vehicle::Vehicle(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, dir, up), acceleration(0), terrain(terrain), constructing(false), constructionProgress(0.0f)
@@ -31,10 +31,11 @@ Vehicle::~Vehicle()
 
 Entity* Vehicle::spawnWreck()
 {
+    return nullptr;
 }
 
 
-void Tank::init(Scene* scene)
+void Vehicle::init(Scene* scene)
 {
     this->scene = scene;
 }
@@ -126,9 +127,9 @@ void Vehicle::accelerate(Vector2 velocityTarget)
     else
         turnRate = 0;*/
 
-    auto maxSpeed = this->vehicleMaxSpeed.get<real>();
-    auto maxForwardAcc = this->vehicleMaxForwardAcc.get<real>();
-    auto maxBreakAcc = this->vehicleMaxBreakAcc.get<real>();
+    auto maxSpeed = this->maxSpeed.get<real>();
+    auto maxForwardAcc = this->maxForwardAcc.get<real>();
+    auto maxBreakAcc = this->maxBreakAcc.get<real>();
 
     //auto radialAcc = geoDir.perp()*turnRate*maxSpeed;
 
@@ -147,7 +148,7 @@ void Vehicle::brake()
 {
     /*turnRate = 0;
     auto maxBreakAcc = this->tankMaxBreakAcc.get<real>();*/
-    acceleration = -maxBreakAcc;
+    //acceleration = -maxBreakAcc;
 }
 
 void Vehicle::turn(bool left)
@@ -155,8 +156,8 @@ void Vehicle::turn(bool left)
     /*auto maxRadialAcc = this->tankMaxRadialAcc.get<float>();
     auto maxTurnRate = this->tankMaxTurnRate.get<float>();
     turnRate = std::min(maxTurnRate, maxRadialAcc/velocity.length());*/
-    if(!left)
-        turnRate = -turnRate;
+    /*if(!left)
+        turnRate = -turnRate;*/
 }
 
 void Vehicle::update(real dt)
@@ -187,7 +188,7 @@ void Vehicle::update(real dt)
     //    acceleration = 0;
     //}
 
-    auto maxSpeed = this->vehicleMaxSpeed.get<real>();
+    auto maxSpeed = this->maxSpeed.get<real>();
     if(geoVelocity.length() > maxSpeed)
         geoVelocity = geoVelocity.normalized()*maxSpeed;
 
@@ -202,6 +203,12 @@ void Vehicle::update(real dt)
         setCurrentPathfindingRequest(request);
         addPathFindingRequest(request);
     }
+}
+
+Vector2 Vehicle::getSeekVector()
+{
+    auto R = turnRadius;
+    return { 0, 0 };
 }
 
 Vector2 Vehicle::seek()
@@ -234,7 +241,7 @@ Vector2 Vehicle::seek()
                     this->target = Vector3(0, 0, 0);
             }
 
-            auto maxSpeed = this->vehicleMaxSpeed.get<real>();
+            auto maxSpeed = this->maxSpeed.get<real>();
             auto speed = maxSpeed;
             if(path.size() == 1)
             {
@@ -314,7 +321,7 @@ Vector2 Vehicle::separate()
             auto e = (pos1 - pos2);
             auto l = std::max(1.15f, e.length());
 
-            auto maxSpeed = this->vehicleMaxSpeed.get<real>();
+            auto maxSpeed = this->maxSpeed.get<real>();
             // Ranking units by their address and only having lower-ranked units yield way seems
             // to give a bit better result when many units try to get through a narrow gap
 
@@ -335,7 +342,7 @@ Vector2 Vehicle::boidCalc()
 {
     auto evade_ = evade(), seek_ = seek(), avoid_ = avoid(), separate_ = separate();
     
-    if(boidDebug.varInt())
+    /*if(boidDebug.varInt())
     {
         if(evade_)
             ShapeDrawer::drawArrow(pos, evade_.to3(), evade_.length(), 0.02, Vector3(1, 0, 0));
@@ -345,7 +352,7 @@ Vector2 Vehicle::boidCalc()
             ShapeDrawer::drawArrow(pos, avoid_.to3(), avoid_.length(), 0.02, Vector3(0, 0, 1));
         if(separate_)
             ShapeDrawer::drawArrow(pos, separate_.to3(), separate_.length(), 0.02, Vector3(1, 1, 0));
-    }
+    }*/
 
     auto sum = evade_ + seek_ + avoid_ + separate_;
     return sum;

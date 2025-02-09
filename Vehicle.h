@@ -27,6 +27,8 @@ public:
     void update(real dt);
 
     Entity* spawnWreck();
+    
+    Vector2 getSeekVector();
 
     Vector2 seek();
     Vector2 evade();
@@ -36,12 +38,12 @@ public:
 
     Model3d* body;
 
-    static ConsoleVariable vehicleMaxTurnAngle;
-    static ConsoleVariable vehicleMaxRadialAcc;
+    static ConsoleVariable turnRadius;
+    static ConsoleVariable maxRadialAcc;
 
-    static ConsoleVariable vehicleMaxSpeed;
-    static ConsoleVariable vehicleMaxForwardAcc;
-    static ConsoleVariable vehicleMaxBreakAcc;
+    static ConsoleVariable maxSpeed;
+    static ConsoleVariable maxForwardAcc;
+    static ConsoleVariable maxBreakAcc;
 
     Terrain* terrain;
     real acceleration;
@@ -54,8 +56,6 @@ public:
     Line3d destinationLine;
 
     static BoundingBox vehicleBoundingBox;
-
-    static ConsoleVariable boidDebug;
 
     static Material* fowMaterial;
 
