@@ -64,7 +64,11 @@ Matrix4 PerspectiveCamera::getMatrix()
 
 Matrix4 OrthogonalCamera::getMatrix()
 {
-    return Matrix4(1, 0, 0, 0, 0, ar, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    return Matrix4(
+        1, 0, 0, 0,
+        0, ar, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1);
 }
 
 Ray OrthogonalCamera::getViewRay(real x, real y) const

@@ -49,6 +49,15 @@ Line3d makeCircle(Vector2 pos, real radius)
     return { points };
 }
 
+Line2d makeCircle2d(Vector2 pos, real radius)
+{
+    int N = 50;
+    std::vector<Vector2> points;
+    for(int i = 0; i < N+1; i++)
+        points.push_back(pos + Vector2(std::cos(i*(2*pi/N))*radius, std::sin(i*(2*pi/N))*radius));
+    return { points };
+}
+
 int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
 {
     InputManager::getInstance().initInput(window);
@@ -404,24 +413,36 @@ int drawIntersectCircles(GLFWwindow* window, int xres, int yres)
         auto r1 = 0.35;
         auto r2 = 0.15;
 
-        auto [x, y] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
-        auto line = makeCircle(Vector2(x, y), r1);
+        // TODO: make a mouseCoordtoWorldCoord as well
+        auto pos = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
+        auto [orig, ray] = scene.getCamera()->getViewRay(pos.x, pos.y);
+        auto x = orig.x, y = orig.y;
+
+        auto a = Vector2(x, y);
+
+        auto line = makeCircle(b, r2);
         line.init(&scene);
         line.draw();
 
-        auto line2 = makeCircle(b, r2);
-        line2.init(&scene);
-        line2.draw();
+        auto line2d = makeCircle2d(b, r2);
+        line2d.init(&scene);
+        line2d.draw();
 
-        auto [p1, p2] = intersectCircleCircle(Vector2(x, y), r1, b, r2);
+        auto v = (a - b);
+        auto d = v.length();
 
-        auto line3 = makeCircle(p1, 0.02);
-        line3.init(&scene);
-        line3.draw();
+        auto L = std::sqrt(d*d - r2*r2);
 
-        auto line4 = makeCircle(p2, 0.02);
-        line4.init(&scene);
-        line4.draw();
+        auto [p1, p2] = intersectCircleCircle(a, L, b, r2);
+
+        auto lineA = Line3d( { p1.to3(), a.to3() } );
+        auto lineB = Line3d( { p2.to3(), a.to3() } );
+
+        lineA.init(&scene);
+        lineB.init(&scene);
+
+        lineA.draw();
+        lineB.draw();
        
         glfwSwapBuffers(window);
     }

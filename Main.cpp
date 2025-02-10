@@ -76,8 +76,8 @@ int main()
 
     glfwSetFramebufferSizeCallback(window, sizeCallback);
 
-    //debugDraw(window, xres, yres);
-    //return 0;
+    debugDraw(window, xres, yres);
+    return 0;
 
     glEnable              ( GL_DEBUG_OUTPUT );
     glDebugMessageCallback( MessageCallback, 0 );

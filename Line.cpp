@@ -147,7 +147,9 @@ void Line2d::draw()
     scene->setShaderProgram(program);
     program->use();
 
-    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)(&identityMatrix.m_val));
+    auto perspM = scene->getCamera()->getMatrix();
+    
+    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)(&perspM.m_val));
     glUniform3fv(glGetUniformLocation(program->getId(), "Kd"), 1, (float*)(&color));
     glBindVertexArray(VAO);
     glDrawArrays(GL_LINE_STRIP, 0, vertexData.size()/2);

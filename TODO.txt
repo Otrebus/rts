@@ -140,6 +140,7 @@
 + Make tank consts static
 + Make better admissible-terrain-visualizer
 + TODO: 2x meshes?
+- // TODO: make a mouseCoordtoWorldCoord as well
 - Have tanks reverse in certain situations
 + Camera can strafe through terrain
 + Debug intersect
