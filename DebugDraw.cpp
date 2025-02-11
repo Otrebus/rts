@@ -1,6 +1,8 @@
 #define NOMINMAX
 
+#include "Main.h"
 #include "Camera.h"
+#include <cmath>
 #include "Entity.h"
 #include "GeometryUtils.h"
 #include "InputManager.h"
@@ -8,7 +10,6 @@
 #include "Bytestream.h"
 #include "Line.h"
 #include "Logger.h"
-#include "Main.h"
 #include "Math.h"
 #include "Matrix4.h"
 #include "Model3d.h"
@@ -40,22 +41,54 @@
 #include FT_FREETYPE_H
 
 
-Line3d makeCircle(Vector2 pos, real radius)
+void drawLine(Scene& scene, Vector2 a, Vector2 b)
 {
-    int N = 50;
-    std::vector<Vector3> points;
-    for(int i = 0; i < N+1; i++)
-        points.push_back(pos.to3() + Vector3(std::cos(i*(2*pi/N))*radius, std::sin(i*(2*pi/N))*radius, 0));
-    return { points };
+    Line2d line({ a, b });
+    line.init(&scene);
+    line.draw();
 }
 
-Line2d makeCircle2d(Vector2 pos, real radius)
+void drawArrow(Scene& scene, Vector2 pos, Vector2 dir, real len)
+{
+    auto a = pos, b = pos+dir.normalized()*len;
+    auto c = a + (b-a)*0.85 + (a-b).perp()*0.15;
+    auto d = a + (b-a)*0.85 - (a-b).perp()*0.15;
+
+    Line2d line({ a, b, c });
+    line.init(&scene);
+    line.draw();
+
+    Line2d line2({ d, b });
+    line2.init(&scene);
+    line2.draw();
+}
+
+void drawCircle(Scene& scene, Vector2 pos, real radius)
 {
     int N = 50;
     std::vector<Vector2> points;
     for(int i = 0; i < N+1; i++)
         points.push_back(pos + Vector2(std::cos(i*(2*pi/N))*radius, std::sin(i*(2*pi/N))*radius));
-    return { points };
+
+    Line2d line(points);
+    line.init(&scene);
+    line.draw();
+}
+
+void drawArc(Scene& scene, Vector2 c, Vector2 p, real angle)
+{
+    int N = 50;
+    auto v = p-c;
+    real radius = v.length();
+
+    real a1 = std::atan2(v.y, v.x);
+    std::vector<Vector2> points;
+    for(int i = 0; i < N+1; i++)
+        points.push_back(c + Vector2(std::cos(a1 + i*(angle/N))*radius, std::sin(a1 + i*(angle/N))*radius));
+
+    Line2d line(points);
+    line.init(&scene);
+    line.draw();
 }
 
 int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
@@ -141,9 +174,7 @@ int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
 
             if(s > -inf && s < inf)
             {
-                auto circle = makeCircle(r1.pos.to2() + (r2.pos-r1.pos).to2().normalized()*s, radius);
-                circle.init(&scene);
-                circle.draw();
+                drawCircle(scene, r1.pos.to2() + (r2.pos-r1.pos).to2().normalized()*s, radius);
             }
         }
 
@@ -373,7 +404,7 @@ int drawIntersectCircles(GLFWwindow* window, int xres, int yres)
 {
     InputManager::getInstance().initInput(window);
     OrthogonalCamera cam({ 0, 0, 1 }, { 0, 0, -1 }, { 0, 1, 0 }, real(xres)/float(yres));
-
+    
     real time = glfwGetTime();
 
     ShaderProgramManager shaderProgramManager;
@@ -408,17 +439,130 @@ int drawIntersectCircles(GLFWwindow* window, int xres, int yres)
             delete input;
         }
 
-        Vector2 b(0.25, 0.25);
-
-        auto r1 = 0.35;
-        auto r2 = 0.15;
-
         // TODO: make a mouseCoordtoWorldCoord as well
-        auto pos = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
-        auto [orig, ray] = scene.getCamera()->getViewRay(pos.x, pos.y);
+        auto mousePos = mouseCoordToScreenCoord(::xres, ::yres, mouseX, mouseY);
+        auto [orig, ray] = scene.getCamera()->getViewRay(mousePos.x, mousePos.y);
         auto x = orig.x, y = orig.y;
 
-        auto a = Vector2(x, y);
+        Vector2 dest = orig.to2();
+
+        Vector2 pos(0.25, 0.25);
+        auto dir = Vector2(0.5, 0.5).normalized();
+
+        drawArrow(scene, pos, dir, 0.05);
+
+        real R = 0.10;
+
+        /////////////
+
+        auto c_l = pos + dir.perp()*R;
+        auto c_r = pos - dir.perp()*R;
+
+        auto [a, b] = getTangents(c_l, R, dest);
+
+        Vector2 v_t = (c_l - dest) % (a - dest) > 0 ? a : b;
+
+        auto A = (pos - c_l).normalized(), B = (v_t - c_l).normalized();
+
+        auto angle = std::acos(A*B);
+        if(A%B < 0)
+            angle = 2*pi - angle;
+
+        auto D_1 = angle*R + (v_t - dest).length();
+
+        /*drawArc(scene, c_l, pos, angle);
+        drawLine(scene, v_t, dest);*/
+
+        //////////////
+
+        auto p = getTangents(c_r, R, dest);
+        a = p.first;
+        b = p.second;
+
+        v_t = (c_r - dest) % (a - dest) > 0 ? b : a;
+
+        A = (pos - c_r).normalized();
+        B = (v_t - c_r).normalized();
+
+        angle = std::acos(A*B);
+        if(A%B > 0)
+            angle = 2*pi - angle;
+
+        auto D_2 = angle*R + (v_t - dest).length();
+
+        /*drawArc(scene, c_r, pos, -angle);
+        drawLine(scene, v_t, dest);*/
+
+        //////////
+
+        auto v = (dest - c_l).normalized();
+        auto P = c_l + v*R;
+
+//        drawCircle(scene, P, 0.01);
+
+        auto P_r = P + v*R;
+
+        p = getTangents(P_r, R, dest);
+        a = p.first;
+        b = p.second;
+
+        v_t = (P_r - dest) % (a - dest) > 0 ? b : a;
+
+        A = (pos-c_l).normalized(), B = (P-c_l).normalized();
+        angle = std::acos(A*B);
+        if(A%B > 0)
+            angle = 2*pi - angle;
+        /*drawArc(scene, c_l, pos, -angle);*/
+
+        A = (v_t-P_r).normalized(), B = (P-P_r).normalized();
+        angle = std::acos(A*B);
+        if(A%B < 0)
+            angle = 2*pi - angle;
+        /*drawArc(scene, P_r, v_t, angle);
+        drawLine(scene, v_t, dest);*/
+
+        ////////////////////
+
+        v = (dest - c_r).normalized();
+        P = c_r + v*R;
+
+        auto P_l = P + v*R;
+
+        p = getTangents(P_l, R, dest);
+        a = p.first;
+        b = p.second;
+
+        v_t = (P_l - dest) % (a - dest) > 0 ? a : b;
+
+        A = (pos-c_r).normalized(), B = (P-c_r).normalized();
+        angle = std::acos(A*B);
+        if(A%B < 0)
+            angle = 2*pi - angle;
+        drawArc(scene, c_r, pos, angle);
+
+        A = (v_t-P_l).normalized(), B = (P-P_l).normalized();
+        angle = std::acos(A*B);
+        if(A%B > 0)
+            angle = 2*pi - angle;
+        drawArc(scene, P_l, v_t, -angle);
+        drawLine(scene, v_t, dest);
+
+
+
+
+        //(pos - c_l) % (
+
+        /*drawCircle(scene, c_l, R);
+
+        auto [a, b] = getTangents(c_l, R, dest);
+        drawCircle(scene, a, 0.02);
+        drawCircle(scene, b, 0.02);*/
+
+        //drawArrow(scene, Vector2(0.2, 0.2), Vector2(0.2, 0.2), 0.15);
+
+        /*Vector2 pos(0.25, 0.25);
+
+        auto dest = Vector2(x, y);
 
         auto line = makeCircle(b, r2);
         line.init(&scene);
@@ -443,7 +587,9 @@ int drawIntersectCircles(GLFWwindow* window, int xres, int yres)
 
         lineA.draw();
         lineB.draw();
-       
+
+        drawArc(scene, Vector2(-0.25, 0.25), Vector2(-0.35, 0.30), -3.1415);
+       */
         glfwSwapBuffers(window);
     }
 

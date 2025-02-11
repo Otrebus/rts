@@ -75,6 +75,16 @@ std::pair<Vector2, Vector2> intersectCircleCircle(Vector2 c1, real r1, Vector2 c
     return { c1 + x*X + y*Y, c1 + x*X - y*Y };
 }
 
+std::pair<Vector2, Vector2> getTangents(Vector2 c, real R, Vector2 p)
+{
+    auto v = (c - p);
+    auto d = v.length();
+
+    auto L = std::sqrt(d*d - R*R);
+
+    return intersectCircleCircle(p, L, c, R);
+}
+
 
 std::pair<real, Vector2> intersectCircleCirclePath(Vector2 p1, real r1, Vector2 p2, real r2, Vector2 dir)
 {
