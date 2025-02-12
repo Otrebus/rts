@@ -453,7 +453,7 @@ int drawIntersectCircles(GLFWwindow* window, int xres, int yres)
 
         real R = 0.10;
 
-        /////////////
+        ///////////// Case 1: left hand turn
 
         auto c_l = pos + dir.perp()*R;
         auto c_r = pos - dir.perp()*R;
@@ -473,7 +473,7 @@ int drawIntersectCircles(GLFWwindow* window, int xres, int yres)
         /*drawArc(scene, c_l, pos, angle);
         drawLine(scene, v_t, dest);*/
 
-        //////////////
+        ////////////// Case 1: right hand turn
 
         auto p = getTangents(c_r, R, dest);
         a = p.first;
@@ -490,10 +490,10 @@ int drawIntersectCircles(GLFWwindow* window, int xres, int yres)
 
         auto D_2 = angle*R + (v_t - dest).length();
 
-        /*drawArc(scene, c_r, pos, -angle);
-        drawLine(scene, v_t, dest);*/
+        //drawArc(scene, c_r, pos, -angle);
+        //drawLine(scene, v_t, dest);
 
-        //////////
+        ////////// Case 2: right two point turn
 
         auto v = (dest - c_l).normalized();
         auto P = c_l + v*R;
@@ -521,7 +521,7 @@ int drawIntersectCircles(GLFWwindow* window, int xres, int yres)
         /*drawArc(scene, P_r, v_t, angle);
         drawLine(scene, v_t, dest);*/
 
-        ////////////////////
+        //////////////////// Case 2: left two point turn
 
         v = (dest - c_r).normalized();
         P = c_r + v*R;
@@ -538,17 +538,56 @@ int drawIntersectCircles(GLFWwindow* window, int xres, int yres)
         angle = std::acos(A*B);
         if(A%B < 0)
             angle = 2*pi - angle;
-        drawArc(scene, c_r, pos, angle);
+        //drawArc(scene, c_r, pos, angle);
 
         A = (v_t-P_l).normalized(), B = (P-P_l).normalized();
         angle = std::acos(A*B);
         if(A%B > 0)
             angle = 2*pi - angle;
-        drawArc(scene, P_l, v_t, -angle);
+        //drawArc(scene, P_l, v_t, -angle);
+        //drawLine(scene, v_t, dest);
+
+        /////////////////////// Case 3: reverse left turn
+
+        p = getTangents(c_l, R, dest);
+        a = p.first;
+        b = p.second;
+
+        v_t = (c_l - dest) % (a - dest) < 0 ? a : b;
+
+        A = (pos - c_l).normalized();
+        B = (v_t - c_l).normalized();
+
+        angle = std::acos(A*B);
+        if(A%B > 0)
+            angle = 2*pi - angle;
+
+        D_2 = angle*R + (v_t - dest).length();
+
+
+        //drawArc(scene, c_l, v_t, angle);
+        //drawLine(scene, v_t, dest);
+
+        ///////////////////// Case 3: reverse right turn
+
+        p = getTangents(c_r, R, dest);
+        a = p.first;
+        b = p.second;
+
+        v_t = (c_r - dest) % (a - dest) < 0 ? b : a;
+
+        A = (pos - c_r).normalized();
+        B = (v_t - c_r).normalized();
+
+        angle = std::acos(A*B);
+        if(A%B < 0)
+            angle = 2*pi - angle;
+
+        D_2 = angle*R + (v_t - dest).length();
+
+
+        drawArc(scene, c_r, v_t, -angle);
         drawLine(scene, v_t, dest);
-
-
-
 
         //(pos - c_l) % (
 
