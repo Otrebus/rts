@@ -327,6 +327,8 @@ void Model3d::readFromFile(const std::string& file)
             for(int i = 0; i < 33; i++)
             {
                 Mesh3d* mesh = new Mesh3d;
+                if(!curmat)
+                    curmat = new LambertianMaterial(Vector3(0.7, 0.7, 0.7));
                 mesh->material = curmat;
                 std::vector<Vertex3> vertices;
                 std::vector<int> indices;

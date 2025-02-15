@@ -62,11 +62,30 @@ Matrix4 PerspectiveCamera::getMatrix()
     return viewMatrix = persp*proj*trans;
 }
 
+Matrix4 PerspectiveCamera::getScreenMatrix()
+{
+    return Matrix4(
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    );
+}
+
 Matrix4 OrthogonalCamera::getMatrix()
 {
     return Matrix4(
         1, 0, 0, 0,
         0, ar, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1);
+}
+
+Matrix4 OrthogonalCamera::getScreenMatrix()
+{
+    return Matrix4(
+        1, 0, 0, 0,
+        0, 1, 0, 0,
         0, 0, 1, 0,
         0, 0, 0, 1);
 }

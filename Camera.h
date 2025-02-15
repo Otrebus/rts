@@ -15,6 +15,7 @@ public:
     Camera(Vector3 pos, Vector3 dir, Vector3 up, real ar);
 
     virtual Matrix4 getMatrix() = 0;
+    virtual Matrix4 getScreenMatrix() = 0;
     void setUp(Vector3 up);
 
     void setPos(const Vector3& pos);
@@ -42,6 +43,7 @@ public:
     PerspectiveCamera(Vector3 pos, Vector3 dir, Vector3 up, real fov, real ar);
     Ray getViewRay(real x, real y) const;
     Matrix4 getMatrix();
+    Matrix4 getScreenMatrix();
 
     const real getFov() const;
 
@@ -54,4 +56,5 @@ public:
     OrthogonalCamera(Vector3 pos, Vector3 dir, Vector3 up, real ar);
     Ray getViewRay(real x, real y) const;
     Matrix4 getMatrix();
+    Matrix4 getScreenMatrix();
 };

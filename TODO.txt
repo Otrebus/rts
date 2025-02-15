@@ -144,8 +144,10 @@
 - Have tanks reverse in certain situations
 + Camera can strafe through terrain
 + Debug intersect
+- Move model loading from model3d to its own file?
 - Make turretDir.x along the tank
 - Combine init/constructor for meshes?
+- What's unit init about anyway
 - Command queuing
 - Improve collisions further
 - Minimap

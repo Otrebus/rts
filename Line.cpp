@@ -142,17 +142,17 @@ void Line2d::init(Scene* scene)
 
 void Line2d::draw()
 {
+    glDisable(GL_DEPTH_TEST);
     auto s = scene->getShaderProgramManager();
     auto program = s->getProgram(fragmentShader, vertexShader);
     scene->setShaderProgram(program);
     program->use();
-
-    auto perspM = scene->getCamera()->getMatrix();
     
-    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)(&perspM.m_val));
+    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)(&identityMatrix.m_val));
     glUniform3fv(glGetUniformLocation(program->getId(), "Kd"), 1, (float*)(&color));
     glBindVertexArray(VAO);
     glDrawArrays(GL_LINE_STRIP, 0, vertexData.size()/2);
+    glEnable(GL_DEPTH_TEST);
 }
 
 void Line2d::tearDown()

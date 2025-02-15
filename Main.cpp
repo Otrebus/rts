@@ -37,6 +37,7 @@
 #include <thread>
 #include "Input.h"
 #include "ConsoleSettings.h"
+#include "Vehicle.h"
 #include "Font.h"
 #include "Building.h"
 
@@ -76,8 +77,8 @@ int main()
 
     glfwSetFramebufferSizeCallback(window, sizeCallback);
 
-    debugDraw(window, xres, yres);
-    return 0;
+    //debugDraw(window, xres, yres);
+    //return 0;
 
     glEnable              ( GL_DEBUG_OUTPUT );
     glDebugMessageCallback( MessageCallback, 0 );
@@ -122,33 +123,35 @@ int main()
 
     Tank::loadModels();
     TankWreck::loadModels();
+    Vehicle::loadModels();
 
     //scene.addUnit(new Tank({ 180.480316, 99.7414932, 15.0 }, { 1, 0, 0 }, { 0, 0, 1}, &terrain));
 
-    for(int y = 0; y < 3; y++)
-    {
-        for(int x = 0; x < 3; x++)
-        {
-            scene.addEntity(new Tank({ 165.5f-x, 95.15f-y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain));
-        }
-    }
+    auto vehicle = new Vehicle({ 150.5f, 35.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+    scene.addEntity(vehicle);
+
+    //for(int y = 0; y < 3; y++)
+    //{
+    //    for(int x = 0; x < 3; x++)
+    //    {
+    //        scene.addEntity(new Tank({ 165.5f-x, 95.15f-y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain));
+    //    }
+    //}
 
     
     /*auto tank = new Tank({ 170.5f, 65.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
     tank->constructing = true;
     scene.addEntity(tank);*/
 
-    for(int y = 0; y < 3; y++)
-    {
-        for(int x = 0; x < 3; x++)
-        {
-            auto enemy = new Tank({ 170.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
-            enemy->setEnemy(true);
-            scene.addEntity(enemy);
-        }
-    }
-    
-    
+    //for(int y = 0; y < 3; y++)
+    //{
+    //    for(int x = 0; x < 3; x++)
+    //    {
+    //        auto enemy = new Tank({ 170.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+    //        enemy->setEnemy(true);
+    //        scene.addEntity(enemy);
+    //    }
+    //}
 
     //for(int y = 0; y < 1; y++)
     //{

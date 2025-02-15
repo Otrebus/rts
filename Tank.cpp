@@ -157,6 +157,7 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, d
         model->setDirection(dir, up);
         //model->init(); // TODO: we're updating the VAOs etc, but not deleting the old ones
     }
+
 }
 
 

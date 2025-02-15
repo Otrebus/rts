@@ -36,6 +36,8 @@ public:
     Vector2 separate();
     Vector2 boidCalc();
 
+    static void loadModels();
+
     Model3d* body;
 
     static ConsoleVariable turnRadius;
@@ -58,6 +60,8 @@ public:
     static BoundingBox vehicleBoundingBox;
 
     static Material* fowMaterial;
+
+    Model3d* model;
 
     bool constructing;
     real constructionProgress;

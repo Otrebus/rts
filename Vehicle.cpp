@@ -21,6 +21,78 @@ ConsoleVariable Vehicle::maxRadialAcc("vehicleMaxRadialAcc", 4.f);
 // TODO: no need to get terrain since we have scene->getTerrain()
 Vehicle::Vehicle(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, dir, up), acceleration(0), terrain(terrain), constructing(false), constructionProgress(0.0f)
 {
+    model = ModelManager::instantiateModel("truck");
+    geoPos = pos.to2();
+    geoDir = dir.to2();
+
+    model->setDirection(dir, up);
+    model->setPosition(pos);
+
+    selectionMarkerMesh = new SelectionMarkerMesh(2, 2, true);
+
+    boundingBox = vehicleBoundingBox;
+}
+
+
+void Vehicle::loadModels()
+{
+    auto model = new Model3d();
+    model->readFromFile("truck.obj");
+    ModelManager::addModel("truck", model);
+
+    real length = 1;
+
+    BoundingBox bb1;
+
+    for(auto& mesh : model->getMeshes())
+    {
+        for(auto& v : ((Mesh3d*)mesh)->v)
+        {
+            v.pos = Vector3(v.pos.z, v.pos.x, v.pos.y);
+            v.normal = Vector3(v.normal.z, v.normal.x, v.normal.y);
+            bb1.c1.x = std::min(bb1.c1.x, v.pos.x);
+            bb1.c1.y = std::min(bb1.c1.y, v.pos.y);
+            bb1.c1.z = std::min(bb1.c1.z, v.pos.z);
+            bb1.c2.x = std::max(bb1.c2.x, v.pos.x);
+            bb1.c2.y = std::max(bb1.c2.y, v.pos.y);
+            bb1.c2.z = std::max(bb1.c2.z, v.pos.z);
+        }
+    }
+
+    auto l = (bb1.c2.x - bb1.c1.x);
+    auto w = (bb1.c2.y - bb1.c1.y);
+    auto h = (bb1.c2.z - bb1.c1.z);
+    auto ratio = length/l;
+
+    BoundingBox bb[3];
+    int i = 0;
+
+    for(auto& mesh : model->getMeshes())
+    {
+        for(auto& v : ((Mesh3d*)mesh)->v)
+        {
+            bb[i].c1.x = std::min(bb[i].c1.x, v.pos.x);
+            bb[i].c1.y = std::min(bb[i].c1.y, v.pos.y);
+            bb[i].c1.z = std::min(bb[i].c1.z, v.pos.z);
+            bb[i].c2.x = std::max(bb[i].c2.x, v.pos.x);
+            bb[i].c2.y = std::max(bb[i].c2.y, v.pos.y);
+            bb[i].c2.z = std::max(bb[i].c2.z, v.pos.z);
+        }
+    }
+    for(auto& mesh : model->getMeshes())
+    {
+        for(auto& v : ((Mesh3d*)mesh)->v)
+        {
+            v.pos -= Vector3((bb[i].c2.x + bb[i].c1.x)/2, (bb[i].c2.y + bb[i].c1.y)/2, (bb[i].c2.z + bb[i].c1.z)/2);
+            v.pos *= length/l;
+        }
+    }
+    model->init();
+
+    auto height = h*ratio;
+    auto width = w*ratio;
+
+    vehicleBoundingBox = BoundingBox(Vector3(-length/2, -width/2, -height/2), Vector3(length/2, width/2, height/2));
 }
 
 
@@ -38,10 +110,16 @@ Entity* Vehicle::spawnWreck()
 void Vehicle::init(Scene* scene)
 {
     this->scene = scene;
+    model->setScene(scene);
+
+    selectionMarkerMesh->setScene(scene);
+    selectionMarkerMesh->init(pos.to2());
 }
 
 void Vehicle::updateUniforms()
 {
+    model->updateUniforms();
+    selectionMarkerMesh->updateUniforms();
 }
 
 void Vehicle::draw(Material* mat)
@@ -69,15 +147,13 @@ void Vehicle::draw(Material* mat)
     
     glBlendFuncSeparate(GL_ZERO, GL_ONE, GL_ONE, GL_ZERO);
     
-    /*body->draw(fowMaterial);
-    */
+    model->draw(fowMaterial);
 
     glDepthFunc(GL_LEQUAL);
     glEnable(GL_BLEND);
     glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
 
-    /*body->draw(mat);
-    */
+    model->draw(mat);
 
     if(!curBlend)
         glDisable(GL_BLEND);
@@ -89,7 +165,7 @@ void Vehicle::draw(Material* mat)
 
     if(constructing)
     {
-        body->tearDown(scene);
+        model->tearDown(scene);
         delete mat;
         delete body;
     }
@@ -100,7 +176,7 @@ void Vehicle::draw(Material* mat)
 void Vehicle::setPosition(Vector3 pos)
 {
     this->pos = pos;
-    //body->setPosition();
+    model->setPosition(pos);
 }
 
 
@@ -108,7 +184,7 @@ void Vehicle::setDirection(Vector3 dir, Vector3 up)
 {
     this->dir = dir;
     this->up = up;
-    //body->setDirection(dir, up);
+    model->setDirection(dir, up);
 }
 
 

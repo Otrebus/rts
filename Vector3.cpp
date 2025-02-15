@@ -1,10 +1,12 @@
 #include "Matrix4.h"
 #include "Vector2.h"
 #include "Vector3.h"
+#include <cmath>
 
 
 Vector3::Vector3(real x, real y, real z) : x(x), y(y), z(z)
 {
+    assert(!std::isnan(x) && !std::isnan(y) && !std::isnan(z));
 }
 
 
