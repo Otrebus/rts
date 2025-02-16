@@ -98,8 +98,6 @@ public:
 
     static BoundingBox tankBoundingBox;
 
-    static ConsoleVariable boidDebug;
-
     static Material* fowMaterial;
 
     bool constructing;

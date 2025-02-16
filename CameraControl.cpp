@@ -201,18 +201,22 @@ void CameraControl::setAngle(real theta, real phi)
 
 void CameraControl::move(Vector2 dir, real t)
 {
+    auto camDir = cam->getDir(), camPos = cam->getPos(), camUp = cam->getUp();
     if(cameraMode == Freelook)
     {
-        auto dDir = (dir.x*cam->getDir() + (dir.y*cam->getDir()%cam->getUp()))*t*100.f;
+        auto dDir = (dir.x*camDir + (dir.y*camDir%camUp))*t*100.f;
         auto w = terrain->intersect({ cam->getPos(), dDir.normalized() });
-        if((w - cam->getPos()).length() < dDir.length() || (w - (cam->getPos() + dDir)).length() < 0.5)
+        if((w - camPos).length() < dDir.length() || (w - (camPos + dDir)).length() < 0.5)
             cam->setPos(w - dDir.normalized()*0.5f);
         else
-            cam->setPos(cam->getPos() + dDir);
+            cam->setPos(camPos + dDir);
     }
     else
     {
-        terrainPos += Vector3(dir.y, dir.x, 0.0)*t*100.f;
+        auto forward = camDir.to2().normalized();
+        auto right = -forward.perp();
+        auto newDir = (forward*dir.x + right*dir.y);
+        terrainPos += newDir.to3()*t*100.f;
         setPosFromTerrainPos();
     }
 }

@@ -15,7 +15,7 @@ ConsoleVariable Vehicle::maxSpeed("vehicleMaxSpeed", 2.0f);
 ConsoleVariable Vehicle::maxForwardAcc("vehicleMaxForwardAcc", 0.7f);
 ConsoleVariable Vehicle::maxBreakAcc("vehicleMaxBreakAcc", 0.7f);
 
-ConsoleVariable Vehicle::turnRadius("vehicleMaxTurnAngle", 1.2*pi/4);
+ConsoleVariable Vehicle::turnRadius("vehicleTurnRadius", 1.2*pi/4);
 ConsoleVariable Vehicle::maxRadialAcc("vehicleMaxRadialAcc", 4.f);
 
 // TODO: no need to get terrain since we have scene->getTerrain()
@@ -48,8 +48,8 @@ void Vehicle::loadModels()
     {
         for(auto& v : ((Mesh3d*)mesh)->v)
         {
-            v.pos = Vector3(v.pos.z, v.pos.x, v.pos.y);
-            v.normal = Vector3(v.normal.z, v.normal.x, v.normal.y);
+            v.pos = Vector3(v.pos.x, v.pos.z, v.pos.y);
+            v.normal = -Vector3(v.normal.x, v.normal.z, v.normal.y);
             bb1.c1.x = std::min(bb1.c1.x, v.pos.x);
             bb1.c1.y = std::min(bb1.c1.y, v.pos.y);
             bb1.c1.z = std::min(bb1.c1.z, v.pos.z);
@@ -111,6 +111,10 @@ void Vehicle::init(Scene* scene)
 {
     this->scene = scene;
     model->setScene(scene);
+
+    destinationLine.init(scene);
+    destinationLine.setColor(Vector3(0.2, 0.7, 0.1));
+    destinationLine.setInFront(true);
 
     selectionMarkerMesh->setScene(scene);
     selectionMarkerMesh->init(pos.to2());
@@ -193,47 +197,47 @@ void Vehicle::accelerate(Vector2 velocityTarget)
     accelerationTarget = velocityTarget - geoVelocity;
     if(accelerationTarget.length() < 1e-6)
     {
-        //turnRate = 0;
+        turnRate = 0;
         acceleration = 0;
         return;
     }
 
-    /*if(velocityTarget.length() > 0.01 && velocityTarget.normalized()*geoDir < 0.999)
+    if(velocityTarget.length() > 0.01 && velocityTarget.normalized()*geoDir < 0.999)
         turn(geoDir%velocityTarget > 0);
     else
-        turnRate = 0;*/
+        turnRate = 0;
 
     auto maxSpeed = this->maxSpeed.get<real>();
     auto maxForwardAcc = this->maxForwardAcc.get<real>();
     auto maxBreakAcc = this->maxBreakAcc.get<real>();
 
-    //auto radialAcc = geoDir.perp()*turnRate*maxSpeed;
+    auto radialAcc = geoDir.perp()*turnRate*maxSpeed;
 
-    //auto x = radialAcc;
-    //auto v = accelerationTarget;
-    //auto ct = !x ? 0 : x.normalized()*v.normalized();
-    //auto projAcc = ct ? x.length()*v.normalized()/ct - x : (v*geoDir)*geoDir;
+    auto x = radialAcc;
+    auto v = accelerationTarget;
+    auto ct = !x ? 0 : x.normalized()*v.normalized();
+    auto projAcc = ct ? x.length()*v.normalized()/ct - x : (v*geoDir)*geoDir;
 
-    //if(projAcc*geoDir < 0 && geoDir*geoVelocity <= 0) // We don't want to reverse at maxBreakAcc
-    //    acceleration = 0;
-    //else
-    //    acceleration = std::max(-maxBreakAcc, std::min(maxForwardAcc, projAcc*geoDir));
+    if(projAcc*geoDir < 0 && geoDir*geoVelocity <= 0) // We don't want to reverse at maxBreakAcc
+        acceleration = 0;
+    else
+        acceleration = std::max(-maxBreakAcc, std::min(maxForwardAcc, projAcc*geoDir));
 }
 
 void Vehicle::brake()
 {
-    /*turnRate = 0;
-    auto maxBreakAcc = this->tankMaxBreakAcc.get<real>();*/
-    //acceleration = -maxBreakAcc;
+    turnRate = 0;
+    auto maxBreakAcc = this->maxBreakAcc.get<real>();
+    acceleration = -maxBreakAcc;
 }
 
 void Vehicle::turn(bool left)
 {
-    /*auto maxRadialAcc = this->tankMaxRadialAcc.get<float>();
-    auto maxTurnRate = this->tankMaxTurnRate.get<float>();
-    turnRate = std::min(maxTurnRate, maxRadialAcc/velocity.length());*/
-    /*if(!left)
-        turnRate = -turnRate;*/
+    auto maxRadialAcc = this->maxRadialAcc.get<float>();
+    auto turnRadius = this->turnRadius.get<float>();
+    turnRate = geoVelocity.length()/turnRadius;
+    if(!left)
+        turnRate = -turnRate;
 }
 
 void Vehicle::update(real dt)
@@ -251,18 +255,18 @@ void Vehicle::update(real dt)
     velocityTarget = boidCalc();
     accelerate(velocityTarget);
 
-    //auto newDir = geoDir.normalized().rotated(turnRate*dt);
-    //if((newDir%velocityTarget)*(geoDir%velocityTarget) < 0 && newDir*velocityTarget > 0)
-    //    newDir = velocityTarget.normalized();
-    //geoDir = newDir;
+    auto newDir = geoDir.normalized().rotated(turnRate*dt);
+    if((newDir%velocityTarget)*(geoDir%velocityTarget) < 0 && newDir*velocityTarget > 0)
+        newDir = velocityTarget.normalized();
+    geoDir = newDir;
 
-    //geoVelocity += geoDir.normalized()*acceleration*dt;
+    geoVelocity += geoDir.normalized()*acceleration*dt;
 
-    //if(!velocityTarget)
-    //{
-    //    // NOTE: if we don't check for velocity1*geoVelocity < 0, then the tanks will back up initially
-    //    acceleration = 0;
-    //}
+    if(!velocityTarget)
+    {
+        // NOTE: if we don't check for velocity1*geoVelocity < 0, then the tanks will back up initially
+        acceleration = 0;
+    }
 
     auto maxSpeed = this->maxSpeed.get<real>();
     if(geoVelocity.length() > maxSpeed)
@@ -418,7 +422,7 @@ Vector2 Vehicle::boidCalc()
 {
     auto evade_ = evade(), seek_ = seek(), avoid_ = avoid(), separate_ = separate();
     
-    /*if(boidDebug.varInt())
+    if(boidDebug.varInt())
     {
         if(evade_)
             ShapeDrawer::drawArrow(pos, evade_.to3(), evade_.length(), 0.02, Vector3(1, 0, 0));
@@ -428,7 +432,7 @@ Vector2 Vehicle::boidCalc()
             ShapeDrawer::drawArrow(pos, avoid_.to3(), avoid_.length(), 0.02, Vector3(0, 0, 1));
         if(separate_)
             ShapeDrawer::drawArrow(pos, separate_.to3(), separate_.length(), 0.02, Vector3(1, 1, 0));
-    }*/
+    }
 
     auto sum = evade_ + seek_ + avoid_ + separate_;
     return sum;

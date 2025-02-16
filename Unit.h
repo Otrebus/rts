@@ -2,6 +2,7 @@
 
 #include "Entity.h"
 #include <deque>
+#include "ConsoleSettings.h"
 
 class SelectionMarkerMesh;
 class Model3d;
@@ -39,6 +40,8 @@ public:
     int getEnemyTargetId() const;
 
     real health;
+
+    static ConsoleVariable boidDebug;
 
 protected:
     PathFindingRequest* pathFindingRequest;

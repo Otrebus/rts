@@ -11,8 +11,6 @@
 #include "GeometryUtils.h"
 #include "LambertianMaterial.h"
 
-ConsoleVariable Tank::boidDebug("boidDebug", 0);
-
 ConsoleVariable Tank::maxSpeed("tankMaxSpeed", 2.0f);
 ConsoleVariable Tank::maxForwardAcc("tankMaxForwardAcc", 0.7f);
 ConsoleVariable Tank::maxBreakAcc("tankMaxBreakAcc", 0.7f);

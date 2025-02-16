@@ -54,6 +54,7 @@ public:
     Vector2 accelerationTarget;
 
     Vector3 target;
+    real turnRate;
 
     Line3d destinationLine;
 

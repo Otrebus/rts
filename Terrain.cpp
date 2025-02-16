@@ -285,6 +285,8 @@ Vector3 Terrain::intersectFast(const Ray& ray, real maxT)
                 t = max(t, t2);
         }
 
+        if(t == -inf)
+            return { inf, inf, inf };
         auto p0 = p + d*t;
         x0 = p0.x;
         y0 = p0.y;

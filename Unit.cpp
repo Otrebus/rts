@@ -4,6 +4,8 @@
 #include <cassert>
 #include <vector>
 
+ConsoleVariable Unit::boidDebug("boidDebug", 0);
+
 Unit::Unit(Vector3 pos, Vector3 dir, Vector3 up) : Entity(pos, dir, up) {}
 
 Unit::~Unit()
