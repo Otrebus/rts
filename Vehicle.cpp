@@ -15,8 +15,8 @@ ConsoleVariable Vehicle::maxSpeed("vehicleMaxSpeed", 2.0f);
 ConsoleVariable Vehicle::maxForwardAcc("vehicleMaxForwardAcc", 0.7f);
 ConsoleVariable Vehicle::maxBreakAcc("vehicleMaxBreakAcc", 0.7f);
 
-ConsoleVariable Vehicle::turnRadius("vehicleTurnRadius", 1.2*pi/4);
-ConsoleVariable Vehicle::maxRadialAcc("vehicleMaxRadialAcc", 4.f);
+ConsoleVariable Vehicle::turnRadius("vehicleTurnRadius", 1.5f);
+ConsoleVariable Vehicle::maxRadialAcc("vehicleMaxRadialAcc", 2.5f);
 
 // TODO: no need to get terrain since we have scene->getTerrain()
 Vehicle::Vehicle(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, dir, up), acceleration(0), terrain(terrain), constructing(false), constructionProgress(0.0f)
@@ -202,7 +202,7 @@ void Vehicle::accelerate(Vector2 velocityTarget)
         return;
     }
 
-    if(velocityTarget.length() > 0.01 && velocityTarget.normalized()*geoDir < 0.999)
+    if(velocityTarget.length() > 0.01 && velocityTarget.normalized()*geoDir < 0.999 && velocityTarget.normalized()*geoDir > -0.999)
         turn(geoDir%velocityTarget > 0);
     else
         turnRate = 0;
@@ -218,10 +218,10 @@ void Vehicle::accelerate(Vector2 velocityTarget)
     auto ct = !x ? 0 : x.normalized()*v.normalized();
     auto projAcc = ct ? x.length()*v.normalized()/ct - x : (v*geoDir)*geoDir;
 
-    if(projAcc*geoDir < 0 && geoDir*geoVelocity <= 0) // We don't want to reverse at maxBreakAcc
-        acceleration = 0;
+    if(projAcc*geoDir < 0 && geoDir*geoVelocity <= 0)
+        acceleration = -maxForwardAcc*0.5;
     else
-        acceleration = std::max(-maxBreakAcc, std::min(maxForwardAcc, projAcc*geoDir));
+        acceleration = projAcc*geoDir > 0 ? maxForwardAcc : - maxBreakAcc;
 }
 
 void Vehicle::brake()
@@ -235,7 +235,7 @@ void Vehicle::turn(bool left)
 {
     auto maxRadialAcc = this->maxRadialAcc.get<float>();
     auto turnRadius = this->turnRadius.get<float>();
-    turnRate = geoVelocity.length()/turnRadius;
+    turnRate = std::min(geoVelocity.length()/turnRadius, maxRadialAcc/velocity.length());
     if(!left)
         turnRate = -turnRate;
 }
@@ -251,7 +251,6 @@ void Vehicle::update(real dt)
     if(constructing)
         return;
 
-
     velocityTarget = boidCalc();
     accelerate(velocityTarget);
 
@@ -264,7 +263,6 @@ void Vehicle::update(real dt)
 
     if(!velocityTarget)
     {
-        // NOTE: if we don't check for velocity1*geoVelocity < 0, then the tanks will back up initially
         acceleration = 0;
     }
 
@@ -285,10 +283,181 @@ void Vehicle::update(real dt)
     }
 }
 
-Vector2 Vehicle::getSeekVector()
+Vector2 Vehicle::calcSeekVector(Vector2 dest)
 {
-    auto R = turnRadius;
-    return { 0, 0 };
+    if((dest-geoPos).normalized()*geoDir > 0.999)
+        return geoDir;
+
+    if((dest-geoPos).normalized()*geoDir < -0.999)
+        return -geoDir;
+
+    auto R = this->turnRadius.get<float>();
+    auto pos = geoPos;
+    auto dir = geoDir;
+
+    auto c_l = pos + dir.perp()*R;
+    auto c_r = pos - dir.perp()*R;
+    
+    if(auto a = (c_l-dest), b = (c_r-dest); a.length() < R || b.length() < R)
+        return (dest-pos);
+
+    real reverseCost = 1.5;
+
+    auto leftHand = [&] (bool draw = false) -> std::pair<real, Vector2> {
+        // Case 1: left hand turn
+
+        auto [a, b] = getTangents(c_l, R, dest);
+
+        Vector2 v_t = (c_l - dest) % (a - dest) > 0 ? a : b;
+
+        auto A = (pos - c_l).normalized(), B = (v_t - c_l).normalized();
+
+        auto angle = std::acos(A*B);
+        if(A%B < 0)
+            angle = 2*pi - angle;
+
+        return { angle*R + (v_t - dest).length(), (dir + dir.perp()).normalized() };
+    };
+
+    auto rightHand = [&] (bool draw = false) -> std::pair<real, Vector2> {
+        // Case 1: right hand turn
+        auto p = getTangents(c_r, R, dest);
+        auto a = p.first;
+        auto b = p.second;
+
+        auto v_t = (c_r - dest) % (a - dest) > 0 ? b : a;
+
+        auto A = (pos - c_r).normalized();
+        auto B = (v_t - c_r).normalized();
+
+        auto angle = std::acos(A*B);
+        if(A%B > 0)
+            angle = 2*pi - angle;
+
+        return { angle*R + (v_t - dest).length(), (dir - dir.perp()).normalized() };
+    };
+
+    ////////// Case 2: right two point turn
+    auto rightTwoPoint = [&] (bool draw = false) -> std::pair<real, Vector2> {
+        auto v = (dest - c_l).normalized();
+        auto P = c_l + v*R;
+
+        auto P_r = P + v*R;
+
+        auto p = getTangents(P_r, R, dest);
+        auto a = p.first;
+        auto b = p.second;
+
+        auto v_t = (P_r - dest) % (a - dest) > 0 ? b : a;
+
+        auto A = (pos-c_l).normalized(), B = (P-c_l).normalized();
+        auto angle = std::acos(A*B);
+        if(A%B > 0)
+            angle = 2*pi - angle;
+
+        real ret = 0;
+
+        ret += reverseCost*angle*R;
+
+        A = (v_t-P_r).normalized(), B = (P-P_r).normalized();
+        angle = std::acos(A*B);
+        if(A%B < 0)
+            angle = 2*pi - angle;
+
+        return { ret + angle*R + (v_t - dest).length(), (-dir -dir.perp()).normalized() };
+    };
+
+    //////////////////// Case 2: left two point turn
+    auto leftTwoPoint = [&] (bool draw = false) -> std::pair<real, Vector2> {
+        auto v = (dest - c_r).normalized();
+        auto P = c_r + v*R;
+
+        auto P_l = P + v*R;
+
+        auto p = getTangents(P_l, R, dest);
+        auto a = p.first;
+        auto b = p.second;
+
+        auto v_t = (P_l - dest) % (a - dest) > 0 ? a : b;
+
+        auto A = (pos-c_r).normalized(), B = (P-c_r).normalized();
+        auto angle = std::acos(A*B);
+        if(A%B < 0)
+            angle = 2*pi - angle;
+
+        real ret = reverseCost*angle*R;
+
+        A = (v_t-P_l).normalized(), B = (P-P_l).normalized();
+        angle = std::acos(A*B);
+        if(A%B > 0)
+            angle = 2*pi - angle;
+
+        return { ret + angle*R + (v_t - dest).length(), (-dir + dir.perp()).normalized() };
+    };
+
+    /////////////////////// Case 3: reverse left turn
+    auto leftReverse = [&] (bool draw = false) -> std::pair<real, Vector2> {
+        auto p = getTangents(c_l, R, dest);
+        auto a = p.first;
+        auto b = p.second;
+
+        auto v_t = (c_l - dest) % (a - dest) < 0 ? a : b;
+
+        auto A = (pos - c_l).normalized();
+        auto B = (v_t - c_l).normalized();
+
+        auto angle = std::acos(A*B);
+        if(A%B > 0)
+            angle = 2*pi - angle;
+
+        auto D = angle*R + (v_t - dest).length();
+
+        return { reverseCost*D, (-dir - dir.perp()).normalized() };
+    };
+
+    ///////////////////// Case 3: reverse right turn
+    auto rightReverse = [&] (bool draw = false) -> std::pair<real, Vector2> {
+        auto p = getTangents(c_r, R, dest);
+        auto a = p.first;
+        auto b = p.second;
+
+        auto v_t = (c_r - dest) % (a - dest) < 0 ? b : a;
+
+        auto A = (pos - c_r).normalized();
+        auto B = (v_t - c_r).normalized();
+
+        auto angle = std::acos(A*B);
+        if(A%B < 0)
+            angle = 2*pi - angle;
+
+        auto D_2 = angle*R + (v_t - dest).length();
+
+        return { reverseCost*D_2, (-dir + dir.perp()).normalized() };
+    };
+
+    auto [lh, vlh] = leftHand();
+    auto [rh, vrh] = rightHand();
+    auto [rtp, vrtp] = rightTwoPoint();
+    auto [ltp, vltp] = leftTwoPoint();
+    auto [lr, vlr] = leftReverse();
+    auto [rr, vrr] = rightReverse();
+    real m = min(lh, rh, rtp, ltp, lr, rr);
+
+    Vector2 v;
+    if(m == lh)
+        v = vlh;
+    if(m == rh)
+        v = vrh;
+    if(m == rtp)
+        v = vrtp;
+    if(m == ltp)
+        v = vltp;
+    if(m == lr)
+        v = vlr;
+    if(m == rr)
+        v = vrr;
+
+    return v;
 }
 
 Vector2 Vehicle::seek()
@@ -309,7 +478,9 @@ Vector2 Vehicle::seek()
             // TODO: this could become NaN
             if(!l)
                 return { 0, 0 };
-            auto v2 = (target - geoPos).normalized();
+            //auto v2 = (target - geoPos).normalized();
+            auto v2 = calcSeekVector(target);
+            v2 = calcSeekVector(target);
 
             auto R = path.size() < 2 ? getArrivalRadius(target, scene->getUnits()) : 0.5;
             if(l < R)
@@ -333,7 +504,7 @@ Vector2 Vehicle::seek()
         }
     }
     else
-        return { 0, 0 };
+        return -geoVelocity;
 }
 
 Vector2 Vehicle::evade()

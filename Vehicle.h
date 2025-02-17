@@ -27,14 +27,14 @@ public:
     void update(real dt);
 
     Entity* spawnWreck();
-    
-    Vector2 getSeekVector();
 
     Vector2 seek();
     Vector2 evade();
     Vector2 avoid();
     Vector2 separate();
     Vector2 boidCalc();
+
+    Vector2 calcSeekVector(Vector2 dest);
 
     static void loadModels();
 

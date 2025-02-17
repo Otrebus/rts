@@ -400,7 +400,7 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
 }
 
 
-int drawIntersectCircles(GLFWwindow* window, int xres, int yres)
+int drawVehiclePaths(GLFWwindow* window, int xres, int yres)
 {
     InputManager::getInstance().initInput(window);
     OrthogonalCamera cam({ 0, 0, 1 }, { 0, 0, -1 }, { 0, 1, 0 }, real(xres)/float(yres));
@@ -695,5 +695,5 @@ int debugDraw(GLFWwindow* window, int xres, int yres)
     // return drawCircleTriangle(window, xres, yres);
     // return drawDecals(window, xres, yres);
     // return drawSigned(window, xres, yres);
-    return drawIntersectCircles(window, xres, yres);
+    return drawVehiclePaths(window, xres, yres);
 }

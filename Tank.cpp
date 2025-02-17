@@ -553,7 +553,6 @@ void Tank::update(real dt)
         addPathFindingRequest(request);
     }
 
-
     auto enemyTarget = dynamic_cast<Unit*>(scene->getEntity(enemyTargetId));
 
     if(closestEnemy && (!enemyTarget || closestD*0.95 < (enemyTarget->getPosition()-this->getPosition()).length()))
@@ -568,7 +567,6 @@ void Tank::update(real dt)
         enemyTarget = nullptr;
         turretTarget = Vector3(1, 0, 0);
     }
-
 
     auto fireInterval = this->fireInterval.get<real>();
 
