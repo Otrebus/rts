@@ -753,9 +753,10 @@ std::pair<real, Vector2> Terrain::intersectCirclePathOcclusion(Vector2 pos, Vect
     auto mint = inf;
     Vector2 N;
 
-    for(int dx = -1; dx <= 1; dx++)
+    // TODO: we probably only want to trace in the direction towards pos2
+    for(int dx = -3; dx <= 3; dx++)
     {
-        for(int dy = -1; dy <= 1; dy++)
+        for(int dy = -3; dy <= 3; dy++)
         {
             int X = x+dx, Y = y+dy;
 

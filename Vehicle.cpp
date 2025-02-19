@@ -480,7 +480,6 @@ Vector2 Vehicle::seek()
                 return { 0, 0 };
             //auto v2 = (target - geoPos).normalized();
             auto v2 = calcSeekVector(target);
-            v2 = calcSeekVector(target);
 
             auto R = path.size() < 2 ? getArrivalRadius(target, scene->getUnits()) : 0.5;
             if(l < R)

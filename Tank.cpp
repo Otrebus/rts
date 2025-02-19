@@ -533,7 +533,6 @@ void Tank::update(real dt)
 
     if(!velocityTarget)
     {
-        // NOTE: if we don't check for velocity1*geoVelocity < 0, then the tanks will back up initially
         acceleration = 0;
     }
 
@@ -688,13 +687,19 @@ Vector2 Tank::evade()
 
 Vector2 Tank::avoid()
 {
-    auto pos2 = geoPos + geoVelocity;
+    if(!geoVelocity)
+        return { 0, 0 };
+    auto pos2 = geoPos + geoVelocity.normalized();
+    //ShapeDrawer::drawArrow(pos, (pos2 - pos.to2()).to3().normalized(), (pos2.to3() - pos).length(), 0.1, Vector3(1, 0, 0));
 
     auto [t, norm] = terrain->intersectCirclePathOcclusion(geoPos, pos2, 0.5);
+
+    ShapeDrawer::drawArrow(pos, (pos2 - pos.to2()).to3().normalized(), t, 0.1, Vector3(1, 0, 0));
+
     auto t2 = (pos2 - geoPos).length();
-    if(t > 0.05 && t < t2 && geoDir*norm < 0)
+    if(t > 0.05 && geoDir*norm < 0)
     {
-        auto v = norm*(1/t);
+        auto v = t2*norm*(1/t);
         return v;
     }
     return { 0, 0 };
