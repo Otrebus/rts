@@ -51,8 +51,8 @@ void drawLine(Scene& scene, Vector2 a, Vector2 b)
 void drawArrow(Scene& scene, Vector2 pos, Vector2 dir, real len)
 {
     auto a = pos, b = pos+dir.normalized()*len;
-    auto c = a + (b-a)*0.85 + (a-b).perp()*0.15;
-    auto d = a + (b-a)*0.85 - (a-b).perp()*0.15;
+    auto c = a + (b-a)*0.85f + (a-b).perp()*0.15f;
+    auto d = a + (b-a)*0.85f - (a-b).perp()*0.15f;
 
     Line2d line({ a, b, c });
     line.init(&scene);
@@ -109,7 +109,7 @@ int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
 
     //Vector2 p1(0.5, 0.5), p2(0.65, 0.75), p3(0.55, 0.85);
 
-    Vector2 p1(0.3, -0.3), p2(0, 0.3), p3(-0.3, 0);
+    Vector2 p1(0.3f, -0.3f), p2(0.f, 0.3f), p3(-0.3f, 0.f);
 
     while(!glfwWindowShouldClose(window))
     {
@@ -275,7 +275,7 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
         mesh.draw();
 
         auto prevTime = time;
-        time = glfwGetTime();
+        time = real(glfwGetTime());
         auto dt = time - prevTime;
 
         checkError();
@@ -301,10 +301,10 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
         glBlendFuncSeparate(GL_ONE, GL_ZERO, GL_ZERO, GL_ONE);
         i = 0;
 
-        SelectionDecalMaterial::radiusA = 0.17;
+        SelectionDecalMaterial::radiusA = 0.17f;
         for(auto& decal : decals)
         {
-            glPolygonOffset(-1.0, -1.0);
+            glPolygonOffset(-1.0f, -1.0f);
             decal->updateUniforms();
             decal->draw();
         }
@@ -362,7 +362,7 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
     InputManager::getInstance().initInput(window);
     OrthogonalCamera cam({ 0, 0, 1 }, { 0, 0, -1 }, { 0, 1, 0 }, real(xres)/float(yres));
 
-    real time = glfwGetTime();
+    real time = real(glfwGetTime());
 
     ShaderProgramManager shaderProgramManager;
     Scene scene(&cam, &shaderProgramManager);
@@ -375,19 +375,19 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
             glfwSetWindowShouldClose(window, true);
         
         auto prevTime = time;
-        time = glfwGetTime();
+        time = real(glfwGetTime());
         auto dt = time - prevTime;
         
         glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
      
-        real size = 0.2;
+        real size = 0.2f;
         real y = 1;
         for(int i = 0; i < 15; i++)
         {
             font.draw(scene, "This, is me. Typing something (I wonder if this will look good :)).", { -1, y }, size);
             y -= size;
-            size -= 0.2/15;
+            size -= 0.2f/15;
         }
 
 
@@ -446,12 +446,12 @@ int drawVehiclePaths(GLFWwindow* window, int xres, int yres)
 
         Vector2 dest = orig.to2();
 
-        Vector2 pos(0.25, 0.25);
-        auto dir = Vector2(0.5, 0.5).normalized();
+        Vector2 pos(0.25f, 0.25f);
+        auto dir = Vector2(0.5f, 0.5f).normalized();
 
-        drawArrow(scene, pos, dir, 0.05);
+        drawArrow(scene, pos, dir, 0.05f);
 
-        real R = 0.10;
+        real R = 0.10f;
 
         auto c_l = pos + dir.perp()*R;
         auto c_r = pos - dir.perp()*R;

@@ -113,7 +113,7 @@ void Vehicle::init(Scene* scene)
     model->setScene(scene);
 
     destinationLine.init(scene);
-    destinationLine.setColor(Vector3(0.2, 0.7, 0.1));
+    destinationLine.setColor(Vector3(0.2f, 0.7f, 0.1f));
     destinationLine.setInFront(true);
 
     selectionMarkerMesh->setScene(scene);
@@ -219,7 +219,7 @@ void Vehicle::accelerate(Vector2 velocityTarget)
     auto projAcc = ct ? x.length()*v.normalized()/ct - x : (v*geoDir)*geoDir;
 
     if(projAcc*geoDir < 0 && geoDir*geoVelocity <= 0)
-        acceleration = -maxForwardAcc*0.5;
+        acceleration = -maxForwardAcc*0.5f;
     else
         acceleration = projAcc*geoDir > 0 ? maxForwardAcc : - maxBreakAcc;
 }
@@ -337,8 +337,8 @@ Vector2 Vehicle::calcSeekVector(Vector2 dest)
         return { angle*R + (v_t - dest).length(), (dir - dir.perp()).normalized() };
     };
 
-    ////////// Case 2: right two point turn
     auto rightTwoPoint = [&] (bool draw = false) -> std::pair<real, Vector2> {
+        // Case 2: right two point turn
         auto v = (dest - c_l).normalized();
         auto P = c_l + v*R;
 
@@ -367,8 +367,8 @@ Vector2 Vehicle::calcSeekVector(Vector2 dest)
         return { ret + angle*R + (v_t - dest).length(), (-dir -dir.perp()).normalized() };
     };
 
-    //////////////////// Case 2: left two point turn
     auto leftTwoPoint = [&] (bool draw = false) -> std::pair<real, Vector2> {
+        // Case 2: left two point turn
         auto v = (dest - c_r).normalized();
         auto P = c_r + v*R;
 
@@ -395,8 +395,8 @@ Vector2 Vehicle::calcSeekVector(Vector2 dest)
         return { ret + angle*R + (v_t - dest).length(), (-dir + dir.perp()).normalized() };
     };
 
-    /////////////////////// Case 3: reverse left turn
     auto leftReverse = [&] (bool draw = false) -> std::pair<real, Vector2> {
+        // Case 3: reverse left turn
         auto p = getTangents(c_l, R, dest);
         auto a = p.first;
         auto b = p.second;
@@ -415,8 +415,8 @@ Vector2 Vehicle::calcSeekVector(Vector2 dest)
         return { reverseCost*D, (-dir - dir.perp()).normalized() };
     };
 
-    ///////////////////// Case 3: reverse right turn
     auto rightReverse = [&] (bool draw = false) -> std::pair<real, Vector2> {
+        // Case 3: reverse right turn
         auto p = getTangents(c_r, R, dest);
         auto a = p.first;
         auto b = p.second;
@@ -595,13 +595,13 @@ Vector2 Vehicle::boidCalc()
     if(boidDebug.varInt())
     {
         if(evade_)
-            ShapeDrawer::drawArrow(pos, evade_.to3(), evade_.length(), 0.02, Vector3(1, 0, 0));
+            ShapeDrawer::drawArrow(pos, evade_.to3(), evade_.length(), 0.02f, Vector3(1, 0, 0));
         if(seek_)
-            ShapeDrawer::drawArrow(pos, seek_.to3(), seek_.length(), 0.02, Vector3(0, 1, 0));
+            ShapeDrawer::drawArrow(pos, seek_.to3(), seek_.length(), 0.02f, Vector3(0, 1, 0));
         if(avoid_)
-            ShapeDrawer::drawArrow(pos, avoid_.to3(), avoid_.length(), 0.02, Vector3(0, 0, 1));
+            ShapeDrawer::drawArrow(pos, avoid_.to3(), avoid_.length(), 0.02f, Vector3(0, 0, 1));
         if(separate_)
-            ShapeDrawer::drawArrow(pos, separate_.to3(), separate_.length(), 0.02, Vector3(1, 1, 0));
+            ShapeDrawer::drawArrow(pos, separate_.to3(), separate_.length(), 0.02f, Vector3(1, 1, 0));
     }
 
     auto sum = evade_ + seek_ + avoid_ + separate_;

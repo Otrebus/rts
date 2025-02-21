@@ -497,7 +497,7 @@ void Tank::update(real dt)
             // TODO: break this (fow check) into a separate function
             bool isInFog = false;
             if(dynamic_cast<Tank*>(unit))
-                isInFog = scene->getTerrain()->getFog(unit->getGeoPosition().x, unit->getGeoPosition().y) && scene->getTerrain()->fogOfWarEnabled.varInt();
+                isInFog = scene->getTerrain()->getFog(int(unit->getGeoPosition().x), int(unit->getGeoPosition().y)) && scene->getTerrain()->fogOfWarEnabled.varInt();
             else if(Building* building = dynamic_cast<Building*>(unit); building)
             {
                 int height = scene->getTerrain()->getHeight();

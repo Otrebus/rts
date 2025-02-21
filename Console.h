@@ -49,9 +49,9 @@ public:
 	
 	void handleInput(const Input& input);
 
-	const real textSize = 0.04;
-	const real bottomPos = 0;
-	const real animDuration = 0.15;
+	const real textSize = 0.04f;
+	const real bottomPos = 0.f;
+	const real animDuration = 0.15f;
 
 	real lastBackspacePress;
 	real backSpaceDelay;

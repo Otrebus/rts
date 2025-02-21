@@ -140,10 +140,12 @@
 + Make tank consts static
 + Make better admissible-terrain-visualizer
 + TODO: 2x meshes?
+- Improve collision resolution
 - // TODO: make a mouseCoordtoWorldCoord as well
 - Have tanks reverse in certain situations
 + Camera can strafe through terrain
 + Debug intersect
+- Vehicles have weird evade behind a tank wreck
 - Move model loading from model3d to its own file?
 - Make turretDir.x along the tank
 - Combine init/constructor for meshes?

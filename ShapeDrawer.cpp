@@ -14,7 +14,7 @@ void ShapeDrawer::setDepthTest()
 {
     if(inFront)
 	{
-		glDepthRange(0, 0.5);
+		glDepthRange(0.f, 0.5f);
 	}
 }
 
@@ -23,7 +23,7 @@ void ShapeDrawer::restoreDepthTest()
 {
 	if(inFront)
 	{
-		glDepthRange(0.5, 1);
+		glDepthRange(0.5f, 1.f);
 		//glSet(GL_DEPTH_BUFFER_BIT);
 	}
 }
@@ -35,14 +35,14 @@ void ShapeDrawer::drawArrow(Vector3 pos, Vector3 dir, real length, real width, M
 	if(!dir)
 		return;
 	setDepthTest();
-	cylinderModel->setSize(Vector3(length*0.8, width, width));
-	cylinderModel->setDirection(dir.normalized(), Vector3(0, 0, 1));
+	cylinderModel->setSize(Vector3(length*0.8f, width, width));
+	cylinderModel->setDirection(dir.normalized(), Vector3(0.f, 0.f, 1.f));
 	cylinderModel->setPosition(pos);
 	cylinderModel->draw(material);
 
-	coneModel->setSize(Vector3(length*0.2, width*2.5, width*2.5));
-	coneModel->setDirection(dir.normalized(), Vector3(0, 0, 1));
-	coneModel->setPosition(pos + dir.normalized()*0.8*length);
+	coneModel->setSize(Vector3(length*0.2f, width*2.5f, width*2.5f));
+	coneModel->setDirection(dir.normalized(), Vector3(0.f, 0.f, 1.f));
+	coneModel->setPosition(pos + dir.normalized()*0.8f*length);
 	coneModel->draw(material);
 	restoreDepthTest();
 }

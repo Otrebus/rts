@@ -171,9 +171,9 @@ Vector3 rebaseOrtho(const Vector3& v, const Vector3& a, const Vector3& b, const 
 }
 
 
-std::tuple<double, double, double> intersectTriangle(const Vector3& v0, const Vector3& v1, const Vector3& v2, const Ray& ray)
+std::tuple<real, real, real> intersectTriangle(const Vector3& v0, const Vector3& v1, const Vector3& v2, const Ray& ray)
 {
-    double u, v, t;
+    real u, v, t;
     const Vector3& D = ray.dir;
 
     Vector3 E1 = v1-v0, E2 = v2-v0;
@@ -181,7 +181,7 @@ std::tuple<double, double, double> intersectTriangle(const Vector3& v0, const Ve
 
     Vector3 P = E2%T, Q = E1%D;
 
-    double det = E2*Q;
+    real det = E2*Q;
     if(!det)
         return { -inf, -inf, -inf };
     u = ray.dir*P/det;

@@ -83,22 +83,22 @@ QueuedInput InputManager::pop()
 auto keyCallback = [](GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if(action != GLFW_REPEAT)
-        InputManager::getInstance().addKeyInput(glfwGetTime(), key, action);
+        InputManager::getInstance().addKeyInput(real(glfwGetTime()), key, action);
 };
 
 auto charCallback = [](GLFWwindow* window, unsigned int codepoint)
 {
-    InputManager::getInstance().addCharacterInput(glfwGetTime(), codepoint);
+    InputManager::getInstance().addCharacterInput(real(glfwGetTime()), codepoint);
 };
 
 auto mouseButtonCallback = [](GLFWwindow* window, int button, int action, int mods)
 {
-    InputManager::getInstance().addMouseInput(glfwGetTime(), button, action);
+    InputManager::getInstance().addMouseInput(real(glfwGetTime()), button, action);
 };
 
 auto cursorPositionCallback = [](GLFWwindow* window, double xpos, double ypos)
 {
-    InputManager::getInstance().addMousePosition(glfwGetTime(), xpos, ypos);
+    InputManager::getInstance().addMousePosition(real(glfwGetTime()), real(xpos), real(ypos));
 };
 
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)

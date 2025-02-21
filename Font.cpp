@@ -310,7 +310,7 @@ void Glyph::draw(Scene& scene, FT_Face face, Vector2 pos, real size, Vector3 col
         )
     );
 
-    real scale = size*(1.0 + marginY*2)*h/H;
+    real scale = size*(1.0f + marginY*2)*h/H;
     auto scalingMatrix = getScalingMatrix(Vector3(scale/scene.getCamera()->getAspectRatio(), scale, 1));
 
     auto modelViewMatrix = translationMatrix * scalingMatrix;

@@ -99,7 +99,7 @@ void CameraControl::update(real dt)
     std::vector<MovementImpulse> v;
     for(auto movementImpulse : movementImpulses)
     {
-        auto time = glfwGetTime();
+        real time = real(glfwGetTime());
         auto dDir = movementImpulse.getVal(time) - movementImpulse.getVal(time-dt);
 
         if(!dDir)
@@ -169,7 +169,7 @@ void CameraControl::handleInput(const Input& input)
     {
 
         if((cameraMode == Freelook) && !isnan(prevX))
-            setAngle(getTheta() - (input.posX-prevX)/500.0, getPhi() - (input.posY-prevY)/500.0);
+            setAngle(getTheta() - (input.posX-prevX)/500.0f, getPhi() - (input.posY-prevY)/500.0);
         prevX = input.posX;
         prevY = input.posY;
     }

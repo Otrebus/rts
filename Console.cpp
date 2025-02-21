@@ -120,10 +120,10 @@ void Console::draw()
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     int i = 1;
-    font->draw(*scene, textInput + "|", Vector2(-0.98, getY() + ++i*textSize*1.05), textSize, Vector3(1, 1, 0));
+    font->draw(*scene, textInput + "|", Vector2(-0.98f, getY() + ++i*textSize*1.05f), textSize, Vector3(1.f, 1.f, 0.f));
     for(auto it = history.rbegin(); it < history.rend(); it++)
     {
-        Vector3 color = it->type == ConsoleHistoryEntry::Input ? Vector3(0.8, 0.8, 0.8) : Vector3(0.6, 0.6, 0.6);
+        Vector3 color = it->type == ConsoleHistoryEntry::Input ? Vector3(0.8f, 0.8f, 0.8f) : Vector3(0.6f, 0.6f, 0.6f);
         font->draw(*scene, it->entry, Vector2(-0.98, getY() + ++i*textSize*1.05), textSize, color);
     }
 }
@@ -141,8 +141,8 @@ void Console::handleInput(const Input& input)
         {
             if(glfwGetTime() - lastBackspacePress > backSpaceDelay) // TODO: find the actual repetition rate
             {
-                lastBackspacePress = glfwGetTime();
-                backSpaceDelay = 0.05;
+                lastBackspacePress = real(glfwGetTime());
+                backSpaceDelay = 0.05f;
                 if(textInput.size())
                     textInput.pop_back();
             }
@@ -219,7 +219,7 @@ void Console::handleInput(const Input& input)
             completionIndex = 0;
         }
         else
-            completionIndex = (completionIndex + (!shifting ? 1 : (completionStrings.size() - 1))) % completionStrings.size();
+            completionIndex = (completionIndex + (!shifting ? 1 : (int(completionStrings.size()) - 1))) % completionStrings.size();
 
         if(completionStrings.size())
             textInput = completionStrings[completionIndex] + " ";

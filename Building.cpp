@@ -13,7 +13,7 @@
 
 Building::Building(int x, int y, int length, int width, std::vector<int> footprint) : Unit(pos, { 1, 0, 0 }, { 0, 0, 1 }), length(length), width(width), footprint(footprint)
 {
-    height = 2.0;
+    height = 2.0f;
     geoDir = dir.to2();
     pos = Vector3(x+real(length)/2, y+real(width)/2, 0);
     geoPos = pos.to2();
@@ -162,13 +162,13 @@ void Building::produceTank()
 
 bool Building::pointWithinFootprint(int posX, int posY) const
 {
-    int x = posX - pos.x + real(length)/2, y = posY - pos.y + real(width)/2;
+    int x = int(posX - pos.x + real(length)/2), y = int(posY - pos.y + real(width)/2);
     return x >= 0 && x <= length && y >= 0 && y <= width && footprint[y*(length+1)+x];
 }
 
 bool Building::pointWithin(int posX, int posY) const
 {
-    int x = posX - pos.x + real(length)/2, y = posY - pos.y + real(width)/2;
+    int x = int(posX - pos.x + real(length)/2), y = int(posY - pos.y + real(width)/2);
     return x >= 0 && x <= length && y >= 0 && y <= width;
 }
 

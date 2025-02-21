@@ -596,7 +596,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
             {
                 auto [x, y] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
                 auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(x, y));
-                if(drawTarget.empty() || (drawTarget.back() - pos).length() > 0.1)
+                if(drawTarget.empty() || (drawTarget.back() - pos).length() > 0.1f)
                     drawTarget.push_back(pos);
             }
         }
@@ -649,10 +649,10 @@ void UserInterface::update(real dt)
 void UserInterface::draw()
 {
     if(showFps.varInt())
-        font->draw(*scene, realToString(fps, 3), { 0.952, 0.98 }, 0.035, Vector3(0.2, 0.9, 0.2));
+        font->draw(*scene, realToString(fps, 3), { 0.952f, 0.98f }, 0.035f, Vector3(0.2f, 0.9f, 0.2f));
 
     if(showCoordinates.varInt())
-        font->draw(*scene, std::format("({:.2f}, {:.2f})", mouseGeoCoords.x, mouseGeoCoords.y), { 0.852, -0.95 }, 0.035, Vector3(0.2, 0.9, 0.2));
+        font->draw(*scene, std::format("({:.2f}, {:.2f})", mouseGeoCoords.x, mouseGeoCoords.y), { 0.852f, -0.95f }, 0.035f, Vector3(0.2f, 0.9f, 0.2f));
 
     GLint depthFunc;
     glGetIntegerv(GL_DEPTH_FUNC, &depthFunc);
