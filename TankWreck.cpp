@@ -24,6 +24,7 @@ TankWreck::TankWreck(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : E
 
     geoPos = pos.to2();
     geoDir = dir.to2();
+    geoVelocity = Vector2(0.f, 0.f);
 
     boundingBox = tankWreckBoundingBox;
 

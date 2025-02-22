@@ -1,5 +1,6 @@
 #include "Entity.h"
 #include "Scene.h"
+#include "TankWreck.h"
 #include "Unit.h"
 #include "Terrain.h"
 #include "GeometryUtils.h"
@@ -156,7 +157,7 @@ void Scene::moveEntitiesSoft(real dt, int depth, std::unordered_set<Entity*>& gl
 
         entity->geoPos = posNext;
         entity->plant(*terrain);
-        entity->setVelocity((entity->getPosition() - prePos)/dt);
+        //entity->setVelocity((entity->getPosition() - prePos)/dt);
     }
 
     if(minT < inf)
@@ -211,7 +212,8 @@ void Scene::moveEntities(real dt)
             if(l < 1)
             {
                 real modifier = std::max(0.0f, 1/(1.0f-entity->getVelocity().length()));
-                entity2->geoVelocity += modifier*r*dt/l;
+                if(!dynamic_cast<TankWreck*>(entity2) && !dynamic_cast<Building*>(entity2))
+                    entity2->geoVelocity += modifier*r*dt/l;
             }
         }
         /*for(auto building : buildings)

@@ -106,7 +106,7 @@ void ShapeDrawer::drawCylinder(Vector3 pos, Vector3 dir, real length, real radiu
 		return;
 	setDepthTest();
 	cylinderModel->setSize(Vector3(length, radius, radius));
-	cylinderModel->setDirection(dir.normalized(), Vector3(0, 0, 1));
+	cylinderModel->setDirection(dir.normalized(), Vector3(0.f, 0.f, 1.f));
 	cylinderModel->setPosition(pos);
 	cylinderModel->draw(material);
 	restoreDepthTest();
@@ -117,19 +117,19 @@ void ShapeDrawer::loadModels()
 	inFront = true;
 	material = new LambertianMaterial();
 
-	boxModel = ModelManager::addModel("box", createBoxModel(1.0, 1.0, 1.0));
+	boxModel = ModelManager::addModel("box", createBoxModel(1.0f, 1.0f, 1.0f));
 	boxModel->setScene(scene);
 	boxModel->init();
 
-	cylinderModel = ModelManager::addModel("cylinder", createCylinderModel(1.0, 1.0, 10));
+	cylinderModel = ModelManager::addModel("cylinder", createCylinderModel(1.0f, 1.0f, 10));
 	cylinderModel->setScene(scene);
 	cylinderModel->init();
 
-	coneModel = ModelManager::addModel("cone", createConeModel(1.0, 1.0, 100));
+	coneModel = ModelManager::addModel("cone", createConeModel(1.0f, 1.0f, 100));
 	coneModel->setScene(scene);
 	coneModel->init();
 
-	sphereModel = ModelManager::addModel("sphere", createSphereModel(1.0, 5));
+	sphereModel = ModelManager::addModel("sphere", createSphereModel(1.0f, 5.f));
 	sphereModel->setScene(scene);
 	sphereModel->init();
 }
