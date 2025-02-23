@@ -202,8 +202,9 @@ void Vehicle::accelerate(Vector2 velocityTarget)
         return;
     }
 
+
     if(velocityTarget.length() > 0.01 && velocityTarget.normalized()*geoDir < 0.999 && velocityTarget.normalized()*geoDir > -0.999)
-        turn(geoDir%velocityTarget > 0);
+        turn((geoDir.perp()%(velocityTarget.perp()) > 0) ^ (geoDir*velocityTarget < 0));
     else
         turnRate = 0;
 
@@ -211,17 +212,29 @@ void Vehicle::accelerate(Vector2 velocityTarget)
     auto maxForwardAcc = this->maxForwardAcc.get<real>();
     auto maxBreakAcc = this->maxBreakAcc.get<real>();
 
-    auto radialAcc = geoDir.perp()*turnRate*maxSpeed;
+    //auto radialAcc = geoDir.perp()*turnRate*maxSpeed;
 
-    auto x = radialAcc;
-    auto v = accelerationTarget;
-    auto ct = !x ? 0 : x.normalized()*v.normalized();
-    auto projAcc = ct ? x.length()*v.normalized()/ct - x : (v*geoDir)*geoDir;
+    //auto x = radialAcc;
+    //auto v = accelerationTarget;
+    //auto ct = !x ? 0 : x.normalized()*v.normalized();
+    //auto projAcc = ct ? x.length()*v.normalized()/ct - x : (v*geoDir)*geoDir;
 
-    if(projAcc*geoDir < 0 && geoDir*geoVelocity <= 0)
-        acceleration = -maxForwardAcc*0.5f;
+    //if(!this->isSelected())
+    //    std::cout << "turnRate is " << turnRate << std::endl;
+
+    //ShapeDrawer::drawArrow(pos, projAcc.to3(), projAcc.length(), 0.02, Vector3(1, 0, 1));
+
+    //if(projAcc*geoDir < 0 && geoDir*geoVelocity <= 0)
+    //    acceleration = -maxForwardAcc*0.5f;
+    //else
+    //    acceleration = projAcc*geoDir > 0 ? maxForwardAcc : - maxBreakAcc;
+    if(accelerationTarget*geoDir > 0)
+        acceleration = maxForwardAcc;
     else
-        acceleration = projAcc*geoDir > 0 ? maxForwardAcc : - maxBreakAcc;
+        acceleration = -maxForwardAcc*0.5f;
+
+    if(!isSelected())
+        std::cout << acceleration << std::endl;
 }
 
 void Vehicle::brake()
