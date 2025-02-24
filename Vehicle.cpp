@@ -194,6 +194,7 @@ void Vehicle::setDirection(Vector3 dir, Vector3 up)
 
 void Vehicle::accelerate(Vector2 velocityTarget)
 {
+    // TODO: what if we do a similar thing as below but for acceleration, check current acceleration dir and how we need to amend it
     accelerationTarget = velocityTarget - geoVelocity;
     if(accelerationTarget.length() < 1e-6)
     {
@@ -203,8 +204,23 @@ void Vehicle::accelerate(Vector2 velocityTarget)
     }
 
 
+    //if(velocityTarget.length() > 0.01 && velocityTarget.normalized()*geoDir < 0.999 && velocityTarget.normalized()*geoDir > -0.999)
+    //{
+    //    if(geoDir*velocityTarget > 0)
+    //    {
+    //        turn((geoDir.perp()*(velocityTarget) > 0));
+    //    }
+    //    else
+    //    {
+    //        turn((geoDir.perp()*(velocityTarget) < 0));
+    //    }
+    //}
+    //else
+    //    turnRate = 0;
+
+    // The above while more correct actually works worse in practice!
     if(velocityTarget.length() > 0.01 && velocityTarget.normalized()*geoDir < 0.999 && velocityTarget.normalized()*geoDir > -0.999)
-        turn((geoDir.perp()%(velocityTarget.perp()) > 0) ^ (geoDir*velocityTarget < 0));
+        turn(geoDir%velocityTarget > 0);
     else
         turnRate = 0;
 
@@ -228,6 +244,7 @@ void Vehicle::accelerate(Vector2 velocityTarget)
     //    acceleration = -maxForwardAcc*0.5f;
     //else
     //    acceleration = projAcc*geoDir > 0 ? maxForwardAcc : - maxBreakAcc;
+
     if(accelerationTarget*geoDir > 0)
         acceleration = maxForwardAcc;
     else

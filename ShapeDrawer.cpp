@@ -36,12 +36,12 @@ void ShapeDrawer::drawArrow(Vector3 pos, Vector3 dir, real length, real width, M
 		return;
 	setDepthTest();
 	cylinderModel->setSize(Vector3(length*0.8f, width, width));
-	cylinderModel->setDirection(dir.normalized(), Vector3(0.f, 0.f, 1.f));
+	cylinderModel->setDirection(dir.normalized(), dir.perp());
 	cylinderModel->setPosition(pos);
 	cylinderModel->draw(material);
 
 	coneModel->setSize(Vector3(length*0.2f, width*2.5f, width*2.5f));
-	coneModel->setDirection(dir.normalized(), Vector3(0.f, 0.f, 1.f));
+	coneModel->setDirection(dir.normalized(), dir.perp());
 	coneModel->setPosition(pos + dir.normalized()*0.8f*length);
 	coneModel->draw(material);
 	restoreDepthTest();

@@ -45,6 +45,7 @@ public:
     void normalize();
     Vector3 normalized() const;
     bool isValid() const;
+    Vector3 perp() const;
 
     Vector2 to2() const;
 

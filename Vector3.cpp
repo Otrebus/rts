@@ -203,3 +203,13 @@ Vector3::operator bool() const
 {
     return x || y || z;
 }
+
+Vector3 Vector3::perp() const
+{
+  // Idea from https://stackoverflow.com/a/43454629
+  bool b0 = abs(x) < abs(y) && abs(x) < abs(z);
+  bool b1 = abs(y) <= abs(x) && abs(y) < abs(z);
+  bool b2 = abs(z) <= abs(x) && abs(z) <= abs(y);
+
+  return *this%Vector3(real(b0), real(b1), real(b2));
+}

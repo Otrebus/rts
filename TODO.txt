@@ -23,7 +23,7 @@
   + Wall avoidance
   + Obstacle avoidance
   + Separation
-  - Fix oscillation (reduce jittering: make velocityTarget exponentially averaged?)
+  + Fix oscillation (reduce jittering: make velocityTarget exponentially averaged?)
 + Multithreaded path finding
 + "TODO: these vectors before normalization can be 0"
 + "TODO: is b in the right direction?"
@@ -67,7 +67,6 @@
 + Better heap for path finding (find min prio etc)
 + Tank turret position etc should be constants and calculated once
 + Models should be instantiated from a single source
-- Reorganize project a bit
 + Gun vibrates ever so slightly
 - Combine Preselected/selected, and selectionstate in userinterface - into bitfields maybe
 + Add terrain/unit visualisations of all sorts (lines, arrows, dots, etc)
@@ -100,7 +99,7 @@
 + Review the two vertex shaders for lines, if we can unify them 
 - Now that we have geometric normals we don't really need to create a new mesh for flat rendering
 + Fix flat terrain shading
-- Remove the selecttriangle stuff, not needed anymore
++ Remove the selecttriangle stuff, not needed anymore
 - Terrain set scene / scene set terrain?
 - Figure out mesh ownership
 + Work out memory leaks
@@ -129,7 +128,7 @@
   + Fix fog update when fogOfWar 0 sets back to 1
 + Make fog of war apply to buildings and have some more generic handling than the stuff in Tank::draw() if possible
 - Bug: Setting fogofwar to 0 and then switching to textured terrain makes tanks invisible forever
-- Fix unhandled conditions when a tank is on the edge of the map
++ Fix unhandled conditions when a tank is on the edge of the map
   + Fixed selection mesh
   + "TODO: intersect against edge of map"
 - Right and top edges of the map show as passable even when they probably aren't
@@ -146,10 +145,10 @@
 + Camera can strafe through terrain
 + Debug intersect
 - Optimize fog of war calculations
-- Fix appearance of drawarrow
++ Fix appearance of drawarrow
 + Vehicles have weird evade behind a tank wreck
 - Move model loading from model3d to its own file?
-- Make turretDir.x along the tank
++ Make turretDir.x along the tank
 - Combine init/constructor for meshes?
 - What's unit init about anyway
 - Command queuing
