@@ -158,6 +158,7 @@
     <ClCompile Include="gl3w.c" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Primitives.cpp" />
+    <ClCompile Include="Rock.cpp" />
     <ClCompile Include="ShapeDrawer.cpp" />
     <ClCompile Include="TankWreck.cpp" />
     <ClCompile Include="GeometryUtils.cpp" />
@@ -230,6 +231,7 @@
     <ClInclude Include="Font.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Primitives.h" />
+    <ClInclude Include="Rock.h" />
     <ClInclude Include="ShapeDrawer.h" />
     <ClInclude Include="TankWreck.h" />
     <ClInclude Include="GeometryUtils.h" />

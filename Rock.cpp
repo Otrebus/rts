@@ -12,6 +12,12 @@ Rock::Rock(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Entity(pos,
     model->setScene(scene);
     model->setPosition(pos);
     model->setDirection(dir, up);
+
+    geoPos = pos.to2();
+    geoDir = dir.to2();
+    geoVelocity = Vector2(0.f, 0.f);
+
+    boundingBox = rockBoundingBox;
 }
 
 void Rock::init(Scene* scene)
@@ -37,6 +43,8 @@ void Rock::loadModels()
 {
     auto model = new Model3d();
     model->readFromFile("Rock.obj");
+
+    ModelManager::addModel("Rock", model);
 
     real length = 1;
 
@@ -89,8 +97,8 @@ void Rock::loadModels()
 
     auto height = h*ratio;
     auto width = w*ratio;
-
-    vehicleBoundingBox = BoundingBox(Vector3(-length/2, -width/2, -height/2), Vector3(length/2, width/2, height/2));
+    
+    rockBoundingBox = BoundingBox(Vector3(-length/2, -width/2, -height/2), Vector3(length/2, width/2, height/2));
 }
 
 void Rock::draw(Material* mat)
@@ -107,3 +115,5 @@ void Rock::updateUniforms()
 {
     model->updateUniforms();
 }
+
+BoundingBox Rock::rockBoundingBox = BoundingBox();

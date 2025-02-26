@@ -14,4 +14,6 @@ public:
     void setDirection(Vector3 dir, Vector3 up);
 
     Model3d* model;
+
+    static BoundingBox rockBoundingBox;
 };

@@ -75,6 +75,8 @@ void Entity::updateUniforms()
 
 void Entity::plant(const Terrain& terrain)
 {
+    assert(!std::isnan(boundingBox.c2.x) && !std::isnan(boundingBox.c1.x)); // TODO: is there a better way of checking that it's initialized
+
     auto x = Vector3(geoDir.x, geoDir.y, 0).normalized();
     auto y = Vector3(-geoDir.y, geoDir.x, 0).normalized();
     auto z = Vector3(0, 0, 1).normalized();

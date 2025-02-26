@@ -2,6 +2,7 @@
 
 #include "Camera.h"
 #include "DebugDraw.h"
+#include "Rock.h"
 #include "TankWreck.h"
 #include "Entity.h"
 #include "InputManager.h"
@@ -124,6 +125,7 @@ int main()
     Tank::loadModels();
     TankWreck::loadModels();
     Vehicle::loadModels();
+    Rock::loadModels();
 
     //scene.addUnit(new Tank({ 180.480316, 99.7414932, 15.0 }, { 1, 0, 0 }, { 0, 0, 1}, &terrain));
 
@@ -165,6 +167,10 @@ int main()
     auto wreck = new TankWreck({ 167.5f, 85.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
     wreck->init(&scene);
     scene.addEntity(wreck);
+
+    auto rock = new Rock({ 157.5f, 75.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+    rock->init(&scene);
+    scene.addEntity(rock);
     
     scene.updateUnitList();
     for(auto& e : scene.getUnits())

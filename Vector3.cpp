@@ -6,7 +6,7 @@
 
 Vector3::Vector3(real x, real y, real z) : x(x), y(y), z(z)
 {
-    //assert(!std::isnan(x) && !std::isnan(y) && !std::isnan(z));
+    assert(!std::isnan(x) && !std::isnan(y) && !std::isnan(z));
 }
 
 
