@@ -163,12 +163,12 @@ bool intersectsFrustum(Vector3 pos, Vector3 v[4], Entity& entity, Scene* scene)
 }
 
 
-void addUnitPathfindingRequest(Unit* unit, Vector3 pos)
+void addUnitPathfindingRequest(Unit* unit, Vector2 pos)
 {
     PathFindingRequest* request = new PathFindingRequest;
     request->requester = unit;
     request->start = unit->getPosition().to2();
-    request->dest = pos.to2();
+    request->dest = pos;
     addPathFindingRequest(request);
     unit->setCurrentPathfindingRequest(request);
 }
@@ -310,7 +310,7 @@ void UserInterface::moveDrawnUnits(const std::vector<Unit*>& selectedUnits)
         }
     }
     for(auto assignment : v)
-        addUnitPathfindingRequest(assignment.unit, points[assignment.point]);
+        addUnitPathfindingRequest(assignment.unit, points[assignment.point].to2());
 }
 
 void UserInterface::selectUnit(const Ray& ray, const std::vector<Unit*>& units, bool pre)
@@ -574,7 +574,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
                 {
                     if(unit->isSelected())
                     {
-                        addUnitPathfindingRequest(unit, pos);
+                        addUnitPathfindingRequest(unit, pos.to2());
                     }
                 }
             }

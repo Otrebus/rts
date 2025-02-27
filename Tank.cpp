@@ -2,6 +2,7 @@
 #include "PathFinding.h"
 #include "Polysolver.h"
 #include "TankWreck.h"
+#include "UserInterface.h"
 #include "Projectile.h"
 #include "SelectionMarkerMesh.h"
 #include "Tank.h"
@@ -544,12 +545,7 @@ void Tank::update(real dt)
 
     if(!pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && path.size())
     {
-        PathFindingRequest* request = new PathFindingRequest;
-        request->requester = this;
-        request->start = getPosition().to2();
-        request->dest = path.back();
-        setCurrentPathfindingRequest(request);
-        addPathFindingRequest(request);
+        addUnitPathfindingRequest(this, path.back());
     }
 
     auto enemyTarget = dynamic_cast<Unit*>(scene->getEntity(enemyTargetId));

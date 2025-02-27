@@ -9,6 +9,7 @@
 #include "FogOfWarMaterial.h"
 #include "BuildingWreck.h"
 #include "PathFinding.h"
+#include "UserInterface.h"
 
 
 Building::Building(int x, int y, int length, int width, std::vector<int> footprint) : Unit(pos, { 1, 0, 0 }, { 0, 0, 1 }), length(length), width(width), footprint(footprint)
@@ -152,12 +153,7 @@ void Building::produceTank()
     tank->constructing = true;
     scene->addEntity(tank);
     tank->init(scene);
-    PathFindingRequest* request = new PathFindingRequest;
-    request->requester = tank;
-    request->start = getPosition().to2();
-    request->dest = (pos + dir.normalized()*3).to2();
-    tank->setCurrentPathfindingRequest(request);
-    addPathFindingRequest(request);
+    addUnitPathfindingRequest(tank, (pos + dir.normalized()*3).to2());
 }
 
 bool Building::pointWithinFootprint(int posX, int posY) const

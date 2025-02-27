@@ -87,4 +87,4 @@ public:
     static ConsoleVariable showCoordinates;
 };
 
-void addUnitPathfindingRequest(Unit* unit, Vector3 pos);
+void addUnitPathfindingRequest(Unit* unit, Vector2 pos);

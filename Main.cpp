@@ -62,6 +62,9 @@ int main()
         printf("failed to initialize GLFW.\n");
         return -1;
     }
+    
+    std::default_random_engine generator;
+    std::uniform_real_distribution<real> coord(0, 200);
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
@@ -132,13 +135,13 @@ int main()
     auto vehicle = new Vehicle({ 150.5f, 35.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
     scene.addEntity(vehicle);
 
-    for(int y = 0; y < 5; y++)
+    /*for(int y = 0; y < 5; y++)
     {
         for(int x = 0; x < 5; x++)
         {
             scene.addEntity(new Vehicle({ 165.5f-x, 95.15f-y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain));
         }
-    }
+    }*/
 
     
     /*auto tank = new Tank({ 170.5f, 65.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
@@ -168,9 +171,12 @@ int main()
     wreck->init(&scene);
     scene.addEntity(wreck);
 
-    auto rock = new Rock({ 157.5f, 75.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
-    rock->init(&scene);
-    scene.addEntity(rock);
+    int i = 0;
+    for(int i = 0; i < 10000; i++) {
+        auto rock = new Rock({ coord(generator), coord(generator), 0 }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+        rock->init(&scene);
+        scene.addEntity(rock);
+    }
     
     scene.updateUnitList();
     for(auto& e : scene.getUnits())

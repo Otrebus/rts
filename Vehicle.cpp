@@ -9,6 +9,7 @@
 #include "ConsoleSettings.h"
 #include "FogOfWarMaterial.h"
 #include "GeometryUtils.h"
+#include "UserInterface.h"
 #include "LambertianMaterial.h"
 
 ConsoleVariable Vehicle::maxSpeed("vehicleMaxSpeed", 2.0f);
@@ -304,12 +305,7 @@ void Vehicle::update(real dt)
 
     if(!pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && path.size())
     {
-        PathFindingRequest* request = new PathFindingRequest;
-        request->requester = this;
-        request->start = getPosition().to2();
-        request->dest = path.back();
-        setCurrentPathfindingRequest(request);
-        addPathFindingRequest(request);
+        addUnitPathfindingRequest(this, path.back());
     }
 }
 
