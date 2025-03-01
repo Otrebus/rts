@@ -156,6 +156,7 @@
     <ClCompile Include="FogOfWarMaterial.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="gl3w.c" />
+    <ClCompile Include="Harvester.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Primitives.cpp" />
     <ClCompile Include="Rock.cpp" />
@@ -229,6 +230,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="FogOfWarMaterial.h" />
     <ClInclude Include="Font.h" />
+    <ClInclude Include="Harvester.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Primitives.h" />
     <ClInclude Include="Rock.h" />

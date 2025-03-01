@@ -1,6 +1,7 @@
 #define NOMINMAX
 
 #include "Camera.h"
+#include "Harvester.h"
 #include "DebugDraw.h"
 #include "Rock.h"
 #include "TankWreck.h"
@@ -64,7 +65,7 @@ int main()
     }
     
     std::default_random_engine generator;
-    std::uniform_real_distribution<real> coord(0, 200);
+    std::uniform_real_distribution<real> coord(50, 70);
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
@@ -128,12 +129,13 @@ int main()
     Tank::loadModels();
     TankWreck::loadModels();
     Vehicle::loadModels();
+    Harvester::loadModels();
     Rock::loadModels();
 
     //scene.addUnit(new Tank({ 180.480316, 99.7414932, 15.0 }, { 1, 0, 0 }, { 0, 0, 1}, &terrain));
 
-    auto vehicle = new Vehicle({ 150.5f, 35.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
-    scene.addEntity(vehicle);
+    auto harvester = new Harvester({ 150.5f, 35.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+    scene.addEntity(harvester);
 
     /*for(int y = 0; y < 5; y++)
     {
@@ -148,35 +150,35 @@ int main()
     tank->constructing = true;
     scene.addEntity(tank);*/
 
-    for(int y = 0; y < 3; y++)
-    {
-        for(int x = 0; x < 3; x++)
-        {
-            auto enemy = new Tank({ 170.5f+x, 75.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
-            enemy->setEnemy(true);
-            scene.addEntity(enemy);
-        }
-    }
+    //for(int y = 0; y < 3; y++)
+    //{
+    //    for(int x = 0; x < 3; x++)
+    //    {
+    //        auto enemy = new Tank({ 170.5f+x, 75.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+    //        enemy->setEnemy(true);
+    //        scene.addEntity(enemy);
+    //    }
+    //}
 
-    for(int y = 0; y < 3; y++)
-    {
-        for(int x = 0; x < 3; x++)
-        {
-            auto tank = new Tank({ 170.5f+x, 55.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
-            scene.addEntity(tank);
-        }
-    }
+    //for(int y = 0; y < 3; y++)
+    //{
+    //    for(int x = 0; x < 3; x++)
+    //    {
+    //        auto tank = new Tank({ 170.5f+x, 55.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+    //        scene.addEntity(tank);
+    //    }
+    //}
 
     auto wreck = new TankWreck({ 167.5f, 85.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
     wreck->init(&scene);
     scene.addEntity(wreck);
 
-    //int i = 0;
-    //for(int i = 0; i < 10000; i++) {
-    //    auto rock = new Rock({ coord(generator), coord(generator), 0 }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
-    //    rock->init(&scene);
-    //    scene.addEntity(rock);
-    //}
+    int i = 0;
+    for(int i = 0; i < 1000; i++) {
+        auto rock = new Rock({ coord(generator), coord(generator), 0 }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+        rock->init(&scene);
+        scene.addEntity(rock);
+    }
     
     scene.updateUnitList();
     for(auto& e : scene.getUnits())

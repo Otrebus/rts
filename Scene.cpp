@@ -1,5 +1,6 @@
 #include "Entity.h"
 #include "Scene.h"
+#include "Rock.h"
 #include "TankWreck.h"
 #include "Unit.h"
 #include "Terrain.h"
@@ -146,7 +147,7 @@ void Scene::moveEntitiesSoft(real dt, int depth, std::unordered_set<Entity*>& gl
 
     for(auto entity : entities)
     { 
-        if(!dynamic_cast<Unit*>(entity) || dynamic_cast<Building*>(entity)) // TODO: bad pattern
+        if(!dynamic_cast<Unit*>(entity) || dynamic_cast<Building*>(entity) || dynamic_cast<Rock*>(entity) ) // TODO: bad pattern
             continue;
 
         auto t = minT < inf ? minT : dt;
@@ -157,7 +158,7 @@ void Scene::moveEntitiesSoft(real dt, int depth, std::unordered_set<Entity*>& gl
 
         entity->geoPos = posNext;
         entity->plant(*terrain);
-        //entity->setVelocity((entity->getPosition() - prePos)/dt);
+        entity->setVelocity((entity->getPosition() - prePos)/dt);
     }
 
     if(minT < inf)

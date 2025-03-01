@@ -51,8 +51,13 @@ struct ObjTriangle
     Vector3 getNormal() const
     {
         Vector3 normal = (v1->position-v0->position)%(v2->position-v0->position);
-        normal.normalize();
-        return normal;
+        if(!normal)
+            return Vector3(0, 0, 1);
+        else
+        {
+            normal.normalize();
+            return normal;
+        }
     }
 };
 
