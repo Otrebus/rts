@@ -690,8 +690,6 @@ Vector2 Tank::avoid()
 
     auto [t, norm] = terrain->intersectCirclePathOcclusion(geoPos, pos2, 0.5);
 
-    ShapeDrawer::drawArrow(pos, (pos2 - pos.to2()).to3().normalized(), t, 0.1, Vector3(1, 0, 0));
-
     auto t2 = (pos2 - geoPos).length();
     if(t > 0.05 && geoDir*norm < 0)
     {

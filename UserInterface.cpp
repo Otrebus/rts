@@ -213,7 +213,7 @@ void UserInterface::selectUnits(std::vector<Unit*> units, bool pre)
 
 bool UserInterface::isInFrustum(Unit* unit)
 {
-auto time = glfwGetTime();
+    auto time = glfwGetTime();
     auto camera = scene->getCamera();
 
     Vector3 v[4] = {

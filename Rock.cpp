@@ -108,7 +108,6 @@ void Rock::draw(Material* mat)
 
 void Rock::update(real dt)
 {
-    plant(*scene->getTerrain());
 }
 
 void Rock::updateUniforms()

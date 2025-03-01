@@ -148,39 +148,43 @@ int main()
     tank->constructing = true;
     scene.addEntity(tank);*/
 
-    //for(int y = 0; y < 3; y++)
-    //{
-    //    for(int x = 0; x < 3; x++)
-    //    {
-    //        auto enemy = new Tank({ 170.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
-    //        enemy->setEnemy(true);
-    //        scene.addEntity(enemy);
-    //    }
-    //}
+    for(int y = 0; y < 3; y++)
+    {
+        for(int x = 0; x < 3; x++)
+        {
+            auto enemy = new Tank({ 170.5f+x, 75.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+            enemy->setEnemy(true);
+            scene.addEntity(enemy);
+        }
+    }
 
-    //for(int y = 0; y < 1; y++)
-    //{
-    //    for(int x = 0; x < 1; x++)
-    //    {
-    //        auto enemy = new Tank({ 170.5f+x, 65.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
-    //        scene.addUnit(enemy);
-    //    }
-    //}
+    for(int y = 0; y < 3; y++)
+    {
+        for(int x = 0; x < 3; x++)
+        {
+            auto tank = new Tank({ 170.5f+x, 55.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+            scene.addEntity(tank);
+        }
+    }
 
     auto wreck = new TankWreck({ 167.5f, 85.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
     wreck->init(&scene);
     scene.addEntity(wreck);
 
-    int i = 0;
-    for(int i = 0; i < 10000; i++) {
-        auto rock = new Rock({ coord(generator), coord(generator), 0 }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
-        rock->init(&scene);
-        scene.addEntity(rock);
-    }
+    //int i = 0;
+    //for(int i = 0; i < 10000; i++) {
+    //    auto rock = new Rock({ coord(generator), coord(generator), 0 }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+    //    rock->init(&scene);
+    //    scene.addEntity(rock);
+    //}
     
     scene.updateUnitList();
     for(auto& e : scene.getUnits())
         e->init(&scene);
+
+    auto entities = scene.getEntities();
+    for(auto& entity : entities)
+        entity->plant(*scene.getTerrain());
 
     checkError();
 
@@ -320,7 +324,6 @@ int main()
 
         for(auto& entity : scene.getEntities())
         {
-            auto pos = entity->getGeoPosition();
             entity->updateUniforms();
             entity->draw();
         }

@@ -449,8 +449,6 @@ int drawVehiclePaths(GLFWwindow* window, int xres, int yres)
         Vector2 pos(0.25f, 0.25f);
         auto dir = Vector2(0.5f, 0.5f).normalized();
 
-        drawArrow(scene, pos, dir, 0.05f);
-
         real R = 0.10f;
 
         auto c_l = pos + dir.perp()*R;
