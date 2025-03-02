@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Mesh3d.h"
-#include "Tank.h"
 
 
 class Scene;
@@ -17,6 +16,8 @@ public:
 
     void setSelectionType(bool pre);
 
+    void setRadius(real radius);
+
     std::pair<std::vector<Vertex3>, std::vector<int>> calcVertices(Vector2 pos);
     void init(Vector2 pos);
 
@@ -25,4 +26,5 @@ public:
 
     real length, width;
     bool circular;
+    real radius;
 };

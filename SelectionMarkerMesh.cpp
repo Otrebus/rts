@@ -9,6 +9,13 @@
 SelectionMarkerMesh::SelectionMarkerMesh(real length, real width, bool circular = false) : length(length), width(width), circular(circular)
 {
     int pass = 0;
+    radius = 1.0f;
+}
+
+
+void SelectionMarkerMesh::setRadius(real radius)
+{
+    this->radius = radius;
 }
 
 
@@ -20,18 +27,18 @@ void SelectionMarkerMesh::draw(Material* mat)
     scene->setShaderProgram(program);
     program->use();
     
-    float radiusA = 1.0, radiusB = 1.0;
+    float radiusA = radius, radiusB = radius;
     if(!circular)
     {
-        radiusA = 0.2 + real(length)/2;
-        radiusB = 0.2 + real(width)/2;
+        radiusA = 0.2f + real(length)/2;
+        radiusB = 0.2f + real(width)/2;
     }
 
     if(pass == 0)
     {
-        ((SelectionDecalMaterial*)material)->alpha = 0.89;
-        SelectionDecalMaterial::radiusA = radiusA - 0.1;
-        SelectionDecalMaterial::radiusB = radiusB - 0.1;
+        ((SelectionDecalMaterial*)material)->alpha = 0.89f;
+        SelectionDecalMaterial::radiusA = radiusA - 0.1f;
+        SelectionDecalMaterial::radiusB = radiusB - 0.1f;
 
         glEnable(GL_BLEND);
         glEnable(GL_POLYGON_OFFSET_FILL);
@@ -39,9 +46,9 @@ void SelectionMarkerMesh::draw(Material* mat)
     }
     else if(pass == 1)
     {
-        ((SelectionDecalMaterial*)material)->alpha = 1.0;
-        SelectionDecalMaterial::radiusA = pre ? (radiusA - 0.05) : radiusA;
-        SelectionDecalMaterial::radiusB = pre ? (radiusB - 0.05) : radiusB;
+        ((SelectionDecalMaterial*)material)->alpha = 1.0f;
+        SelectionDecalMaterial::radiusA = pre ? (radiusA - 0.05f) : radiusA;
+        SelectionDecalMaterial::radiusB = pre ? (radiusB - 0.05f) : radiusB;
 
         glEnable(GL_BLEND);
         glEnable(GL_POLYGON_OFFSET_FILL);
@@ -50,9 +57,9 @@ void SelectionMarkerMesh::draw(Material* mat)
     }
     else if(pass == 2)
     {
-        ((SelectionDecalMaterial*)material)->alpha = 1.0;
-        SelectionDecalMaterial::radiusA = radiusA - 0.1;
-        SelectionDecalMaterial::radiusB = radiusB - 0.1;
+        ((SelectionDecalMaterial*)material)->alpha = 1.0f;
+        SelectionDecalMaterial::radiusA = radiusA - 0.1f;
+        SelectionDecalMaterial::radiusB = radiusB - 0.1f;
 
         glEnable(GL_BLEND);
         glEnable(GL_POLYGON_OFFSET_FILL);
@@ -79,8 +86,18 @@ std::pair<std::vector<Vertex3>, std::vector<int>> SelectionMarkerMesh::calcVerti
     std::vector<Vertex3> vs;
 
     int W, L;
-    W = width + 2;
-    L = length + 2;
+    if(circular)
+    {
+        W = radius*2 + 3;
+        L = radius*2 + 3;
+        width = W;
+        length = L;
+    }
+    else
+    {
+        W = width + 2;
+        L = length + 2;
+    }
 
     auto terrain = scene->getTerrain();
     auto W_t = terrain->getWidth();

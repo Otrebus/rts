@@ -10,6 +10,7 @@
 #include "BuildingWreck.h"
 #include "PathFinding.h"
 #include "UserInterface.h"
+#include "Tank.h"
 
 
 Building::Building(int x, int y, int length, int width, std::vector<int> footprint) : Unit(pos, { 1, 0, 0 }, { 0, 0, 1 }), length(length), width(width), footprint(footprint)

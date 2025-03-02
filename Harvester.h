@@ -1,10 +1,10 @@
 #pragma once
-#pragma once
 
 #include "Line.h"
 #include "Math.h"
 #include "Unit.h"
 #include "ConsoleSettings.h"
+#include "Rock.h"
 
 class Harvester : public Unit
 {

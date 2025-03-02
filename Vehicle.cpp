@@ -10,6 +10,7 @@
 #include "FogOfWarMaterial.h"
 #include "GeometryUtils.h"
 #include "UserInterface.h"
+#include "Rock.h"
 #include "LambertianMaterial.h"
 
 ConsoleVariable Vehicle::maxSpeed("vehicleMaxSpeed", 2.0f);
@@ -589,7 +590,7 @@ Vector2 Vehicle::separate()
     Vector2 sum = { 0, 0 };
     for(auto unit : scene->getEntities())
     {
-        if(unit != this && !dynamic_cast<Projectile*>(unit))
+        if(unit != this && !dynamic_cast<Projectile*>(unit) && !dynamic_cast<Rock*>(unit))
         {
             auto pos1 = geoPos, pos2 = unit->geoPos;
             if(pos1 == pos2)

@@ -4,6 +4,7 @@
 #include "Console.h"
 #include "Font.h"
 
+class SelectionMarkerMesh;
 class BuildingPlacerMesh;
 class Input;
 class Scene;
@@ -13,7 +14,7 @@ class Unit;
 
 enum SelectState
 {
-    NotSelecting, Clicking, DrawingBox
+    NotSelecting, Clicking, DrawingBox, PickingCircleCenter, DrawingCircle
 };
 
 enum CommandState
@@ -73,6 +74,7 @@ public:
     Material* consoleMaterial;
 
     BuildingPlacerMesh* buildingPlacerMesh;
+    SelectionMarkerMesh* selectionMesh;
 
     Ray intersectRay;
     GLFWcursor* cursor;
@@ -82,6 +84,7 @@ public:
 
     real fps;
     Vector2 mouseGeoCoords;
+    Vector2 circleCenter;
 
     static ConsoleVariable showFps;
     static ConsoleVariable showCoordinates;

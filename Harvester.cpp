@@ -12,12 +12,12 @@
 #include "UserInterface.h"
 #include "LambertianMaterial.h"
 
-ConsoleVariable Harvester::maxSpeed("HarvesterMaxSpeed", 2.0f);
-ConsoleVariable Harvester::maxForwardAcc("HarvesterMaxForwardAcc", 0.7f);
-ConsoleVariable Harvester::maxBreakAcc("HarvesterMaxBreakAcc", 0.7f);
+ConsoleVariable Harvester::maxSpeed("harvesterMaxSpeed", 2.0f);
+ConsoleVariable Harvester::maxForwardAcc("harvesterMaxForwardAcc", 0.7f);
+ConsoleVariable Harvester::maxBreakAcc("harvesterMaxBreakAcc", 0.7f);
 
-ConsoleVariable Harvester::turnRadius("HarvesterTurnRadius", 1.5f);
-ConsoleVariable Harvester::maxRadialAcc("HarvesterMaxRadialAcc", 2.5f);
+ConsoleVariable Harvester::turnRadius("harvesterTurnRadius", 1.5f);
+ConsoleVariable Harvester::maxRadialAcc("harvesterMaxRadialAcc", 2.5f);
 
 // TODO: no need to get terrain since we have scene->getTerrain()
 Harvester::Harvester(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, dir, up), acceleration(0), terrain(terrain), constructing(false), constructionProgress(0.0f)
@@ -537,7 +537,7 @@ Vector2 Harvester::evade()
     Vector2 sum = { 0, 0 };
     for(auto unit : scene->getEntities())
     {
-        if(unit != this && !dynamic_cast<Projectile*>(unit) && !dynamic_cast<Building*>(unit)) // TODO: this is getting stupid
+        if(unit != this && !dynamic_cast<Projectile*>(unit) && !dynamic_cast<Building*>(unit) && !dynamic_cast<Rock*>(unit)) // TODO: this is getting stupid
         {
             auto pos1 = geoPos, pos2 = unit->geoPos;
             auto v1 = geoVelocity, v2 = unit->getGeoVelocity();
@@ -589,7 +589,7 @@ Vector2 Harvester::separate()
     Vector2 sum = { 0, 0 };
     for(auto unit : scene->getEntities())
     {
-        if(unit != this && !dynamic_cast<Projectile*>(unit))
+        if(unit != this && !dynamic_cast<Projectile*>(unit) && !dynamic_cast<Rock*>(unit))
         {
             auto pos1 = geoPos, pos2 = unit->geoPos;
             if(pos1 == pos2)

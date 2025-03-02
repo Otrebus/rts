@@ -330,17 +330,6 @@ int main()
             entity->draw();
         }
 
-        glPolygonOffset(-1.0, -1.0);
-        for(auto& unit : scene.getUnits())
-            unit->drawSelectionDecal(0);
-
-        for(auto& unit : scene.getUnits())
-            unit->drawSelectionDecal(1);
-
-        glPolygonOffset(-1.0, -2.0);
-        for(auto& unit : scene.getUnits())
-            unit->drawSelectionDecal(2);
-
         interface.setResolution(xres, yres);
         cameraControl.setResolution(xres, yres);
 

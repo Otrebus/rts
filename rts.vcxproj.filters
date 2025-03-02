@@ -185,6 +185,9 @@
     <ClCompile Include="Rock.cpp">
       <Filter>Source files\Entities\Entities</Filter>
     </ClCompile>
+    <ClCompile Include="Harvester.cpp">
+      <Filter>Source files\Entities\Entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -371,6 +374,9 @@
       <Filter>Source files\Entities\Entities</Filter>
     </ClInclude>
     <ClInclude Include="Rock.h">
+      <Filter>Source files\Entities\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Harvester.h">
       <Filter>Source files\Entities\Entities</Filter>
     </ClInclude>
   </ItemGroup>

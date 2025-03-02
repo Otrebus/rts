@@ -15,6 +15,7 @@
 #include <format>
 #include "LambertianMaterial.h"
 #include "BuildingPlacerMesh.h"
+#include "SelectionMarkerMesh.h"
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
 #include "Font.h"
@@ -26,6 +27,8 @@ UserInterface::UserInterface(GLFWwindow* window, Scene* scene, CameraControl* ca
     selectState = NotSelecting;
     buildingPlacingState = NotPlacingBuilding;
     buildingPlacerMesh = nullptr;
+
+    selectionMesh = nullptr;
     intersecting = false;
     selectingAdditional = false;
     showConsole = false;
@@ -439,14 +442,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
 
     if(input.stateStart == InputType::MousePress && input.key == GLFW_MOUSE_BUTTON_1 && !inputQueue.isKeyHeld(GLFW_KEY_LEFT_CONTROL))
     {
-        if(buildingPlacingState != PlacingBuilding)
-        {
-            selectState = Clicking;
-            drawBoxc1 = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
-            drawBoxc2 = drawBoxc1;
-            setCursor(GLFW_CROSSHAIR_CURSOR);
-        }
-        else
+        if(buildingPlacingState == PlacingBuilding)
         {
             auto [px, py] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
             auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
@@ -475,6 +471,33 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
                 }
             }
         }
+        else if(selectState == PickingCircleCenter)
+        {
+            selectState = DrawingCircle;
+            auto [px, py] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
+            auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
+            // TODO: check for being outside terrain
+            circleCenter = pos.to2();
+
+            selectionMesh = new SelectionMarkerMesh(0, 0, true);
+            selectionMesh->setScene(scene);
+            selectionMesh->init(circleCenter);
+        }
+        else
+        {
+            selectState = Clicking;
+            drawBoxc1 = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
+            drawBoxc2 = drawBoxc1;
+            setCursor(GLFW_CROSSHAIR_CURSOR);
+        }
+    }
+    if(selectState == DrawingCircle)
+    {
+        auto [px, py] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
+        auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
+        selectionMesh->setRadius((pos.to2() - circleCenter).length());
+        selectionMesh->init(circleCenter);
+        selectionMesh->update(circleCenter);
     }
     if(selectState == DrawingBox)
     {
@@ -505,6 +528,13 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
         if(selectState == DrawingBox)
             selectUnits(units, false);
 
+        if(selectState == DrawingCircle)
+        {
+            delete selectionMesh;
+            selectionMesh = nullptr;
+            selectState = NotSelecting;
+        }
+
         else if(selectState == Clicking)
         {
             auto c1 = drawBoxc1;
@@ -523,6 +553,10 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
             if(unit->isSelected() && dynamic_cast<Building*>(unit))
                 ((Building*)unit)->produceTank();
         }
+    }
+    if(input.stateStart == InputType::KeyPress && input.key == GLFW_KEY_H)
+    {
+        selectState = PickingCircleCenter;
     }
 
     if(input.stateStart == InputType::MousePosition)
@@ -583,22 +617,13 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
 
     else if((input.stateStart == InputType::MousePress || input.stateStart == InputType::MouseHold) && input.key == GLFW_MOUSE_BUTTON_2)
     {
-        if(inputQueue.isKeyHeld(GLFW_KEY_LEFT_CONTROL))
+        bool anySelected = std::ranges::any_of(units, [](auto unit) { return unit->isSelected(); });
+        if(anySelected)
         {
             auto [x, y] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
             auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(x, y));
-            scene->getTerrain()->setFog(pos.x, pos.y, true);
-        }
-        else
-        {
-            bool anySelected = std::ranges::any_of(units, [](auto unit) { return unit->isSelected(); });
-            if(anySelected)
-            {
-                auto [x, y] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
-                auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(x, y));
-                if(drawTarget.empty() || (drawTarget.back() - pos).length() > 0.1f)
-                    drawTarget.push_back(pos);
-            }
+            if(drawTarget.empty() || (drawTarget.back() - pos).length() > 0.1f)
+                drawTarget.push_back(pos);
         }
     }
 
@@ -648,6 +673,33 @@ void UserInterface::update(real dt)
 
 void UserInterface::draw()
 {
+    glPolygonOffset(-1.0, -1.0);
+    for(auto& unit : scene->getUnits())
+        unit->drawSelectionDecal(0);
+    if(selectionMesh)
+    {
+        selectionMesh->pass = 0;
+        selectionMesh->draw();
+    }
+
+    for(auto& unit : scene->getUnits())
+        unit->drawSelectionDecal(1);
+
+    if(selectionMesh)
+    {
+        selectionMesh->pass = 1;
+        selectionMesh->draw();
+    }
+
+    glPolygonOffset(-1.0, -2.0);
+    for(auto& unit : scene->getUnits())
+        unit->drawSelectionDecal(2);
+    if(selectionMesh)
+    {
+        selectionMesh->pass = 2;
+        selectionMesh->draw();
+    }
+
     if(showFps.varInt())
         font->draw(*scene, realToString(fps, 3), { 0.952f, 0.98f }, 0.035f, Vector3(0.2f, 0.9f, 0.2f));
 
