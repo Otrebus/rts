@@ -194,7 +194,7 @@ void Terrain::updateAdmissiblePoints()
         {
             for(int x = 0; x <= building->length; x++)
             {
-                int X = building->pos.x + x - real(building->length)/2, Y = building->pos.y + y - real(building->width)/2;
+                int X = int(building->pos.x + x - real(building->length)/2), Y = int(building->pos.y + y - real(building->width)/2);
                 currentBuildingPoints.insert(Y*width+X);
             }
         }
@@ -258,7 +258,7 @@ Vector3 Terrain::intersectBrute(const Ray& ray, real maxT)
 
 Vector3 Terrain::intersectFast(const Ray& ray, real maxT)
 {
-    real t1 = glfwGetTime();
+    real t1 = real(glfwGetTime());
     auto p = ray.pos, d = ray.dir;
 
     real x0, y0;
@@ -272,7 +272,7 @@ Vector3 Terrain::intersectFast(const Ray& ray, real maxT)
     {
         real t0 = inf, t1 = inf, t2 = inf, t3 = inf;
 
-        std::array<Vector2, 4> vs = {Vector2{0.0f, 0.0f}, Vector2{width - 2.0f, 0.0f}, Vector2{width - 2.0f, height - 2.0f}, Vector2{0.0f, height - 2.0f}};
+        std::array<Vector2, 4> vs = {Vector2{0.f, 0.f}, Vector2{width - 2.0f, 0.f}, Vector2{width - 2.0f, height - 2.0f}, Vector2{0.f, height - 2.0f}};
 
         auto t = -inf;
         for(int i = 0; i < 4 && t == -inf; i++)
@@ -464,9 +464,9 @@ real Terrain::getElevation(real x, real y) const
     // TODO: could overflow, check
     // temporary (ha!) hack
     if(y > 0)
-        y -= 1e-4;
+        y -= 1e-4f;
     if(x > 0)
-        x -= 1e-4;
+        x -= 1e-4f;
 
     int xl = x, yl = y;
     auto p1 = points[yl*width+xl];
@@ -492,9 +492,9 @@ Vector3 Terrain::getNormal(real x, real y) const
     // TODO: could overflow, check
     // temporary hack
     if(y > 0)
-        y -= 1e-4;
+        y -= 1e-4f;
     if(x > 0)
-        x -= 1e-4;
+        x -= 1e-4f;
 
     int xl = x, yl = y;
     auto p1 = points[yl*width+xl];
@@ -553,7 +553,7 @@ bool Terrain::getFog(int x, int y) const
 
 std::pair<Vector3, Vector3> Terrain::getBoundingBox() const
 {
-    return { { 0.f, 0.f, width/10.0f }, { real(width), real(height), width/10.0f } };
+    return { { 0.f, 0.f, width/10.f }, { real(width), real(height), width/10.f } };
 }
 
 const Vector3& Terrain::getPoint(int x, int y) const
@@ -649,7 +649,7 @@ bool Terrain::isTriangleAdmissible(int x1, int y1, int x2, int y2, int x3, int y
 std::pair<real, Vector2> Terrain::intersectRayOcclusion(Vector2 pos, Vector2 dir) const
 {
     auto p = pos;
-    int x = p.x, y = p.y;
+    int x = int(p.x), y = int(p.y);
     int X = x, Y = y;
     int dx = x-X, dy = y-Y;
 
@@ -841,7 +841,7 @@ std::vector<Vector3> Terrain::chopLine(Vector2 start, Vector2 end) const
             std::reverse(t.begin(), t.end());
             return t;
         }
-        for(int x = std::ceil(start.x); x <= std::floor(end.x); x++)
+        for(int x = int(std::ceil(start.x)); x <= int(std::floor(end.x)); x++)
         {
             auto y = start.y + (dy/dx)*(x-start.x);
             result.push_back( { real(x), y, getElevation(x, y) } );

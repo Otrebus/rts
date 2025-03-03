@@ -61,8 +61,8 @@ const Matrix4 identityMatrix(
     0, 0, 1, 0,
     0, 0, 0, 1
 );
-const real pi = std::acos(-1);
-const real eps = 1e-6;
+const real pi = std::acos(-1.0f);
+const real eps = 1e-6f;
 const real gravity = 1; // TODO: put in another file eventually, not a math constant
 
 Vector2 resToScreen(real x, real y, int xres, int yres)

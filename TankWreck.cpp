@@ -18,9 +18,9 @@ TankWreck::TankWreck(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : E
     turret->setScene(scene);
     gun->setScene(scene);
 
-    turretDir = Vector3(1, 1, 0).normalized();
-    gunPos = Vector3(0, 0.18, 0);
-    turretPos = Vector3(0, 0, 0.18);
+    turretDir = Vector3(1.f, 1.f, 0.f).normalized();
+    gunPos = Vector3(0.f, 0.18f, 0.f);
+    turretPos = Vector3(0.f, 0.f, 0.18f);
 
     geoPos = pos.to2();
     geoDir = dir.to2();
@@ -77,7 +77,7 @@ void TankWreck::loadModels()
                 bb.c2.y = std::max(bb.c2.y, v.pos.y);
                 bb.c2.z = std::max(bb.c2.z, v.pos.z);
             }
-            ((LambertianMaterial*)(mesh->getMaterial()))->Kd = { 0.1, 0.1, 0.1 };
+            ((LambertianMaterial*)(mesh->getMaterial()))->Kd = { 0.1f, 0.1f, 0.1f };
         }
     }
 

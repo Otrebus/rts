@@ -38,7 +38,7 @@ std::vector<real> calcSigned(std::vector<char> data, int xres, int yres)
     {
         if(!!get(x+dx, y+dy) == b)
         {
-            if(auto c = dist(dx, dy)/2; getCost(x+dx, y+dy) > c)
+            if(auto c = dist(real(dx), real(dy))/2; getCost(x+dx, y+dy) > c)
             {
                 q.decreaseKey((y+dy)*xres + x+dx, c);
                 getVec(x+dx, y+dy) = { real(dx)/2, real(dy)/2 };
@@ -164,10 +164,11 @@ std::tuple<Buffer2d<real>, std::map<unsigned char, GlyphCoords>> makeSdfMap(FT_F
             for(int x = 0; x < int(1+charWidth); x++)
             {
                 real X = dw*x + dw/2, Y = dw*y + dw/2;
-                real xf = X-int(X), yf = Y-int(Y);
+                int xi = int(X), yi = int(Y);
+                real xf = X-xi, yf = Y-yi;
                 real s = 0;
-                s += yf*(xf*sBuf.get(X, Y, 50.f) + (1-xf)*sBuf.get(X+1, Y, 50.f));
-                s += (1-yf)*(xf*sBuf.get(X, Y+1, 50.f) + (1-xf)*sBuf.get(X+1, Y+1, 50.f));
+                s += yf*(xf*sBuf.get(xi, yi, 50.f) + (1-xf)*sBuf.get(xi+1, yi, 50.f));
+                s += (1-yf)*(xf*sBuf.get(xi, yi+1, 50.f) + (1-xf)*sBuf.get(xi+1, yi+1, 50.f));
                 sdfMap[(posY+y)*mapWidth+x+posX] = s;
             }
         }

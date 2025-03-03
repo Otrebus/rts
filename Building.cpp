@@ -52,9 +52,9 @@ void Building::draw(Material* mat = nullptr)
     glEnable(GL_BLEND);
     glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
 
-    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(-real(W)/2+real(length)/2, 0, -real(height)/6), Vector3(1, 0, 0), up, W, width, height*2.0/3, Vector3(0.7, 0.7, 0.7));
-    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(real(W)/2-real(length)/2, 0, -real(height)/6), Vector3(1, 0, 0), up, W, width, height*2.0/3, Vector3(0.7, 0.7, 0.7));
-    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(0, real(width)/2 - real(L)/2, 0), Vector3(1, 0, 0), up, length-W*2, L, height, Vector3(0.7, 0.7, 0.7));
+    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(-real(W)/2+real(length)/2, 0, -real(height)/6), Vector3(1.f, 0.f, 0.f), up, W, width, height*2.0f/3, Vector3(0.7f, 0.7f, 0.7f));
+    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(real(W)/2-real(length)/2, 0, -real(height)/6), Vector3(1.f, 0.f, 0.f), up, W, width, height*2.0f/3, Vector3(0.7f, 0.7f, 0.7f));
+    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(0.f, real(width)/2 - real(L)/2, 0.f), Vector3(1.0f, 0.f, 0.f), up, length-W*2, L, height, Vector3(0.7f, 0.7f, 0.7f));
 
     if(!curBlend)
         glDisable(GL_BLEND);
@@ -65,9 +65,9 @@ void Building::draw(Material* mat = nullptr)
 real Building::getAverageElevation(const Terrain& terrain)
 {
     // This isn't really the total average but the average of the four corners
-    auto x = Vector3(geoDir.x, geoDir.y, 0).normalized();
-    auto y = Vector3(-geoDir.y, geoDir.x, 0).normalized();
-    auto z = Vector3(0, 0, 1).normalized();
+    auto x = Vector3(geoDir.x, geoDir.y, 0.f).normalized();
+    auto y = Vector3(-geoDir.y, geoDir.x, 0.f).normalized();
+    auto z = Vector3(0.f, 0.f, 1.f).normalized();
 
     auto height = (boundingBox.c2.z-boundingBox.c1.z)/2;
     auto length = (boundingBox.c2.x-boundingBox.c1.x)/2;
@@ -119,10 +119,10 @@ void Building::init(Scene& scene)
     {
         for(int y = 0; y <= width; y++)
         {
-            if(auto h = terrain->getElevation(x + cx, y + cy); std::abs(h - avgH) > 0.25)
+            if(auto h = terrain->getElevation(real(x) + cx, real(y) + cy); std::abs(h - avgH) > 0.25f)
             for(auto building : scene.getBuildings())
-                if(building->pointWithin(x+cx, y+cy))
-                    adjHeights.push_back(terrain->getElevation(x + cx, y + cy));
+                if(building->pointWithin(int(real(x)+cx), int(real(y)+cy)))
+                    adjHeights.push_back(terrain->getElevation(real(x) + cx, real(y) + cy));
         }
     }
 
@@ -131,7 +131,7 @@ void Building::init(Scene& scene)
 
     for(int x = 0; x <= length; x++)
         for(int y = 0; y <= width; y++)
-            terrain->setElevation(x + pos.x-real(length)/2, y + pos.y-real(width)/2, avgH);
+            terrain->setElevation(int(x + pos.x-real(length)/2), int(y + pos.y-real(width)/2), avgH);
 
     plant(*terrain);
 }
@@ -188,14 +188,16 @@ bool Building::canBePlaced(real posX, real posY, int length, int width, Scene* s
     {
         for(int y = 0; y <= width; y++)
         {
-            if(auto h = terrain->getElevation(x + cx, y + cy); std::abs(h - avgH) > 0.5)
+            if(auto h = terrain->getElevation(int(x+cx), int(y+cy)); std::abs(h-avgH) > 0.5)
                 canPlace = false;
             for(auto building : scene->getBuildings())
-                if(building->pointWithin(x+cx, y+cy))
+            {
+                if(building->pointWithin(int(x+cx), int(y+cy)))
                 {
                     std::cout << "pushing back " << (x+cx) << " " << (y+cy) << std::endl;
-                    adjHeights.push_back(terrain->getElevation(x + cx, y + cy));
+                    adjHeights.push_back(terrain->getElevation(int(x+cx), int(y+cy)));
                 }
+            }
         }
     }
 
@@ -231,8 +233,8 @@ std::vector<int> Building::getAbsoluteFootprint()
         {
             if(footprint[x*(length+1)+y])
             {
-                auto X = pos.x - real(length)/2;
-                auto Y = pos.y - real(width)/2;
+                auto X = int(pos.x - real(length)/2);
+                auto Y = int(pos.y - real(width)/2);
                 p.push_back((Y+y)*scene->getTerrain()->getWidth()+(X+x));
             }
         }

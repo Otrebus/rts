@@ -192,7 +192,7 @@ void addSphereVertices(int a, int b, int c, real radius, std::vector<Vector3>& p
 
 std::pair<std::vector<Vertex3>, std::vector<int>> buildSphere(real radius, int N)
 {
-	auto u = 2*sqrt(2)/3, v = sqrt(2)/sqrt(3), w = sqrt(2)/3, t = 1/3.0;
+	real u = 2*sqrt(2.0)/3, v = sqrt(2.0)/sqrt(3.0), w = sqrt(2.0)/3, t = 1/3.0f;
 	auto a = Vector3(u, 0, t);
 	auto b = Vector3(-w, v, t);
 	auto c = Vector3(-w, -v, t);
@@ -216,7 +216,7 @@ std::pair<std::vector<Vertex3>, std::vector<int>> buildSphere(real radius, int N
 
 Model3d* createSphereModel(real radius, int N)
 {
-    auto material = new LambertianMaterial({ 0, 0.8, 0.1 });
+    auto material = new LambertianMaterial({ 0, 0.8f, 0.1f });
 
 	auto [vertices, triangles] = buildSphere(radius, N);
 
@@ -257,9 +257,9 @@ std::pair<std::vector<Vertex3>, std::vector<int>> buildBox(real length, real wid
     {
         int t1[3] = { 0, 1, 2 }, t2[3] = { 0, 2, 3 };
 
-        int j = vertices.size();
+        int j = int(vertices.size());
         for(int i = 0; i < 4; i++)
-            vertices.push_back({ c[ci[i]], calcNormal(c[ci[0]], c[ci[1]], c[ci[2]]), { 0, 0 } });
+            vertices.push_back({ c[ci[i]], calcNormal(c[ci[0]], c[ci[1]], c[ci[2]]), { 0.f, 0.f } });
         triangles.insert(triangles.end(), { j, j+1, j+2 });
         triangles.insert(triangles.end(), { j, j+2, j+3 });
     }
@@ -269,7 +269,7 @@ std::pair<std::vector<Vertex3>, std::vector<int>> buildBox(real length, real wid
 
 Model3d* createBoxModel(real length, real width, real height)
 {
-    auto material = new LambertianMaterial({ 0, 0.8, 0.1 });
+    auto material = new LambertianMaterial({ 0.f, 0.8f, 0.1f });
 
 	auto [vertices, triangles] = buildBox(length, width, height);
 

@@ -119,7 +119,7 @@ int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         auto prevTime = time;
-        time = glfwGetTime();
+        time = real(glfwGetTime());
         auto dt = time - prevTime;
 
         auto inputs = InputManager::getInstance().handleInput(prevTime, time);
@@ -128,7 +128,7 @@ int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
         for(auto input : inputs)
         {
             if(input->stateStart == MousePosition)
-                mouseX = input->posX, mouseY = input->posY;
+                mouseX = int(input->posX), mouseY = int(input->posY);
 
             if(input->stateStart == InputType::MousePress && input->key == GLFW_MOUSE_BUTTON_1)
             {
@@ -188,10 +188,10 @@ int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
 std::vector<Vertex3> createQuadVertices()
 {
     std::vector<Vertex3> vs = {
-        {{-0.15, -0.15, 0.0}, {0.0, 0.0, 1.0}, {-0.5, -0.5}},
-        {{ 0.15, -0.15, 0.0}, {0.0, 0.0, 1.0}, {0.5, -0.5}},
-        {{ 0.15,  0.15, 0.0}, {0.0, 0.0, 1.0}, {0.5, 0.5}},
-        {{-0.15,  0.15, 0.0}, {0.0, 0.0, 1.0}, {-0.5, 0.5}}
+        {{-0.15f, -0.15f, 0.0f}, {0.0f, 0.0f, 1.0f}, {-0.5f, -0.5f}},
+        {{ 0.15f, -0.15f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.5f, -0.5f}},
+        {{ 0.15f,  0.15f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.5f, 0.5f}},
+        {{-0.15f,  0.15f, 0.0f}, {0.0f, 0.0f, 1.0f}, {-0.5f, 0.5f}}
     };
 
     return vs;
@@ -268,7 +268,7 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
         if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
 
-        glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
+        glClearColor(0.5f, 0.5f, 0.5f, 0.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         mesh.updateUniforms();
@@ -378,7 +378,7 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
         time = real(glfwGetTime());
         auto dt = time - prevTime;
         
-        glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
+        glClearColor(0.5f, 0.5f, 0.5f, 0.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
      
         real size = 0.2f;
@@ -405,7 +405,7 @@ int drawVehiclePaths(GLFWwindow* window, int xres, int yres)
     InputManager::getInstance().initInput(window);
     OrthogonalCamera cam({ 0, 0, 1 }, { 0, 0, -1 }, { 0, 1, 0 }, real(xres)/float(yres));
     
-    real time = glfwGetTime();
+    real time = real(glfwGetTime());
 
     ShaderProgramManager shaderProgramManager;
     Scene scene(&cam, &shaderProgramManager);

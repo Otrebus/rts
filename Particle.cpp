@@ -64,26 +64,26 @@ int Particle::getRandomInt(int min, int max)
 
 GunFireParticle::GunFireParticle(Vector3 initialPos, Vector3 initialDir, Vector3 initialVelocity) : Particle(initialPos, initialDir) // TODO: this sets initialdir to color
 {
-    auto right = (initialDir%Vector3(0, 0, 1)).normalized();
+    auto right = (initialDir%Vector3(0.f, 0.f, 1.f)).normalized();
     auto up = initialDir%right;
     auto theta = getRandomFloat(0, 2*pi);
-    start = getRandomFloat(0, 0.15);
+    start = getRandomFloat(0.f, 0.15f);
     this->initialVelocity = initialVelocity;
 
-    smoke = getRandomFloat(0, 1.0) > 0.5;
+    smoke = getRandomFloat(0.f, 1.0f) > 0.5f;
 
     if(!smoke)
     {
-        lifeTime = 0.15;
-        velocity = initialVelocity + 5.f*(initialDir*getRandomFloat(0.8, 1.0f) + getRandomFloat(0, 0.1)*(right*std::sin(theta) + up*std::cos(theta)));
+        lifeTime = 0.15f;
+        velocity = initialVelocity + 5.f*(initialDir*getRandomFloat(0.8, 1.0f) + getRandomFloat(0.f, 0.1f)*(right*std::sin(theta) + up*std::cos(theta)));
     }
     else
     {
-        real darkness = getRandomFloat(0.37, 0.5);
+        real darkness = getRandomFloat(0.37f, 0.5f);
         startColor = Vector4(darkness, darkness, darkness, 1);
-        start = getRandomFloat(0.00, 0.05f);
-        lifeTime = 1.0;
-        velocity = initialVelocity + getRandomFloat(0.4, 1.38)*(initialDir*getRandomFloat(1.3, 2.5) + getRandomFloat(0.5, 0.7)*(right*std::sin(theta) + up*std::cos(theta)));
+        start = getRandomFloat(0.00f, 0.05f);
+        lifeTime = 1.0f;
+        velocity = initialVelocity + getRandomFloat(0.4f, 1.38f)*(initialDir*getRandomFloat(1.3f, 2.5f) + getRandomFloat(0.5f, 0.7f)*(right*std::sin(theta) + up*std::cos(theta)));
     }
     startVelocity = velocity;
 }
@@ -96,7 +96,7 @@ void GunFireParticle::update(real dt)
     else
         pos += initialVelocity*dt;
     if(smoke && time > start)
-        velocity = startVelocity*std::max(std::exp(start-time), 0.0f);
+        velocity = startVelocity*std::max(std::exp(start-time), 0.f);
 }
 
 bool GunFireParticle::isAlive()
@@ -112,51 +112,51 @@ bool GunFireParticle::isVisible()
 SerializedParticle GunFireParticle::serialize()
 {
     if(!smoke)
-        return SerializedParticle(pos, 0.03+time*0.2, Vector4(1.0-(time-start)*1.5, 1.0-(time-start)*1.5, 0.7-(time-start)*1.5, 1-(time-start)/lifeTime));
+        return SerializedParticle(pos, 0.03f+time*0.2f, Vector4(1.0f-(time-start)*1.5f, 1.0f-(time-start)*1.5f, 0.7f-(time-start)*1.5f, 1.f-(time-start)/lifeTime));
     else
     {
         auto color = startColor;
-        color.w = 1-(time-start)/lifeTime;
-        return SerializedParticle(pos, 0.02+time*0.35, color);
+        color.w = 1.f-(time-start)/lifeTime;
+        return SerializedParticle(pos, 0.02f+time*0.35f, color);
     }
 }
 
 GroundExplosionParticle::GroundExplosionParticle(Vector3 initialPos, Vector3 normal) : Particle(initialPos, normal)
 {
-    auto right = (normal%Vector3(0, 1, 0)).normalized();
+    auto right = (normal%Vector3(0.f, 1.f, 0.f)).normalized();
     auto forward = normal%right;
-    auto theta = getRandomFloat(0, 2*pi);
+    auto theta = getRandomFloat(0.f, 2*pi);
 
-    auto t = getRandomFloat(0, 1.0);
-    if(t < 0.33)
+    auto t = getRandomFloat(0, 1.0f);
+    if(t < 0.33f)
         type = Explosion;
-    else if(t < 0.66)
+    else if(t < 0.66f)
         type = Dust;
     else
         type = Debris;
 
     if(type == Explosion)
     {
-        lifeTime = 0.15;
-        velocity = 3.f*(normal*getRandomFloat(0.8, 1.0f) + getRandomFloat(0.4, 0.8)*(right*std::sin(theta) + forward*std::cos(theta)));
-        start = getRandomFloat(0, 0.02f);
+        lifeTime = 0.15f;
+        velocity = 3.f*(normal*getRandomFloat(0.8f, 1.0f) + getRandomFloat(0.4f, 0.8f)*(right*std::sin(theta) + forward*std::cos(theta)));
+        start = getRandomFloat(0.f, 0.02f);
     }
     else if(type == Dust)
     {
-        real darkness = getRandomFloat(0.17, 0.3);
-        startColor = Vector4(darkness, darkness/1.5, 0, 1);
-        start = getRandomFloat(0.00, 0.02f);
-        lifeTime = 0.7;
-        velocity = getRandomFloat(0.8, 1.78)*(normal*getRandomFloat(1.3, 4.5) + getRandomFloat(0.5, 1.3)*(right*std::sin(theta) + forward*std::cos(theta)));
+        real darkness = getRandomFloat(0.17f, 0.3f);
+        startColor = Vector4(darkness, darkness/1.5, 0.f, 1.f);
+        start = getRandomFloat(0.f, 0.02f);
+        lifeTime = 0.7f;
+        velocity = getRandomFloat(0.8f, 1.78f)*(normal*getRandomFloat(1.3f, 4.5f) + getRandomFloat(0.5f, 1.3f)*(right*std::sin(theta) + forward*std::cos(theta)));
     }
     else if(type == Debris)
     {
-        real darkness = getRandomFloat(0.10, 0.15);
-        startColor = Vector4(darkness, darkness/1.5, 0, 1);
-        start = getRandomFloat(0.00, 0.02f);
-        lifeTime = 0.7;
-        size = getRandomFloat(0.02, 0.05);
-        velocity = getRandomFloat(0.8, 1.78)*(normal*getRandomFloat(1.3, 4.5) + getRandomFloat(1.5, 2.3)*(right*std::sin(theta) + forward*std::cos(theta)));
+        real darkness = getRandomFloat(0.10, 0.15f);
+        startColor = Vector4(darkness, darkness/1.5f, 0.f, 1.f);
+        start = getRandomFloat(0.00f, 0.02f);
+        lifeTime = 0.7f;
+        size = getRandomFloat(0.02f, 0.05f);
+        velocity = getRandomFloat(0.8f, 1.78f)*(normal*getRandomFloat(1.3f, 4.5f) + getRandomFloat(1.5f, 2.3f)*(right*std::sin(theta) + forward*std::cos(theta)));
     }
     startVelocity = velocity;
 }
@@ -167,11 +167,11 @@ void GroundExplosionParticle::update(real dt)
     if(time > start)
         pos += velocity*dt;
     if(type == Dust && time > start)
-        velocity = startVelocity*std::max(std::exp((start-time)*3), 0.0f);
+        velocity = startVelocity*std::max(std::exp((start-time)*3), 0.f);
     else if(type == Debris && time > start)
     {
-        auto v = startVelocity*(std::max(std::exp((start-time)*2), 0.0f));
-        velocity = v + Vector3(0, 0, -5)*time;
+        auto v = startVelocity*(std::max(std::exp((start-time)*2), 0.f));
+        velocity = v + Vector3(0.f, 0.f, -5.f)*time;
     }
 }
 
@@ -188,12 +188,12 @@ bool GroundExplosionParticle::isVisible()
 SerializedParticle GroundExplosionParticle::serialize()
 {
     if(type == Explosion)
-        return SerializedParticle(pos, 0.03+time*0.2, Vector4(1.0-(time-start)*1.5, 1.0-(time-start)*1.5, 0.7-(time-start)*1.5, 1-(time-start)/lifeTime));
+        return SerializedParticle(pos, 0.03f+time*0.2f, Vector4(1.0f-(time-start)*1.5f, 1.0f-(time-start)*1.5f, 0.7f-(time-start)*1.5f, 1.f-(time-start)/lifeTime));
     else if(type == Dust)
     {
         auto color = startColor;
         color.w = 1-(time-start)/lifeTime;
-        return SerializedParticle(pos, 0.02+(time-start)*0.65, color);
+        return SerializedParticle(pos, 0.02f+(time-start)*0.65f, color);
     }
     else if(type == Debris)
     {
@@ -204,18 +204,18 @@ SerializedParticle GroundExplosionParticle::serialize()
 
 UnitHitParticle::UnitHitParticle(Vector3 initialPos, Vector3 normal) : Particle(initialPos, normal)
 {
-    auto right = (normal%Vector3(0, 1, 0));
+    auto right = (normal%Vector3(0.f, 1.f, 0.f));
     if(!right)
-        right = (normal%Vector3(1, 1, 0));
+        right = (normal%Vector3(1.f, 1.f, 0.f));
     right.normalize();
     auto forward = normal%right;
     auto theta = getRandomFloat(0, 2*pi);
-    start = getRandomFloat(0, 0.05);
+    start = getRandomFloat(0, 0.05f);
 
-    smoke = getRandomFloat(0, 1.0) > 0.5;
+    smoke = getRandomFloat(0.f, 1.0f) > 0.5f;
 
-    lifeTime = 0.15;
-    velocity = 3.f*(normal*getRandomFloat(0.8, 1.0f) + getRandomFloat(0.8, 1.0)*(right*std::sin(theta) + forward*std::cos(theta)));
+    lifeTime = 0.15f;
+    velocity = 3.f*(normal*getRandomFloat(0.8f, 1.0f) + getRandomFloat(0.8f, 1.0f)*(right*std::sin(theta) + forward*std::cos(theta)));
 }
 
 void UnitHitParticle::update(real dt)
@@ -237,5 +237,5 @@ bool UnitHitParticle::isVisible()
 
 SerializedParticle UnitHitParticle::serialize()
 {
-    return SerializedParticle(pos, 0.01, Vector4(1.0-(time-start)*1.5, 1.0-(time-start)*1.5, 0.7-(time-start)*1.5, 1-(time-start)/lifeTime));
+    return SerializedParticle(pos, 0.01f, Vector4(1.0-(time-start)*1.5f, 1.0f-(time-start)*1.5f, 0.7f-(time-start)*1.5f, 1.f-(time-start)/lifeTime));
 }

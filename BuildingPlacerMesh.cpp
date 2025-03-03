@@ -13,7 +13,7 @@ void BuildingPlacerMesh::init()
 {
     auto [vs, triangles] = calcVertices(scene, 0, 0);
 
-    auto material = new BuildingPlacerMaterial({ 0, 0.8, 0.1 });
+    auto material = new BuildingPlacerMaterial({ 0.f, 0.8f, 0.1f });
 
     v = vs;
     this->triangles = triangles;
@@ -48,9 +48,9 @@ std::pair<std::vector<Vertex3>, std::vector<int>> BuildingPlacerMesh::calcVertic
         for(int x = 0; x <= width; x++)
         {
             auto X = float(xpos)+x, Y = float(ypos)+y;
-            auto pos = scene->getTerrain()->getPoint(X, Y);
+            auto pos = scene->getTerrain()->getPoint(int(X), int(Y));
             pos.z += 0.01;
-            vs.push_back({ pos.x, pos.y, pos.z, 0, 0, 1, real(pos.x), real(pos.y) });
+            vs.push_back({ pos.x, pos.y, pos.z, 0.f, 0.f, 1.f, real(pos.x), real(pos.y) });
         }
     }
 
@@ -79,6 +79,6 @@ void BuildingPlacerMesh::update(int xpos, int ypos, bool allowed)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*triangles.size(), triangles.data(), GL_STREAM_DRAW);
 
-    ((BuildingPlacerMaterial*)material)->Kd = allowed ? Vector3(0, 0.8, 0.1) : Vector3(0.8, 0, 0.1);
+    ((BuildingPlacerMaterial*)material)->Kd = allowed ? Vector3(0.f, 0.8f, 0.1f) : Vector3(0.8f, 0.f, 0.1f);
     nTriangles = triangles.size();
 }

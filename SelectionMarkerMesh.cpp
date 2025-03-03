@@ -88,10 +88,10 @@ std::pair<std::vector<Vertex3>, std::vector<int>> SelectionMarkerMesh::calcVerti
     int W, L;
     if(circular)
     {
-        W = radius*2 + 3;
-        L = radius*2 + 3;
-        width = W;
-        length = L;
+        W = int(radius*2 + 3);
+        L = int(radius*2 + 3);
+        width = real(W);
+        length = real(L);
     }
     else
     {
@@ -114,10 +114,10 @@ std::pair<std::vector<Vertex3>, std::vector<int>> SelectionMarkerMesh::calcVerti
             int Yc = std::max(0, std::min(H_t-1, Y));
     
             auto pos = terrain->getPoint(Xc, Yc);
-            pos.x = X;
-            pos.y = Y;
-            pos.z += 0.01;
-            vs.push_back({ pos.x, pos.y, pos.z, 0, 0, 1, real(X)-entityPos.x, real(Y)-entityPos.y });
+            pos.x = real(X);
+            pos.y = real(Y);
+            pos.z += 0.01f;
+            vs.push_back({ pos.x, pos.y, pos.z, 0.f, 0.f, 1.f, real(X)-entityPos.x, real(Y)-entityPos.y });
         }
     }
 

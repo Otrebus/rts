@@ -298,7 +298,7 @@ void UserInterface::moveDrawnUnits(const std::vector<Unit*>& selectedUnits)
         sumD += a.d;
 
     std::default_random_engine generator;
-    std::uniform_int_distribution<int> dist(0, v.size()-1);
+    std::uniform_int_distribution<int> dist(0, int(v.size()-1));
     for(int i = 0; i < 10000; i++)
     {
         int a = dist(generator), b = dist(generator);
@@ -561,8 +561,8 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
 
     if(input.stateStart == InputType::MousePosition)
     {
-        mouseX = input.posX;
-        mouseY = input.posY;
+        mouseX = int(input.posX);
+        mouseY = int(input.posY);
 
         drawBoxc2 = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
 
@@ -678,6 +678,7 @@ void UserInterface::draw()
         unit->drawSelectionDecal(0);
     if(selectionMesh)
     {
+        selectionMesh->pre = true;
         selectionMesh->pass = 0;
         selectionMesh->draw();
     }
@@ -730,14 +731,14 @@ void UserInterface::draw()
             { drawBoxc1.x, drawBoxc2.y, },
             { drawBoxc1.x, drawBoxc1.y, }
         });
-        line.setColor(Vector3(0.2, 0.7, 0.1));
+        line.setColor(Vector3(0.2f, 0.7f, 0.1f));
         line.init(scene);
         line.draw();
     }
     if(!drawTarget.empty())
     {
         Line3d line(drawTarget);
-        line.setColor(Vector3(0.2, 0.7, 0.1));
+        line.setColor(Vector3(0.2f, 0.7f, 0.1f));
         line.setInFront(true);
         line.init(scene);
         line.draw();

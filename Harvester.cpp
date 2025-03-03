@@ -20,7 +20,7 @@ ConsoleVariable Harvester::turnRadius("harvesterTurnRadius", 1.5f);
 ConsoleVariable Harvester::maxRadialAcc("harvesterMaxRadialAcc", 2.5f);
 
 // TODO: no need to get terrain since we have scene->getTerrain()
-Harvester::Harvester(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, dir, up), acceleration(0), terrain(terrain), constructing(false), constructionProgress(0.0f)
+Harvester::Harvester(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, dir, up), acceleration(0), terrain(terrain), constructing(false), constructionProgress(0.f)
 {
     model = ModelManager::instantiateModel("harvester");
     geoPos = pos.to2();
@@ -607,7 +607,7 @@ Vector2 Harvester::separate()
             if(l < 1.55)
                 sum += std::min(1.0f/std::pow(l-0.245f, 3.0f), maxSpeed)*e.normalized();
             else
-                sum += std::min(std::max(2-l, 0.0f), maxSpeed)*e.normalized();
+                sum += std::min(std::max(2-l, 0.f), maxSpeed)*e.normalized();
         }
     }
     return sum;

@@ -28,8 +28,9 @@ struct QueuedInput
     InputManager* inputQueue;
 };
 
-struct Input
+class Input
 {
+public:
     Input() {}
     Input(real posX, real posY, int key, InputType stateStart, InputType stateEnd, real timeStart, real timeEnd) : posX(posX), posY(posY), key(key), stateStart(stateStart), stateEnd(stateEnd), timeStart(timeStart), timeEnd(timeEnd) {}
     real posX, posY;

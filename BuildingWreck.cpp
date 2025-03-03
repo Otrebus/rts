@@ -9,7 +9,7 @@
 
 BuildingWreck::BuildingWreck(Vector3 pos, Vector3 dir, Vector3 up, int length, int width, Terrain* terrain) : Entity(pos, dir, up)
 {
-    height = 2.0;
+    height = 2.0f;
     geoDir = dir.to2();
     this->pos = pos;
     geoPos = pos.to2();
@@ -39,7 +39,7 @@ void BuildingWreck::setDirection(Vector3 dir, Vector3 up)
 
 void BuildingWreck::draw(Material* mat)
 {
-    real W = 0.1, L = 1.0;
+    real W = 0.1f, L = 1.0f;
 
     GLint curDepthFun;
     GLboolean curBlend;
@@ -52,17 +52,17 @@ void BuildingWreck::draw(Material* mat)
     
     glBlendFuncSeparate(GL_ZERO, GL_ONE, GL_ONE, GL_ZERO);
 
-    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(-real(W)/2+real(length)/2, 0.f, -real(height)/6), Vector3(1.f, 0.f, 0.f), up, W, width, height*2.0/3, fowMaterial);
-    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(real(W)/2-real(length)/2, 0.f, -real(height)/6), Vector3(1.f, 0.f, 0.f), up, W, width, height*2.0/3, fowMaterial);
-    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(0.f, real(width)/2 - real(L)/2, 0.f), Vector3(1.f, 0.f, 0.f), up, length-W*2, L, height, fowMaterial);
+    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(-real(W)/2+real(length)/2, 0.f, -real(height)/6), Vector3(1.f, 0.f, 0.f), up, W, real(width), height*2.0f/3, fowMaterial);
+    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(real(W)/2-real(length)/2, 0.f, -real(height)/6), Vector3(1.f, 0.f, 0.f), up, W, real(width), height*2.0f/3, fowMaterial);
+    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(0.f, real(width)/2 - real(L)/2, 0.f), Vector3(1.f, 0.f, 0.f), up, length-W*2, L, real(height), fowMaterial);
 
     glDepthFunc(GL_LEQUAL);
     glEnable(GL_BLEND);
     glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
 
-    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(-real(W)/2+real(length)/2, 0.f, -real(height)/6), Vector3(1.f, 0.f, 0.f), up, W, width, height*2.0/3, Vector3(0.1f, 0.1f, 0.1f));
-    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(real(W)/2-real(length)/2, 0.f, -real(height)/6), Vector3(1.f, 0.f, 0.f), up, W, width, height*2.0/3, Vector3(0.1f, 0.1f, 0.1f));
-    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(0.f, real(width)/2 - real(L)/2, 0.f), Vector3(1.f, 0.f, 0.f), up, length-W*2, L, height, Vector3(0.1f, 0.1f, 0.1f));
+    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(-real(W)/2+real(length)/2, 0.f, -real(height)/6), Vector3(1.f, 0.f, 0.f), up, W, real(width), height*2.0f/3, Vector3(0.1f, 0.1f, 0.1f));
+    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(real(W)/2-real(length)/2, 0.f, -real(height)/6), Vector3(1.f, 0.f, 0.f), up, W, real(width), height*2.0f/3, Vector3(0.1f, 0.1f, 0.1f));
+    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(0.f, real(width)/2 - real(L)/2, 0.f), Vector3(1.f, 0.f, 0.f), up, length-W*2, L, real(height), Vector3(0.1f, 0.1f, 0.1f));
 
     if(!curBlend)
         glDisable(GL_BLEND);

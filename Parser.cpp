@@ -498,6 +498,6 @@ std::vector<Token> tokenize(std::ifstream& file, std::string& str)
         else
             throw ParseException(std::string("Couldn't parse character: \"") + peek() + "\"");
     }
-    addToken(Token::Eof, str.size(), str.size());
+    addToken(Token::Eof, int(str.size()), int(str.size()));
     return v;
 }

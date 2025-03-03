@@ -333,7 +333,7 @@ void Model3d::readFromFile(const std::string& file)
             {
                 Mesh3d* mesh = new Mesh3d;
                 if(!curmat)
-                    curmat = new LambertianMaterial(Vector3(0.7, 0.7, 0.7));
+                    curmat = new LambertianMaterial(Vector3(0.7f, 0.7f, 0.7f));
                 mesh->material = curmat;
                 std::vector<Vertex3> vertices;
                 std::vector<int> indices;
@@ -349,7 +349,7 @@ void Model3d::readFromFile(const std::string& file)
 
                         if(vertMap.find(v) == vertMap.end())
                         {
-                            vertMap[v] = vertices.size();
+                            vertMap[v] = int(vertices.size());
                             vertices.emplace_back(v->position, normal, v->texture);
                         }
                         indices.push_back(vertMap[v]);

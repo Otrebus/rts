@@ -124,7 +124,7 @@ void Tank::loadModels()
 
 
 // TODO: no need to get terrain since we have scene->getTerrain()
-Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, dir, up), turnRate(0), acceleration(0), terrain(terrain), gunRecoilPos(0.0f), constructing(false), constructionProgress(0.0f)
+Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, dir, up), turnRate(0), acceleration(0), terrain(terrain), gunRecoilPos(0.f), constructing(false), constructionProgress(0.f)
 {
     body = ModelManager::instantiateModel("tankbody");
     turret = ModelManager::instantiateModel("tankturret");
@@ -148,7 +148,7 @@ Tank::Tank(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, d
 
     selectionMarkerMesh = new SelectionMarkerMesh(2, 2, true);
 
-    pathCalculationInterval = (500 + (rand() % 500))/1000.0f;
+    pathCalculationInterval = (500 + (rand() % 500))/1000.f;
 
     for(auto model :{ body, turret, gun })
     {
@@ -258,7 +258,7 @@ void Tank::drawTurret(Material* mat)
 
 void Tank::updateTurret(real dt)
 {
-    gunRecoilPos = std::max(gunRecoilPos - gunRecoilRecoveryRate*dt, 0.0f);
+    gunRecoilPos = std::max(gunRecoilPos - gunRecoilRecoveryRate*dt, 0.f);
     auto u = turretDir.to2().normalized(), v = turretTarget.to2().normalized();
 
     absTurPos = pos + (dir*turretPos.x + (dir%up).normalized()*turretPos.y + up*turretPos.z);
@@ -723,7 +723,7 @@ Vector2 Tank::separate()
             if(l < 1.55)
                 sum += std::min(1.0f/std::pow(l-0.245f, 3.0f), maxSpeed)*e.normalized();
             else
-                sum += std::min(std::max(2-l, 0.0f), maxSpeed)*e.normalized();
+                sum += std::min(std::max(2-l, 0.f), maxSpeed)*e.normalized();
         }
     }
     return sum;

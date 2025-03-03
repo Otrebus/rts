@@ -115,12 +115,12 @@ void Scene::moveEntitiesSoft(real dt, int depth, std::unordered_set<Entity*>& gl
             //       we push ourselves slightly out of the triangle and hope this will
             //       resolve things eventually, but this isn't really robust
             //__debugbreak();
-            entity->lastBumped = glfwGetTime();
+            entity->lastBumped = real(glfwGetTime());
             entity->geoPos += norm*0.01f;
             gliding.insert(entity);
             
             auto vn1 = (entity->geoVelocity*norm2)*norm2;
-            auto vp1 = entity->geoVelocity - vn1 + norm2*0.1;
+            auto vp1 = entity->geoVelocity - vn1 + norm2*0.1f;
 
             entity->geoVelocity = vp1;
             continue;
@@ -129,12 +129,12 @@ void Scene::moveEntitiesSoft(real dt, int depth, std::unordered_set<Entity*>& gl
         auto t2 = (pos2 - entity->geoPos).length();
         if(!t)
         {
-            entity->lastBumped = glfwGetTime();
+            entity->lastBumped = real(glfwGetTime());
             gliding.insert(entity);
         }
         if(t > 0 && t < t2 && entity->geoVelocity*norm < 0)
         {
-            entity->lastBumped = glfwGetTime();
+            entity->lastBumped = real(glfwGetTime());
             auto T = dt*(t/t2);
             gliding.insert(entity);
             if(T < minT && T < dt)
@@ -212,7 +212,7 @@ void Scene::moveEntities(real dt)
             auto l = r.length();
             if(l < 1)
             {
-                real modifier = std::max(0.0f, 1/(1.0f-entity->getVelocity().length()));
+                real modifier = std::max(0.f, 1/(1.0f-entity->getVelocity().length()));
                 if(!dynamic_cast<TankWreck*>(entity2) && !dynamic_cast<Building*>(entity2))
                     entity2->geoVelocity += modifier*r*dt/l;
             }

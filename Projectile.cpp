@@ -10,8 +10,8 @@ Projectile::Projectile(Vector3 pos, Vector3 dir, Vector3 up, Entity* owner = nul
     // TODO: replace this with the generic box model that we have
     if(!ModelManager::hasModel("projectile"))
     {
-        real width = 0.03, height = 0.03;
-        real length = 0.10;
+        real width = 0.03f, height = 0.03f;
+        real length = 0.10f;
         real l = length, w = width, h = height;
         std::vector<Vector3> c = {
             { -l/2, -w/2, -h/2 }, // bottom-front-left
@@ -118,7 +118,7 @@ void Projectile::update(real dt)
     setDirection(velocity.normalized(), ((velocity%up%velocity).normalized()));
 
     auto p2 = pos;
-    auto v2 = scene->getTerrain()->intersect(Ray(pos, (p2-p1).normalized()), (p2-p1).length()*(1+1e-6));
+    auto v2 = scene->getTerrain()->intersect(Ray(pos, (p2-p1).normalized()), (p2-p1).length()*(1.f+1e-6f));
 
     if(v2.length() < inf)
     {

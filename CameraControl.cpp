@@ -169,7 +169,7 @@ void CameraControl::handleInput(const Input& input)
     {
 
         if((cameraMode == Freelook) && !isnan(prevX))
-            setAngle(getTheta() - (input.posX-prevX)/500.0f, getPhi() - (input.posY-prevY)/500.0);
+            setAngle(getTheta() - (input.posX-prevX)/500.f, getPhi() - (input.posY-prevY)/500.0);
         prevX = input.posX;
         prevY = input.posY;
     }

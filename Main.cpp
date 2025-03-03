@@ -193,9 +193,9 @@ int main()
     UserInterface interface(window, &scene, &cameraControl);
 
     int frames = 0;
-    real frameTime = 0;
-    real avgFps = 0;
-    real prevFogOfWar = Terrain::fogOfWarEnabled.varInt();
+    real frameTime = 0.f;
+    real avgFps = 0.f;
+    auto prevFogOfWar = Terrain::fogOfWarEnabled.varInt();
 
     ShapeDrawer::setScene(&scene);
     ShapeDrawer::loadModels();
@@ -216,10 +216,10 @@ int main()
             glfwSetWindowShouldClose(window, true);
 
         auto prevTime = time;
-        time = glfwGetTime();
+        time = real(glfwGetTime());
         auto dt = time - prevTime;
 
-        glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
+        glClearColor(0.5f, 0.5f, 0.5f, 0.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         handleInput(prevTime, time, cameraControl, interface, scene, terrain, window);
@@ -283,9 +283,9 @@ int main()
         for(auto& light : scene.getLights())
         {
             real t = glfwGetTime() - light->getStart();
-            light->setColor(Vector3(0.3, 0.3, 0.2)*std::exp(-20.f*t));
+            light->setColor(Vector3(0.3f, 0.3f, 0.2f)*std::exp(-20.f*t));
             light->setPos(light->getPos() + light->getVelocity()*dt);
-            if(light->getColor().length() < 1e-3)
+            if(light->getColor().length() < 1e-3f)
                 scene.removeLight(light);
         }
 
@@ -299,7 +299,7 @@ int main()
                     int dy = int(unit->getPosition().y) - y;
                     if(dx*dx + dy*dy < fogR*fogR && !unit->isEnemy())
                     {
-                        terrain.setFog(x, y, 0);
+                        terrain.setFog(x, y, false);
                         return true;
                     }
                     return false;
@@ -337,7 +337,8 @@ int main()
         for(auto particle : scene.getParticles())
         {
             particle->update(dt);
-            if(particle->isAlive() && (!Terrain::fogOfWarEnabled.varInt() || !terrain.getFog(particle->getPos().x, particle->getPos().y)))
+            int x = int(particle->getPos().x), y = int(particle->getPos().y);
+            if(particle->isAlive() && (!Terrain::fogOfWarEnabled.varInt() || !terrain.getFog(x, y)))
                 P.push_back(particle->serialize());
         }
         std::sort(P.begin(), P.end(), [&scene](const auto p1, const auto& p2) { return (p1.pos-scene.getCamera()->getPos()).length2() > (p2.pos-scene.getCamera()->getPos()).length2(); });
@@ -363,7 +364,7 @@ int main()
         glDepthMask(GL_FALSE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);
-        glDrawArrays(GL_POINTS, 0, P.size());
+        glDrawArrays(GL_POINTS, 0, (GLsizei)P.size());
         glDisable(GL_BLEND);
         glBindVertexArray(0);
         glDepthMask(GL_TRUE);

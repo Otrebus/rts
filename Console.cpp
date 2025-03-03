@@ -20,10 +20,10 @@ Console::Console(Scene* scene)
     geometryShader = new Shader("geometryShader.geom", GL_GEOMETRY_SHADER);
     fragmentShader = new Shader("console.frag", GL_FRAGMENT_SHADER);
     this->scene = scene;
-    lastBackspacePress = 0;
-    backSpaceDelay = 0.2;
-    animStartPos = 0;
-    animStart = -1;
+    lastBackspacePress = 0.f;
+    backSpaceDelay = 0.2f;
+    animStartPos = 0.f;
+    animStart = -1.f;
     open = false;
     completionIndex = 0;
     historyIndex = 1;

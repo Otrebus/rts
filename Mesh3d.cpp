@@ -15,7 +15,7 @@ Mesh3d::Mesh3d(std::vector<Vertex3> vertices, std::vector<int> triangles, Materi
     this->material = material;
     this->v = vertices;
     this->triangles = triangles;
-    this->nTriangles = triangles.size();
+    this->nTriangles = int(triangles.size());
     if(!vertexShader)
         vertexShader = new Shader("vertexShader.vert", GL_VERTEX_SHADER);
     if(!geometryShader)
