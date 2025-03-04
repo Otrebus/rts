@@ -15,12 +15,12 @@
 
 Building::Building(int x, int y, int length, int width, std::vector<int> footprint) : Unit(pos, { 1, 0, 0 }, { 0, 0, 1 }), length(length), width(width), footprint(footprint)
 {
-    height = 2.0f;
+    height = 2;
     geoDir = dir.to2();
     pos = Vector3(x+real(length)/2, y+real(width)/2, 0);
     geoPos = pos.to2();
     boundingBox = BoundingBox(Vector3(-real(length)/2, -real(width)/2, -real(height)/2), Vector3(real(length)/2, real(width)/2, real(height)/2));
-    selectionMarkerMesh = new SelectionMarkerMesh(length+0.2, width+0.2, false);
+    selectionMarkerMesh = new SelectionMarkerMesh(length+0.2f, width+0.2f, false);
     if(!fowMaterial)
         fowMaterial = new FogOfWarMaterial();
 }
@@ -31,7 +31,7 @@ Building::~Building()
 
 void Building::draw(Material* mat = nullptr)
 {
-    real W = 0.1, L = 1.0;
+    real W = 0.1f, L = 1.0f;
 
     GLint curDepthFun;
     GLboolean curBlend;
@@ -44,17 +44,17 @@ void Building::draw(Material* mat = nullptr)
     
     glBlendFuncSeparate(GL_ZERO, GL_ONE, GL_ONE, GL_ZERO);
 
-    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(-real(W)/2+real(length)/2, 0, -real(height)/6), Vector3(1, 0, 0), up, W, width, height*2.0/3, fowMaterial);
-    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(real(W)/2-real(length)/2, 0, -real(height)/6), Vector3(1, 0, 0), up, W, width, height*2.0/3, fowMaterial);
-    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(0, real(width)/2 - real(L)/2, 0), Vector3(1, 0, 0), up, length-W*2, L, height, fowMaterial);
+    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(-real(W)/2+real(length)/2, 0.f, -real(height)/6), Vector3(1.f, 0.f, 0.f), up, W, real(width), height*2.0f/3, fowMaterial);
+    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(real(W)/2-real(length)/2, 0.f, -real(height)/6), Vector3(1.f, 0.f, 0.f), up, W, real(width), height*2.0f/3, fowMaterial);
+    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(0.f, real(width)/2 - real(L)/2, 0.f), Vector3(1, 0, 0), up, length-W*2, L, real(height), fowMaterial);
 
     glDepthFunc(GL_LEQUAL);
     glEnable(GL_BLEND);
     glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
 
-    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(-real(W)/2+real(length)/2, 0, -real(height)/6), Vector3(1.f, 0.f, 0.f), up, W, width, height*2.0f/3, Vector3(0.7f, 0.7f, 0.7f));
-    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(real(W)/2-real(length)/2, 0, -real(height)/6), Vector3(1.f, 0.f, 0.f), up, W, width, height*2.0f/3, Vector3(0.7f, 0.7f, 0.7f));
-    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(0.f, real(width)/2 - real(L)/2, 0.f), Vector3(1.0f, 0.f, 0.f), up, length-W*2, L, height, Vector3(0.7f, 0.7f, 0.7f));
+    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(-real(W)/2+real(length)/2, 0.f, -real(height)/6), Vector3(1.f, 0.f, 0.f), up, W, real(width), height*2.0f/3, Vector3(0.7f, 0.7f, 0.7f));
+    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(real(W)/2-real(length)/2, 0.f, -real(height)/6), Vector3(1.f, 0.f, 0.f), up, W, real(width), height*2.0f/3, Vector3(0.7f, 0.7f, 0.7f));
+    ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(0.f, real(width)/2 - real(L)/2, 0.f), Vector3(1.0f, 0.f, 0.f), up, length-W*2, L, real(height), Vector3(0.7f, 0.7f, 0.7f));
 
     if(!curBlend)
         glDisable(GL_BLEND);
@@ -188,14 +188,14 @@ bool Building::canBePlaced(real posX, real posY, int length, int width, Scene* s
     {
         for(int y = 0; y <= width; y++)
         {
-            if(auto h = terrain->getElevation(int(x+cx), int(y+cy)); std::abs(h-avgH) > 0.5)
+            if(auto h = terrain->getElevation(x+cx, y+cy); std::abs(h-avgH) > 0.5)
                 canPlace = false;
             for(auto building : scene->getBuildings())
             {
                 if(building->pointWithin(int(x+cx), int(y+cy)))
                 {
                     std::cout << "pushing back " << (x+cx) << " " << (y+cy) << std::endl;
-                    adjHeights.push_back(terrain->getElevation(int(x+cx), int(y+cy)));
+                    adjHeights.push_back(terrain->getElevation(x+cx, y+cy));
                 }
             }
         }

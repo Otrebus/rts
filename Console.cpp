@@ -41,15 +41,15 @@ Console::~Console()
 
 real Console::getY()
 {
-    auto t = (glfwGetTime()-animStart)/animDuration;
+    auto t = (real(glfwGetTime())-animStart)/animDuration;
     if(t >= 1)
         t = 1;
-    return animStartPos + (1 - (t*(t-2)+1))*(real(!open) - animStartPos);
+    return animStartPos + (1.f - (t*(t-2.f)+1))*(real(!open) - animStartPos);
 }
 
 bool Console::isVisible()
 {
-    return open || glfwGetTime() - animStart < animDuration;
+    return open || real(glfwGetTime()) - animStart < animDuration;
 }
 
 void Console::setOpen(bool open)
@@ -57,7 +57,7 @@ void Console::setOpen(bool open)
     animStartPos = getY();
     this->open = open;
 
-    animStart = glfwGetTime();
+    animStart = real(glfwGetTime());
 }
 
 void Console::init()
@@ -124,7 +124,7 @@ void Console::draw()
     for(auto it = history.rbegin(); it < history.rend(); it++)
     {
         Vector3 color = it->type == ConsoleHistoryEntry::Input ? Vector3(0.8f, 0.8f, 0.8f) : Vector3(0.6f, 0.6f, 0.6f);
-        font->draw(*scene, it->entry, Vector2(-0.98, getY() + ++i*textSize*1.05), textSize, color);
+        font->draw(*scene, it->entry, Vector2(-0.98f, getY() + ++i*textSize*1.05f), textSize, color);
     }
 }
 
@@ -134,12 +134,12 @@ void Console::handleInput(const Input& input)
     {
         if(input.stateStart == InputType::KeyPress && textInput.size())
         {
-            lastBackspacePress = glfwGetTime();
+            lastBackspacePress = real(glfwGetTime());
             textInput.pop_back();
         }
         if(input.stateStart == InputType::KeyHold)
         {
-            if(glfwGetTime() - lastBackspacePress > backSpaceDelay) // TODO: find the actual repetition rate
+            if(real(glfwGetTime()) - lastBackspacePress > backSpaceDelay) // TODO: find the actual repetition rate
             {
                 lastBackspacePress = real(glfwGetTime());
                 backSpaceDelay = 0.05f;
@@ -230,9 +230,9 @@ void Console::handleInput(const Input& input)
     {
         if(!commandHistory.empty())
         {
-            if(historyIndex >= commandHistory.size())
+            if(historyIndex >= int(commandHistory.size()))
             {
-                historyIndex = commandHistory.size();
+                historyIndex = int(commandHistory.size());
             }
             historyIndex = std::max(historyIndex-1, 0);
             textInput = commandHistory[historyIndex];
@@ -255,7 +255,7 @@ void Console::handleInput(const Input& input)
     }
     if(input.key != GLFW_KEY_UP && input.key != GLFW_KEY_DOWN && input.stateStart == InputType::KeyPress)
     {
-        historyIndex = history.size();
+        historyIndex = int(history.size());
     }
     if(input.key == GLFW_KEY_LEFT_SHIFT || input.key == GLFW_KEY_RIGHT_SHIFT)
     {

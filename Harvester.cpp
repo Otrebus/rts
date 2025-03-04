@@ -273,7 +273,7 @@ void Harvester::turn(bool left)
 
 void Harvester::update(real dt)
 {
-    constructionProgress += dt*0.3;
+    constructionProgress += dt*0.3f;
     if(constructionProgress >= 1.0f)
     {
         constructing = false;

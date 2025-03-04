@@ -121,7 +121,7 @@ void CameraControl::update(real dt)
     dir.x += moveDir[0] + moveDir[1];
     dir.y += moveDir[2] + moveDir[3];
     if(dir)
-        move(dir, moveSlow ? dt*0.1 : dt);
+        move(dir, moveSlow ? dt*0.1f : dt);
     std::memset(moveDir, 0, sizeof(moveDir));
 }
 
@@ -169,7 +169,7 @@ void CameraControl::handleInput(const Input& input)
     {
 
         if((cameraMode == Freelook) && !isnan(prevX))
-            setAngle(getTheta() - (input.posX-prevX)/500.f, getPhi() - (input.posY-prevY)/500.0);
+            setAngle(getTheta() - (input.posX-prevX)/500.f, getPhi() - (input.posY-prevY)/500.0f);
         prevX = input.posX;
         prevY = input.posY;
     }
@@ -180,7 +180,7 @@ void CameraControl::handleInput(const Input& input)
 
         auto zoomDir = cam->getViewRay(x, y);
         auto dir = -(input.posY)*(zoomDir.dir.normalized())*(moveSlow ? 0.5f : 5.f);
-        movementImpulses.push_back(MovementImpulse(glfwGetTime(), 0.2f, dir));
+        movementImpulses.push_back(MovementImpulse(real(glfwGetTime()), 0.2f, dir));
     }
 }
 

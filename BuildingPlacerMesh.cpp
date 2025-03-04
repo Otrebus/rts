@@ -49,7 +49,7 @@ std::pair<std::vector<Vertex3>, std::vector<int>> BuildingPlacerMesh::calcVertic
         {
             auto X = float(xpos)+x, Y = float(ypos)+y;
             auto pos = scene->getTerrain()->getPoint(int(X), int(Y));
-            pos.z += 0.01;
+            pos.z += 0.01f;
             vs.push_back({ pos.x, pos.y, pos.z, 0.f, 0.f, 1.f, real(pos.x), real(pos.y) });
         }
     }
@@ -80,5 +80,5 @@ void BuildingPlacerMesh::update(int xpos, int ypos, bool allowed)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*triangles.size(), triangles.data(), GL_STREAM_DRAW);
 
     ((BuildingPlacerMaterial*)material)->Kd = allowed ? Vector3(0.f, 0.8f, 0.1f) : Vector3(0.8f, 0.f, 0.1f);
-    nTriangles = triangles.size();
+    nTriangles = int(triangles.size());
 }

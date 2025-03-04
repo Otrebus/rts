@@ -30,7 +30,7 @@ Matrix4 PerspectiveCamera::getMatrix()
     if(matrixCached)
         return viewMatrix;
     float a = std::tan(deg(fov/2));
-    float n = -0.3, f = -500.0;
+    float n = -0.3f, f = -500.0f;
 
     Matrix4 trans(
         1, 0, 0, -pos.x,
@@ -52,9 +52,9 @@ Matrix4 PerspectiveCamera::getMatrix()
     );
 
     Matrix4 persp(
-        1.0/a, 0, 0, 0,
+        1.0f/a, 0, 0, 0,
         0, ar/a, 0, 0,
-        0, 0, -(-n-f)/(n-f), -2.0*f*n/(n-f),
+        0, 0, -(-n-f)/(n-f), -2.0f*f*n/(n-f),
         0, 0, -1, 0
     );
 

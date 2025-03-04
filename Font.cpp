@@ -130,9 +130,9 @@ std::tuple<Buffer2d<real>, std::map<unsigned char, GlyphCoords>> makeSdfMap(FT_F
         FT_Bitmap bitmap = slot->bitmap;
 
         Buffer2d<char> buf(bitmap.width + margin * 2, bitmap.rows + margin * 2, false);
-        for(int y = 0; y < bitmap.rows; y++)
+        for(int y = 0; y < int(bitmap.rows); y++)
         {
-            for(int x = 0; x < bitmap.width; x++)
+            for(int x = 0; x < int(bitmap.width); x++)
             {
                 auto b = x%8;
                 auto X = x/8;
@@ -183,7 +183,7 @@ std::tuple<Buffer2d<real>, std::map<unsigned char, GlyphCoords>> makeSdfMap(FT_F
             margin/real(bitmap.rows)
         };
 
-        posX += charWidth;
+        posX += int(charWidth);
         rowMaxHeight = std::max(rowMaxHeight, charHeight);
     }
 
@@ -296,12 +296,12 @@ void Glyph::draw(Scene& scene, FT_Face face, Vector2 pos, real size, Vector3 col
 
     FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
 
-    real H = face->units_per_EM;
-    real a = face->ascender;
-    real b = face->glyph->metrics.horiBearingY;
-    real h = face->glyph->metrics.height;
-    real w = face->glyph->metrics.width;
-    real l = face->glyph->metrics.horiBearingX;
+    real H = real(face->units_per_EM);
+    real a = real(face->ascender);
+    real b = real(face->glyph->metrics.horiBearingY);
+    real h = real(face->glyph->metrics.height);
+    real w = real(face->glyph->metrics.width);
+    real l = real(face->glyph->metrics.horiBearingX);
 
     auto translationMatrix = getTranslationMatrix(
         Vector3(

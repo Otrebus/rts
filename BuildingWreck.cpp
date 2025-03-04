@@ -9,7 +9,7 @@
 
 BuildingWreck::BuildingWreck(Vector3 pos, Vector3 dir, Vector3 up, int length, int width, Terrain* terrain) : Entity(pos, dir, up)
 {
-    height = 2.0f;
+    height = 2;
     geoDir = dir.to2();
     this->pos = pos;
     geoPos = pos.to2();

@@ -96,13 +96,12 @@ int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
     InputManager::getInstance().initInput(window);
     OrthogonalCamera cam({ 0, 0, 1 }, { 0, 0, -1 }, { 0, 1, 0 }, real(xres)/float(yres));
 
-    real time = glfwGetTime();
+    real time = real(glfwGetTime());
 
     ShaderProgramManager shaderProgramManager;
     Scene scene(&cam, &shaderProgramManager);
 
     bool intersecting = false;
-    real startX, startY;
     int mouseX, mouseY;
 
     Ray r1, r2;
@@ -207,7 +206,7 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
     InputManager::getInstance().initInput(window);
     OrthogonalCamera cam({ 0, 0, 1 }, { 0, 0, -1 }, { 0, 1, 0 }, real(xres)/float(yres));
 
-    real time = glfwGetTime();
+    real time = real(glfwGetTime());
 
     glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageCallback(MessageCallback, 0);
@@ -216,7 +215,6 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
     Scene scene(&cam, &shaderProgramManager);
 
     bool intersecting = false;
-    real startX, startY;
     int mouseX, mouseY;
 
     Ray r1, r2;
@@ -235,13 +233,13 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
         decals.push_back(decal);
 
 
-        real x = ((rand()%2000) - 1000.0)/10000.0;
-        real y = ((rand()%2000) - 1000.0)/10000.0;
+        real x = ((rand()%2000) - 1000.0f)/10000.0f;
+        real y = ((rand()%2000) - 1000.0f)/10000.0f;
 
         position[i] = { x, y, 0 };
 
-        real vx = ((rand()%2000) - 1000.0)/10000.0;
-        real vy = ((rand()%2000) - 1000.0)/10000.0;
+        real vx = ((rand()%2000) - 1000.0f)/10000.0f;
+        real vy = ((rand()%2000) - 1000.0f)/10000.0f;
 
         velocity[i] = { vx, vy, 0 };
     }
@@ -280,7 +278,7 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
 
         checkError();
 
-        SelectionDecalMaterial::radiusA = 0.15;
+        SelectionDecalMaterial::radiusA = 0.15f;
         int i = 1;
 
         glEnable(GL_BLEND);
@@ -289,13 +287,13 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
 
         for(auto& decal : decals)
         {
-            glPolygonOffset(-1.0, -1.0*++i);
+            glPolygonOffset(-1.0f, -1.0f*++i);
             decal->updateUniforms();
             decal->draw();
         }
 
         glEnable(GL_SAMPLE_SHADING);
-        glMinSampleShading(1.0);
+        glMinSampleShading(1.0f);
 
         glBlendFunc(GL_SRC_ALPHA_SATURATE, GL_ONE);
         glBlendFuncSeparate(GL_ONE, GL_ZERO, GL_ZERO, GL_ONE);
@@ -313,22 +311,22 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
         {
             if(position[i].y > 0.2)
             {
-                position[i].y = 0.2;
+                position[i].y = 0.2f;
                 velocity[i].y = -velocity[i].y;
             }
-            if(position[i].y < -0.2)
+            if(position[i].y < -0.2f)
             {
-                position[i].y = -0.2;
+                position[i].y = -0.2f;
                 velocity[i].y = -velocity[i].y;
             }
-            if(position[i].x > 0.2)
+            if(position[i].x > 0.2f)
             {
-                position[i].x = 0.2;
+                position[i].x = 0.2f;
                 velocity[i].x = -velocity[i].x;
             }
-            if(position[i].x < -0.2)
+            if(position[i].x < -0.2f)
             {
-                position[i].x = -0.2;
+                position[i].x = -0.2f;
                 velocity[i].x = -velocity[i].x;
             }
 
@@ -346,7 +344,7 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
         for(auto input : inputs)
         {
             if(input->stateStart == MousePosition)
-                mouseX = input->posX, mouseY = input->posY;
+                mouseX = int(input->posX), mouseY = int(input->posY);
         }
 
         glfwSwapBuffers(window);
@@ -411,7 +409,6 @@ int drawVehiclePaths(GLFWwindow* window, int xres, int yres)
     Scene scene(&cam, &shaderProgramManager);
 
     bool intersecting = false;
-    real startX, startY;
     int mouseX, mouseY;
 
     Ray r1, r2;
