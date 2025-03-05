@@ -318,7 +318,7 @@ void UserInterface::moveDrawnUnits(const std::vector<Unit*>& selectedUnits)
 
 void UserInterface::selectUnit(const Ray& ray, const std::vector<Unit*>& units, bool pre)
 {
-    auto time = glfwGetTime();
+    auto time = real(glfwGetTime());
     auto camera = scene->getCamera();
 
     if(!pre)
@@ -421,7 +421,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
             1, 1, 1, 1
         };
         auto building = new Building(int(pos.x), int(pos.y), 3, 4, footprint);
-        buildingPlacerMesh->update(pos.x, pos.y, building->canBePlaced(int(pos.x) + 3.0/2, int(pos.y) + 4.0/2, 3, 4, scene));
+        buildingPlacerMesh->update(int(pos.x), int(pos.y), building->canBePlaced(int(pos.x) + 3.0f/2, int(pos.y) + 4.0f/2, 3, 4, scene));
         delete building;
     }
 
@@ -454,7 +454,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
                     1, 1, 1, 1
                 };
             auto building = new Building(int(pos.x), int(pos.y), 3, 4, footprint);
-            if(building->canBePlaced(int(pos.x) + 3.0/2, int(pos.y) + 4.0/2, 3, 4, scene))
+            if(building->canBePlaced(int(pos.x) + 3.0f/2, int(pos.y) + 4.0f/2, 3, 4, scene))
             {
                 building->init(*scene);
                 scene->addEntity(building);
@@ -464,7 +464,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
                 delete building;
                 for(auto building : scene->getBuildings())
                 {
-                    if(building->buildingWithin(int(pos.x) + 3.0/2, int(pos.y) + 4.0/2, 3, 4))
+                    if(building->buildingWithin(int(pos.x) + 3.0f/2, int(pos.y) + 4.0f/2, 3, 4))
                     {
                         scene->removeEntity(building);
                     }
@@ -479,7 +479,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
             // TODO: check for being outside terrain
             circleCenter = pos.to2();
 
-            selectionMesh = new SelectionMarkerMesh(0, 0, true);
+            selectionMesh = new SelectionMarkerMesh(0.f, 0.f, true);
             selectionMesh->setScene(scene);
             selectionMesh->init(circleCenter);
         }

@@ -106,8 +106,8 @@ void Scene::moveEntitiesSoft(real dt, int depth, std::unordered_set<Entity*>& gl
         auto pos2 = entity->geoPos + entity->geoVelocity*dt;
 
         // Collision detection, against the terrain
-        auto [t, norm] = terrain->intersectCirclePathOcclusion(entity->geoPos, pos2, 0.51);
-        auto [s, norm2] = terrain->intersectCirclePathOcclusion(entity->geoPos, pos2, 0.50);
+        auto [t, norm] = terrain->intersectCirclePathOcclusion(entity->geoPos, pos2, 0.51f);
+        auto [s, norm2] = terrain->intersectCirclePathOcclusion(entity->geoPos, pos2, 0.50f);
         if(s > -inf && s <= 0)
         {
             // TODO: sometimes we find ourselves inside a triangle, what do we do then?

@@ -90,13 +90,13 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
 
-    auto startTime = glfwGetTime();
+    auto startTime = real(glfwGetTime());
 
     InputManager::getInstance().initInput(window);
 
     PerspectiveCamera cam({ 0, 0, 100 }, { 0, 1, -1 }, { 0, 0, 1 }, 59, real(xres)/float(yres));
 
-    real time = glfwGetTime();
+    real time = real(glfwGetTime());
 
     ShaderProgramManager shaderProgramManager;
 
@@ -137,13 +137,13 @@ int main()
     auto harvester = new Harvester({ 150.5f, 35.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
     scene.addEntity(harvester);
 
-    /*for(int y = 0; y < 5; y++)
+    for(int y = 0; y < 5; y++)
     {
         for(int x = 0; x < 5; x++)
         {
-            scene.addEntity(new Vehicle({ 165.5f-x, 95.15f-y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain));
+            scene.addEntity(new Tank({ 165.5f-x, 95.15f-y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain));
         }
-    }*/
+    }
 
     
     /*auto tank = new Tank({ 170.5f, 65.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
@@ -282,7 +282,7 @@ int main()
         // TODO: this should be done in some update function or something
         for(auto& light : scene.getLights())
         {
-            real t = glfwGetTime() - light->getStart();
+            real t = real(glfwGetTime()) - light->getStart();
             light->setColor(Vector3(0.3f, 0.3f, 0.2f)*std::exp(-20.f*t));
             light->setPos(light->getPos() + light->getVelocity()*dt);
             if(light->getColor().length() < 1e-3f)
@@ -391,7 +391,7 @@ int main()
                 glUniform3fv(loc, 1, (GLfloat*)&(light->getPos()));
                 i++;
             }
-            glUniform1i(glGetUniformLocation(program->getId(), std::format("nLights", i).c_str()), scene.getLights().size());
+            glUniform1i(glGetUniformLocation(program->getId(), std::format("nLights", i).c_str()), int(scene.getLights().size()));
         }
         prevFogOfWar = Terrain::fogOfWarEnabled.varInt();
     }

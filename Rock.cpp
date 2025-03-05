@@ -46,7 +46,7 @@ void Rock::loadModels()
 
     ModelManager::addModel("Rock", model);
 
-    real length = 0.1;
+    real length = 0.1f;
 
     BoundingBox bb1;
 

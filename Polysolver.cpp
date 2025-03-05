@@ -49,8 +49,8 @@ int findPolynomialRoots_(ld* roots, ld* v, int N)
         auto d = b*b - 4*a*c;
         if(d < 0)
             return 0;
-        auto r1 = (r0 - std::sqrt(d))/(2.f*a);
-        auto r2 = (r0 + std::sqrt(d))/(2.f*a);
+        auto r1 = (r0 - std::sqrt(d))/(2.0*a);
+        auto r2 = (r0 + std::sqrt(d))/(2.0*a);
         roots[0] = r1;
         roots[1] = r2;
         return 2;
@@ -82,7 +82,7 @@ std::vector<ld> findPolynomialRoots(std::vector<ld> v)
     for(int i = 0; i < v.size(); i++)
         w[i] = v[i];
 
-    auto n = findPolynomialRoots_(o, w, v.size());
+    auto n = findPolynomialRoots_(o, w, int(v.size()));
     std::vector<ld> ret;
     for(int i = 0; i < n; i++)
         ret.push_back(o[i]);

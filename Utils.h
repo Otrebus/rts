@@ -28,7 +28,7 @@ Vector2 mouseCoordToScreenCoord(int xres, int yres, int mouseX, int mouseY);
 
 template<typename T> T sgn(T s)
 {
-    return s > 0 ? 1 : s < 0 ? -1 : 0;
+    return s > T(0) ? T(1) : s < T(0) ? T(-1) : T(0);
 }
 
 template<typename T> T min(T a, T b)
@@ -56,7 +56,7 @@ std::string realToString(real num, int significantDigits);
 template<typename T> T flipVertically(T input, int width)
 {
     T out;
-    int height = input.size()/width;
+    int height = int(input.size())/width;
     for(int i = 0; i < input.size(); i++)
     {
         int x = i % width;

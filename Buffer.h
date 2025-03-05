@@ -36,7 +36,7 @@ template<typename T> struct Buffer2d
         return data[y*width+x];
     }
 
-    T& get(int x, int y, T overflowValue)
+    T get(int x, int y, T overflowValue)
     {
         if(!(x < width && x >= 0 && y < height && y >= 0))
             return overflowValue;

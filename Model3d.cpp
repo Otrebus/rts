@@ -32,8 +32,9 @@ Model3d* ModelManager::getModel(const std::string& name)
     return templateMap[name];
 }
 
-struct ObjVertex
+class ObjVertex
 {
+public:
     ObjVertex(Vector3 position, Vector3 normal, Vector2 texture) : position(position), normal(normal), texture(texture) {}
 
     Vector3 position;
@@ -43,8 +44,9 @@ struct ObjVertex
     std::vector<ObjTriangle*> triangles;
 };
 
-struct ObjTriangle
+class ObjTriangle
 {
+public:
     ObjTriangle(ObjVertex* v0, ObjVertex* v1, ObjVertex* v2) : v0(v0), v1(v1), v2(v2) {}
     ObjVertex *v0, *v1, *v2;
 
@@ -301,7 +303,6 @@ void Model3d::readFromFile(const std::string& file)
 
     std::map<std::string, Material*> materials;
 
-    bool normalInterp;
     std::string str;
     int currentSmoothingGroup = 0;
 
@@ -374,7 +375,7 @@ void Model3d::readFromFile(const std::string& file)
                     if(mesh->triangles.size())
                         this->addMesh(*mesh);
                 }
-                mesh->nTriangles = mesh->triangles.size();
+                mesh->nTriangles = int(mesh->triangles.size());
             }
         };
 
@@ -436,7 +437,7 @@ void Model3d::readFromFile(const std::string& file)
                             for(auto& tri : v->triangles)
                                 v->normal += tri->getNormal();
 
-                            v->normal /= v->triangles.size();
+                            v->normal /= real(v->triangles.size());
                         }
                     }
                 }

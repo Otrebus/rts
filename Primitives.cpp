@@ -84,7 +84,7 @@ std::pair<std::vector<Vertex3>, std::vector<int>> buildCylinder(real length, rea
 
 Model3d* createCylinderModel(real length, real radius, int N)
 {
-    auto material = new LambertianMaterial({ 0, 0.8, 0.1 });
+    auto material = new LambertianMaterial({ 0.f, 0.8f, 0.1f });
 
 	auto [vertices, triangles] = buildCylinder(length, radius, N);
 
@@ -97,7 +97,7 @@ Model3d* createCylinderModel(real length, real radius, int N)
 
 std::pair<std::vector<Vertex3>, std::vector<int>> buildCone(real length, real radius, int N)
 {
-	Vector3 x = { 1, 0, 0 }, y = { 0, 1, 0 }, z = { 0, 0, 1 };
+	Vector3 x = { 1.f, 0.f, 0.f }, y = { 0.f, 1.f, 0.f }, z = { 0.f, 0.f, 1.f };
 
 	std::vector<Vector3> points;
 	std::vector<Vertex3> vertices;
@@ -108,7 +108,7 @@ std::pair<std::vector<Vertex3>, std::vector<int>> buildCone(real length, real ra
 		auto u = y*std::cos(i*2*pi/N)*radius + z*std::sin(i*2*pi/N)*radius;
 		points.push_back(u);
 	}
-	points.push_back( { length, 0, 0 } );
+	points.push_back( { length, 0.f, 0.f } );
 
 	for(int i = 0; i < N; i++)
 	{
@@ -118,7 +118,7 @@ std::pair<std::vector<Vertex3>, std::vector<int>> buildCone(real length, real ra
 		Vector3 v = points[i];
 		auto n_u = (a%v)%a;
 
-		Vertex3 U(u, n_u.normalized(), { 0, 0 });
+		Vertex3 U(u, n_u.normalized(), { 0.f, 0.f });
 		vertices.push_back(U);
 	}
 
@@ -128,15 +128,15 @@ std::pair<std::vector<Vertex3>, std::vector<int>> buildCone(real length, real ra
 		Vector3 v = points[i];
 		auto n_u = (a%v)%a;
 
-		Vertex3 U( { length, 0, 0 }, n_u.normalized(), { 0, 0 });
+		Vertex3 U( { length, 0.f, 0.f }, n_u.normalized(), { 0.f, 0.f });
 		vertices.push_back(U);
 	}
 
 	for(int i = 0; i < N; i++)
 	{
 		auto u = points[i];
-		Vector3 n_u = { -1, 0, 0 };
-		Vertex3 U(u, n_u, { 0, 0 });
+		Vector3 n_u = { -1.f, 0.f, 0.f };
+		Vertex3 U(u, n_u, { 0.f, 0.f });
 		vertices.push_back(U);
 	}
 
@@ -159,7 +159,7 @@ std::pair<std::vector<Vertex3>, std::vector<int>> buildCone(real length, real ra
 
 Model3d* createConeModel(real length, real radius, int N)
 {
-    auto material = new LambertianMaterial({ 0, 0.8, 0.1 });
+    auto material = new LambertianMaterial({ 0.f, 0.8f, 0.1f });
 
 	auto [vertices, triangles] = buildCone(length, radius, N);
 
@@ -180,7 +180,7 @@ void addSphereVertices(int a, int b, int c, real radius, std::vector<Vector3>& p
 		return;
 	}
 
-	int d = points.size(), e = d+1, f = e+1;
+	int d = int(points.size()), e = d+1, f = e+1;
 	points.push_back(((points[a]+points[b])/2).normalized()*radius);
 	points.push_back(((points[b]+points[c])/2).normalized()*radius);
 	points.push_back(((points[c]+points[a])/2).normalized()*radius);
@@ -192,11 +192,11 @@ void addSphereVertices(int a, int b, int c, real radius, std::vector<Vector3>& p
 
 std::pair<std::vector<Vertex3>, std::vector<int>> buildSphere(real radius, int N)
 {
-	real u = 2*sqrt(2.0)/3, v = sqrt(2.0)/sqrt(3.0), w = sqrt(2.0)/3, t = 1/3.0f;
-	auto a = Vector3(u, 0, t);
+	real u = 2*sqrt(2.0f)/3, v = sqrt(2.0f)/sqrt(3.0f), w = sqrt(2.0f)/3, t = 1/3.0f;
+	auto a = Vector3(u, 0.f, t);
 	auto b = Vector3(-w, v, t);
 	auto c = Vector3(-w, -v, t);
-	auto d = Vector3(0, 0, -1);
+	auto d = Vector3(0.f, 0.f, -1.f);
 
 	std::vector<Vector3> points = { a*radius, b*radius, c*radius, d*radius };
 	std::vector<int> indices;
@@ -209,14 +209,14 @@ std::pair<std::vector<Vertex3>, std::vector<int>> buildSphere(real radius, int N
 	std::vector<Vertex3> vertices;
 
 	for(auto& p : points)
-		vertices.push_back( { p, p.normalized(), { 0, 0 } });
+		vertices.push_back( { p, p.normalized(), { 0.f, 0.f } });
 
 	return { vertices, indices };
 }
 
 Model3d* createSphereModel(real radius, int N)
 {
-    auto material = new LambertianMaterial({ 0, 0.8f, 0.1f });
+    auto material = new LambertianMaterial({ 0.f, 0.8f, 0.1f });
 
 	auto [vertices, triangles] = buildSphere(radius, N);
 

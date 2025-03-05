@@ -210,7 +210,7 @@ real getArrivalRadius(Vector2 p, const std::vector<Unit*>& units)
         for(auto& unit : units)
         {
             if(auto w = (unit->geoPos-p).length(); w < M)
-                sum += 1.5*1.5*pi;
+                sum += 1.5f*1.5f*pi;
         }
         if(sum < pi*M*M)
             R = M;

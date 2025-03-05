@@ -32,13 +32,13 @@ Vector3 Unit::getTarget() const
 {
     //return target;
     // TODO: not really used
-    return { 0, 0, 0 };
+    return { 0.f, 0.f, 0.f };
 }
 
 void Unit::setPath(std::deque<Vector2> path)
 {
     this->path = std::deque(path.begin(), path.end());
-    pathLastCalculated = glfwGetTime();
+    pathLastCalculated = real(glfwGetTime());
 }
 
 void Unit::setPreSelected(bool preSelected)
@@ -54,7 +54,7 @@ void Unit::drawSelectionDecal(int pass)
         selectionMarkerMesh->update(getGeoPosition());
         selectionMarkerMesh->pass = pass;
         if(isEnemy())
-            ((SelectionDecalMaterial*)(selectionMarkerMesh->getMaterial()))->Kd = Vector3(0.8, 0, 0);
+            ((SelectionDecalMaterial*)(selectionMarkerMesh->getMaterial()))->Kd = Vector3(0.8f, 0.f, 0.f);
         selectionMarkerMesh->updateUniforms();
         selectionMarkerMesh->draw();
         selectionMarkerMesh->setSelectionType(preSelected && !selected);

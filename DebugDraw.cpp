@@ -422,7 +422,7 @@ int drawVehiclePaths(GLFWwindow* window, int xres, int yres)
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         auto prevTime = time;
-        time = glfwGetTime();
+        time = real(glfwGetTime());
         auto dt = time - prevTime;
 
         auto inputs = InputManager::getInstance().handleInput(prevTime, time);
@@ -431,8 +431,10 @@ int drawVehiclePaths(GLFWwindow* window, int xres, int yres)
         for(auto input : inputs)
         {
             if(input->stateStart == MousePosition)
-                mouseX = input->posX, mouseY = input->posY;
-
+            {
+                mouseX = int(input->posX);
+                mouseY = int(input->posY);
+            }
             delete input;
         }
 

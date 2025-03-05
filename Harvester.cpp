@@ -491,42 +491,38 @@ Vector2 Harvester::seek()
     if(!path.empty())
     {
         auto target = path.front();
+        auto l = (target - geoPos).length();
 
-        if(target.length() > 0.0001)
+        if(path.empty())
+            return { 0, 0 };
+        target = path.front();
+        //target = path.back();
+
+        // TODO: this could become NaN
+        if(!l)
+            return { 0, 0 };
+        //auto v2 = (target - geoPos).normalized();
+        auto v2 = calcSeekVector(target);
+
+        auto R = path.size() < 2 ? getArrivalRadius(target, scene->getUnits()) : 0.5;
+        if(l < R)
         {
-            auto l = (target - geoPos).length();
-
-            if(path.empty())
-                return { 0, 0 };
-            target = path.front();
-            //target = path.back();
-
-            // TODO: this could become NaN
-            if(!l)
-                return { 0, 0 };
-            //auto v2 = (target - geoPos).normalized();
-            auto v2 = calcSeekVector(target);
-
-            auto R = path.size() < 2 ? getArrivalRadius(target, scene->getUnits()) : 0.5;
-            if(l < R)
-            {
-                path.pop_front();
-                if(!path.empty())
-                    this->target = path.front().to3();
-                else
-                    this->target = Vector3(0, 0, 0);
-            }
-
-            auto maxSpeed = this->maxSpeed.get<real>();
-            auto speed = maxSpeed;
-            if(path.size() == 1)
-            {
-                if((target - geoPos).length() < 0.5)
-                    return { 0, 0 };
-                speed = std::min(maxSpeed, (target - geoPos).length());
-            }
-            return v2*speed;
+            path.pop_front();
+            if(!path.empty())
+                this->target = path.front().to3();
+            else
+                this->target = Vector3(0, 0, 0);
         }
+
+        auto maxSpeed = this->maxSpeed.get<real>();
+        auto speed = maxSpeed;
+        if(path.size() == 1)
+        {
+            if((target - geoPos).length() < 0.5)
+                return { 0, 0 };
+            speed = std::min(maxSpeed, (target - geoPos).length());
+        }
+        return v2*speed;
     }
     else
         return -geoVelocity;

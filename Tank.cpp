@@ -193,7 +193,7 @@ void Tank::init(Scene* scene)
     gun->setScene(scene);
     destinationLine.init(scene);
     //destinationLine.init(scene);
-    destinationLine.setColor(Vector3(0.2, 0.7, 0.1));
+    destinationLine.setColor(Vector3(0.2f, 0.7f, 0.1f));
     destinationLine.setInFront(true);
 
     //enemyLine.init(scene);
@@ -214,8 +214,6 @@ void Tank::updateUniforms()
 
 void Tank::drawTurret(Material* mat)
 {
-    Model3d* turret, *gun;
-
     this->turret->setDirection(absTurDir, absTurUp);
     this->turret->setPosition(absTurPos - up*turretPos.z/2);
 
@@ -236,7 +234,7 @@ void Tank::drawTurret(Material* mat)
         turret->init();
         gun->init();
 
-        mat = new LambertianMaterial(Vector3(0, 0.8, 0));
+        mat = new LambertianMaterial(Vector3(0.f, 0.8f, 0.f));
 
         turret->draw(mat);
         gun->draw(mat);
@@ -325,7 +323,7 @@ void Tank::draw(Material* mat)
         auto z = (tankBoundingBox.c2 - tankBoundingBox.c1).z;
         auto p = pos - z/2*up;
 
-        mat = new LambertianMaterial(Vector3(0.0, 0.8, 0));
+        mat = new LambertianMaterial(Vector3(0.0f, 0.8f, 0.f));
 
         body = splitModel(*this->body, p + z*up*constructionProgress, -up);
         body->init();
@@ -459,8 +457,9 @@ bool Tank::setBallisticTarget(Unit* enemyTarget)
 
     auto ts = findPolynomialRoots({ t4, t3, t2, t1, c });
 
-    for(real t : ts)
+    for(auto T : ts)
     {
+        real t = real(T);
         if(t > 0)
         {
             auto target = p + v*t - g*t*t/2.f;
@@ -478,7 +477,7 @@ bool Tank::setBallisticTarget(Unit* enemyTarget)
 void Tank::update(real dt)
 {
     updateTurret(dt);
-    constructionProgress += dt*0.3;
+    constructionProgress += dt*0.3f;
     if(constructionProgress >= 1.0f)
     {
         constructing = false;
@@ -541,7 +540,7 @@ void Tank::update(real dt)
     if(geoVelocity.length() > maxSpeed)
         geoVelocity = geoVelocity.normalized()*maxSpeed;
 
-    auto time = glfwGetTime();
+    auto time = real(glfwGetTime());
 
     if(!pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && path.size())
     {
@@ -572,7 +571,7 @@ void Tank::update(real dt)
         // we have separate fow for player and enemy
         auto p = (enemyTarget->isEnemy() ? enemyTarget : this)->getGeoPosition();
         if(dynamic_cast<Tank*>(enemyTarget))
-            isInFog = scene->getTerrain()->getFog(p.x, p.y) && scene->getTerrain()->fogOfWarEnabled.varInt();
+            isInFog = scene->getTerrain()->getFog(int(p.x), int(p.y)) && scene->getTerrain()->fogOfWarEnabled.varInt();
         else if(Building* building = dynamic_cast<Building*>(enemyTarget); building)
         {
             int height = scene->getTerrain()->getHeight();
@@ -604,49 +603,45 @@ Vector2 Tank::seek()
     if(!path.empty())
     {
         auto target = path.front();
+        auto l = (target - geoPos).length();
 
-        if(target.length() > 0.0001)
+        if(path.empty())
+            return { 0, 0 };
+        target = path.front();
+        //target = path.back();
+
+        // TODO: this could become NaN
+        if(!l)
+            return { 0, 0 };
+        auto v2 = (target - geoPos).normalized();
+
+        auto R = path.size() < 2 ? getArrivalRadius(target, scene->getUnits()) : 0.5;
+        if(l < R)
         {
-            auto l = (target - geoPos).length();
-
-            if(path.empty())
-                return { 0, 0 };
-            target = path.front();
-            //target = path.back();
-
-            // TODO: this could become NaN
-            if(!l)
-                return { 0, 0 };
-            auto v2 = (target - geoPos).normalized();
-
-            auto R = path.size() < 2 ? getArrivalRadius(target, scene->getUnits()) : 0.5;
-            if(l < R)
-            {
-                path.pop_front();
-                if(!path.empty())
-                    this->target = path.front().to3();
-                else
-                    this->target = Vector3(0, 0, 0);
-            }
-
-            auto maxSpeed = this->maxSpeed.get<real>();
-            auto speed = maxSpeed;
-            if(path.size() == 1)
-            {
-                if((target - geoPos).length() < 0.5)
-                    return { 0, 0 };
-                speed = std::min(maxSpeed, (target - geoPos).length());
-            }
-            return v2*speed;
+            path.pop_front();
+            if(!path.empty())
+                this->target = path.front().to3();
+            else
+                this->target = Vector3(0, 0, 0);
         }
+
+        auto maxSpeed = this->maxSpeed.get<real>();
+        auto speed = maxSpeed;
+        if(path.size() == 1)
+        {
+            if((target - geoPos).length() < 0.5)
+                return { 0, 0 };
+            speed = std::min(maxSpeed, (target - geoPos).length());
+        }
+        return v2*speed;
     }
     else
-        return { 0, 0 };
+        return { 0.f, 0.f };
 }
 
 Vector2 Tank::evade()
 {
-    Vector2 sum = { 0, 0 };
+    Vector2 sum = { 0.f, 0.f };
     for(auto unit : scene->getEntities())
     {
         if(unit != this && !dynamic_cast<Projectile*>(unit) && !dynamic_cast<Building*>(unit)) // TODO: this is getting stupid
@@ -737,13 +732,13 @@ Vector2 Tank::boidCalc()
     if(boidDebug.varInt())
     {
         if(evade_)
-            ShapeDrawer::drawArrow(pos, evade_.to3(), evade_.length(), 0.02, Vector3(1, 0, 0));
+            ShapeDrawer::drawArrow(pos, evade_.to3(), evade_.length(), 0.02f, Vector3(1.f, 0.f, 0.f));
         if(seek_)
-            ShapeDrawer::drawArrow(pos, seek_.to3(), seek_.length(), 0.02, Vector3(0, 1, 0));
+            ShapeDrawer::drawArrow(pos, seek_.to3(), seek_.length(), 0.02f, Vector3(0.f, 1.f, 0.f));
         if(avoid_)
-            ShapeDrawer::drawArrow(pos, avoid_.to3(), avoid_.length(), 0.02, Vector3(0, 0, 1));
+            ShapeDrawer::drawArrow(pos, avoid_.to3(), avoid_.length(), 0.02f, Vector3(0.f, 0.f, 1.f));
         if(separate_)
-            ShapeDrawer::drawArrow(pos, separate_.to3(), separate_.length(), 0.02, Vector3(1, 1, 0));
+            ShapeDrawer::drawArrow(pos, separate_.to3(), separate_.length(), 0.02f, Vector3(1.f, 1.f, 0.f));
     }
 
     auto sum = evade_ + seek_ + avoid_ + separate_;
@@ -777,5 +772,5 @@ bool Tank::canTurretAbsoluteTarget(Vector3 target)
 real Tank::gunLength = 1.0f;
 BoundingBox Tank::tankBoundingBox = BoundingBox();
 Material* Tank::fowMaterial = nullptr;
-const Vector3 Tank::gunPos = Vector3(0.18, 0, 0);
-const Vector3 Tank::turretPos = Vector3(0, 0, 0.18);
+const Vector3 Tank::gunPos = Vector3(0.18f, 0.f, 0.f);
+const Vector3 Tank::turretPos = Vector3(0.f, 0.f, 0.18f);

@@ -69,7 +69,7 @@ void SelectionMarkerMesh::draw(Material* mat)
     updateUniforms();
 
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, triangles.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, GLsizei(triangles.size()), GL_UNSIGNED_INT, 0);
 
     glDisable(GL_POLYGON_OFFSET_FILL);
     glDisable(GL_BLEND);
@@ -81,7 +81,7 @@ std::pair<std::vector<Vertex3>, std::vector<int>> SelectionMarkerMesh::calcVerti
 {
     auto entityPos = pos;
 
-    int xc = pos.x, yc = pos.y;
+    int xc = int(pos.x), yc = int(pos.y);
 
     std::vector<Vertex3> vs;
 
@@ -95,8 +95,8 @@ std::pair<std::vector<Vertex3>, std::vector<int>> SelectionMarkerMesh::calcVerti
     }
     else
     {
-        W = width + 2;
-        L = length + 2;
+        W = int(width + 2);
+        L = int(length + 2);
     }
 
     auto terrain = scene->getTerrain();
@@ -107,8 +107,8 @@ std::pair<std::vector<Vertex3>, std::vector<int>> SelectionMarkerMesh::calcVerti
     {
         for(int x = 0; x <= L; x++)
         {
-            int Y = std::floor(y + entityPos.y - real(width)/2);
-            int X = std::floor(x + entityPos.x - real(length)/2);
+            int Y = int(std::floor(y + entityPos.y - real(width)/2));
+            int X = int(std::floor(x + entityPos.x - real(length)/2));
 
             int Xc = std::max(0, std::min(W_t-1, X));
             int Yc = std::max(0, std::min(H_t-1, Y));
@@ -139,7 +139,7 @@ void SelectionMarkerMesh::init(Vector2 pos)
 {
     auto [vs, triangles] = calcVertices(pos);
 
-    auto material = new SelectionDecalMaterial({ 0, 0.8, 0.1 }, circular);
+    auto material = new SelectionDecalMaterial({ 0.f, 0.8f, 0.1f }, circular);
 
     v = vs;
     this->triangles = triangles;

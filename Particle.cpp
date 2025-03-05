@@ -75,7 +75,7 @@ GunFireParticle::GunFireParticle(Vector3 initialPos, Vector3 initialDir, Vector3
     if(!smoke)
     {
         lifeTime = 0.15f;
-        velocity = initialVelocity + 5.f*(initialDir*getRandomFloat(0.8, 1.0f) + getRandomFloat(0.f, 0.1f)*(right*std::sin(theta) + up*std::cos(theta)));
+        velocity = initialVelocity + 5.f*(initialDir*getRandomFloat(0.8f, 1.0f) + getRandomFloat(0.f, 0.1f)*(right*std::sin(theta) + up*std::cos(theta)));
     }
     else
     {
@@ -144,14 +144,14 @@ GroundExplosionParticle::GroundExplosionParticle(Vector3 initialPos, Vector3 nor
     else if(type == Dust)
     {
         real darkness = getRandomFloat(0.17f, 0.3f);
-        startColor = Vector4(darkness, darkness/1.5, 0.f, 1.f);
+        startColor = Vector4(darkness, darkness/1.5f, 0.f, 1.f);
         start = getRandomFloat(0.f, 0.02f);
         lifeTime = 0.7f;
         velocity = getRandomFloat(0.8f, 1.78f)*(normal*getRandomFloat(1.3f, 4.5f) + getRandomFloat(0.5f, 1.3f)*(right*std::sin(theta) + forward*std::cos(theta)));
     }
     else if(type == Debris)
     {
-        real darkness = getRandomFloat(0.10, 0.15f);
+        real darkness = getRandomFloat(0.10f, 0.15f);
         startColor = Vector4(darkness, darkness/1.5f, 0.f, 1.f);
         start = getRandomFloat(0.00f, 0.02f);
         lifeTime = 0.7f;
@@ -200,6 +200,9 @@ SerializedParticle GroundExplosionParticle::serialize()
         auto color = startColor;
         return SerializedParticle(pos, size, color);
     }
+
+    assert(false);
+    return SerializedParticle(pos, size, startColor);
 }
 
 UnitHitParticle::UnitHitParticle(Vector3 initialPos, Vector3 normal) : Particle(initialPos, normal)
@@ -237,5 +240,5 @@ bool UnitHitParticle::isVisible()
 
 SerializedParticle UnitHitParticle::serialize()
 {
-    return SerializedParticle(pos, 0.01f, Vector4(1.0-(time-start)*1.5f, 1.0f-(time-start)*1.5f, 0.7f-(time-start)*1.5f, 1.f-(time-start)/lifeTime));
+    return SerializedParticle(pos, 0.01f, Vector4(1.0f-(time-start)*1.5f, 1.0f-(time-start)*1.5f, 0.7f-(time-start)*1.5f, 1.f-(time-start)/lifeTime));
 }

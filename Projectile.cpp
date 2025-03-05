@@ -40,9 +40,9 @@ Projectile::Projectile(Vector3 pos, Vector3 dir, Vector3 up, Entity* owner = nul
         {
             int t1[3] = { 0, 1, 2 }, t2[3] = { 0, 2, 3 };
 
-            int j = vertices.size();
+            int j = int(vertices.size());
             for(int i = 0; i < 4; i++)
-                vertices.push_back({ c[ci[i]], calcNormal(c[ci[0]], c[ci[1]], c[ci[2]]), { 0, 0 } });
+                vertices.push_back({ c[ci[i]], calcNormal(c[ci[0]], c[ci[1]], c[ci[2]]), { 0.f, 0.f } });
             triangles.insert(triangles.end(), { j, j+1, j+2 });
             triangles.insert(triangles.end(), { j, j+2, j+3 });
         }

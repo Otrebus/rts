@@ -103,7 +103,7 @@ auto cursorPositionCallback = [](GLFWwindow* window, double xpos, double ypos)
 
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    InputManager::getInstance().addScrollOffset(glfwGetTime(), yoffset);
+    InputManager::getInstance().addScrollOffset(real(glfwGetTime()), real(yoffset));
 }
 
 

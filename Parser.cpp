@@ -289,12 +289,12 @@ std::tuple<bool, int> acceptInt(Parser& parser)
  * @param parser The parser object.
  * @returns The real number.
  */
-double expectReal(Parser& parser)
+real expectReal(Parser& parser)
 {
     if(parser.peek().type != Token::Number)
         throw ParseException("Floating point expected", parser.peek());
 
-    double d = 0;
+    real d = 0;
     auto st = parser.next().str;
     auto res = std::from_chars(st.data(), st.data() + st.size(), d);
 
@@ -308,12 +308,12 @@ double expectReal(Parser& parser)
  * @returns A tuple of { success, real } where success is if the parsing was successful and
  *          along with the real number parsed.
  */
-std::tuple<bool, double> acceptReal(Parser& parser)
+std::tuple<bool, real> acceptReal(Parser& parser)
 {
     if(parser.peek().type != Token::Number)
         return { false, 0 };
 
-    double d = 0;
+    real d = 0;
     const auto& st = parser.next().str;
     auto res = std::from_chars(st.data(), st.data() + st.size(), d);
 
@@ -375,7 +375,7 @@ Vector3 expectVector3d(Parser& parser)
  */
 Vector2 expectVtCoordinate(Parser& parser)
 {
-    double arr[3] = { 0, 0, 0 };
+    real arr[3] = { 0, 0, 0 };
     bool hadSuccess = false;
     for(int i = 0; i < 3; i++)
     {
@@ -467,7 +467,7 @@ std::vector<Token> tokenize(std::ifstream& file, std::string& str)
             for(auto c = peek(); std::isdigit(c) || c == '.' || c == 'e' || c == 'E' || c == '+' || c == '-'; c = peek())
                 p++;
 
-            double D = 0;
+            real D = 0;
             auto res = std::from_chars(str.c_str()+d, str.c_str() + p, D);
             if(res.ec == std::errc::invalid_argument)
                 throw ParseException("Couldn't parse floating point number \"" + str.substr(d, p-d) + "\"", line, col);

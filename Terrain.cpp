@@ -68,15 +68,15 @@ TerrainMesh* Terrain::createMesh(std::string fileName, bool textured = false)
 
         auto H = [&colors, &width, &height](int x, int y)
         {
-            return colors[width*3*(height-y-1)+x*3]/255.0*width/15;
+            return colors[width*3*(height-y-1)+x*3]/255.0f*width/15;
         };
 
         for(int y = 0; y < height; y++)
         {
             for(int x = 0; x < width; x++)
             {
-                real X = x;
-                real Y = y;
+                real X = real(x);
+                real Y = real(y);
 
                 auto fx = x == 0, lx = x == width-1;
                 auto fy = y == 0, ly = y == height-1;
@@ -84,8 +84,8 @@ TerrainMesh* Terrain::createMesh(std::string fileName, bool textured = false)
                 auto dx = ((!lx ? H(x+1, y) : H(x, y)) - (!fx ? H(x-1, y) : H(x, y)))/((!fx + !lx));
                 auto dy = ((!ly ? H(x, y+1) : H(x, y)) - (!fy ? H(x, y-1) : H(x, y)))/((!fy + !ly));
                 real l = std::sqrt(dx*dx+dy*dy+1);
-                points.push_back(Vector3(X, Y, H(x, y) + 3.0));
-                vertices[width*y+x] = MeshVertex3(X, Y, H(x, y) + 3.0, -dx/l, -dy/l, 1.0/l, x, y);
+                points.push_back(Vector3(X, Y, H(x, y) + 3.0f));
+                vertices[width*y+x] = MeshVertex3(X, Y, H(x, y) + 3.0f, -dx/l, -dy/l, 1.0f/l, X, Y);
                 vertices[width*y+x].selected = 0;
             }
         }
@@ -173,7 +173,8 @@ void Terrain::calcAdmissiblePoints()
                 {
                     for(int x = 0; x <= building->length; x++)
                     {
-                        int X = building->pos.x + x, Y = building->pos.y + y;
+                        int X = int(building->pos.x + x);
+                        int Y = int(building->pos.y + y);
                         if(building->pointWithinFootprint(X, Y))
                             admissiblePoints[width*y+x] = false;
                     }
@@ -294,8 +295,8 @@ Vector3 Terrain::intersectFast(const Ray& ray, real maxT)
 
     real xm = x0, xM, ym, yM;
 
-    xM = int(xm+1);
-    xm = int(xm);
+    xM = std::trunc(xm+1);
+    xm = std::trunc(xm);
 
     while(true)
     {
@@ -328,8 +329,8 @@ Vector3 Terrain::intersectFast(const Ray& ray, real maxT)
         }
         else
         {
-            ym = 0;
-            yM = height;
+            ym = 0.f;
+            yM = real(height);
         }
 
         auto yMin = std::max(0.f, std::min(ym, yM));
@@ -340,7 +341,7 @@ Vector3 Terrain::intersectFast(const Ray& ray, real maxT)
 
         int dy = d.y > 0 ? 1 : -1;
 
-        for(int Y = yStart; Y != yEnd && Y >= 0 && Y < height; Y += dy)
+        for(int Y = int(yStart); Y != yEnd && Y >= 0 && Y < height; Y += dy)
         {
             auto p1 = getPoint(X, Y);
             auto p2 = getPoint(X+1, Y);
@@ -460,15 +461,15 @@ void Terrain::draw()
 real Terrain::getElevation(real x, real y) const
 {
     if(x == int(x) && y == int(y))
-        return points[y*width+x].z;
+        return points[int(y)*width+int(x)].z;
     // TODO: could overflow, check
     // temporary (ha!) hack
-    if(y > 0)
+    if(y > 0.f)
         y -= 1e-4f;
-    if(x > 0)
+    if(x > 0.f)
         x -= 1e-4f;
 
-    int xl = x, yl = y;
+    int xl = int(x), yl = int(y);
     auto p1 = points[yl*width+xl];
     auto p2 = points[yl*width+xl+1];
     auto p3 = points[(yl+1)*width+xl+1];
@@ -496,7 +497,7 @@ Vector3 Terrain::getNormal(real x, real y) const
     if(x > 0)
         x -= 1e-4f;
 
-    int xl = x, yl = y;
+    int xl = int(x), yl = int(y);
     auto p1 = points[yl*width+xl];
     auto p2 = points[yl*width+xl+1];
     auto p3 = points[(yl+1)*width+xl+1];
@@ -701,7 +702,7 @@ std::pair<real, Vector2> Terrain::intersectRayOcclusion(Vector2 pos, Vector2 dir
 
 bool Terrain::isTriangleAdmissible(Vector2 p) const
 {
-    int x = p.x, y = p.y;
+    int x = int(p.x), y = int(p.y);
     if(p.x-x > p.y-y)
         return isTriangleAdmissible(x, y, x+1, y, x+1, y+1);
     return isTriangleAdmissible(x, y, x+1, y+1, x, y+1);
@@ -764,7 +765,7 @@ std::pair<real, Vector2> Terrain::intersectCirclePathOcclusion(Vector2 pos, Vect
             {
                 if(!inBounds(x, y))
                 {
-                    return Vector3(x, y, 1e3);
+                    return Vector3(real(x), real(y), 1e3f);
                 }
                 return getPoint(x, y);
             };
@@ -801,7 +802,7 @@ bool Terrain::isVisible(Vector2 start, Vector2 end) const
     {
         if(dx < 0)
             return isVisible(end, start);
-        for(int x = std::ceil(start.x); x <= std::floor(end.x); x++)
+        for(int x = int(std::ceil(start.x)); x <= int(std::floor(end.x)); x++)
         {
             auto y = start.y + (dy/dx)*(x-start.x);
             int Y = int(y + 0.5f);
@@ -814,7 +815,7 @@ bool Terrain::isVisible(Vector2 start, Vector2 end) const
     {
         if(dy < 0)
             return isVisible(end, start);
-        for(int y = std::ceil(start.y); y <= std::floor(end.y); y++)
+        for(int y = int(std::ceil(start.y)); y <= int(std::floor(end.y)); y++)
         {
             auto x = start.x + (dx/dy)*(y-start.y);
             int X = int(x + 0.5f);
@@ -844,7 +845,7 @@ std::vector<Vector3> Terrain::chopLine(Vector2 start, Vector2 end) const
         for(int x = int(std::ceil(start.x)); x <= int(std::floor(end.x)); x++)
         {
             auto y = start.y + (dy/dx)*(x-start.x);
-            result.push_back( { real(x), y, getElevation(x, y) } );
+            result.push_back( { real(x), y, getElevation(real(x), real(y)) } );
         }
     }
     else
@@ -855,10 +856,10 @@ std::vector<Vector3> Terrain::chopLine(Vector2 start, Vector2 end) const
             std::reverse(t.begin(), t.end());
             return t;
         }
-        for(int y = std::ceil(start.y); y <= std::floor(end.y); y++)
+        for(int y = int(std::ceil(start.y)); y <= int(std::floor(end.y)); y++)
         {
             auto x = start.x + (dx/dy)*(y-start.y);
-            result.push_back( { x, real(y), getElevation(x, y) } );
+            result.push_back( { x, real(y), getElevation(x, real(y)) } );
         }
     }
     result.push_back( { end.x, end.y, getElevation(end.x, end.y) });
