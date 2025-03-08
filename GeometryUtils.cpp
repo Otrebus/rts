@@ -89,7 +89,7 @@ std::pair<Vector2, Vector2> getTangents(Vector2 c, real R, Vector2 p)
 std::pair<real, Vector2> intersectCircleCirclePath(Vector2 p1, real r1, Vector2 p2, real r2, Vector2 dir)
 {
     if((p2-p1).length() < r1+r2)
-        return { 0, (p1-p2).normalized() };
+        return { 0.f, (p1-p2).normalized() };
     auto t = intersectRayCircle(p2, dir, p1, r1+r2);
     return { t, ((p1 + dir*t) - p2).normalized() };
 }
@@ -104,22 +104,22 @@ std::pair<real, Vector2> intersectCircleTrianglePath(Vector2 pos, real radius, V
 
     // First check if we're closer than the radius of the circle to the triangle
     if(auto [t, q, s] = distPointLine(pos, p1, p2); t < radius && s > 0 && s < (p2-p1).length())
-        return { 0, (p1-p2).perp().normalized() };
+        return { 0.f, (p1-p2).perp().normalized() };
 
     if(auto [t, q, s] = distPointLine(pos, p2, p3); t < radius && s > 0 && s < (p3-p2).length())
-        return { 0, (p2-p3).perp().normalized() };
+        return { 0.f, (p2-p3).perp().normalized() };
 
     if(auto [t, q, s] = distPointLine(pos, p3, p1); t < radius && s > 0 && s < (p1-p3).length())
-        return { 0, (p3-p1).perp().normalized() };
+        return { 0.f, (p3-p1).perp().normalized() };
 
     if(auto t = (pos - p1).length(); t < radius)
-        return { 0, (pos - p1).normalized() };
+        return { 0.f, (pos - p1).normalized() };
 
     if(auto t = (pos - p2).length(); t < radius)
-        return { 0, (pos - p2).normalized() };
+        return { 0.f, (pos - p2).normalized() };
 
     if(auto t = (pos - p3).length(); t < radius)
-        return { 0, (pos - p3).normalized() };
+        return { 0.f, (pos - p3).normalized() };
 
     real minT = inf;
     Vector2 norm;

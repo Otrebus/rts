@@ -3,6 +3,9 @@
 #include "Entity.h"
 #include <deque>
 #include "ConsoleSettings.h"
+#include "Command.h"
+#include <queue>
+#include <optional>
 
 class SelectionMarkerMesh;
 class Model3d;
@@ -40,8 +43,11 @@ public:
     int getEnemyTargetId() const;
 
     real health;
-
+    
     static ConsoleVariable boidDebug;
+
+    std::optional<Command> currentCommand;
+    std::queue<Command> commandQueue;
 
 protected:
     PathFindingRequest* pathFindingRequest;

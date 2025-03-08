@@ -149,6 +149,7 @@
     <ClCompile Include="ByteStream.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraControl.cpp" />
+    <ClCompile Include="Command.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="ConsoleSettings.cpp" />
     <ClCompile Include="DebugDraw.cpp" />
@@ -224,6 +225,7 @@
     <ClInclude Include="Bytestream.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraControl.h" />
+    <ClInclude Include="Command.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="ConsoleSettings.h" />
     <ClInclude Include="DebugDraw.h" />

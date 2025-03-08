@@ -608,7 +608,8 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
                 {
                     if(unit->isSelected())
                     {
-                        addUnitPathfindingRequest(unit, pos.to2());
+                        //addUnitPathfindingRequest(unit, pos.to2());
+                        unit->commandQueue.push(MoveCommand(pos.to2()));
                     }
                 }
             }

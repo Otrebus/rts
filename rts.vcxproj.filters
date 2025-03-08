@@ -188,6 +188,9 @@
     <ClCompile Include="Harvester.cpp">
       <Filter>Source files\Entities\Entities</Filter>
     </ClCompile>
+    <ClCompile Include="Command.cpp">
+      <Filter>Source files\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -378,6 +381,9 @@
     </ClInclude>
     <ClInclude Include="Harvester.h">
       <Filter>Source files\Entities\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Command.h">
+      <Filter>Source files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

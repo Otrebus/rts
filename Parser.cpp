@@ -311,7 +311,7 @@ real expectReal(Parser& parser)
 std::tuple<bool, real> acceptReal(Parser& parser)
 {
     if(parser.peek().type != Token::Number)
-        return { false, 0 };
+        return { false, 0.f };
 
     real d = 0;
     const auto& st = parser.next().str;
