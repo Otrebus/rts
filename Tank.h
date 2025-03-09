@@ -30,6 +30,8 @@ public:
     void updateTurret(real dt);
     void update(real dt);
 
+    void handleCommand(real dt);
+
     Entity* spawnWreck();
 
     void shoot();

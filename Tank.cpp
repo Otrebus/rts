@@ -6,6 +6,7 @@
 #include "Projectile.h"
 #include "SelectionMarkerMesh.h"
 #include "Tank.h"
+#include <variant>
 #include "ShapeDrawer.h"
 #include "ConsoleSettings.h"
 #include "FogOfWarMaterial.h"
@@ -474,8 +475,37 @@ bool Tank::setBallisticTarget(Unit* enemyTarget)
     return false;
 }
 
+void Tank::handleCommand(real dt)
+{
+    auto time = real(glfwGetTime());
+    if(commandQueue.empty())
+        return;
+
+    auto& command = commandQueue.front();
+
+    if(auto v = std::get_if<MoveCommand>(&command))
+    {
+        if(!v->active)
+        {
+            addUnitPathfindingRequest(this, v->destination);
+            v->active = true;
+        }
+        else
+        {        
+            if(!pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && path.size())
+            {
+                addUnitPathfindingRequest(this, path.back());
+            }
+        }
+    }
+    else
+    {
+    }
+}
+
 void Tank::update(real dt)
 {
+    auto time = real(glfwGetTime());
     updateTurret(dt);
     constructionProgress += dt*0.3f;
     if(constructionProgress >= 1.0f)
@@ -485,6 +515,8 @@ void Tank::update(real dt)
     }
     if(constructing)
         return;
+
+    handleCommand(dt);
 
     Unit* closestEnemy = nullptr;
     real closestD = inf;
@@ -539,13 +571,6 @@ void Tank::update(real dt)
     auto maxSpeed = this->maxSpeed.get<real>();
     if(geoVelocity.length() > maxSpeed)
         geoVelocity = geoVelocity.normalized()*maxSpeed;
-
-    auto time = real(glfwGetTime());
-
-    if(!pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && path.size())
-    {
-        addUnitPathfindingRequest(this, path.back());
-    }
 
     auto enemyTarget = dynamic_cast<Unit*>(scene->getEntity(enemyTargetId));
 
@@ -605,8 +630,6 @@ Vector2 Tank::seek()
         auto target = path.front();
         auto l = (target - geoPos).length();
 
-        if(path.empty())
-            return { 0, 0 };
         target = path.front();
         //target = path.back();
 
@@ -622,7 +645,11 @@ Vector2 Tank::seek()
             if(!path.empty())
                 this->target = path.front().to3();
             else
+            {
+                if(!commandQueue.empty())
+                    commandQueue.pop();
                 this->target = Vector3(0, 0, 0);
+            }
         }
 
         auto maxSpeed = this->maxSpeed.get<real>();

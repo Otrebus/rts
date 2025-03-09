@@ -46,8 +46,7 @@ public:
     
     static ConsoleVariable boidDebug;
 
-    std::optional<Command> currentCommand;
-    std::queue<Command> commandQueue;
+    CommandQueue commandQueue;
 
 protected:
     PathFindingRequest* pathFindingRequest;

@@ -87,12 +87,10 @@ void Unit::setEnemy(bool enemy)
     this->enemy = enemy;
 }
 
-
 void Unit::setEnemyTargetId(int enemy)
 {
     this->enemyTargetId = enemy;
 }
-
 
 int Unit::getEnemyTargetId() const
 {

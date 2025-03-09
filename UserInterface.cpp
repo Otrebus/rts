@@ -313,7 +313,9 @@ void UserInterface::moveDrawnUnits(const std::vector<Unit*>& selectedUnits)
         }
     }
     for(auto assignment : v)
-        addUnitPathfindingRequest(assignment.unit, points[assignment.point].to2());
+        //addUnitPathfindingRequest(assignment.unit, points[assignment.point].to2());
+        assignment.unit->commandQueue.push(!selectingAdditional, MoveCommand(points[assignment.point].to2()));
+
 }
 
 void UserInterface::selectUnit(const Ray& ray, const std::vector<Unit*>& units, bool pre)
@@ -608,8 +610,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
                 {
                     if(unit->isSelected())
                     {
-                        //addUnitPathfindingRequest(unit, pos.to2());
-                        unit->commandQueue.push(MoveCommand(pos.to2()));
+                        unit->commandQueue.push(!selectingAdditional, MoveCommand(pos.to2()));
                     }
                 }
             }
