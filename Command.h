@@ -2,7 +2,7 @@
 
 #include "Vector2.h"
 #include <variant>
-#include <queue>
+#include <deque>
 
 
 struct BaseCommand
@@ -29,20 +29,20 @@ using Command = std::variant<MoveCommand, ExtractCommand>;
 
 class CommandQueue
 {
-    std::queue<Command> q;
+    std::deque<Command> q;
 
 public:
     void push(bool replace, const Command& command)
     {
         if(replace)
-            q = std::queue<Command>();
-        q.push(command);
+            q = std::deque<Command>();
+        q.push_back(command);
     }
 
     Command pop()
     {
         auto c = q.front();
-        q.pop();
+        q.pop_front();
         return c;
     }
 
@@ -54,5 +54,10 @@ public:
     bool empty()
     {
         return q.empty();
+    }
+
+    std::vector<Command> get()
+    {
+        return std::vector<Command>(q.begin(), q.end());
     }
 };

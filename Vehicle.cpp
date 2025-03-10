@@ -139,17 +139,20 @@ void Vehicle::draw(Material* mat)
     glGetIntegerv(GL_BLEND_SRC_RGB, &curSrc);
     glGetIntegerv(GL_BLEND_DST_RGB, &curDst);
 
-    std::vector<Vector2> P = { getGeoPosition() };
-    for(auto p : path)
-        P.push_back(p);
-    std::vector<Vector3> S;
-    // TODO: slow
-    for(int i = 0; i+1 < P.size(); i++)
+    if(drawPaths.varInt())
     {
-        auto pieces = terrain->chopLine(P[i], P[i+1]);
-        S.insert(S.end(), pieces.begin(), pieces.end());
+        std::vector<Vector2> P = { getGeoPosition() };
+        for(auto p : path)
+            P.push_back(p);
+        std::vector<Vector3> S;
+        // TODO: slow
+        for(int i = 0; i+1 < P.size(); i++)
+        {
+            auto pieces = terrain->chopLine(P[i], P[i+1]);
+            S.insert(S.end(), pieces.begin(), pieces.end());
+        }
+        destinationLine.setVertices(S);
     }
-    destinationLine.setVertices(S);
     
     glBlendFuncSeparate(GL_ZERO, GL_ONE, GL_ONE, GL_ZERO);
     

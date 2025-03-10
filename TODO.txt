@@ -149,6 +149,7 @@
 + Vehicles have weird evade behind a tank wreck
 - Move model loading from model3d to its own file?
 + Make turretDir.x along the tank
+- Put path drawing using destinationLine in Unit base
 - Combine init/constructor for meshes?
 - What's unit init about anyway
 - Command queuing

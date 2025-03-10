@@ -37,6 +37,8 @@ public:
     void setEnemy(bool enemy);
     bool isEnemy() const;
 
+    void drawCommands();
+
     virtual Entity* spawnWreck() = 0;
 
     void setEnemyTargetId(int enemy);
@@ -45,6 +47,7 @@ public:
     real health;
     
     static ConsoleVariable boidDebug;
+    static ConsoleVariable drawPaths;
 
     CommandQueue commandQueue;
 

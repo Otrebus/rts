@@ -1,7 +1,11 @@
 #include "SelectionDecalMaterial.h"
 #include "SelectionMarkerMesh.h"
 #include <array>
+#include "Vector3.h"
+#include "Line.h"
+#include "Vector2.h"
 #include <cassert>
+#include "Terrain.h"
 #include <vector>
 
 ConsoleVariable Unit::boidDebug("boidDebug", 0);
@@ -44,6 +48,39 @@ void Unit::setPath(std::deque<Vector2> path)
 void Unit::setPreSelected(bool preSelected)
 {
     this->preSelected = preSelected;
+}
+
+
+void Unit::drawCommands()
+{
+    if(commandQueue.empty())
+        return;
+    std::vector<Vector2> P = { getGeoPosition() };
+        
+    std::vector<Vector3> S;
+
+    for(auto command : commandQueue.get())
+    {
+        if(auto v = std::get_if<MoveCommand>(&command))
+        {
+            v->destination;
+            P.push_back(v->destination);
+        }
+    }
+    
+    for(int i = 0; i+1 < P.size(); i++)
+    {
+        auto pieces = scene->getTerrain()->chopLine(P[i], P[i+1]);
+        S.insert(S.end(), pieces.begin(), pieces.end());
+    }
+
+    Line3d queueLine;
+
+    queueLine.setVertices(S);
+    queueLine.init(scene);
+    queueLine.setColor(Vector3(0.2f, 0.7f, 0.1f));
+    queueLine.setInFront(true);
+    queueLine.draw();
 }
 
 
@@ -96,3 +133,5 @@ int Unit::getEnemyTargetId() const
 {
     return enemyTargetId;
 }
+
+ConsoleVariable Unit::drawPaths("drawPaths", 0);
