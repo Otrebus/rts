@@ -36,6 +36,8 @@ public:
 
     Vector2 calcSeekVector(Vector2 dest);
 
+    void handleCommand(real dt);
+
     static void loadModels();
 
     Model3d* body;

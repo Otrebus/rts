@@ -24,7 +24,14 @@ struct ExtractCommand : public BaseCommand
     Vector2 destination;
 };
 
-using Command = std::variant<MoveCommand, ExtractCommand>;
+struct BuildCommand : public BaseCommand
+{
+    Vector2 destination;
+
+    BuildCommand(Vector2 dest) : destination(dest) {}
+};
+
+using Command = std::variant<MoveCommand, ExtractCommand, BuildCommand>;
 
 
 class CommandQueue

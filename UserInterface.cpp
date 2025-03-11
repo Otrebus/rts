@@ -2,6 +2,7 @@
 #include "Entity.h"
 #include "InputManager.h"
 #include "Line.h"
+#include "Vehicle.h"
 #include "Math.h"
 #include "PathFinding.h"
 #include "Ray.h"
@@ -393,19 +394,28 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
 
     if(input.key == GLFW_KEY_B && input.stateStart == InputType::KeyPress)
     {
-        buildingPlacingState = buildingPlacingState == PlacingBuilding ? NotPlacingBuilding : PlacingBuilding;
-        if(buildingPlacingState == PlacingBuilding)
+        std::vector<Unit*> selectedVehicles;
+        for(auto unit : units)
         {
-            if(!buildingPlacerMesh)
-            {
-                buildingPlacerMesh = new BuildingPlacerMesh(scene, 3, 4);
-                buildingPlacerMesh->init();
-            }
+            if(unit->isSelected() && dynamic_cast<Vehicle*>(unit))
+                selectedVehicles.push_back(unit);
         }
-        else
+        if(!selectedVehicles.empty())
         {
-            delete buildingPlacerMesh;
-            buildingPlacerMesh = nullptr;
+            buildingPlacingState = buildingPlacingState == PlacingBuilding ? NotPlacingBuilding : PlacingBuilding;
+            if(buildingPlacingState == PlacingBuilding)
+            {
+                if(!buildingPlacerMesh)
+                {
+                    buildingPlacerMesh = new BuildingPlacerMesh(scene, 3, 4);
+                    buildingPlacerMesh->init();
+                }
+            }
+            else
+            {
+                delete buildingPlacerMesh;
+                buildingPlacerMesh = nullptr;
+            }
         }
     }
 
@@ -446,24 +456,35 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
     {
         if(buildingPlacingState == PlacingBuilding)
         {
+            std::vector<Unit*> selectedVehicles;
+            for(auto unit : units)
+            {
+                if(unit->isSelected() && dynamic_cast<Vehicle*>(unit))
+                    selectedVehicles.push_back(unit);
+            }
+
             auto [px, py] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
             auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
             std::vector<int> footprint = {
-                    1, 0, 0, 1,
-                    1, 0, 0, 1,
-                    1, 0, 0, 1,
-                    1, 1, 1, 1,
-                    1, 1, 1, 1
-                };
-            auto building = new Building(int(pos.x), int(pos.y), 3, 4, footprint);
-            if(building->canBePlaced(int(pos.x) + 3.0f/2, int(pos.y) + 4.0f/2, 3, 4, scene))
+                1, 0, 0, 1,
+                1, 0, 0, 1,
+                1, 0, 0, 1,
+                1, 1, 1, 1,
+                1, 1, 1, 1
+            };
+            auto building = Building(int(pos.x), int(pos.y), 3, 4, footprint);
+            if(building.canBePlaced(int(pos.x) + 3.0f/2, int(pos.y) + 4.0f/2, 3, 4, scene))
             {
-                building->init(*scene);
-                scene->addEntity(building);
+                if(!selectedVehicles.empty())
+                {
+                    for(auto vehicle : selectedVehicles)
+                    {
+                        vehicle->commandQueue.push(!selectingAdditional, BuildCommand(pos.to2()));
+                    }
+                }
             }
             else
             {
-                delete building;
                 for(auto building : scene->getBuildings())
                 {
                     if(building->buildingWithin(int(pos.x) + 3.0f/2, int(pos.y) + 4.0f/2, 3, 4))

@@ -178,7 +178,8 @@ void Vehicle::draw(Material* mat)
         delete mat;
         delete body;
     }
-    //drawBoundingBox();
+
+    drawCommands();
 }
 
 
@@ -259,6 +260,45 @@ void Vehicle::accelerate(Vector2 velocityTarget)
         std::cout << acceleration << std::endl;
 }
 
+void Vehicle::handleCommand(real dt)
+{
+    auto time = real(glfwGetTime());
+    if(commandQueue.empty())
+        return;
+
+    auto& command = commandQueue.front();
+
+    if(auto v = std::get_if<MoveCommand>(&command))
+    {
+        if(!v->active)
+        {
+            addUnitPathfindingRequest(this, v->destination);
+            v->active = true;
+        }
+        else
+        {        
+            if(!pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && path.size())
+            {
+                addUnitPathfindingRequest(this, path.back());
+            }
+        }
+    }
+    else if(auto v = std::get_if<BuildCommand>(&command))
+    {
+        auto pos = v->destination;
+        std::vector<int> footprint = {
+            1, 0, 0, 1,
+            1, 0, 0, 1,
+            1, 0, 0, 1,
+            1, 1, 1, 1,
+            1, 1, 1, 1
+        };
+        auto building = new Building(int(pos.x), int(pos.y), 3, 4, footprint);
+        building->init(*scene);
+        scene->addEntity(building);
+    }
+}
+
 void Vehicle::brake()
 {
     turnRate = 0.f;
@@ -288,6 +328,8 @@ void Vehicle::update(real dt)
 
     velocityTarget = boidCalc();
     accelerate(velocityTarget);
+    
+    handleCommand(dt);
 
     auto newDir = geoDir.normalized().rotated(turnRate*dt);
     if((newDir%velocityTarget)*(geoDir%velocityTarget) < 0 && newDir*velocityTarget > 0)
@@ -516,7 +558,11 @@ Vector2 Vehicle::seek()
             if(!path.empty())
                 this->target = path.front().to3();
             else
+            {
+                if(!commandQueue.empty())
+                    commandQueue.pop();
                 this->target = Vector3(0, 0, 0);
+            }
         }
 
         auto maxSpeed = this->maxSpeed.get<real>();
