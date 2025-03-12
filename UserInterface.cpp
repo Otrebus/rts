@@ -479,7 +479,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
                 {
                     for(auto vehicle : selectedVehicles)
                     {
-                        vehicle->commandQueue.push(!selectingAdditional, BuildCommand(pos.to2()));
+                        vehicle->commandQueue.push(!selectingAdditional, BuildCommand(Vector2(std::floor(pos.x), std::floor(pos.y)), 3, 4));
                     }
                 }
             }

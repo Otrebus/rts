@@ -63,8 +63,32 @@ void Unit::drawCommands()
     {
         if(auto v = std::get_if<MoveCommand>(&command))
         {
-            v->destination;
             P.push_back(v->destination);
+        }
+        else if(auto v = std::get_if<BuildCommand>(&command))
+        {
+            auto w = v->width, h = v->height;
+            auto pos = v->destination;
+            Line3d buildingLine;
+
+            std::vector<Vector2> vs = {
+                pos + Vector2(0, 0),
+                pos + Vector2(w, 0),
+                pos + Vector2(w, h),
+                pos + Vector2(0, h),
+                pos + Vector2(0, 0)
+            };
+
+            std::vector<Vector3> S;
+            for(auto v : vs)
+                S.push_back( { v.x, v.y, scene->getTerrain()->getElevation(v.x, v.y) });
+
+            buildingLine.setVertices(S);
+            buildingLine.init(scene);
+            buildingLine.setColor(Vector3(0.2f, 0.7f, 0.1f));
+            buildingLine.setInFront(true);
+            buildingLine.draw();
+            P.push_back(v->destination + Vector2(w/2, h/2));
         }
     }
     

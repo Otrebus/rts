@@ -27,8 +27,9 @@ struct ExtractCommand : public BaseCommand
 struct BuildCommand : public BaseCommand
 {
     Vector2 destination;
+    real width, height;
 
-    BuildCommand(Vector2 dest) : destination(dest) {}
+    BuildCommand(Vector2 dest, real width, real height) : destination(dest), width(width), height(height) {}
 };
 
 using Command = std::variant<MoveCommand, ExtractCommand, BuildCommand>;
