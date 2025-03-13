@@ -81,8 +81,6 @@ std::pair<std::vector<Vertex3>, std::vector<int>> SelectionMarkerMesh::calcVerti
 {
     auto entityPos = pos;
 
-    int xc = int(pos.x), yc = int(pos.y);
-
     std::vector<Vertex3> vs;
 
     int W, L;

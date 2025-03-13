@@ -102,7 +102,7 @@ int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
     Scene scene(&cam, &shaderProgramManager);
 
     bool intersecting = false;
-    int mouseX, mouseY;
+    int mouseX = 0, mouseY = 0;
 
     Ray r1, r2;
 

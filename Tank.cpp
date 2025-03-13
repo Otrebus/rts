@@ -478,7 +478,7 @@ bool Tank::setBallisticTarget(Unit* enemyTarget)
     return false;
 }
 
-void Tank::handleCommand(real dt)
+void Tank::handleCommand(real)
 {
     auto time = real(glfwGetTime());
     if(commandQueue.empty())

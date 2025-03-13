@@ -332,7 +332,7 @@ Vector2 Harvester::calcSeekVector(Vector2 dest)
 
     real reverseCost = 1.5;
 
-    auto leftHand = [&] (bool draw = false) -> std::pair<real, Vector2> {
+    auto leftHand = [&] () -> std::pair<real, Vector2> {
         // Case 1: left hand turn
 
         auto [a, b] = getTangents(c_l, R, dest);
@@ -348,7 +348,7 @@ Vector2 Harvester::calcSeekVector(Vector2 dest)
         return { angle*R + (v_t - dest).length(), (dir + dir.perp()).normalized() };
     };
 
-    auto rightHand = [&] (bool draw = false) -> std::pair<real, Vector2> {
+    auto rightHand = [&] () -> std::pair<real, Vector2> {
         // Case 1: right hand turn
         auto p = getTangents(c_r, R, dest);
         auto a = p.first;
@@ -366,7 +366,7 @@ Vector2 Harvester::calcSeekVector(Vector2 dest)
         return { angle*R + (v_t - dest).length(), (dir - dir.perp()).normalized() };
     };
 
-    auto rightTwoPoint = [&] (bool draw = false) -> std::pair<real, Vector2> {
+    auto rightTwoPoint = [&] () -> std::pair<real, Vector2> {
         // Case 2: right two point turn
         auto v = (dest - c_l).normalized();
         auto P = c_l + v*R;
@@ -396,7 +396,7 @@ Vector2 Harvester::calcSeekVector(Vector2 dest)
         return { ret + angle*R + (v_t - dest).length(), (-dir -dir.perp()).normalized() };
     };
 
-    auto leftTwoPoint = [&] (bool draw = false) -> std::pair<real, Vector2> {
+    auto leftTwoPoint = [&] () -> std::pair<real, Vector2> {
         // Case 2: left two point turn
         auto v = (dest - c_r).normalized();
         auto P = c_r + v*R;
@@ -424,7 +424,7 @@ Vector2 Harvester::calcSeekVector(Vector2 dest)
         return { ret + angle*R + (v_t - dest).length(), (-dir + dir.perp()).normalized() };
     };
 
-    auto leftReverse = [&] (bool draw = false) -> std::pair<real, Vector2> {
+    auto leftReverse = [&] () -> std::pair<real, Vector2> {
         // Case 3: reverse left turn
         auto p = getTangents(c_l, R, dest);
         auto a = p.first;
@@ -444,7 +444,7 @@ Vector2 Harvester::calcSeekVector(Vector2 dest)
         return { reverseCost*D, (-dir - dir.perp()).normalized() };
     };
 
-    auto rightReverse = [&] (bool draw = false) -> std::pair<real, Vector2> {
+    auto rightReverse = [&] () -> std::pair<real, Vector2> {
         // Case 3: reverse right turn
         auto p = getTangents(c_r, R, dest);
         auto a = p.first;

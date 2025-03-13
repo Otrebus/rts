@@ -417,6 +417,11 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
                 buildingPlacerMesh = nullptr;
             }
         }
+        else
+        {
+            if(buildingPlacingState == PlacingBuilding)
+                buildingPlacingState = NotPlacingBuilding;
+        }
     }
 
     if(buildingPlacerMesh)
@@ -536,14 +541,17 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
     }
     if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_1)
     {
-        for(auto& unit : units)
+        if(buildingPlacingState != PlacingBuilding)
         {
-            if(/*!unit->isEnemy()*/true)
+            for(auto& unit : units)
             {
-                unit->setPreSelected(false);
-                if(!selectingAdditional)
+                if(/*!unit->isEnemy()*/true)
                 {
-                    unit->setSelected(false);
+                    unit->setPreSelected(false);
+                    if(!selectingAdditional)
+                    {
+                        unit->setSelected(false);
+                    }
                 }
             }
         }

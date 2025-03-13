@@ -69,7 +69,6 @@ real Building::getAverageElevation(const Terrain& terrain)
     auto y = Vector3(-geoDir.y, geoDir.x, 0.f).normalized();
     auto z = Vector3(0.f, 0.f, 1.f).normalized();
 
-    auto height = (boundingBox.c2.z-boundingBox.c1.z)/2;
     auto length = (boundingBox.c2.x-boundingBox.c1.x)/2;
     auto width = (boundingBox.c2.y-boundingBox.c1.y)/2;
 
