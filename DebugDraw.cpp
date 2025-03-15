@@ -157,7 +157,7 @@ int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
             Line3d line({
                 r1.pos,
                 r2.pos
-                        });
+            });
             line.init(&scene);
             line.draw();
 

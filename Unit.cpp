@@ -53,8 +53,12 @@ void Unit::setPreSelected(bool preSelected)
 
 void Unit::drawCommands()
 {
+    if(!selected)
+        return;
+
     if(commandQueue.empty())
         return;
+
     std::vector<Vector2> P = { getGeoPosition() };
         
     std::vector<Vector3> S;

@@ -15,7 +15,7 @@
 
 ConsoleVariable Vehicle::maxSpeed("vehicleMaxSpeed", 2.0f);
 ConsoleVariable Vehicle::maxForwardAcc("vehicleMaxForwardAcc", 0.7f);
-ConsoleVariable Vehicle::maxBreakAcc("vehicleMaxBreakAcc", 0.7f);
+ConsoleVariable Vehicle::maxBreakAcc("vehicleMaxBreakAcc", 1.7f);
 
 ConsoleVariable Vehicle::turnRadius("vehicleTurnRadius", 1.5f);
 ConsoleVariable Vehicle::maxRadialAcc("vehicleMaxRadialAcc", 2.5f);
@@ -209,17 +209,12 @@ void Vehicle::accelerate(Vector2 velocityTarget)
         return;
     }
 
-
     //if(velocityTarget.length() > 0.01 && velocityTarget.normalized()*geoDir < 0.999 && velocityTarget.normalized()*geoDir > -0.999)
     //{
     //    if(geoDir*velocityTarget > 0)
-    //    {
     //        turn((geoDir.perp()*(velocityTarget) > 0));
-    //    }
     //    else
-    //    {
     //        turn((geoDir.perp()*(velocityTarget) < 0));
-    //    }
     //}
     //else
     //    turnRate = 0;
@@ -246,15 +241,20 @@ void Vehicle::accelerate(Vector2 velocityTarget)
 
     //ShapeDrawer::drawArrow(pos, projAcc.to3(), projAcc.length(), 0.02, Vector3(1, 0, 1));
 
-    //if(projAcc*geoDir < 0 && geoDir*geoVelocity <= 0)
-    //    acceleration = -maxForwardAcc*0.5f;
-    //else
-    //    acceleration = projAcc*geoDir > 0 ? maxForwardAcc : - maxBreakAcc;
-
-    if(accelerationTarget*geoDir > 0)
-        acceleration = maxForwardAcc;
+    if(accelerationTarget*geoDir > 0.f)
+    {
+        if(geoDir*geoVelocity > 0.f)
+            acceleration = maxForwardAcc;
+        else
+            acceleration = maxBreakAcc;
+    }
     else
-        acceleration = -maxForwardAcc*0.5f;
+    {
+        if(geoDir*geoVelocity > 0.f)
+            acceleration = -maxBreakAcc;
+        else
+            acceleration = -0.5f*maxForwardAcc;
+    }
 
     if(!isSelected())
         std::cout << acceleration << std::endl;
@@ -278,25 +278,62 @@ void Vehicle::handleCommand(real dt)
         else
         {        
             if(!pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && path.size())
-            {
                 addUnitPathfindingRequest(this, path.back());
+        }
+
+        if(!path.empty())
+        {
+            auto target = path.front();
+
+            auto v2 = calcSeekVector(target);
+            auto l = (target - geoPos).length();
+            auto R = path.size() < 2 ? getArrivalRadius(target, scene->getUnits()) : 0.5;
+            if(l < R)
+            {
+                path.pop_front();
+                if(!path.empty())
+                    this->target = path.front().to3();
+                else
+                {
+                    if(!commandQueue.empty())
+                        commandQueue.pop();
+                    this->target = Vector3(0, 0, 0);
+                }
             }
         }
     }
     else if(auto v = std::get_if<BuildCommand>(&command))
     {
+        const real buildingRadius = 3.f;
         auto pos = v->destination;
-        std::vector<int> footprint = {
-            1, 0, 0, 1,
-            1, 0, 0, 1,
-            1, 0, 0, 1,
-            1, 1, 1, 1,
-            1, 1, 1, 1
-        };
-        auto building = new Building(int(pos.x), int(pos.y), 3, 4, footprint);
-        building->init(*scene);
-        scene->addEntity(building);
-        commandQueue.pop(); // Should move towards the target first
+
+        auto dest = v->destination + (geoPos - v->destination).normalized()*buildingRadius;
+
+        if(!v->active)
+        {
+            addUnitPathfindingRequest(this, dest);
+            v->active = true;
+        }
+        else
+        {        
+            if(!pathFindingRequest && time - pathLastCalculated > pathCalculationInterval)
+                addUnitPathfindingRequest(this, dest);
+        }
+
+        if((geoPos - dest).length() < 0.5f)
+        {
+            std::vector<int> footprint = {
+                1, 0, 0, 1,
+                1, 0, 0, 1,
+                1, 0, 0, 1,
+                1, 1, 1, 1,
+                1, 1, 1, 1
+            };
+            auto building = new Building(int(pos.x), int(pos.y), 3, 4, footprint);
+            building->init(*scene);
+            scene->addEntity(building);
+            commandQueue.pop();
+        }
     }
 }
 
@@ -549,23 +586,7 @@ Vector2 Vehicle::seek()
         // TODO: this could become NaN
         if(!l)
             return { 0, 0 };
-        //auto v2 = (target - geoPos).normalized();
         auto v2 = calcSeekVector(target);
-
-        auto R = path.size() < 2 ? getArrivalRadius(target, scene->getUnits()) : 0.5;
-        if(l < R)
-        {
-            path.pop_front();
-            if(!path.empty())
-                this->target = path.front().to3();
-            else
-            {
-                if(!commandQueue.empty())
-                    commandQueue.pop();
-                this->target = Vector3(0, 0, 0);
-            }
-        }
-
         auto maxSpeed = this->maxSpeed.get<real>();
         auto speed = maxSpeed;
         if(path.size() == 1)
