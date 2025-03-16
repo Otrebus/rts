@@ -55,13 +55,13 @@ void checkError()
     error = glGetError();
 
     if(error != GL_NO_ERROR)
-        std::cout << "Not working" << std::endl;
-    if(error == GL_INVALID_OPERATION)
-        std::cout << "Invalid operation" << std::endl;
-    if(error == GL_NO_ERROR)
-        std::cout << "No error" << std::endl;
-    if(error == GL_INVALID_VALUE)
-        std::cout << "No value" << std::endl;
+    {
+        std::cout << "Not working: " << error << std::endl;
+        if(error == GL_INVALID_OPERATION)
+            std::cout << "Invalid operation" << std::endl;
+        if(error == GL_INVALID_VALUE)
+            std::cout << "No value" << std::endl;
+    }
 }
 
 

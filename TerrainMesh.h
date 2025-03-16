@@ -8,7 +8,6 @@ public:
     TerrainMesh(std::vector<MeshVertex3> meshData, std::vector<int> triangles, Material* material);
     ~TerrainMesh();
 
-    void updateSelected(int i, bool b);
     void updateElevation(int i, real height);
 
     static Shader* terrainVertexShader;

@@ -15,7 +15,6 @@ in vec3 position;
 
 in vec2 texCoord;
 out vec4 FragColor;
-flat in int selected;
 
 uniform bool flatShaded = false;
 
@@ -140,8 +139,6 @@ void main()
     float line = min(grid.x, grid.y);
     float col = min(line, 1.0);
     FragColor = FragColor - vec4(vec3(col), 0)*0.1;
-//    if(flatShaded && selected > (1-1e-6))
-//        FragColor = vec4(0.8, 0, 0, 1)*(0.2+0.8*lambertian);
 
     for(int i = 0; i < nLights; i++)
     {

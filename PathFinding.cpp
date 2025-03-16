@@ -131,7 +131,6 @@ void pathFindingThread()
         if(p)
         {
             auto t = (p->requester)->scene->getTerrain();
-            t->updateAdmissiblePoints();
             auto path = findPath(t, p->requester->geoPos, p->dest);
             p->path = path;
             addPathFindingResult(p);

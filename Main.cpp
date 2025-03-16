@@ -325,6 +325,8 @@ int main()
             }
         }
 
+        terrain.updateAdmissiblePoints();
+
         terrain.draw();
 
         for(auto& entity : scene.getEntities())
@@ -397,6 +399,8 @@ int main()
             glUniform1i(glGetUniformLocation(program->getId(), std::format("nLights", i).c_str()), int(scene.getLights().size()));
         }
         prevFogOfWar = Terrain::fogOfWarEnabled.varInt();
+
+        checkError();
     }
 
     quitting = true;

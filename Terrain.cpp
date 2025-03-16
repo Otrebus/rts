@@ -86,7 +86,6 @@ TerrainMesh* Terrain::createMesh(std::string fileName, bool textured = false)
                 real l = std::sqrt(dx*dx+dy*dy+1);
                 points.push_back(Vector3(X, Y, H(x, y) + 3.0f));
                 vertices[width*y+x] = MeshVertex3(X, Y, H(x, y) + 3.0f, -dx/l, -dy/l, 1.0f/l, X, Y);
-                vertices[width*y+x].selected = 0;
             }
         }
         for(int y = 0; y < height-1; y++)
@@ -98,10 +97,6 @@ TerrainMesh* Terrain::createMesh(std::string fileName, bool textured = false)
                 int c = width*(y+1) + x+1;
                 int d = width*(y+1) + x;
                 triangleIndices.insert(triangleIndices.end(), { a, c, d, a, b, c });
-                if(!isTriangleAdmissible(points[a], points[b], points[c]))
-                    vertices[a].selected = vertices[b].selected = vertices[c].selected = 1;
-                if(!isTriangleAdmissible(points[a], points[c], points[d]))
-                    vertices[a].selected = vertices[c].selected = vertices[d].selected = 1;
             }
         }
 
@@ -180,9 +175,11 @@ void Terrain::calcAdmissiblePoints()
                     }
                 }
             }
-            setAdmissible(x, y, admissiblePoints[width*y+x]);
         }
     }
+    for(int x = 0; x < width-1; x++)
+        for(int y = 0; y < height-1; y++)
+            setAdmissible(x, y, admissiblePoints[width*y+x]);
 }
 
 void Terrain::updateAdmissiblePoints()
@@ -209,13 +206,11 @@ void Terrain::updateAdmissiblePoints()
     for(auto p : buildingPoints)
     {
         recalcAdmissiblePoint(p%width, p/width);
-        terrainMesh->updateSelected(p, !admissiblePoints[p]);
         setAdmissible(p%width, p/width, admissiblePoints[p]);
     }
     for(auto p : currentBuildingPoints)
     {
         recalcAdmissiblePoint(p%width, p/width);
-        terrainMesh->updateSelected(p, !admissiblePoints[p]);
         setAdmissible(p%width, p/width, admissiblePoints[p]);
     }
     buildingPoints = currentBuildingPoints;
@@ -532,6 +527,7 @@ Terrain::DrawMode Terrain::getDrawMode() const
 
 void Terrain::setAdmissible(int x, int y, bool b)
 {
+    admissiblePoints[y*width+x] = b;
     int data = b;
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, admissibleBuffer);
     glBufferSubData(GL_SHADER_STORAGE_BUFFER, sizeof(int)*(2+y*width+x), 4, &data);

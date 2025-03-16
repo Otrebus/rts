@@ -3,7 +3,6 @@
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNorm;
 layout (location = 2) in vec2 aTex;
-layout (location = 3) in int selected;
 
 out vec2 TexCoord;
 out vec3 VertexPosition;
@@ -23,5 +22,4 @@ void main()
     toCam = camPos - aPos;
     toCam = normalize(toCam);
     gl_Position = projectionMatrix * vec4(aPos.x, aPos.y, aPos.z, 1.0);
-    sel = selected;
 }

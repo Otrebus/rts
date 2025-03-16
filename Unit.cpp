@@ -87,8 +87,8 @@ void Unit::drawCommands()
             for(auto v : vs)
                 S.push_back( { v.x, v.y, scene->getTerrain()->getElevation(v.x, v.y) });
 
-            buildingLine.setVertices(S);
             buildingLine.init(scene);
+            buildingLine.setVertices(S);
             buildingLine.setColor(Vector3(0.2f, 0.7f, 0.1f));
             buildingLine.setInFront(true);
             buildingLine.draw();
@@ -104,8 +104,8 @@ void Unit::drawCommands()
 
     Line3d queueLine;
 
-    queueLine.setVertices(S);
     queueLine.init(scene);
+    queueLine.setVertices(S);
     queueLine.setColor(Vector3(0.2f, 0.7f, 0.1f));
     queueLine.setInFront(true);
     queueLine.draw();

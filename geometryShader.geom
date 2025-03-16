@@ -13,7 +13,6 @@ out vec2 texCoord;
 out vec3 N_g;
 out vec3 N_s;
 out vec3 tocam;
-out int selected;
 out vec3 position;
 
 void main()
@@ -29,7 +28,6 @@ void main()
         texCoord = TexCoord[i];
         N_g = geometricNormal;
         tocam = toCam[i];
-        selected = int(bool(sel[0]) && bool(sel[1]) && bool(sel[2]));
         position = VertexPosition[i];
 
         EmitVertex();

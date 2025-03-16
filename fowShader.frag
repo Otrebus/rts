@@ -15,7 +15,6 @@ in vec3 position;
 
 in vec2 texCoord;
 out vec4 FragColor;
-flat in int selected;
 
 uniform bool flatShaded = false;
 
