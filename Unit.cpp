@@ -41,6 +41,7 @@ Vector3 Unit::getTarget() const
 
 void Unit::setPath(std::deque<Vector2> path)
 {
+    hasFoundPath = true;
     this->path = std::deque(path.begin(), path.end());
     pathLastCalculated = real(glfwGetTime());
 }
@@ -96,16 +97,23 @@ void Unit::drawCommands()
         }
     }
     
-    for(int i = 0; i+1 < P.size(); i++)
+    /*for(int i = 0; i+1 < P.size(); i++)
     {
         auto pieces = scene->getTerrain()->chopLine(P[i], P[i+1]);
         S.insert(S.end(), pieces.begin(), pieces.end());
-    }
+    }*/
 
     Line3d queueLine;
 
+    std::reverse(P.begin(), P.end());
+
+    std::vector<Vector3> P3;
+    for(auto p : P)
+        P3.push_back( { p.x, p.y, scene->getTerrain()->getElevation(p.x, p.y) });
+
+    queueLine.setDashed(true);
     queueLine.init(scene);
-    queueLine.setVertices(S);
+    queueLine.setVertices(P3);
     queueLine.setColor(Vector3(0.2f, 0.7f, 0.1f));
     queueLine.setInFront(true);
     queueLine.draw();

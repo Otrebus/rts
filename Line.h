@@ -17,6 +17,7 @@ public:
 
     static Shader* fragmentShader;
     static Shader* vertexShader;
+    static Shader* geometryShader;
     Vector3 color;
 
     std::vector<float> vertexData;
@@ -33,6 +34,7 @@ public:
     Line3d(const std::vector<Vector3>& vertices);
     ~Line3d();
 
+    void setDashed(bool b);
     void init(Scene* scene);
     void draw();
     void tearDown();
@@ -41,6 +43,7 @@ public:
 
 private:
     bool inFront;
+    bool dashed;
 };
 
 
@@ -52,6 +55,7 @@ public:
     ~Line2d();
 
     void init(Scene* scene);
+    void setVertices(const std::vector<Vector2>& vertices);
     void draw();
     void tearDown();
 };

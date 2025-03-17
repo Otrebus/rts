@@ -23,6 +23,7 @@ ConsoleVariable Vehicle::maxRadialAcc("vehicleMaxRadialAcc", 2.5f);
 // TODO: no need to get terrain since we have scene->getTerrain()
 Vehicle::Vehicle(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, dir, up), acceleration(0), terrain(terrain), constructing(false), constructionProgress(0.f)
 {
+    hasFoundPath = false;
     model = ModelManager::instantiateModel("truck");
     geoPos = pos.to2();
     geoDir = dir.to2();
@@ -272,6 +273,7 @@ void Vehicle::handleCommand(real dt)
     {
         if(!v->active)
         {
+            hasFoundPath = false;
             addUnitPathfindingRequest(this, v->destination);
             v->active = true;
         }
@@ -295,8 +297,13 @@ void Vehicle::handleCommand(real dt)
                     this->target = path.front().to3();
                 else
                 {
-                    if(!commandQueue.empty())
+                    if(hasFoundPath && !commandQueue.empty())
+                    {
+                        // TODO: Sometimes the reason path is empty is because we are still waiting for a path finding result, in which
+                        //       case we shouldn't clear the command queue. Right now we use the hasFoundPath to make sure we've found a
+                        //       path but this is set to true when setPath is called which might not be robust
                         commandQueue.pop();
+                    }
                     this->target = Vector3(0, 0, 0);
                 }
             }

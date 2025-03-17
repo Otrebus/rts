@@ -62,4 +62,6 @@ protected:
 
     bool enemy;
     int enemyTargetId;
+
+    bool hasFoundPath;
 };
