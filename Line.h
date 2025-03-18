@@ -10,7 +10,7 @@ class Line
 public:
     Line();
     Line(const std::vector<Vector3>& vertices);
-    void setColor(Vector3 color);
+    void setColor(Vector4 color);
 
 public:
     GLuint VAO, VBO;
@@ -18,7 +18,7 @@ public:
     static Shader* fragmentShader;
     static Shader* vertexShader;
     static Shader* geometryShader;
-    Vector3 color;
+    Vector4 color;
 
     std::vector<float> vertexData;
     Scene* scene;

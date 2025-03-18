@@ -78,7 +78,6 @@ int findPolynomialRoots_(ld* roots, ld* v, int N)
 std::vector<ld> findPolynomialRoots(std::vector<ld> v)
 {
     ld w[MAX_N], o[MAX_N];
-    int i = 0;
     for(int i = 0; i < v.size(); i++)
         w[i] = v[i];
 

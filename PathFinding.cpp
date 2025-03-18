@@ -174,8 +174,6 @@ std::deque<Vector2> findPath(Terrain* terrain, Vector2 start, Vector2 destinatio
         if(i == endIndex)
             break;
 
-        real h_i = dist(destX-x, destY-y);
-
         for(int dx = -1; dx <= 1; dx++)
         {
             for(int dy = -1; dy <= 1; dy++)

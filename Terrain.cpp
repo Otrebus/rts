@@ -254,7 +254,6 @@ Vector3 Terrain::intersectBrute(const Ray& ray, real maxT)
 
 Vector3 Terrain::intersectFast(const Ray& ray, real maxT)
 {
-    real t1 = real(glfwGetTime());
     auto p = ray.pos, d = ray.dir;
 
     real x0, y0;
@@ -266,8 +265,6 @@ Vector3 Terrain::intersectFast(const Ray& ray, real maxT)
     }
     else
     {
-        real t0 = inf, t1 = inf, t2 = inf, t3 = inf;
-
         std::array<Vector2, 4> vs = {Vector2{0.f, 0.f}, Vector2{width - 2.0f, 0.f}, Vector2{width - 2.0f, height - 2.0f}, Vector2{0.f, height - 2.0f}};
 
         auto t = -inf;

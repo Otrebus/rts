@@ -10,12 +10,12 @@ uniform PointLight pointLights[100];
 uniform int nLights;
 
 out vec4 FragColor;
-uniform vec3 Kd;
+uniform vec4 Kd;
 in float param;
 
 void main()
 {
     if(param > 0 && int(param)%2 == 0)
         discard;
-    FragColor = vec4(Kd, 1.0f);
+    FragColor = Kd;
 }

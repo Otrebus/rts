@@ -116,7 +116,7 @@ void Vehicle::init(Scene* scene)
     model->setScene(scene);
 
     destinationLine.init(scene);
-    destinationLine.setColor(Vector3(0.2f, 0.7f, 0.1f));
+    destinationLine.setColor(Vector4(0.2f, 0.7f, 0.1f, 1.0f));
     destinationLine.setInFront(true);
 
     selectionMarkerMesh->setScene(scene);
@@ -322,7 +322,7 @@ void Vehicle::handleCommand(real dt)
             v->active = true;
         }
         else
-        {        
+        {
             if(!pathFindingRequest && time - pathLastCalculated > pathCalculationInterval)
                 addUnitPathfindingRequest(this, dest);
         }

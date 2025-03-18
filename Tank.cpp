@@ -194,7 +194,7 @@ void Tank::init(Scene* scene)
     gun->setScene(scene);
     destinationLine.init(scene);
     //destinationLine.init(scene);
-    destinationLine.setColor(Vector3(0.2f, 0.7f, 0.1f));
+    destinationLine.setColor(Vector4(0.2f, 0.7f, 0.1f, 1.0f));
     destinationLine.setInFront(true);
 
     //enemyLine.init(scene);
@@ -535,7 +535,6 @@ void Tank::update(real dt)
                 isInFog = scene->getTerrain()->getFog(int(unit->getGeoPosition().x), int(unit->getGeoPosition().y)) && scene->getTerrain()->fogOfWarEnabled.varInt();
             else if(Building* building = dynamic_cast<Building*>(unit); building)
             {
-                int height = scene->getTerrain()->getHeight();
                 int width = scene->getTerrain()->getHeight();
                 for(auto p : building->getAbsoluteFootprint())
                 {
@@ -602,7 +601,6 @@ void Tank::update(real dt)
             isInFog = scene->getTerrain()->getFog(int(p.x), int(p.y)) && scene->getTerrain()->fogOfWarEnabled.varInt();
         else if(Building* building = dynamic_cast<Building*>(enemyTarget); building)
         {
-            int height = scene->getTerrain()->getHeight();
             int width = scene->getTerrain()->getHeight();
             for(auto p : building->getAbsoluteFootprint())
             {

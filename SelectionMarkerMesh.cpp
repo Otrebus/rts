@@ -8,7 +8,6 @@
 
 SelectionMarkerMesh::SelectionMarkerMesh(real length, real width, bool circular = false) : length(length), width(width), circular(circular)
 {
-    int pass = 0;
     radius = 1.0f;
 }
 

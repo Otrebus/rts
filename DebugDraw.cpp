@@ -119,7 +119,6 @@ int drawCircleTriangle(GLFWwindow* window, int xres, int yres)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         auto prevTime = time;
         time = real(glfwGetTime());
-        auto dt = time - prevTime;
 
         auto inputs = InputManager::getInstance().handleInput(prevTime, time);
         glfwPollEvents();
@@ -214,7 +213,6 @@ int drawDecals(GLFWwindow* window, int xres, int yres)
     ShaderProgramManager shaderProgramManager;
     Scene scene(&cam, &shaderProgramManager);
 
-    bool intersecting = false;
     int mouseX, mouseY;
 
     Ray r1, r2;
@@ -374,7 +372,6 @@ int drawSigned(GLFWwindow* window, int xres, int yres)
         
         auto prevTime = time;
         time = real(glfwGetTime());
-        auto dt = time - prevTime;
         
         glClearColor(0.5f, 0.5f, 0.5f, 0.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -408,7 +405,6 @@ int drawVehiclePaths(GLFWwindow* window, int xres, int yres)
     ShaderProgramManager shaderProgramManager;
     Scene scene(&cam, &shaderProgramManager);
 
-    bool intersecting = false;
     int mouseX, mouseY;
 
     Ray r1, r2;
@@ -423,7 +419,6 @@ int drawVehiclePaths(GLFWwindow* window, int xres, int yres)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         auto prevTime = time;
         time = real(glfwGetTime());
-        auto dt = time - prevTime;
 
         auto inputs = InputManager::getInstance().handleInput(prevTime, time);
         glfwPollEvents();
@@ -441,7 +436,6 @@ int drawVehiclePaths(GLFWwindow* window, int xres, int yres)
         // TODO: make a mouseCoordtoWorldCoord as well
         auto mousePos = mouseCoordToScreenCoord(::xres, ::yres, mouseX, mouseY);
         auto [orig, ray] = scene.getCamera()->getViewRay(mousePos.x, mousePos.y);
-        auto x = orig.x, y = orig.y;
 
         Vector2 dest = orig.to2();
 

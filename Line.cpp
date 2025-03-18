@@ -93,7 +93,7 @@ void Line3d::draw()
         glDisable(GL_DEPTH_TEST);
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)(&perspM.m_val));
     GLuint kdLocation = glGetUniformLocation(program->getId(), "Kd");
-    glUniform3f(kdLocation, color.x, color.y, color.z);
+    glUniform4f(kdLocation, color.x, color.y, color.z, color.w);
     glBindVertexArray(VAO);
     glDrawArrays(GL_LINE_STRIP, 0, int(vertexData.size())/4);
     if(inFront && depthDestIsEnabled)
@@ -106,7 +106,7 @@ void Line3d::tearDown()
     glDeleteVertexArrays(1, &VAO);
 }
 
-void Line::setColor(Vector3 color)
+void Line::setColor(Vector4 color)
 {
     this->color = color;
 }
@@ -188,7 +188,7 @@ void Line2d::draw()
     program->use();
     
     glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)(&identityMatrix.m_val));
-    glUniform3fv(glGetUniformLocation(program->getId(), "Kd"), 1, (float*)(&color));
+    glUniform4fv(glGetUniformLocation(program->getId(), "Kd"), 1, (float*)(&color));
     glBindVertexArray(VAO);
     glDrawArrays(GL_LINE_STRIP, 0, int(vertexData.size())/4);
     glEnable(GL_DEPTH_TEST);

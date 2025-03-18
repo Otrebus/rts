@@ -41,9 +41,16 @@ Vector3 Unit::getTarget() const
 
 void Unit::setPath(std::deque<Vector2> path)
 {
-    hasFoundPath = true;
-    this->path = std::deque(path.begin(), path.end());
-    pathLastCalculated = real(glfwGetTime());
+    if(!commandQueue.empty() && std::get_if<MoveCommand>(&commandQueue.front()))
+    {
+        // This if statement is a relatively lame attempt at preventing a path find update to return
+        // after a command has been finished and still set a path. It would be more robust if the path
+        // finding request stored some unique id of the command that sent it and check that it's still
+        // in the queue; now we just check that there's any movement command there
+        hasFoundPath = true;
+        this->path = std::deque(path.begin(), path.end());
+        pathLastCalculated = real(glfwGetTime());
+    }
 }
 
 void Unit::setPreSelected(bool preSelected)
@@ -90,7 +97,7 @@ void Unit::drawCommands()
 
             buildingLine.init(scene);
             buildingLine.setVertices(S);
-            buildingLine.setColor(Vector3(0.2f, 0.7f, 0.1f));
+            buildingLine.setColor(Vector4(0.2f, 0.7f, 0.1f, 0.5f));
             buildingLine.setInFront(true);
             buildingLine.draw();
             P.push_back(v->destination + Vector2(w/2, h/2));
@@ -114,7 +121,7 @@ void Unit::drawCommands()
     queueLine.setDashed(true);
     queueLine.init(scene);
     queueLine.setVertices(P3);
-    queueLine.setColor(Vector3(0.2f, 0.7f, 0.1f));
+    queueLine.setColor(Vector4(0.2f, 0.7f, 0.1f, 0.5f));
     queueLine.setInFront(true);
     queueLine.draw();
 }

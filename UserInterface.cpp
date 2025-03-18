@@ -180,7 +180,6 @@ void addUnitPathfindingRequest(Unit* unit, Vector2 pos)
 
 void UserInterface::selectUnits(std::vector<Unit*> units, bool pre)
 {
-    auto time = glfwGetTime();
     auto camera = scene->getCamera();
 
     auto c1 = drawBoxc1, c2 = drawBoxc2;
@@ -217,7 +216,6 @@ void UserInterface::selectUnits(std::vector<Unit*> units, bool pre)
 
 bool UserInterface::isInFrustum(Unit* unit)
 {
-    auto time = glfwGetTime();
     auto camera = scene->getCamera();
 
     Vector3 v[4] = {
@@ -762,14 +760,14 @@ void UserInterface::draw()
             { drawBoxc1.x, drawBoxc2.y, },
             { drawBoxc1.x, drawBoxc1.y, }
         });
-        line.setColor(Vector3(0.2f, 0.7f, 0.1f));
+        line.setColor(Vector4(0.2f, 0.7f, 0.1f, 1.0f));
         line.init(scene);
         line.draw();
     }
     if(!drawTarget.empty())
     {
         Line3d line(drawTarget);
-        line.setColor(Vector3(0.2f, 0.7f, 0.1f));
+        line.setColor(Vector4(0.2f, 0.7f, 0.1f, 1.0f));
         line.setInFront(true);
         line.init(scene);
         line.draw();

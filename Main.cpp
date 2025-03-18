@@ -90,8 +90,6 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
 
-    auto startTime = real(glfwGetTime());
-
     InputManager::getInstance().initInput(window);
 
     PerspectiveCamera cam({ 0, 0, 100 }, { 0, 1, -1 }, { 0, 0, 1 }, 59, real(xres)/float(yres));
@@ -176,7 +174,6 @@ int main()
     wreck->init(&scene);
     scene.addEntity(wreck);
 
-    int i = 0;
     for(int i = 0; i < 1000; i++) {
         auto rock = new Rock({ coord(generator), coord(generator), 0 }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
         rock->init(&scene);
@@ -196,8 +193,6 @@ int main()
     UserInterface interface(window, &scene, &cameraControl);
 
     int frames = 0;
-    real frameTime = 0.f;
-    real avgFps = 0.f;
     auto prevFogOfWar = Terrain::fogOfWarEnabled.varInt();
 
     ShapeDrawer::setScene(&scene);
