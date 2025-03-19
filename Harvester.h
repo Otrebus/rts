@@ -26,6 +26,8 @@ public:
     void turn(bool dir);
     void update(real dt);
 
+    void handleCommand(real dt);
+
     Entity* spawnWreck();
 
     Vector2 seek();

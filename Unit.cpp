@@ -41,12 +41,12 @@ Vector3 Unit::getTarget() const
 
 void Unit::setPath(std::deque<Vector2> path)
 {
-    if(!commandQueue.empty() && std::get_if<MoveCommand>(&commandQueue.front()))
+    if(!commandQueue.empty())
     {
         // This if statement is a relatively lame attempt at preventing a path find update to return
         // after a command has been finished and still set a path. It would be more robust if the path
         // finding request stored some unique id of the command that sent it and check that it's still
-        // in the queue; now we just check that there's any movement command there
+        // in the queue; now we just check that there's any command there
         hasFoundPath = true;
         this->path = std::deque(path.begin(), path.end());
         pathLastCalculated = real(glfwGetTime());

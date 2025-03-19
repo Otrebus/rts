@@ -620,8 +620,6 @@ std::pair<int, int> Terrain::getClosestAdmissible(Vector2 v) const
             return { x, y+1 };
         }
     }
-    assert(false);
-    return { x, y };
 }
 
 bool Terrain::isTriangleAdmissible(const Vector3& p1, const Vector3& p2, const Vector3& p3) const

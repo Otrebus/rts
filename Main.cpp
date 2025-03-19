@@ -132,19 +132,19 @@ int main()
 
     //scene.addUnit(new Tank({ 180.480316, 99.7414932, 15.0 }, { 1, 0, 0 }, { 0, 0, 1}, &terrain));
 
-    /*auto harvester = new Harvester({ 150.5f, 35.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
-    scene.addEntity(harvester);*/
+    auto harvester = new Harvester({ 150.5f, 35.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+    scene.addEntity(harvester);
 
     auto vehicle = new Vehicle({ 150.5f, 35.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
     scene.addEntity(vehicle);
 
-    //for(int y = 0; y < 5; y++)
-    //{
-    //    for(int x = 0; x < 5; x++)
-    //    {
-    //        scene.addEntity(new Tank({ 165.5f-x, 95.15f-y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain));
-    //    }
-    //}
+    for(int y = 0; y < 5; y++)
+    {
+        for(int x = 0; x < 5; x++)
+        {
+            scene.addEntity(new Tank({ 165.5f-x, 95.15f-y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain));
+        }
+    }
 
     
     /*auto tank = new Tank({ 170.5f, 65.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);

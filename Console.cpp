@@ -212,9 +212,6 @@ void Console::handleInput(const Input& input)
         if(!tabbing)
         {
             completionStrings = ConsoleSettings::getCompletionStrings(textInput);
-            std::cout << "Completion strings are:" << std::endl;
-            for(auto s : completionStrings)
-                std::cout << s << std::endl;
             tabbing = true;
             completionIndex = 0;
         }

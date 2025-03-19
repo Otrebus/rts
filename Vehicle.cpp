@@ -256,9 +256,6 @@ void Vehicle::accelerate(Vector2 velocityTarget)
         else
             acceleration = -0.5f*maxForwardAcc;
     }
-
-    if(!isSelected())
-        std::cout << acceleration << std::endl;
 }
 
 void Vehicle::handleCommand(real dt)

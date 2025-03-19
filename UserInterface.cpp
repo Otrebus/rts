@@ -329,13 +329,9 @@ void UserInterface::selectUnit(const Ray& ray, const std::vector<Unit*>& units, 
             if(/*!u->isEnemy() && */u->intersectBoundingBox(ray))
             {
                 if(time - timeClickedUnit < 0.5 && u == lastClickedUnit)
-                {
                     for(auto& unit : units)
-                    {
-                        if(unit->isEnemy() == u->isEnemy() && isInFrustum(unit))
+                        if(unit->isEnemy() == u->isEnemy() && isInFrustum(unit) && typeid(*u) == typeid(*unit))
                             unit->setSelected(true);
-                    }
-                }
                 timeClickedUnit = time;
                 lastClickedUnit = u;
                 u->setSelected(true);

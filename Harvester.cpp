@@ -288,6 +288,8 @@ void Harvester::update(real dt)
     velocityTarget = boidCalc();
     accelerate(velocityTarget);
 
+    handleCommand(dt);
+
     auto newDir = geoDir.normalized().rotated(turnRate*dt);
     if((newDir%velocityTarget)*(geoDir%velocityTarget) < 0 && newDir*velocityTarget > 0)
         newDir = velocityTarget.normalized();
@@ -487,6 +489,86 @@ Vector2 Harvester::calcSeekVector(Vector2 dest)
         v = vrr;
 
     return v;
+}
+
+void Harvester::handleCommand(real dt)
+{
+    auto time = real(glfwGetTime());
+    if(commandQueue.empty())
+        return;
+
+    auto& command = commandQueue.front();
+
+    if(auto v = std::get_if<MoveCommand>(&command))
+    {
+        if(!v->active)
+        {
+            hasFoundPath = false;
+            addUnitPathfindingRequest(this, v->destination);
+            v->active = true;
+        }
+        else
+        {        
+            if(!pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && path.size())
+                addUnitPathfindingRequest(this, path.back());
+        }
+
+        if(!path.empty())
+        {
+            auto target = path.front();
+
+            auto v2 = calcSeekVector(target);
+            auto l = (target - geoPos).length();
+            auto R = path.size() < 2 ? getArrivalRadius(target, scene->getUnits()) : 0.5;
+            if(l < R)
+            {
+                path.pop_front();
+                if(!path.empty())
+                    this->target = path.front().to3();
+                else
+                {
+                    if(hasFoundPath && !commandQueue.empty())
+                    {
+                        // TODO: Sometimes the reason path is empty is because we are still waiting for a path finding result, in which
+                        //       case we shouldn't clear the command queue. Right now we use the hasFoundPath to make sure we've found a
+                        //       path but this is set to true when setPath is called which might not be robust
+                        commandQueue.pop();
+                    }
+                    this->target = Vector3(0, 0, 0);
+                }
+            }
+        }
+    }
+    if(auto v = std::get_if<ExtractCommand>(&command))
+    {
+        if(!v->active)
+        {
+            real minDist = inf;
+            Rock* minRock = nullptr;
+            for(auto e : scene->getEntities())
+            {
+                if(auto d = (e->getGeoPosition() - v->destination).length(); dynamic_cast<Rock*>(e) && d < v->radius)
+                {
+                    if(d < minDist)
+                    {
+                        minDist = d;
+                        minRock = (Rock*) e;
+                    }
+                }
+            }
+            if(minRock)
+            {
+                hasFoundPath = false;
+                addUnitPathfindingRequest(this, minRock->getGeoPosition());
+                v->active = true;
+            }
+        }
+        else
+        {
+            if(!pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && path.size())
+                addUnitPathfindingRequest(this, path.back());
+        }
+    }
 }
 
 Vector2 Harvester::seek()

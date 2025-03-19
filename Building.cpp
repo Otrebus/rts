@@ -182,7 +182,6 @@ bool Building::canBePlaced(real posX, real posY, int length, int width, Scene* s
        
     std::vector<real> adjHeights;
     auto cx = posX-real(length)/2, cy = posY-real(width)/2;
-    std::cout << posX << " " << posY << std::endl;
     for(int x = 0; x <= length; x++)
     {
         for(int y = 0; y <= width; y++)
@@ -193,16 +192,11 @@ bool Building::canBePlaced(real posX, real posY, int length, int width, Scene* s
             {
                 if(building->pointWithin(int(x+cx), int(y+cy)))
                 {
-                    std::cout << "pushing back " << (x+cx) << " " << (y+cy) << std::endl;
                     adjHeights.push_back(terrain->getElevation(x+cx, y+cy));
                 }
             }
         }
     }
-
-    std::cout << "----------" << std::endl;
-    for(auto h : adjHeights)
-        std::cout << h << std::endl;
 
     if(!adjHeights.empty())
         for(auto h : adjHeights)
