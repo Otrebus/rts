@@ -132,7 +132,7 @@ int main()
 
     //scene.addUnit(new Tank({ 180.480316, 99.7414932, 15.0 }, { 1, 0, 0 }, { 0, 0, 1}, &terrain));
 
-    auto harvester = new Harvester({ 150.5f, 35.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+    auto harvester = new Harvester({ 155.5f, 35.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
     scene.addEntity(harvester);
 
     auto vehicle = new Vehicle({ 150.5f, 35.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);

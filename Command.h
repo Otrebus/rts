@@ -22,6 +22,7 @@ struct ExtractCommand : public BaseCommand
 {
     real radius;
     Vector2 destination;
+    ExtractCommand(Vector2 dest, real radius) : destination(dest), radius(radius) {}
 };
 
 struct BuildCommand : public BaseCommand
@@ -40,10 +41,8 @@ class CommandQueue
     std::deque<Command> q;
 
 public:
-    void push(bool replace, const Command& command)
+    void push(const Command& command)
     {
-        if(replace)
-            q = std::deque<Command>();
         q.push_back(command);
     }
 
@@ -52,6 +51,11 @@ public:
         auto c = q.front();
         q.pop_front();
         return c;
+    }
+
+    void clear()
+    {
+        q.clear();
     }
 
     Command& front()

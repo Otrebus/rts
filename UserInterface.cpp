@@ -312,8 +312,11 @@ void UserInterface::moveDrawnUnits(const std::vector<Unit*>& selectedUnits)
         }
     }
     for(auto assignment : v)
-        //addUnitPathfindingRequest(assignment.unit, points[assignment.point].to2());
-        assignment.unit->commandQueue.push(!selectingAdditional, MoveCommand(points[assignment.point].to2()));
+    {
+        if(!selectingAdditional)
+            assignment.unit->commandQueue.clear();
+        assignment.unit->commandQueue.push(MoveCommand(points[assignment.point].to2()));
+    }
 
 }
 
@@ -478,7 +481,9 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
                 {
                     for(auto vehicle : selectedVehicles)
                     {
-                        vehicle->commandQueue.push(!selectingAdditional, BuildCommand(Vector2(std::floor(pos.x), std::floor(pos.y)), 3, 4));
+                        if(!selectingAdditional)
+                            vehicle->commandQueue.clear();
+                        vehicle->commandQueue.push(BuildCommand(Vector2(std::floor(pos.x), std::floor(pos.y)), 3, 4));
                     }
                 }
             }
@@ -535,7 +540,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
     }
     if(input.stateEnd == InputType::MouseRelease && input.key == GLFW_MOUSE_BUTTON_1)
     {
-        if(buildingPlacingState != PlacingBuilding)
+        if(buildingPlacingState != PlacingBuilding && selectState != DrawingCircle)
         {
             for(auto& unit : units)
             {
@@ -558,6 +563,18 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
             delete selectionMesh;
             selectionMesh = nullptr;
             selectState = NotSelecting;
+            for(auto& unit : units)
+            {
+                auto [px, py] = mouseCoordToScreenCoord(xres, yres, mouseX, mouseY);
+                auto pos = scene->getTerrain()->intersect(scene->getCamera()->getViewRay(px, py));
+                auto circleRadius = (pos.to2() - circleCenter).length();
+                if(unit->isSelected())
+                {
+                    if(!selectingAdditional)
+                        unit->commandQueue.clear();
+                    unit->commandQueue.push(ExtractCommand(circleCenter, circleRadius));
+                }
+            }
         }
 
         else if(selectState == Clicking)
@@ -633,7 +650,9 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
                 {
                     if(unit->isSelected())
                     {
-                        unit->commandQueue.push(!selectingAdditional, MoveCommand(pos.to2()));
+                        if(!selectingAdditional)
+                            unit->commandQueue.clear();
+                        unit->commandQueue.push(MoveCommand(pos.to2()));
                     }
                 }
             }
