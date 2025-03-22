@@ -198,7 +198,7 @@ void Harvester::setDirection(Vector3 dir, Vector3 up)
 
 void Harvester::accelerate(Vector2 velocityTarget)
 {
-    // TODO: what if we do a similar thing as below but for acceleration, check current acceleration dir and how we need to amend it
+        // TODO: what if we do a similar thing as below but for acceleration, check current acceleration dir and how we need to amend it
     accelerationTarget = velocityTarget - geoVelocity;
     if(accelerationTarget.length() < 1e-6)
     {
@@ -207,17 +207,12 @@ void Harvester::accelerate(Vector2 velocityTarget)
         return;
     }
 
-
     //if(velocityTarget.length() > 0.01 && velocityTarget.normalized()*geoDir < 0.999 && velocityTarget.normalized()*geoDir > -0.999)
     //{
     //    if(geoDir*velocityTarget > 0)
-    //    {
     //        turn((geoDir.perp()*(velocityTarget) > 0));
-    //    }
     //    else
-    //    {
     //        turn((geoDir.perp()*(velocityTarget) < 0));
-    //    }
     //}
     //else
     //    turnRate = 0;
@@ -244,18 +239,38 @@ void Harvester::accelerate(Vector2 velocityTarget)
 
     //ShapeDrawer::drawArrow(pos, projAcc.to3(), projAcc.length(), 0.02, Vector3(1, 0, 1));
 
-    //if(projAcc*geoDir < 0 && geoDir*geoVelocity <= 0)
-    //    acceleration = -maxForwardAcc*0.5f;
-    //else
-    //    acceleration = projAcc*geoDir > 0 ? maxForwardAcc : - maxBreakAcc;
+    ShapeDrawer::drawArrow(pos, velocityTarget.to3(), velocityTarget.length(), 0.02, Vector3(1, 0, 1));
 
-    if(accelerationTarget*geoDir > 0)
-        acceleration = maxForwardAcc;
+    //accelerationTarget = velocityTarget; // Just testing stuff
+    std::cout << accelerationTarget <<  " " << geoDir << std::endl;
+
+    if(accelerationTarget*geoDir >= 0.f)
+    {
+        if(geoDir*geoVelocity >= 0.f)
+        {
+            std::cout << 1;
+            acceleration = std::min(accelerationTarget.length(), maxForwardAcc);
+        }
+        else
+        {
+            std::cout << 2;
+            acceleration = maxBreakAcc;
+        }
+    }
     else
-        acceleration = -maxForwardAcc*0.5f;
-
-    if(!isSelected())
-        std::cout << acceleration << std::endl;
+    {
+        if(geoDir*geoVelocity >= 0.f)
+        {
+            std::cout << 3;
+            acceleration = -maxBreakAcc;
+        }
+        else
+        {
+            std::cout << 4;
+            acceleration = -0.5f*maxForwardAcc;
+        }
+    }
+    ShapeDrawer::drawArrow(pos, geoDir.to3(), acceleration, 0.02, Vector3(1, 0, 1));
 }
 
 void Harvester::brake()
@@ -290,17 +305,21 @@ void Harvester::update(real dt)
 
     handleCommand(dt);
 
+    // If we're turning past the intended direction, clamp the turning towards the direction
     auto newDir = geoDir.normalized().rotated(turnRate*dt);
     if((newDir%velocityTarget)*(geoDir%velocityTarget) < 0 && newDir*velocityTarget > 0)
         newDir = velocityTarget.normalized();
     geoDir = newDir;
 
-    geoVelocity += geoDir.normalized()*acceleration*dt;
+    auto newGeoVelocity = geoVelocity + geoDir.normalized()*acceleration*dt;
+
+    if((newGeoVelocity*geoDir)*(geoVelocity*geoDir) < 0)
+        geoVelocity = { 0, 0 };
+    else
+        geoVelocity = newGeoVelocity;
 
     if(!velocityTarget)
-    {
         acceleration = 0;
-    }
 
     auto maxSpeed = this->maxSpeed.get<real>();
     if(geoVelocity.length() > maxSpeed)
@@ -309,9 +328,7 @@ void Harvester::update(real dt)
     auto time = glfwGetTime();
 
     if(!pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && path.size())
-    {
         addUnitPathfindingRequest(this, path.back());
-    }
 }
 
 Vector2 Harvester::calcSeekVector(Vector2 dest)
@@ -547,9 +564,11 @@ void Harvester::handleCommand(real dt)
             Rock* minRock = nullptr;
             for(auto e : scene->getEntities())
             {
-                if(auto d = (e->getGeoPosition() - v->destination).length(); dynamic_cast<Rock*>(e) && d < v->radius)
+                if(auto rock = dynamic_cast<Rock*>(e); rock)
                 {
-                    if(d < minDist)
+                    auto rockPos = rock->getGeoPosition();
+                    auto d = (rockPos - geoPos).length();
+                    if((rockPos - v->destination).length() < v->radius && d < minDist)
                     {
                         minDist = d;
                         minRock = (Rock*) e;
@@ -559,7 +578,7 @@ void Harvester::handleCommand(real dt)
             if(minRock)
             {
                 hasFoundPath = false;
-                addUnitPathfindingRequest(this, minRock->getGeoPosition());
+                addUnitPathfindingRequest(this, minRock->getGeoPosition() + (geoPos - minRock->getGeoPosition()).normalized());
                 v->active = true;
             }
         }
@@ -610,7 +629,7 @@ Vector2 Harvester::seek()
         return v2*speed;
     }
     else
-        return -geoVelocity;
+        return { 0, 0 };
 }
 
 Vector2 Harvester::evade()
