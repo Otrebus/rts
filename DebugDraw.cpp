@@ -680,11 +680,132 @@ int drawVehiclePaths(GLFWwindow* window, int xres, int yres)
     return 0;
 }
 
+real getTimeToMove(real v, real a_f, real a_r, real maxV, real d)
+{
+    real ret = 0;
+    if(v < 0)
+    {
+        auto t = -v/a_r;
+        ret += t;
+        d += -a_r*t*t/2 - v*t;
+        v = 0;
+    }
+
+    auto tm = (maxV - v)/a_f;
+    auto t = -v/a_f + std::sqrt((v*v)/(a_f*a_f) + 2*d/a_f);
+
+    if(t < tm)
+    {
+        return ret + t;
+    }
+    else
+    {
+        d -= a_f*tm*tm/2 + v*tm;
+        ret += tm;
+        v = maxV;
+        return ret + t + d/maxV;
+    }
+}
+
+int drawAccelerationPath(GLFWwindow* window, int xres, int yres)
+{
+    InputManager::getInstance().initInput(window);
+    OrthogonalCamera cam({ 0, 0, 1 }, { 0, 0, -1 }, { 0, 1, 0 }, real(xres)/float(yres));
+    
+    real time = real(glfwGetTime());
+
+    ShaderProgramManager shaderProgramManager;
+    Scene scene(&cam, &shaderProgramManager);
+
+    int mouseX, mouseY;
+
+    Ray r1, r2;
+    mouseX = mouseY = 0;
+
+    while(!glfwWindowShouldClose(window))
+    {
+        if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+            glfwSetWindowShouldClose(window, true);
+
+        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        auto prevTime = time;
+        time = real(glfwGetTime());
+
+        auto inputs = InputManager::getInstance().handleInput(prevTime, time);
+        glfwPollEvents();
+
+        for(auto input : inputs)
+        {
+            if(input->stateStart == MousePosition)
+            {
+                mouseX = int(input->posX);
+                mouseY = int(input->posY);
+            }
+            delete input;
+        }
+
+        auto mousePos = mouseCoordToScreenCoord(::xres, ::yres, mouseX, mouseY);
+        auto [orig, ray] = scene.getCamera()->getViewRay(mousePos.x, mousePos.y);
+
+        Vector2 dest = Vector2(0, 1.0f);
+
+        real R = 0.25f;
+
+        Vector2 pos = orig.to2().normalized()*R;
+
+        real v = 0.5f;
+        real maxV = 3.0;
+
+        real a_f = 2.0;
+        real a_r = 2.0;
+        real a_b = 13.0;
+
+        auto dir = pos.perp().normalized();
+
+        std::cout << orig << std::endl;
+
+        drawArrow(scene, pos, dir, 0.03);
+
+        auto c_l = pos + dir.perp()*R;
+        
+        auto C = dir%dest > 0 ? pos + dir.perp()*R : pos -dir.perp()*R;
+
+        auto pf = C - dest.perp().normalized()*R;
+        auto pb = C + dest.perp().normalized()*R;
+        
+        auto th_f = std::acos((pf-C).normalized()*(pos-C).normalized());
+        auto th_b = -(pi - std::acos((pf-C).normalized()*(pos-C).normalized()));
+
+        if(dir%dest < 0)
+        {
+            std::swap(th_f, th_b);
+        }
+
+        auto d1 = std::abs(th_f*R);
+        auto d2 = std::abs(th_b*R);
+
+        auto t1 = getTimeToMove(v, a_f, a_b, maxV, d1);
+        auto t2 = getTimeToMove(-v, a_r, a_b, maxV, d2);
+
+        if(t1 < t2)
+            drawArc(scene, C, pos, th_f);
+        else
+            drawArc(scene, C, pos, th_b);
+        
+        glfwSwapBuffers(window);
+    }
+
+    glfwTerminate();
+    return 0;
+}
 
 int debugDraw(GLFWwindow* window, int xres, int yres)
 {
     // return drawCircleTriangle(window, xres, yres);
     // return drawDecals(window, xres, yres);
     // return drawSigned(window, xres, yres);
-    return drawVehiclePaths(window, xres, yres);
+    //return drawVehiclePaths(window, xres, yres);
+
+    return drawAccelerationPath(window, xres, yres);
 }

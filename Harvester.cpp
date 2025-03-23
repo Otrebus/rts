@@ -196,6 +196,74 @@ void Harvester::setDirection(Vector3 dir, Vector3 up)
 }
 
 
+real getTime(real v, real a_f, real a_r, real maxV, real d)
+{
+    real ret = 0;
+    if(v < 0)
+    {
+        auto t = -v/a_r;
+        ret += t;
+        d += -a_r*t*t/2 - v*t;
+        v = 0;
+    }
+
+    auto tm = (maxV - v)/a_f;
+    auto t = -v/a_f + std::sqrt((v*v)/(a_f*a_f) + 2*d/a_f);
+
+    if(t < tm)
+    {
+        return ret + t;
+    }
+    else
+    {
+        d -= a_f*tm*tm/2 + v*tm;
+        ret += tm;
+        v = maxV;
+        return ret + t + d/maxV;
+    }
+}
+
+
+bool getmoveDir(Vector2 dest, Vector2 geoDirection, Vector2 geoVelocity, real maxV, real a_f, real a_r, real a_b, real turnRadius)
+{
+    real R = turnRadius;
+
+    Vector2 pos = -geoDirection.perp()*R;
+
+    real v = geoDirection*geoVelocity;
+    //real maxV = 3.0;
+
+    //real a_f = 2.0;
+    //real a_r = 2.0;
+    //real a_b = 13.0;
+
+    auto dir = pos.perp().normalized();
+
+    auto c_l = pos + dir.perp()*R;
+        
+    auto C = dir%dest > 0 ? pos + dir.perp()*R : pos -dir.perp()*R;
+
+    auto pf = C - dest.perp().normalized()*R;
+    auto pb = C + dest.perp().normalized()*R;
+        
+    auto th_f = std::acos((pf-C).normalized()*(pos-C).normalized());
+    auto th_b = -(pi - std::acos((pf-C).normalized()*(pos-C).normalized()));
+
+    if(dir%dest <= 0)
+    {
+        std::swap(th_f, th_b);
+    }
+
+    auto d1 = std::abs(th_f*R);
+    auto d2 = std::abs(th_b*R);
+
+    auto t1 = getTime(v, a_f, a_b, maxV, d1);
+    auto t2 = getTime(-v, a_r, a_b, maxV, d2);
+
+    return t1 < t2;
+}
+
+
 void Harvester::accelerate(Vector2 velocityTarget)
 {
         // TODO: what if we do a similar thing as below but for acceleration, check current acceleration dir and how we need to amend it
@@ -244,7 +312,9 @@ void Harvester::accelerate(Vector2 velocityTarget)
     //accelerationTarget = velocityTarget; // Just testing stuff
     std::cout << accelerationTarget <<  " " << geoDir << std::endl;
 
-    if(accelerationTarget*geoDir >= 0.f)
+    auto b = getmoveDir(accelerationTarget, geoDir, geoVelocity, maxSpeed, maxForwardAcc, maxForwardAcc/2, maxBreakAcc, turnRadius.get<real>());
+
+    if(b)
     {
         if(geoDir*geoVelocity >= 0.f)
         {

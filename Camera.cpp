@@ -76,7 +76,7 @@ Matrix4 OrthogonalCamera::getMatrix()
 {
     return Matrix4(
         1, 0, 0, 0,
-        0, ar, 0, 0,
+        0, 1, 0, 0,
         0, 0, 1, 0,
         0, 0, 0, 1);
 }
@@ -85,7 +85,7 @@ Matrix4 OrthogonalCamera::getScreenMatrix()
 {
     return Matrix4(
         1, 0, 0, 0,
-        0, 1, 0, 0,
+        0, ar, 0, 0,
         0, 0, 1, 0,
         0, 0, 0, 1);
 }

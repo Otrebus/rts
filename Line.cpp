@@ -186,8 +186,10 @@ void Line2d::draw()
     auto program = s->getProgram(fragmentShader, geometryShader, vertexShader);
     scene->setShaderProgram(program);
     program->use();
+
+    auto screenMatrix = scene->getCamera()->getScreenMatrix();
     
-    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)(&identityMatrix.m_val));
+    glUniformMatrix4fv(glGetUniformLocation(program->getId(), "transform"), 1, GL_TRUE, (float*)(&screenMatrix.m_val));
     glUniform4fv(glGetUniformLocation(program->getId(), "Kd"), 1, (float*)(&color));
     glBindVertexArray(VAO);
     glDrawArrays(GL_LINE_STRIP, 0, int(vertexData.size())/4);

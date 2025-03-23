@@ -444,6 +444,9 @@
     <None Include="buildingPlacerMaterial.frag">
       <Filter>Shaders\Fragment shaders</Filter>
     </None>
+    <None Include="lineGeoShader.geom">
+      <Filter>Shaders\Geometry shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">
