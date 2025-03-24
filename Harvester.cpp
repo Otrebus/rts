@@ -224,8 +224,10 @@ real getTime(real v, real a_f, real a_r, real maxV, real d)
 }
 
 
-bool getmoveDir(Vector2 dest, Vector2 geoDirection, Vector2 geoVelocity, real maxV, real a_f, real a_r, real a_b, real turnRadius)
+std::pair<bool, int> getmoveDir(Vector2 dest, Vector2 geoDirection, Vector2 geoVelocity, real maxV, real a_f, real a_r, real a_b, real turnRadius)
 {
+    if(!dest)
+        return { geoVelocity*geoDirection < 0, 0 };
     real R = turnRadius;
 
     Vector2 pos = -geoDirection.perp()*R;
@@ -246,8 +248,12 @@ bool getmoveDir(Vector2 dest, Vector2 geoDirection, Vector2 geoVelocity, real ma
     auto pf = C - dest.perp().normalized()*R;
     auto pb = C + dest.perp().normalized()*R;
         
-    auto th_f = std::acos((pf-C).normalized()*(pos-C).normalized());
-    auto th_b = -(pi - std::acos((pf-C).normalized()*(pos-C).normalized()));
+    auto x = (pf-C).normalized()*(pos-C).normalized();
+
+    x = std::acos(std::min(1.0f, std::max(-1.0f, x)));
+
+    auto th_f = x;
+    auto th_b = -(pi-x);
 
     if(dir%dest <= 0)
     {
@@ -260,7 +266,8 @@ bool getmoveDir(Vector2 dest, Vector2 geoDirection, Vector2 geoVelocity, real ma
     auto t1 = getTime(v, a_f, a_b, maxV, d1);
     auto t2 = getTime(-v, a_r, a_b, maxV, d2);
 
-    return t1 < t2;
+    // This doesn't quite feel robust, comparing a float to zero; maybe turn rate should be non-binary
+    return { t1 < t2, dir%dest == 0 ? 0 : dir%dest > 0 ? 1 : -1 };
 }
 
 
@@ -286,10 +293,10 @@ void Harvester::accelerate(Vector2 velocityTarget)
     //    turnRate = 0;
 
     // The above while more correct actually works worse in practice!
-    if(velocityTarget.length() > 0.01 && velocityTarget.normalized()*geoDir < 0.999 && velocityTarget.normalized()*geoDir > -0.999)
-        turn(geoDir%velocityTarget > 0);
-    else
-        turnRate = 0;
+    //if(velocityTarget.length() > 0.01 && velocityTarget.normalized()*geoDir < 0.999 && velocityTarget.normalized()*geoDir > -0.999)
+    //    turn(geoDir%velocityTarget > 0);
+    //else
+    //    turnRate = 0;
 
     auto maxSpeed = this->maxSpeed.get<real>();
     auto maxForwardAcc = this->maxForwardAcc.get<real>();
@@ -307,12 +314,15 @@ void Harvester::accelerate(Vector2 velocityTarget)
 
     //ShapeDrawer::drawArrow(pos, projAcc.to3(), projAcc.length(), 0.02, Vector3(1, 0, 1));
 
-    ShapeDrawer::drawArrow(pos, velocityTarget.to3(), velocityTarget.length(), 0.02, Vector3(1, 0, 1));
-
     //accelerationTarget = velocityTarget; // Just testing stuff
-    std::cout << accelerationTarget <<  " " << geoDir << std::endl;
+    //std::cout << velocityTarget <<  " " << geoDir << std::endl;
 
-    auto b = getmoveDir(accelerationTarget, geoDir, geoVelocity, maxSpeed, maxForwardAcc, maxForwardAcc/2, maxBreakAcc, turnRadius.get<real>());
+    auto [b, t] = getmoveDir(velocityTarget, geoDir, geoVelocity, maxSpeed, maxForwardAcc, maxForwardAcc/2, maxBreakAcc, turnRadius.get<real>());
+
+    if(t)
+        turn(t > 0);
+    else
+        turnRate = 0;
 
     if(b)
     {
@@ -378,7 +388,10 @@ void Harvester::update(real dt)
     // If we're turning past the intended direction, clamp the turning towards the direction
     auto newDir = geoDir.normalized().rotated(turnRate*dt);
     if((newDir%velocityTarget)*(geoDir%velocityTarget) < 0 && newDir*velocityTarget > 0)
+    {
         newDir = velocityTarget.normalized();
+        turnRate = 0;
+    }
     geoDir = newDir;
 
     auto newGeoVelocity = geoVelocity + geoDir.normalized()*acceleration*dt;

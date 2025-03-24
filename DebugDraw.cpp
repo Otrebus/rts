@@ -792,6 +792,7 @@ int drawAccelerationPath(GLFWwindow* window, int xres, int yres)
             drawArc(scene, C, pos, th_f);
         else
             drawArc(scene, C, pos, th_b);
+        std::cout << (dir%dest > 0 ? "left" : "right") << std::endl;
         
         glfwSwapBuffers(window);
     }
