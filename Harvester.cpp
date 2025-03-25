@@ -239,9 +239,9 @@ std::pair<bool, int> getmoveDir(Vector2 dest, Vector2 geoDirection, Vector2 geoV
     //real a_r = 2.0;
     //real a_b = 13.0;
 
-    auto dir = pos.perp().normalized();
+    auto dir = pos.perp().normalized(); // same as geodir...?
 
-    auto c_l = pos + dir.perp()*R;
+    auto c_l = pos + dir.perp()*R;  
         
     auto C = dir%dest > 0 ? pos + dir.perp()*R : pos -dir.perp()*R;
 
@@ -258,16 +258,27 @@ std::pair<bool, int> getmoveDir(Vector2 dest, Vector2 geoDirection, Vector2 geoV
     if(dir%dest <= 0)
     {
         std::swap(th_f, th_b);
+
+        auto d1 = std::abs(th_f*R);
+        auto d2 = std::abs(th_b*R);
+
+        auto t1 = getTime(v, v > 0 ? a_f : a_r, a_b, maxV, d1);
+        auto t2 = getTime(-v, v > 0 ? a_r : a_f, a_b, maxV, d2);
+
+        std::cout << "l";
+
+        return { t1 < t2, -1 };
     }
+    else
+    {
+        auto d1 = std::abs(th_f*R);
+        auto d2 = std::abs(th_b*R);
 
-    auto d1 = std::abs(th_f*R);
-    auto d2 = std::abs(th_b*R);
+        auto t1 = getTime(v, v > 0 ? a_f : a_r, a_b, maxV, d1);
+        auto t2 = getTime(-v, v > 0 ? a_r : a_f, a_b, maxV, d2);
 
-    auto t1 = getTime(v, a_f, a_b, maxV, d1);
-    auto t2 = getTime(-v, a_r, a_b, maxV, d2);
-
-    // This doesn't quite feel robust, comparing a float to zero; maybe turn rate should be non-binary
-    return { t1 < t2, dir%dest == 0 ? 0 : dir%dest > 0 ? 1 : -1 };
+        return { t1 < t2, 1 };
+    }
 }
 
 
