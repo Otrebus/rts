@@ -46,6 +46,7 @@ public:
     static ConsoleVariable maxRadialAcc;
 
     static ConsoleVariable maxSpeed;
+    static ConsoleVariable maxReverseSpeed;
     static ConsoleVariable maxForwardAcc;
     static ConsoleVariable maxBreakAcc;
 
