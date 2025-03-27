@@ -492,8 +492,8 @@ int drawVehiclePaths(GLFWwindow* window, int xres, int yres)
             return angle*R + (v_t - dest).length();
         };
 
-        ////////// Case 2: right two point turn
-        auto rightTwoPoint = [&] (bool draw = false) {
+        ////////// Case 2: left two point turn
+        auto leftTwoPoint = [&] (bool draw = false) {
             auto v = (dest - c_l).normalized();
             auto P = c_l + v*R;
 
@@ -528,8 +528,8 @@ int drawVehiclePaths(GLFWwindow* window, int xres, int yres)
             return ret + angle*R + (v_t - dest).length();
         };
 
-        //////////////////// Case 2: left two point turn
-        auto leftTwoPoint = [&] (bool draw = false) {
+        //////////////////// Case 2: right two point turn
+        auto rightTwoPoint = [&] (bool draw = false) {
             auto v = (dest - c_r).normalized();
             auto P = c_r + v*R;
 

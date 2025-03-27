@@ -13,9 +13,9 @@
 #include "LambertianMaterial.h"
 
 ConsoleVariable Harvester::maxSpeed("harvesterMaxSpeed", 2.0f);
-ConsoleVariable Harvester::maxReverseSpeed("harvesterMaxReverseSpeed", 1.5f);
+ConsoleVariable Harvester::maxReverseSpeed("harvesterMaxReverseSpeed", 1.3f);
 ConsoleVariable Harvester::maxForwardAcc("harvesterMaxForwardAcc", 0.7f);
-ConsoleVariable Harvester::maxBreakAcc("harvesterMaxBreakAcc", 0.7f);
+ConsoleVariable Harvester::maxBreakAcc("harvesterMaxBreakAcc", 1.7f);
 
 ConsoleVariable Harvester::turnRadius("harvesterTurnRadius", 1.5f);
 ConsoleVariable Harvester::maxRadialAcc("harvesterMaxRadialAcc", 2.5f);
@@ -482,7 +482,7 @@ Vector2 Harvester::calcSeekVector(Vector2 dest)
 
         auto t = getTime(speed, forwardAcc, breakAcc, maxV, angle*R + (v_t - dest).length());
 
-        auto d = (dir + dir.perp()).normalized();
+        auto d = dir*geoVelocity > 0 ? (dir + dir.perp()).normalized() : (dir - dir.perp()).normalized();
 
         return { t, d };
     };
@@ -504,13 +504,13 @@ Vector2 Harvester::calcSeekVector(Vector2 dest)
 
         auto t = getTime(speed, forwardAcc, breakAcc, maxV, angle*R + (v_t - dest).length());
 
-        auto d =  (dir - dir.perp()).normalized();
+        auto d = dir*geoVelocity > 0 ? (dir - dir.perp()).normalized() : (dir + dir.perp()).normalized();
 
         return { t, d };
     };
 
-    auto rightTwoPoint = [&] () -> std::pair<real, Vector2> {
-        // Case 2: right two point turn
+    auto leftTwoPoint = [&] () -> std::pair<real, Vector2> {
+        // Case 2: left two point turn
         auto v = (dest - c_l).normalized();
         auto P = c_l + v*R;
 
@@ -523,9 +523,9 @@ Vector2 Harvester::calcSeekVector(Vector2 dest)
         auto v_t = (P_r - dest) % (a - dest) > 0 ? b : a;
 
         auto A = (pos-c_l).normalized(), B = (P-c_l).normalized();
-        auto angle = std::acos(A*B);
-        if(A%B > 0)
-            angle = 2*pi - angle;
+        auto angle = std::abs(std::acos(A*B));
+        /*if(A%B > 0)
+            angle = 2*pi - angle;*/
 
         real ret = 0.f;
 
@@ -538,11 +538,13 @@ Vector2 Harvester::calcSeekVector(Vector2 dest)
 
         ret += getTime(0.f, forwardAcc, breakAcc, maxV, angle*R + (v_t - dest).length());
 
-        return { ret, (-dir + dir.perp()).normalized() };
+        auto w = dir*(dest-pos) > 0 ? dir : -dir;
+
+        return { ret, (w + dir.perp()).normalized() };
     };
 
-    auto leftTwoPoint = [&] () -> std::pair<real, Vector2> {
-        // Case 2: left two point turn
+    auto rightTwoPoint = [&] () -> std::pair<real, Vector2> {
+        // Case 2: right two point turn
         auto v = (dest - c_r).normalized();
         auto P = c_r + v*R;
 
@@ -555,9 +557,9 @@ Vector2 Harvester::calcSeekVector(Vector2 dest)
         auto v_t = (P_l - dest) % (a - dest) > 0 ? a : b;
 
         auto A = (pos-c_r).normalized(), B = (P-c_r).normalized();
-        auto angle = std::acos(A*B);
-        if(A%B < 0)
-            angle = 2*pi - angle;
+        auto angle = std::abs(std::acos(A*B));
+        /*if(A%B < 0)
+            angle = 2*pi - angle;*/
 
         real ret = 0.f;
         ret += getTime(-speed, reverseAcc, breakAcc, maxRV, angle*R);
@@ -569,7 +571,9 @@ Vector2 Harvester::calcSeekVector(Vector2 dest)
 
         ret += getTime(0.f, forwardAcc, breakAcc, maxV, angle*R + (v_t - dest).length());
 
-        return { ret, (-dir - dir.perp()).normalized() };
+        auto w = dir*(dest-pos) > 0 ? dir : -dir;
+
+        return { ret, (w - dir.perp()).normalized() };
     };
 
     auto leftReverse = [&] () -> std::pair<real, Vector2> {
