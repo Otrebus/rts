@@ -14,11 +14,11 @@
 
 ConsoleVariable Harvester::maxSpeed("harvesterMaxSpeed", 2.0f);
 ConsoleVariable Harvester::maxReverseSpeed("harvesterMaxReverseSpeed", 1.3f);
-ConsoleVariable Harvester::maxForwardAcc("harvesterMaxForwardAcc", 0.7f);
-ConsoleVariable Harvester::maxBreakAcc("harvesterMaxBreakAcc", 1.7f);
+ConsoleVariable Harvester::maxForwardAcc("harvesterMaxForwardAcc", 1.5f);
+ConsoleVariable Harvester::maxBreakAcc("harvesterMaxBreakAcc", 2.0f);
 
 ConsoleVariable Harvester::turnRadius("harvesterTurnRadius", 1.5f);
-ConsoleVariable Harvester::maxRadialAcc("harvesterMaxRadialAcc", 2.5f);
+ConsoleVariable Harvester::maxRadialAcc("harvesterMaxRadialAcc", 5.7f);
 
 // TODO: no need to get terrain since we have scene->getTerrain()
 Harvester::Harvester(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, dir, up), acceleration(0), terrain(terrain), constructing(false), constructionProgress(0.f)
@@ -443,29 +443,33 @@ void Harvester::update(real dt)
 
 Vector2 Harvester::calcSeekVector(Vector2 dest)
 {
-    if((dest-geoPos).normalized()*geoDir > 0.999)
+    /*if((dest-geoPos).normalized()*geoDir > 0.999)
         return geoDir;
 
     if((dest-geoPos).normalized()*geoDir < -0.999)
-        return -geoDir;
+        return -geoDir;*/
+
+    auto maxV = maxSpeed.get<real>();
+    auto maxRV = maxReverseSpeed.get<real>();
+    auto maxRA = maxRadialAcc.get<real>();
 
     auto R = this->turnRadius.get<float>();
+    auto turnRate = std::min(maxV/R, maxRA/maxV);
+    R = maxV/turnRate;
+
     auto pos = geoPos;
     auto dir = geoDir;
 
     auto c_l = pos + dir.perp()*R;
     auto c_r = pos - dir.perp()*R;
     
-    if(auto a = (c_l-dest), b = (c_r-dest); a.length() < R || b.length() < R)
-        return (dest-pos);
+    //if(auto a = (c_l-dest), b = (c_r-dest); a.length() < R || b.length() < R)
+    //    return (dest-pos);
 
     real forwardAcc = maxForwardAcc.get<real>();
     real reverseAcc = maxForwardAcc.get<real>()*0.5;
     real breakAcc = maxBreakAcc.get<real>()*0.5;
     auto speed = geoVelocity*geoDir;
-
-    auto maxV = maxSpeed.get<real>();
-    auto maxRV = maxReverseSpeed.get<real>();
 
     auto leftHand = [&] () -> std::pair<real, Vector2> {
         // Case 1: left hand turn
@@ -482,13 +486,14 @@ Vector2 Harvester::calcSeekVector(Vector2 dest)
 
         auto t = getTime(speed, forwardAcc, breakAcc, maxV, angle*R + (v_t - dest).length());
 
-        auto d = dir*geoVelocity > 0 ? (dir + dir.perp()).normalized() : (dir - dir.perp()).normalized();
+        auto d = dir*geoVelocity > 0 ? (dir + 0.1*dir.perp()).normalized() : (dir - 0.1*dir.perp()).normalized();
 
         return { t, d };
     };
 
     auto rightHand = [&] () -> std::pair<real, Vector2> {
         // Case 1: right hand turn
+
         auto p = getTangents(c_r, R, dest);
         auto a = p.first;
         auto b = p.second;
@@ -504,7 +509,7 @@ Vector2 Harvester::calcSeekVector(Vector2 dest)
 
         auto t = getTime(speed, forwardAcc, breakAcc, maxV, angle*R + (v_t - dest).length());
 
-        auto d = dir*geoVelocity > 0 ? (dir - dir.perp()).normalized() : (dir + dir.perp()).normalized();
+        auto d = dir*geoVelocity > 0 ? (dir - 0.1*dir.perp()).normalized() : (dir + 0.1*dir.perp()).normalized();
 
         return { t, d };
     };
@@ -538,7 +543,7 @@ Vector2 Harvester::calcSeekVector(Vector2 dest)
 
         ret += getTime(0.f, forwardAcc, breakAcc, maxV, angle*R + (v_t - dest).length());
 
-        auto w = dir*(dest-pos) > 0 ? dir : -dir;
+        auto w = dir*(dest-pos) > 0 ? dir + dir.perp() : -dir + dir.perp();
 
         return { ret, (w + dir.perp()).normalized() };
     };
@@ -571,9 +576,9 @@ Vector2 Harvester::calcSeekVector(Vector2 dest)
 
         ret += getTime(0.f, forwardAcc, breakAcc, maxV, angle*R + (v_t - dest).length());
 
-        auto w = dir*(dest-pos) > 0 ? dir : -dir;
+        auto w = dir*(dest-pos) > 0 ? dir - 0.1*dir.perp() : -dir - 0.1*dir.perp();
 
-        return { ret, (w - dir.perp()).normalized() };
+        return { ret, w.normalized() };
     };
 
     auto leftReverse = [&] () -> std::pair<real, Vector2> {
@@ -595,7 +600,7 @@ Vector2 Harvester::calcSeekVector(Vector2 dest)
 
         auto t = getTime(-speed, reverseAcc, breakAcc, maxRV, D);
 
-        return { t, (-dir + dir.perp()).normalized() };
+        return { t, (-dir + 0.1*dir.perp()).normalized() };
     };
 
     auto rightReverse = [&] () -> std::pair<real, Vector2> {
@@ -617,7 +622,7 @@ Vector2 Harvester::calcSeekVector(Vector2 dest)
 
         auto t = getTime(-speed, reverseAcc, breakAcc, maxRV, D);
 
-        return { t, (-dir - dir.perp()).normalized() };
+        return { t, (-dir - 0.1*dir.perp()).normalized() };
     };
 
     auto [lh, vlh] = leftHand();
@@ -626,15 +631,17 @@ Vector2 Harvester::calcSeekVector(Vector2 dest)
     auto [ltp, vltp] = leftTwoPoint();
     auto [lr, vlr] = leftReverse();
     auto [rr, vrr] = rightReverse();
-    real m = min(lh, rh, rtp, ltp, lr, rr);
+    real m = min(lh == lh ? lh : inf, rh == rh ? rh : inf, rtp == rtp ? rtp : inf, ltp == ltp ? ltp : inf, lr == lr ? lr : inf, rr == rr ? rr : inf);
 
-    std::cout << lh << std::endl;
-    std::cout << rh << std::endl;
-    std::cout << rtp << std::endl;
-    std::cout << ltp << std::endl;
-    std::cout << lr << std::endl;
-    std::cout << rr << std::endl;
-    std::cout << "---------------------" << std::endl;
+    //std::cout << lh << std::endl;
+    //std::cout << rh << std::endl;
+    //std::cout << rtp << std::endl;
+    //std::cout << ltp << std::endl;
+    //std::cout << lr << std::endl;
+    //std::cout << rr << std::endl;
+    //std::cout << "---------------------" << std::endl;
+
+    //std::cout << m << std::endl;
 
     Vector2 v;
     if(m == lh)
