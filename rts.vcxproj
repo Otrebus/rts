@@ -159,6 +159,7 @@
     <ClCompile Include="gl3w.c" />
     <ClCompile Include="Harvester.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="Primitives.cpp" />
     <ClCompile Include="Rock.cpp" />
     <ClCompile Include="ShapeDrawer.cpp" />
@@ -234,6 +235,7 @@
     <ClInclude Include="Font.h" />
     <ClInclude Include="Harvester.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="Primitives.h" />
     <ClInclude Include="Rock.h" />
     <ClInclude Include="ShapeDrawer.h" />

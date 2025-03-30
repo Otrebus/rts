@@ -5,6 +5,7 @@
 #include <cassert>
 #include "Vertex3d.h"
 #include "Model3d.h"
+#include "LineMesh3d.h"
 
 real intersectRayCircle(Vector2 pos, Vector2 dir, Vector2 c, real radius)
 {
@@ -287,6 +288,73 @@ Mesh3d* splitMesh(Mesh3d& mesh, Vector3 pos, Vector3 dir)
     }
 
     return new Mesh3d(vOut, outTri, mesh.material);
+}
+
+LineMesh3d* splitMeshIntoLineMesh(Mesh3d& mesh, Vector3 pos, Vector3 dir)
+{
+    int num = 0;
+    std::unordered_map<Vector3, int> vMap;
+    std::vector<std::pair<int, int>> outLines;
+    std::vector<Vector3> vOut;
+
+    dir.normalize();
+    for(int i = 0; i < mesh.triangles.size(); i += 3)
+    {
+        std::vector<int> out;
+        auto& tris = mesh.triangles;
+        int T[3] = { tris[i], tris[i+1], tris[i+2] };
+        for(int j = 0; j < 3; j++)
+        {
+            auto u = mesh.v[T[j]].pos, v = mesh.v[T[(j+1)%3]].pos;
+            auto up = scalarProj(dir, (u - pos));
+            auto vp = scalarProj(dir, (v - pos));
+            if(up >= 0)
+            {
+                if(auto it = vMap.find(u); it == vMap.end())
+                    vMap[u] = num++, vOut.push_back(u);
+                out.push_back(vMap[u]);
+            }
+
+            if(vp < 0 && up > 0 || vp > 0 && up < 0)
+            {
+                up = std::abs(up);
+                vp = std::abs(vp);
+                auto pos = (u*vp + v*up)/(up + vp);
+
+                auto vx = Vector3(pos);
+
+                if(auto it = vMap.find(vx); it == vMap.end())
+                    vMap[vx] = num++, vOut.push_back(vx);
+                out.push_back(vMap[vx]);
+            }
+        }
+        for(int i = 1; i < ((int)out.size()-1); i++)
+        {
+            outLines.push_back( { out[i], out[(i+1)%(out.size())] } );
+        }
+    }
+
+    return new LineMesh3d(vOut, outLines);
+}
+
+Model3d* splitModelIntoLineModel(Model3d& sourceModel, Vector3 pos, Vector3 dir)
+{
+    auto model = new Model3d();
+    model->pos = sourceModel.pos;
+    model->setDirection(sourceModel.dir, sourceModel.up);
+    model->setSize(Vector3(1, 1, 1));
+    auto modelMatrix = model->getTransformationMatrix();
+
+    for (auto& mesh : sourceModel.meshes)
+    {
+        auto newMesh = new Mesh3d(mesh->v, mesh->triangles, mesh->material);
+        newMesh->transform(modelMatrix);
+        model->addMesh(*splitMeshIntoLineMesh(*newMesh, pos, dir));
+        delete newMesh;
+    }
+
+    model->setDirection(Vector3(1, 0, 0), Vector3(0, 0, 1));
+    return model;
 }
 
 

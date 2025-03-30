@@ -11,6 +11,7 @@
 #include "GeometryUtils.h"
 #include "UserInterface.h"
 #include "LambertianMaterial.h"
+#include "ModelLoader.h"
 
 ConsoleVariable Harvester::maxSpeed("harvesterMaxSpeed", 2.0f);
 ConsoleVariable Harvester::maxReverseSpeed("harvesterMaxReverseSpeed", 1.3f);
@@ -39,7 +40,7 @@ Harvester::Harvester(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : U
 void Harvester::loadModels()
 {
     auto model = new Model3d();
-    model->readFromFile("harvester.obj");
+    readFromFile(model, "harvester.obj");
     ModelManager::addModel("harvester", model);
 
     real length = 1;

@@ -5,6 +5,7 @@
 class Unit;
 class Mesh3d;
 class Model3d;
+class LineMesh3d;
 
 std::pair<real, Vector2> intersectCircleLinePath(Vector2 pos, real radius, Vector2 dir, Vector2 p1, Vector2 p2);
 std::pair<real, Vector2> intersectCircleTrianglePath(Vector2 pos, real radius, Vector2 dir, Vector2 p1, Vector2 p2, Vector2 p3);
@@ -20,3 +21,7 @@ real intersectSegmentSegment(Vector2 r1, Vector2 r2, Vector2 p1, Vector2 p2);
 
 Mesh3d* splitMesh(Mesh3d& mesh, Vector3 pos, Vector3 dir);
 Model3d* splitModel(Model3d& model, Vector3 pos, Vector3 dir);
+
+
+LineMesh3d* splitMeshIntoLineMesh(Mesh3d& mesh, Vector3 pos, Vector3 dir);
+Model3d* splitModelIntoLineModel(Model3d& mesh, Vector3 pos, Vector3 dir);

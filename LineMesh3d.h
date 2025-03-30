@@ -25,6 +25,6 @@ public:
 
     int lineWidth;
 
-    LineMesh3d(std::vector<Vector3> vertices, std::vector<std::pair<int, int>> lines, Material* material, int lineWidth = 1);
+    LineMesh3d(std::vector<Vector3> vertices, std::vector<std::pair<int, int>> lines, Material* material = nullptr, int lineWidth = 1);
     LineMesh3d();
 };

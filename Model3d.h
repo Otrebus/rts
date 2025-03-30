@@ -20,7 +20,6 @@ public:
 
     Model3d& operator= (const Model3d& model);
 
-    std::map<std::string, Material*> readMaterialFile(const std::string& matfilestr);
     void readFromFile(const std::string& file);
 
     const std::vector<Mesh3d*>& getMeshes() const;

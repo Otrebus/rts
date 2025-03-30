@@ -191,6 +191,9 @@
     <ClCompile Include="Command.cpp">
       <Filter>Source files\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="ModelLoader.cpp">
+      <Filter>Source files\Entities\Models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -384,6 +387,9 @@
     </ClInclude>
     <ClInclude Include="Command.h">
       <Filter>Source files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelLoader.h">
+      <Filter>Source files\Entities\Models</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

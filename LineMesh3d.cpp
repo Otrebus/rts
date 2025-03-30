@@ -1,4 +1,5 @@
 #include "LineMesh3d.h"
+#include "LambertianMaterial.h"
 
 LineMesh3d::LineMesh3d()
 {
@@ -14,7 +15,7 @@ LineMesh3d::~LineMesh3d()
 
 LineMesh3d::LineMesh3d(std::vector<Vector3> vertices, std::vector<std::pair<int, int>> lines, Material* material, int lineWidth) : lineWidth(lineWidth)
 {
-    this->material = material;
+    this->material = new LambertianMaterial();
     this->v = vertices;
     this->lines = lines;
     if(!vertexShader)

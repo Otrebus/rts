@@ -152,7 +152,7 @@
 - Put path drawing using destinationLine in Unit base
 - Combine init/constructor for meshes?
 - What's unit init about anyway
-- Command queuing
++ Command queuing
 - Improve collisions further
 - Minimap
 - Speed up the rendering of many entities
