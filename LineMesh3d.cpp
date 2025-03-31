@@ -1,10 +1,12 @@
 #include "LineMesh3d.h"
-#include "LambertianMaterial.h"
+#include "LineModelMaterial.h"
 
 LineMesh3d::LineMesh3d()
 {
     if(!vertexShader)
         vertexShader = new Shader("lineModel.vert", GL_VERTEX_SHADER);
+    if(!geometryShader)
+        geometryShader = new Shader("lineModel.geom", GL_GEOMETRY_SHADER);
 }
 
 
@@ -15,11 +17,13 @@ LineMesh3d::~LineMesh3d()
 
 LineMesh3d::LineMesh3d(std::vector<Vector3> vertices, std::vector<std::pair<int, int>> lines, Material* material, int lineWidth) : lineWidth(lineWidth)
 {
-    this->material = new LambertianMaterial();
+    this->material = new LineModelMaterial();
     this->v = vertices;
     this->lines = lines;
     if(!vertexShader)
         vertexShader = new Shader("lineModel.vert", GL_VERTEX_SHADER);
+    if(!geometryShader)
+        geometryShader = new Shader("lineModel.geom", GL_GEOMETRY_SHADER);
 }
 
 
@@ -59,8 +63,9 @@ void LineMesh3d::tearDown(Scene* s)
 
 void LineMesh3d::draw(Material *mat)
 {
+    auto material = mat ? mat : this->material;
     auto s = scene->getShaderProgramManager();
-    auto program = s->getProgram(this->material->getShader(), getVertexShader());
+    auto program = s->getProgram(material->getShader(), getGeometryShader(), getVertexShader());
     scene->setShaderProgram(program);
     program->use();
 
@@ -73,7 +78,7 @@ void LineMesh3d::updateUniforms(Material* mat)
 {
     auto material = mat ? mat : this->material;
     auto s = scene->getShaderProgramManager();
-    auto program = s->getProgram(material->getShader(), getVertexShader());
+    auto program = s->getProgram(material->getShader(), getGeometryShader(), getVertexShader());
     scene->setShaderProgram(program);
 
     program->use();

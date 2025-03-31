@@ -3,6 +3,7 @@
 #include "Polysolver.h"
 #include "TankWreck.h"
 #include "UserInterface.h"
+#include "LineModelMaterial.h"
 #include "Projectile.h"
 #include "SelectionMarkerMesh.h"
 #include "Tank.h"
@@ -235,7 +236,7 @@ void Tank::drawTurret(Material* mat)
         turret->init();
         gun->init();
 
-        mat = new LambertianMaterial(Vector3(0.f, 0.8f, 0.f));
+        mat = new LineModelMaterial(Vector3(0.f, 0.8f, 0.f));
 
         turret->draw(mat);
         gun->draw(mat);
@@ -327,9 +328,9 @@ void Tank::draw(Material* mat)
         auto z = (tankBoundingBox.c2 - tankBoundingBox.c1).z;
         auto p = pos - z/2*up;
 
-        mat = new LambertianMaterial(Vector3(0.0f, 0.8f, 0.f));
+        mat = new LineModelMaterial(Vector3(0.0f, 0.8f, 0.f));
 
-        body = splitModel(*this->body, p + z*up*constructionProgress, -up);
+        body = splitModelIntoLineModel(*this->body, p + z*up*constructionProgress, -up);
         body->init();
         body->setScene(scene);
     }

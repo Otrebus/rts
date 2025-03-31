@@ -194,6 +194,9 @@
     <ClCompile Include="ModelLoader.cpp">
       <Filter>Source files\Entities\Models</Filter>
     </ClCompile>
+    <ClCompile Include="LineModelMaterial.cpp">
+      <Filter>Source files\Materials</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LambertianMaterial.h">
@@ -391,6 +394,9 @@
     <ClInclude Include="ModelLoader.h">
       <Filter>Source files\Entities\Models</Filter>
     </ClInclude>
+    <ClInclude Include="LineModelMaterial.h">
+      <Filter>Source files\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="lambertian.frag">
@@ -451,6 +457,12 @@
       <Filter>Shaders\Fragment shaders</Filter>
     </None>
     <None Include="lineGeoShader.geom">
+      <Filter>Shaders\Geometry shaders</Filter>
+    </None>
+    <None Include="lineModel.frag">
+      <Filter>Shaders\Fragment shaders</Filter>
+    </None>
+    <None Include="lineModel.geom">
       <Filter>Shaders\Geometry shaders</Filter>
     </None>
   </ItemGroup>

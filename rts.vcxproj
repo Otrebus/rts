@@ -159,6 +159,7 @@
     <ClCompile Include="gl3w.c" />
     <ClCompile Include="Harvester.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="LineModelMaterial.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="Primitives.cpp" />
     <ClCompile Include="Rock.cpp" />
@@ -235,6 +236,7 @@
     <ClInclude Include="Font.h" />
     <ClInclude Include="Harvester.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="LineModelMaterial.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="Primitives.h" />
     <ClInclude Include="Rock.h" />
@@ -287,6 +289,8 @@
     <None Include="geometryShader.geom" />
     <None Include="lambertian.frag" />
     <None Include="lineGeoShader.geom" />
+    <None Include="lineModel.frag" />
+    <None Include="lineModel.geom" />
     <None Include="lineModel.vert" />
     <None Include="particle.frag" />
     <None Include="particle.geom" />
