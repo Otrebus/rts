@@ -13,6 +13,7 @@
 #include "FogOfWarMaterial.h"
 #include "GeometryUtils.h"
 #include "LambertianMaterial.h"
+#include "Logger.h"
 
 ConsoleVariable Tank::maxSpeed("tankMaxSpeed", 2.0f);
 ConsoleVariable Tank::maxForwardAcc("tankMaxForwardAcc", 0.7f);

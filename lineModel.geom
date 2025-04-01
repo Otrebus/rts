@@ -3,8 +3,6 @@
 layout (lines) in;
 layout (line_strip, max_vertices=2) out;
 
-in vec3 VertexPosition[2];
-
 out vec3 position;
 
 void main()
