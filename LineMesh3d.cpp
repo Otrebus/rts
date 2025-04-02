@@ -17,7 +17,7 @@ LineMesh3d::~LineMesh3d()
 
 LineMesh3d::LineMesh3d(std::vector<Vector3> vertices, std::vector<std::pair<int, int>> lines, Material* material, int lineWidth) : lineWidth(lineWidth)
 {
-    this->material = new LineModelMaterial();
+    this->material = new LineModelMaterial(Vector3(0, 1, 0));
     this->v = vertices;
     this->lines = lines;
     if(!vertexShader)
@@ -27,9 +27,8 @@ LineMesh3d::LineMesh3d(std::vector<Vector3> vertices, std::vector<std::pair<int,
 }
 
 
-void LineMesh3d::init(Scene* s)
+void LineMesh3d::init()
 {
-    scene = s;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
@@ -55,7 +54,7 @@ void LineMesh3d::init(Scene* s)
     glBindVertexArray(0);
 }
 
-void LineMesh3d::tearDown(Scene* s)
+void LineMesh3d::tearDown()
 {
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
@@ -72,6 +71,8 @@ void LineMesh3d::draw(Material *mat)
 
     glLineWidth(2);
     glBindVertexArray(VAO);
+    //glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(indices.size())/2);
+    //glDrawArrays(GL_LINES, 0, 4);
     glDrawElements(GL_LINES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
 }
 

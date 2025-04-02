@@ -24,7 +24,7 @@ public:
     virtual Shader* getVertexShader() const;
     virtual Shader* getGeometryShader() const;
 
-    void draw(Material* mat = nullptr);
+    virtual void draw(Material* mat = nullptr);
     virtual void updateUniforms(Material* mat = nullptr);
 
     void transform(Matrix4 m);

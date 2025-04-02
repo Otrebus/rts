@@ -14,8 +14,8 @@ public:
     static Shader* vertexShader;
     static Shader* geometryShader;
 
-    void init(Scene* scene);
-    void tearDown(Scene* scene);
+    void init();
+    void tearDown();
 
     Shader* getVertexShader() const;
     Shader* getGeometryShader() const;
