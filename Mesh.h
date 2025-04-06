@@ -38,7 +38,7 @@ public:
     Vector3 getPos() const;
 
     int nTriangles;
-private:
+protected:
     Vector3 dir, up, pos, size;
     Matrix4 transformationMatrix;
     bool matrixCached;

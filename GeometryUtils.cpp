@@ -6,6 +6,7 @@
 #include "Vertex3d.h"
 #include "Model3d.h"
 #include "LineMesh3d.h"
+#include "LineModelMaterial.h"
 
 real intersectRayCircle(Vector2 pos, Vector2 dir, Vector2 c, real radius)
 {
@@ -328,7 +329,7 @@ LineMesh3d* splitMeshIntoLineMesh(Mesh3d& mesh, Vector3 pos, Vector3 dir)
                 out.push_back(vMap[vx]);
             }
         }
-        for(int i = 1; i < ((int)out.size()-1); i++)
+        for(int i = 0; i < (int)out.size(); i++)
         {
             outLines.push_back( { out[i], out[(i+1)%(out.size())] } );
         }
@@ -376,4 +377,25 @@ Model3d* splitModel(Model3d& sourceModel, Vector3 pos, Vector3 dir)
 
     model->setDirection(Vector3(1, 0, 0), Vector3(0, 0, 1));
     return model;
+}
+
+
+Model3d splitModelAsConstructing(Model3d& sourceModel, real height, Vector3 pos, Vector3 up, real completion)
+{
+    auto z = height;
+    auto p = pos - z/2*up;
+
+    auto mat = new LineModelMaterial(Vector3(0.0f, 0.8f, 0.f));
+
+    if(completion < 1.f/3.f)
+    {
+        auto body = splitModelIntoLineModel(sourceModel, p + z*up*(completion*3.0f), -up);
+    }
+    else if(completion < 2.f/3.f)
+    {
+        auto body1 = splitModel(sourceModel, p + z*up*completion, -up);
+    }
+    else
+    {
+    }
 }

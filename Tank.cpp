@@ -237,12 +237,8 @@ void Tank::drawTurret(Material* mat)
         turret->init();
         gun->init();
 
-        mat = new LineModelMaterial(Vector3(0.f, 0.8f, 0.f));
-
         turret->draw(mat);
         gun->draw(mat);
-
-        delete mat;
 
         turret->tearDown(scene);
         gun->tearDown(scene);
@@ -512,7 +508,7 @@ void Tank::update(real dt)
 {
     auto time = real(glfwGetTime());
     updateTurret(dt);
-    constructionProgress += dt*0.3f;
+    constructionProgress += dt*0.1f;
     if(constructionProgress >= 1.0f)
     {
         constructing = false;

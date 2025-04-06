@@ -110,6 +110,7 @@ Shader* Mesh3d::getVertexShader() const
 
 void Mesh3d::transform(Matrix4 matrix)
 {
+    transformationMatrix = matrix;
     for(auto& p : v)
         p.pos *= matrix;
 }
