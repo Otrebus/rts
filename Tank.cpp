@@ -228,8 +228,12 @@ void Tank::drawTurret(Material* mat)
         auto z = (tankBoundingBox.c2 - tankBoundingBox.c1).z;
         auto p = pos - z/2*up;
 
-        auto turret = splitModelIntoLineModel(*this->turret, p + z*up*constructionProgress, -up);
-        auto gun = splitModelIntoLineModel(*this->gun, p + z*up*constructionProgress, -up);
+        //auto turret = splitModelIntoLineModel(*this->turret, p + z*up*constructionProgress, -up);
+        //auto gun = splitModelIntoLineModel(*this->gun, p + z*up*constructionProgress, -up);
+
+        auto turret = splitModelAsConstructing(*this->turret, z, pos, up, constructionProgress);
+        auto gun = splitModelAsConstructing(*this->gun, z, pos, up, constructionProgress);
+
 
         turret->setScene(scene);
         gun->setScene(scene);
@@ -327,7 +331,7 @@ void Tank::draw(Material* mat)
 
         mat = new LineModelMaterial(Vector3(0.0f, 0.8f, 0.f));
 
-        body = splitModelIntoLineModel(*this->body, p + z*up*constructionProgress, -up);
+        body = splitModelAsConstructing(*this->body, z, pos, up, constructionProgress);
         body->init();
         body->setScene(scene);
     }

@@ -7,6 +7,7 @@
 #include "Model3d.h"
 #include "LineMesh3d.h"
 #include "LineModelMaterial.h"
+#include "LambertianMaterial.h"
 
 real intersectRayCircle(Vector2 pos, Vector2 dir, Vector2 c, real radius)
 {
@@ -380,7 +381,7 @@ Model3d* splitModel(Model3d& sourceModel, Vector3 pos, Vector3 dir)
 }
 
 
-Model3d splitModelAsConstructing(Model3d& sourceModel, real height, Vector3 pos, Vector3 up, real completion)
+Model3d* splitModelAsConstructing(Model3d& sourceModel, real height, Vector3 pos, Vector3 up, real completion)
 {
     auto z = height;
     auto p = pos - z/2*up;
@@ -389,13 +390,65 @@ Model3d splitModelAsConstructing(Model3d& sourceModel, real height, Vector3 pos,
 
     if(completion < 1.f/3.f)
     {
-        auto body = splitModelIntoLineModel(sourceModel, p + z*up*(completion*3.0f), -up);
+        auto model = splitModelIntoLineModel(sourceModel, p + z*up*(completion*3.0f), -up);
+        return model;
     }
     else if(completion < 2.f/3.f)
     {
-        auto body1 = splitModel(sourceModel, p + z*up*completion, -up);
+        auto bottom = splitModel(sourceModel, p + z*up*(completion-1.0f/3)*3.0, -up);
+        auto top = splitModelIntoLineModel(sourceModel, p + z*up*(completion-1.0f/3.0f)*3.0f, up);
+
+        auto model = new Model3d();
+        model->pos = sourceModel.pos;
+        model->setDirection(sourceModel.dir, sourceModel.up);
+        model->setSize(Vector3(1, 1, 1));
+        auto modelMatrix = model->getTransformationMatrix();
+
+        auto mat = new LambertianMaterial();
+        mat->Kd = Vector3(0, 0.8, 0);
+        for(auto& mesh : bottom->meshes)
+        {
+            auto newMesh = new Mesh3d(mesh->v, mesh->triangles, mat);
+            model->addMesh(*newMesh);
+        }
+
+        for(auto& mesh : top->meshes)
+        {
+            auto p = (LineMesh3d*) mesh;
+            auto newMesh = new LineMesh3d(p->v, p->lines, p->material);
+            model->addMesh(*newMesh);
+        }
+
+        model->setDirection(Vector3(1, 0, 0), Vector3(0, 0, 1));
+        return model;
     }
     else
     {
+        auto bottom = splitModelIntoLineModel(sourceModel, p + z*up*(completion-1.0f/3.0f)*3.0f, -up);
+        auto top = splitModel(sourceModel, p + z*up*(completion-1.0f/3)*3.0, up);
+
+        auto model = new Model3d();
+        model->pos = sourceModel.pos;
+        model->setDirection(sourceModel.dir, sourceModel.up);
+        model->setSize(Vector3(1, 1, 1));
+        auto modelMatrix = model->getTransformationMatrix();
+
+        for(auto& mesh : bottom->meshes)
+        {
+            auto newMesh = new Mesh3d(mesh->v, mesh->triangles, mesh->material);
+            model->addMesh(*newMesh);
+        }
+
+        auto mat = new LambertianMaterial();
+        mat->Kd = Vector3(0, 0.8, 0);
+        for(auto& mesh : top->meshes)
+        {
+            auto newMesh = new Mesh3d(mesh->v, mesh->triangles, mat);
+            model->addMesh(*newMesh);
+        }
+
+
+        model->setDirection(Vector3(1, 0, 0), Vector3(0, 0, 1));
+        return model;
     }
 }
