@@ -17,7 +17,7 @@ LineMesh3d::~LineMesh3d()
 
 LineMesh3d::LineMesh3d(std::vector<Vector3> vertices, std::vector<std::pair<int, int>> lines, Material* material, int lineWidth) : lineWidth(lineWidth)
 {
-    this->material = new LineModelMaterial(Vector3(0, 1, 0));
+    this->material = material ? material : new LineModelMaterial(Vector3(0, 1, 0));
     this->v = vertices;
     this->lines = lines;
     if(!vertexShader)

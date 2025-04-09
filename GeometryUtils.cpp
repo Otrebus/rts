@@ -292,7 +292,7 @@ Mesh3d* splitMesh(Mesh3d& mesh, Vector3 pos, Vector3 dir)
     return new Mesh3d(vOut, outTri, mesh.material);
 }
 
-LineMesh3d* splitMeshIntoLineMesh(Mesh3d& mesh, Vector3 pos, Vector3 dir)
+LineMesh3d* splitMeshIntoLineMesh(Mesh3d& mesh, Vector3 pos, Vector3 dir, Vector3 color = Vector3(1.f, 1.f, 1.f))
 {
     int num = 0;
     std::unordered_map<Vector3, int> vMap;
@@ -336,10 +336,11 @@ LineMesh3d* splitMeshIntoLineMesh(Mesh3d& mesh, Vector3 pos, Vector3 dir)
         }
     }
 
-    return new LineMesh3d(vOut, outLines);
+    auto mat = new LineModelMaterial(color);
+    return new LineMesh3d(vOut, outLines, mat);
 }
 
-Model3d* splitModelIntoLineModel(Model3d& sourceModel, Vector3 pos, Vector3 dir)
+Model3d* splitModelIntoLineModel(Model3d& sourceModel, Vector3 pos, Vector3 dir, Vector3 color)
 {
     auto model = new Model3d();
     model->pos = sourceModel.pos;
@@ -351,7 +352,7 @@ Model3d* splitModelIntoLineModel(Model3d& sourceModel, Vector3 pos, Vector3 dir)
     {
         auto newMesh = new Mesh3d(mesh->v, mesh->triangles, mesh->material);
         newMesh->transform(modelMatrix);
-        model->addMesh(*splitMeshIntoLineMesh(*newMesh, pos, dir));
+        model->addMesh(*splitMeshIntoLineMesh(*newMesh, pos, dir, color));
         delete newMesh;
     }
 
@@ -386,17 +387,17 @@ Model3d* splitModelAsConstructing(Model3d& sourceModel, real height, Vector3 pos
     auto z = height;
     auto p = pos - z/2*up;
 
-    auto mat = new LineModelMaterial(Vector3(0.0f, 0.8f, 0.f));
+    auto time = real(glfwGetTime());
 
     if(completion < 1.f/3.f)
     {
-        auto model = splitModelIntoLineModel(sourceModel, p + z*up*(completion*3.0f), -up);
+        auto model = splitModelIntoLineModel(sourceModel, p + z*up*(completion*3.0f), -up, Vector3(0.0f, 0.8 + std::cos(time*5)*0.2, 0.f));
         return model;
     }
     else if(completion < 2.f/3.f)
     {
         auto bottom = splitModel(sourceModel, p + z*up*(completion-1.0f/3)*3.0, -up);
-        auto top = splitModelIntoLineModel(sourceModel, p + z*up*(completion-1.0f/3.0f)*3.0f, up);
+        auto top = splitModelIntoLineModel(sourceModel, p + z*up*(completion-1.0f/3.0f)*3.0f, up, Vector3(0.0f, 0.8 + std::cos(time*5)*0.2, 0.f));
 
         auto model = new Model3d();
         model->pos = sourceModel.pos;
@@ -405,7 +406,7 @@ Model3d* splitModelAsConstructing(Model3d& sourceModel, real height, Vector3 pos
         auto modelMatrix = model->getTransformationMatrix();
 
         auto mat = new LambertianMaterial();
-        mat->Kd = Vector3(0, 0.8, 0);
+        mat->Kd = Vector3(0.f, 0.8f + std::cos(time*5)*0.2f, 0);
         for(auto& mesh : bottom->meshes)
         {
             auto newMesh = new Mesh3d(mesh->v, mesh->triangles, mat);
@@ -424,8 +425,8 @@ Model3d* splitModelAsConstructing(Model3d& sourceModel, real height, Vector3 pos
     }
     else
     {
-        auto bottom = splitModelIntoLineModel(sourceModel, p + z*up*(completion-1.0f/3.0f)*3.0f, -up);
-        auto top = splitModel(sourceModel, p + z*up*(completion-1.0f/3)*3.0, up);
+        auto top = splitModel(sourceModel, p + z*up*(completion-2.0f/3)*3.0, up);
+        auto bottom = splitModel(sourceModel, p + z*up*(completion-2.0f/3)*3.0, -up);
 
         auto model = new Model3d();
         model->pos = sourceModel.pos;
@@ -440,13 +441,12 @@ Model3d* splitModelAsConstructing(Model3d& sourceModel, real height, Vector3 pos
         }
 
         auto mat = new LambertianMaterial();
-        mat->Kd = Vector3(0, 0.8, 0);
+        mat->Kd = Vector3(0.f, 0.8f + std::cos(time*5)*0.2f, 0);
         for(auto& mesh : top->meshes)
         {
             auto newMesh = new Mesh3d(mesh->v, mesh->triangles, mat);
             model->addMesh(*newMesh);
         }
-
 
         model->setDirection(Vector3(1, 0, 0), Vector3(0, 0, 1));
         return model;

@@ -111,8 +111,12 @@ Shader* Mesh3d::getVertexShader() const
 void Mesh3d::transform(Matrix4 matrix)
 {
     transformationMatrix = matrix;
+    auto normalMatrix = getNormalMatrix(matrix);
     for(auto& p : v)
+    {
         p.pos *= matrix;
+        p.normal *= normalMatrix;
+    }
 }
 
 Shader* Mesh3d::vertexShader = nullptr;

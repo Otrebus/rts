@@ -329,8 +329,6 @@ void Tank::draw(Material* mat)
         auto z = (tankBoundingBox.c2 - tankBoundingBox.c1).z;
         auto p = pos - z/2*up;
 
-        mat = new LineModelMaterial(Vector3(0.0f, 0.8f, 0.f));
-
         body = splitModelAsConstructing(*this->body, z, pos, up, constructionProgress);
         body->init();
         body->setScene(scene);

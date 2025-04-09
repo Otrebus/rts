@@ -23,6 +23,6 @@ Mesh3d* splitMesh(Mesh3d& mesh, Vector3 pos, Vector3 dir);
 Model3d* splitModel(Model3d& model, Vector3 pos, Vector3 dir);
 
 
-LineMesh3d* splitMeshIntoLineMesh(Mesh3d& mesh, Vector3 pos, Vector3 dir);
-Model3d* splitModelIntoLineModel(Model3d& mesh, Vector3 pos, Vector3 dir);
+LineMesh3d* splitMeshIntoLineMesh(Mesh3d& mesh, Vector3 pos, Vector3 dir, Vector3 color);
+Model3d* splitModelIntoLineModel(Model3d& mesh, Vector3 pos, Vector3 dir, Vector3 color);
 Model3d* splitModelAsConstructing(Model3d& sourceModel, real height, Vector3 pos, Vector3 up, real completion);
