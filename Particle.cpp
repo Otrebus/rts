@@ -15,24 +15,20 @@ void Particle::setPos(const Vector3& pos)
     this->pos = pos;
 }
 
-
 const Vector3& Particle::getPos() const
 {
     return pos;
 }
-
 
 Vector3 Particle::getVelocity() const
 {
     return velocity;
 }
 
-
 void Particle::setVelocity(const Vector3& velocity)
 {
     this->velocity = velocity;
 }
-
 
 const Vector3& Particle::getColor() const
 {
@@ -54,7 +50,6 @@ float Particle::getRandomFloat(float min, float max)
     std::uniform_real_distribution<float> distribution(min, max);
     return distribution(Random::getInstance().getGenerator());
 }
-
 
 int Particle::getRandomInt(int min, int max)
 {

@@ -593,7 +593,20 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
         for(auto unit : units)
         {
             if(unit->isSelected() && dynamic_cast<Building*>(unit))
-                ((Building*)unit)->produceTank();
+            {
+                auto factory = (Building*) unit;
+                bool isWithin = false;
+                for(auto unit : units)
+                {
+                    if(unit != factory && (unit->getGeoPosition() - factory->getGeoPosition()).length() < 1.f)
+                    {
+                        isWithin = true;
+                        break;
+                    }
+                }
+                if(!isWithin)
+                    factory->produceTank();
+            }
         }
     }
     if(input.stateStart == InputType::KeyPress && input.key == GLFW_KEY_H)

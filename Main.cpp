@@ -230,10 +230,10 @@ int main()
         time = real(glfwGetTime());
         auto dt = time - prevTime;
 
+        handleInput(prevTime, time, cameraControl, interface, scene, terrain, window);
+
         glClearColor(0.5f, 0.5f, 0.5f, 0.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        handleInput(prevTime, time, cameraControl, interface, scene, terrain, window);
 
         for(auto result = popPathFindingResult(); result; result = popPathFindingResult())
         {

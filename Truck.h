@@ -1,16 +1,16 @@
 #pragma once
+#pragma once
 
 #include "Line.h"
 #include "Math.h"
 #include "Unit.h"
 #include "ConsoleSettings.h"
-#include "Rock.h"
 
-class Harvester : public Unit
+class Vehicle : public Unit
 {
 public:
-    Harvester(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain);
-    ~Harvester();
+    Vehicle(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain);
+    ~Vehicle();
 
     void init(Scene* scene);
     void updateUniforms();
@@ -26,8 +26,6 @@ public:
     void turn(bool dir);
     void update(real dt);
 
-    void handleCommand(real dt);
-
     Entity* spawnWreck();
 
     Vector2 seek();
@@ -38,6 +36,8 @@ public:
 
     Vector2 calcSeekVector(Vector2 dest);
 
+    void handleCommand(real dt);
+
     static void loadModels();
 
     Model3d* body;
@@ -46,7 +46,6 @@ public:
     static ConsoleVariable maxRadialAcc;
 
     static ConsoleVariable maxSpeed;
-    static ConsoleVariable maxReverseSpeed;
     static ConsoleVariable maxForwardAcc;
     static ConsoleVariable maxBreakAcc;
 
@@ -61,7 +60,7 @@ public:
 
     Line3d destinationLine;
 
-    static BoundingBox HarvesterBoundingBox;
+    static BoundingBox vehicleBoundingBox;
 
     static Material* fowMaterial;
 

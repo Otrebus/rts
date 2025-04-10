@@ -44,6 +44,8 @@ void Building::draw(Material* mat = nullptr)
     
     glBlendFuncSeparate(GL_ZERO, GL_ONE, GL_ONE, GL_ZERO);
 
+    ShapeDrawer::setInFront(false);
+
     ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(-real(W)/2+real(length)/2, 0.f, -real(height)/6), Vector3(1.f, 0.f, 0.f), up, W, real(width), height*2.0f/3, fowMaterial);
     ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(real(W)/2-real(length)/2, 0.f, -real(height)/6), Vector3(1.f, 0.f, 0.f), up, W, real(width), height*2.0f/3, fowMaterial);
     ShapeDrawer::drawBox(Vector3(pos.x, pos.y, pos.z) + Vector3(0.f, real(width)/2 - real(L)/2, 0.f), Vector3(1, 0, 0), up, length-W*2, L, real(height), fowMaterial);
@@ -153,7 +155,7 @@ void Building::produceTank()
     tank->constructing = true;
     scene->addEntity(tank);
     tank->init(scene);
-    addUnitPathfindingRequest(tank, (pos + dir.normalized()*3).to2());
+    tank->commandQueue.push(MoveCommand((pos + tank->dir.normalized()*3).to2()));
 }
 
 bool Building::pointWithinFootprint(int posX, int posY) const

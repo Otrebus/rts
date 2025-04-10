@@ -69,7 +69,7 @@ void writeBMP(std::vector<Vector3> v, int width, int height, std::string filenam
         for(int x = 0; x < width; x++)
         {
             auto [r, g, b] = vectorToRgb(v[y*width+x]);
-            file.put(r); file.put(g); file.put(b);
+            file.put((char)r); file.put((char)g); file.put((char)b);
         }
         for(int n = 0; n < pad; n++)
             file.put(0);

@@ -35,14 +35,14 @@ void handleInput(const real& prevTime, const real& time, CameraControl& cameraCo
 
                 glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
 
-                for (int y = 0; y < height; y++)
+                for(int y = 0; y < height; y++)
                 {
-                    for (int x = 0; x < width; x++)
+                    for(int x = 0; x < width; x++)
                     {
-                        auto i = 3 * ((height - 1 - y) * width + x);
+                        auto i = 3 * ((height - 1 - y)*width + x);
                         auto r = pixels[i];
-                        auto g = pixels[i + 1];
-                        auto b = pixels[i + 2];
+                        auto g = pixels[i+1];
+                        auto b = pixels[i+2];
                         v[x + y * width] = rgbToVector(r, g, b);
                     }
                 }
@@ -51,7 +51,6 @@ void handleInput(const real& prevTime, const real& time, CameraControl& cameraCo
                 writeBMP(v, width, height, "screenshot.bmp");
             }
         }
-
         delete input;
     }
 }
