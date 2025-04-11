@@ -6,16 +6,15 @@
 #include "ConsoleSettings.h"
 #include "Rock.h"
 
-class Harvester : public Unit
+class Vehicle : public Unit
 {
 public:
-    Harvester(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain);
-    ~Harvester();
+    Vehicle(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain);
+    ~Vehicle();
 
     void init(Scene* scene);
     void updateUniforms();
 
-    void drawTurret(Material* mat = nullptr);
     void draw(Material* mat = nullptr);
 
     void setPosition(Vector3 pos);
@@ -44,7 +43,6 @@ public:
 
     static ConsoleVariable turnRadius;
     static ConsoleVariable maxRadialAcc;
-
     static ConsoleVariable maxSpeed;
     static ConsoleVariable maxReverseSpeed;
     static ConsoleVariable maxForwardAcc;
@@ -61,7 +59,7 @@ public:
 
     Line3d destinationLine;
 
-    static BoundingBox HarvesterBoundingBox;
+    static BoundingBox vehicleBoundingBox;
 
     static Material* fowMaterial;
 

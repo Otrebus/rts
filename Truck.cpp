@@ -4,7 +4,7 @@
 #include "TankWreck.h"
 #include "Projectile.h"
 #include "SelectionMarkerMesh.h"
-#include "Vehicle.h"
+#include "Truck.h"
 #include "ShapeDrawer.h"
 #include "ConsoleSettings.h"
 #include "FogOfWarMaterial.h"
@@ -13,15 +13,15 @@
 #include "Rock.h"
 #include "LambertianMaterial.h"
 
-ConsoleVariable Vehicle::maxSpeed("vehicleMaxSpeed", 2.0f);
-ConsoleVariable Vehicle::maxForwardAcc("vehicleMaxForwardAcc", 0.7f);
-ConsoleVariable Vehicle::maxBreakAcc("vehicleMaxBreakAcc", 1.7f);
+ConsoleVariable Truck::maxSpeed("truckMaxSpeed", 2.0f);
+ConsoleVariable Truck::maxForwardAcc("truckMaxForwardAcc", 0.7f);
+ConsoleVariable Truck::maxBreakAcc("truckMaxBreakAcc", 1.7f);
 
-ConsoleVariable Vehicle::turnRadius("vehicleTurnRadius", 1.5f);
-ConsoleVariable Vehicle::maxRadialAcc("vehicleMaxRadialAcc", 2.5f);
+ConsoleVariable Truck::turnRadius("truckTurnRadius", 1.5f);
+ConsoleVariable Truck::maxRadialAcc("truckMaxRadialAcc", 2.5f);
 
 // TODO: no need to get terrain since we have scene->getTerrain()
-Vehicle::Vehicle(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, dir, up), acceleration(0), terrain(terrain), constructing(false), constructionProgress(0.f)
+Truck::Truck(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, dir, up), acceleration(0), terrain(terrain), constructing(false), constructionProgress(0.f)
 {
     hasFoundPath = false;
     model = ModelManager::instantiateModel("truck");
@@ -33,11 +33,11 @@ Vehicle::Vehicle(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(
 
     selectionMarkerMesh = new SelectionMarkerMesh(2, 2, true);
 
-    boundingBox = vehicleBoundingBox;
+    boundingBox = truckBoundingBox;
 }
 
 
-void Vehicle::loadModels()
+void Truck::loadModels()
 {
     auto model = new Model3d();
     model->readFromFile("truck.obj");
@@ -95,22 +95,22 @@ void Vehicle::loadModels()
     auto height = h*ratio;
     auto width = w*ratio;
 
-    vehicleBoundingBox = BoundingBox(Vector3(-length/2, -width/2, -height/2), Vector3(length/2, width/2, height/2));
+    truckBoundingBox = BoundingBox(Vector3(-length/2, -width/2, -height/2), Vector3(length/2, width/2, height/2));
 }
 
 
-Vehicle::~Vehicle()
+Truck::~Truck()
 {
 }
 
 
-Entity* Vehicle::spawnWreck()
+Entity* Truck::spawnWreck()
 {
     return nullptr;
 }
 
 
-void Vehicle::init(Scene* scene)
+void Truck::init(Scene* scene)
 {
     this->scene = scene;
     model->setScene(scene);
@@ -123,13 +123,13 @@ void Vehicle::init(Scene* scene)
     selectionMarkerMesh->init(pos.to2());
 }
 
-void Vehicle::updateUniforms()
+void Truck::updateUniforms()
 {
     model->updateUniforms();
     selectionMarkerMesh->updateUniforms();
 }
 
-void Vehicle::draw(Material* mat)
+void Truck::draw(Material* mat)
 {
     GLint curDepthFun;
     GLboolean curBlend;
@@ -184,14 +184,14 @@ void Vehicle::draw(Material* mat)
 }
 
 
-void Vehicle::setPosition(Vector3 pos)
+void Truck::setPosition(Vector3 pos)
 {
     this->pos = pos;
     model->setPosition(pos);
 }
 
 
-void Vehicle::setDirection(Vector3 dir, Vector3 up)
+void Truck::setDirection(Vector3 dir, Vector3 up)
 {
     this->dir = dir;
     this->up = up;
@@ -199,7 +199,7 @@ void Vehicle::setDirection(Vector3 dir, Vector3 up)
 }
 
 
-void Vehicle::accelerate(Vector2 velocityTarget)
+void Truck::accelerate(Vector2 velocityTarget)
 {
     // TODO: what if we do a similar thing as below but for acceleration, check current acceleration dir and how we need to amend it
     accelerationTarget = velocityTarget - geoVelocity;
@@ -258,7 +258,7 @@ void Vehicle::accelerate(Vector2 velocityTarget)
     }
 }
 
-void Vehicle::handleCommand(real dt)
+void Truck::handleCommand(real dt)
 {
     auto time = real(glfwGetTime());
     if(commandQueue.empty())
@@ -341,14 +341,14 @@ void Vehicle::handleCommand(real dt)
     }
 }
 
-void Vehicle::brake()
+void Truck::brake()
 {
     turnRate = 0.f;
     auto maxBreakAcc = this->maxBreakAcc.get<real>();
     acceleration = -maxBreakAcc;
 }
 
-void Vehicle::turn(bool left)
+void Truck::turn(bool left)
 {
     auto maxRadialAcc = this->maxRadialAcc.get<float>();
     auto turnRadius = this->turnRadius.get<float>();
@@ -357,7 +357,7 @@ void Vehicle::turn(bool left)
         turnRate = -turnRate;
 }
 
-void Vehicle::update(real dt)
+void Truck::update(real dt)
 {
     constructionProgress += dt*0.3f;
     if(constructionProgress >= 1.0f)
@@ -397,7 +397,7 @@ void Vehicle::update(real dt)
     }
 }
 
-Vector2 Vehicle::calcSeekVector(Vector2 dest)
+Vector2 Truck::calcSeekVector(Vector2 dest)
 {
     if((dest-geoPos).normalized()*geoDir > 0.999)
         return geoDir;
@@ -574,7 +574,7 @@ Vector2 Vehicle::calcSeekVector(Vector2 dest)
     return v;
 }
 
-Vector2 Vehicle::seek()
+Vector2 Truck::seek()
 {
     if(!path.empty())
     {
@@ -605,7 +605,7 @@ Vector2 Vehicle::seek()
         return -geoVelocity;
 }
 
-Vector2 Vehicle::evade()
+Vector2 Truck::evade()
 {
     Vector2 sum = { 0, 0 };
     for(auto unit : scene->getEntities())
@@ -642,7 +642,7 @@ Vector2 Vehicle::evade()
 }
 
 
-Vector2 Vehicle::avoid()
+Vector2 Truck::avoid()
 {
     auto pos2 = geoPos + geoVelocity;
 
@@ -657,7 +657,7 @@ Vector2 Vehicle::avoid()
 }
 
 
-Vector2 Vehicle::separate()
+Vector2 Truck::separate()
 {
     Vector2 sum = { 0, 0 };
     for(auto unit : scene->getEntities())
@@ -687,7 +687,7 @@ Vector2 Vehicle::separate()
 }
 
 
-Vector2 Vehicle::boidCalc()
+Vector2 Truck::boidCalc()
 {
     auto evade_ = evade(), seek_ = seek(), avoid_ = avoid(), separate_ = separate();
     
@@ -708,5 +708,5 @@ Vector2 Vehicle::boidCalc()
 }
 
 
-BoundingBox Vehicle::vehicleBoundingBox = BoundingBox();
-Material* Vehicle::fowMaterial = nullptr;
+BoundingBox Truck::truckBoundingBox = BoundingBox();
+Material* Truck::fowMaterial = nullptr;

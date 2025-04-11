@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 
 #include "Line.h"
 #include "Math.h"
@@ -15,7 +16,6 @@ public:
     void init(Scene* scene);
     void updateUniforms();
 
-    void drawTurret(Material* mat = nullptr);
     void draw(Material* mat = nullptr);
 
     void setPosition(Vector3 pos);

@@ -4,7 +4,7 @@
 #include "TankWreck.h"
 #include "Projectile.h"
 #include "SelectionMarkerMesh.h"
-#include "Harvester.h"
+#include "Vehicle.h"
 #include "ShapeDrawer.h"
 #include "ConsoleSettings.h"
 #include "FogOfWarMaterial.h"
@@ -13,16 +13,16 @@
 #include "LambertianMaterial.h"
 #include "ModelLoader.h"
 
-ConsoleVariable Harvester::maxSpeed("harvesterMaxSpeed", 2.0f);
-ConsoleVariable Harvester::maxReverseSpeed("harvesterMaxReverseSpeed", 1.3f);
-ConsoleVariable Harvester::maxForwardAcc("harvesterMaxForwardAcc", 1.5f);
-ConsoleVariable Harvester::maxBreakAcc("harvesterMaxBreakAcc", 2.0f);
+ConsoleVariable Vehicle::maxSpeed("vehicleMaxSpeed", 2.0f);
+ConsoleVariable Vehicle::maxReverseSpeed("vehicleMaxReverseSpeed", 1.3f);
+ConsoleVariable Vehicle::maxForwardAcc("vehicleMaxForwardAcc", 1.5f);
+ConsoleVariable Vehicle::maxBreakAcc("vehicleMaxBreakAcc", 2.0f);
 
-ConsoleVariable Harvester::turnRadius("harvesterTurnRadius", 1.5f);
-ConsoleVariable Harvester::maxRadialAcc("harvesterMaxRadialAcc", 5.7f);
+ConsoleVariable Vehicle::turnRadius("vehicleTurnRadius", 1.5f);
+ConsoleVariable Vehicle::maxRadialAcc("vehicleMaxRadialAcc", 5.7f);
 
 // TODO: no need to get terrain since we have scene->getTerrain()
-Harvester::Harvester(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, dir, up), acceleration(0), terrain(terrain), constructing(false), constructionProgress(0.f)
+Vehicle::Vehicle(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, dir, up), acceleration(0), terrain(terrain), constructing(false), constructionProgress(0.f)
 {
     model = ModelManager::instantiateModel("harvester");
     geoPos = pos.to2();
@@ -33,11 +33,11 @@ Harvester::Harvester(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : U
 
     selectionMarkerMesh = new SelectionMarkerMesh(2, 2, true);
 
-    boundingBox = HarvesterBoundingBox;
+    boundingBox = vehicleBoundingBox;
 }
 
 
-void Harvester::loadModels()
+void Vehicle::loadModels()
 {
     auto model = new Model3d();
     readFromFile(model, "harvester.obj");
@@ -95,22 +95,22 @@ void Harvester::loadModels()
     auto height = h*ratio;
     auto width = w*ratio;
 
-    HarvesterBoundingBox = BoundingBox(Vector3(-length/2, -width/2, -height/2), Vector3(length/2, width/2, height/2));
+    vehicleBoundingBox = BoundingBox(Vector3(-length/2, -width/2, -height/2), Vector3(length/2, width/2, height/2));
 }
 
 
-Harvester::~Harvester()
+Vehicle::~Vehicle()
 {
 }
 
 
-Entity* Harvester::spawnWreck()
+Entity* Vehicle::spawnWreck()
 {
     return nullptr;
 }
 
 
-void Harvester::init(Scene* scene)
+void Vehicle::init(Scene* scene)
 {
     this->scene = scene;
     model->setScene(scene);
@@ -123,13 +123,13 @@ void Harvester::init(Scene* scene)
     selectionMarkerMesh->init(pos.to2());
 }
 
-void Harvester::updateUniforms()
+void Vehicle::updateUniforms()
 {
     model->updateUniforms();
     selectionMarkerMesh->updateUniforms();
 }
 
-void Harvester::draw(Material* mat)
+void Vehicle::draw(Material* mat)
 {
     GLint curDepthFun;
     GLboolean curBlend;
@@ -183,14 +183,14 @@ void Harvester::draw(Material* mat)
 }
 
 
-void Harvester::setPosition(Vector3 pos)
+void Vehicle::setPosition(Vector3 pos)
 {
     this->pos = pos;
     model->setPosition(pos);
 }
 
 
-void Harvester::setDirection(Vector3 dir, Vector3 up)
+void Vehicle::setDirection(Vector3 dir, Vector3 up)
 {
     this->dir = dir;
     this->up = up;
@@ -294,7 +294,7 @@ std::pair<bool, int> getmoveDir(Vector2 dest, Vector2 geoDirection, Vector2 geoV
 }
 
 
-void Harvester::accelerate(Vector2 velocityTarget)
+void Vehicle::accelerate(Vector2 velocityTarget)
 {
         // TODO: what if we do a similar thing as below but for acceleration, check current acceleration dir and how we need to amend it
     accelerationTarget = velocityTarget - geoVelocity;
@@ -376,14 +376,14 @@ void Harvester::accelerate(Vector2 velocityTarget)
     ShapeDrawer::drawArrow(pos, geoDir.to3(), acceleration, 0.02, Vector3(1, 0, 1));
 }
 
-void Harvester::brake()
+void Vehicle::brake()
 {
     turnRate = 0;
     auto maxBreakAcc = this->maxBreakAcc.get<real>();
     acceleration = -maxBreakAcc;
 }
 
-void Harvester::turn(bool left)
+void Vehicle::turn(bool left)
 {
     auto maxRadialAcc = this->maxRadialAcc.get<float>();
     auto turnRadius = this->turnRadius.get<float>();
@@ -392,7 +392,7 @@ void Harvester::turn(bool left)
         turnRate = -turnRate;
 }
 
-void Harvester::update(real dt)
+void Vehicle::update(real dt)
 {
     constructionProgress += dt*0.3f;
     if(constructionProgress >= 1.0f)
@@ -442,7 +442,7 @@ void Harvester::update(real dt)
         addUnitPathfindingRequest(this, path.back());
 }
 
-Vector2 Harvester::calcSeekVector(Vector2 dest)
+Vector2 Vehicle::calcSeekVector(Vector2 dest)
 {
     /*if((dest-geoPos).normalized()*geoDir > 0.999)
         return geoDir;
@@ -679,7 +679,7 @@ Vector2 Harvester::calcSeekVector(Vector2 dest)
     return v;
 }
 
-void Harvester::handleCommand(real dt)
+void Vehicle::handleCommand(real dt)
 {
     auto time = real(glfwGetTime());
     if(commandQueue.empty())
@@ -761,7 +761,7 @@ void Harvester::handleCommand(real dt)
     }
 }
 
-Vector2 Harvester::seek()
+Vector2 Vehicle::seek()
 {
     if(!path.empty())
     {
@@ -803,7 +803,7 @@ Vector2 Harvester::seek()
         return { 0, 0 };
 }
 
-Vector2 Harvester::evade()
+Vector2 Vehicle::evade()
 {
     Vector2 sum = { 0, 0 };
     for(auto unit : scene->getEntities())
@@ -840,7 +840,7 @@ Vector2 Harvester::evade()
 }
 
 
-Vector2 Harvester::avoid()
+Vector2 Vehicle::avoid()
 {
     auto pos2 = geoPos + geoVelocity;
 
@@ -855,7 +855,7 @@ Vector2 Harvester::avoid()
 }
 
 
-Vector2 Harvester::separate()
+Vector2 Vehicle::separate()
 {
     Vector2 sum = { 0, 0 };
     for(auto unit : scene->getEntities())
@@ -885,7 +885,7 @@ Vector2 Harvester::separate()
 }
 
 
-Vector2 Harvester::boidCalc()
+Vector2 Vehicle::boidCalc()
 {
     auto evade_ = evade(), seek_ = seek(), avoid_ = avoid(), separate_ = separate();
     
@@ -906,5 +906,5 @@ Vector2 Harvester::boidCalc()
 }
 
 
-BoundingBox Harvester::HarvesterBoundingBox = BoundingBox();
-Material* Harvester::fowMaterial = nullptr;
+BoundingBox Vehicle::vehicleBoundingBox = BoundingBox();
+Material* Vehicle::fowMaterial = nullptr;

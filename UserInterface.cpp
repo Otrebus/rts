@@ -394,7 +394,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
         std::vector<Unit*> selectedVehicles;
         for(auto unit : units)
         {
-            if(unit->isSelected() && dynamic_cast<Vehicle*>(unit))
+            if(unit->isSelected() && dynamic_cast<Truck*>(unit))
                 selectedVehicles.push_back(unit);
         }
         if(!selectedVehicles.empty())
@@ -461,7 +461,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
             std::vector<Unit*> selectedVehicles;
             for(auto unit : units)
             {
-                if(unit->isSelected() && dynamic_cast<Vehicle*>(unit))
+                if(unit->isSelected() && dynamic_cast<Truck*>(unit))
                     selectedVehicles.push_back(unit);
             }
 

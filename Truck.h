@@ -6,11 +6,11 @@
 #include "Unit.h"
 #include "ConsoleSettings.h"
 
-class Vehicle : public Unit
+class Truck : public Unit
 {
 public:
-    Vehicle(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain);
-    ~Vehicle();
+    Truck(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain);
+    ~Truck();
 
     void init(Scene* scene);
     void updateUniforms();
@@ -60,7 +60,7 @@ public:
 
     Line3d destinationLine;
 
-    static BoundingBox vehicleBoundingBox;
+    static BoundingBox truckBoundingBox;
 
     static Material* fowMaterial;
 
