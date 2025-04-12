@@ -28,6 +28,9 @@ public:
 
     void handleCommand(real dt);
 
+    std::pair<bool, int> getmoveDir(Vector2 dest, Vector2 geoDirection, Vector2 geoVelocity, real maxV, real a_f, real a_r, real a_b, real turnRadius);
+    real getTime(real v, real a_f, real a_r, real maxV, real d);
+
     Entity* spawnWreck();
 
     Vector2 seek();

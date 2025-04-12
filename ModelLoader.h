@@ -1,5 +1,5 @@
 #include <map>
-#include <string>s
+#include <string>
 
 class Model3d;
 class Material;

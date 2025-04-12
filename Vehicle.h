@@ -36,8 +36,11 @@ public:
     Vector2 boidCalc();
 
     Vector2 calcSeekVector(Vector2 dest);
+    real getTime(real v, real a_f, real a_r, real maxV, real d);
 
     static void loadModels();
+
+    std::pair<bool, int> getmoveDir(Vector2 dest, Vector2 geoDirection, Vector2 geoVelocity, real maxV, real a_f, real a_r, real a_b, real turnRadius);
 
     Model3d* body;
 

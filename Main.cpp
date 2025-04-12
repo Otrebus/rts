@@ -7,6 +7,7 @@
 #include "Rock.h"
 #include "TankWreck.h"
 #include "Entity.h"
+#include "Truck.h"
 #include "InputManager.h"
 #include "Line.h"
 #include "Logger.h"

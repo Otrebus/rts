@@ -4,6 +4,7 @@
 #include "Line.h"
 #include "Vehicle.h"
 #include "Math.h"
+#include "Truck.h"
 #include "PathFinding.h"
 #include "Ray.h"
 #include "Tank.h"
@@ -724,7 +725,8 @@ void UserInterface::setResolution(int xres, int yres)
 
 void UserInterface::update(real dt)
 {
-    fps = fps == -1 ? dt : ((9*fps + 1/dt))/10;
+    const int avgInterval = 3;
+    fps = fps == -1 ? dt : (((avgInterval-1)*fps + 1/dt))/avgInterval;
 }
 
 

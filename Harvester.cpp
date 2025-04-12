@@ -198,7 +198,7 @@ void Harvester::setDirection(Vector3 dir, Vector3 up)
 }
 
 
-real getTime(real v, real a_f, real a_r, real maxV, real d)
+real Harvester::getTime(real v, real a_f, real a_r, real maxV, real d)
 {
     real ret = 0;
     if(v < 0)
@@ -226,7 +226,7 @@ real getTime(real v, real a_f, real a_r, real maxV, real d)
 }
 
 
-std::pair<bool, int> getmoveDir(Vector2 dest, Vector2 geoDirection, Vector2 geoVelocity, real maxV, real a_f, real a_r, real a_b, real turnRadius)
+std::pair<bool, int> Harvester::getmoveDir(Vector2 dest, Vector2 geoDirection, Vector2 geoVelocity, real maxV, real a_f, real a_r, real a_b, real turnRadius)
 {
     if(!dest)
         return { geoVelocity*geoDirection < 0, 0 };
