@@ -129,12 +129,13 @@ int main()
     Tank::loadModels();
     TankWreck::loadModels();
     Truck::loadModels();
+    Harvester::loadModels();
     Vehicle::loadModels();
     Rock::loadModels();
 
     //scene.addUnit(new Tank({ 180.480316, 99.7414932, 15.0 }, { 1, 0, 0 }, { 0, 0, 1}, &terrain));
 
-    auto harvester = new Vehicle({ 155.5f, 35.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+    auto harvester = new Harvester({ 155.5f, 35.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
     scene.addEntity(harvester);
 
     auto vehicle = new Truck({ 150.5f, 35.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);

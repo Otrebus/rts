@@ -41,7 +41,8 @@ void Harvester::loadModels()
 {
     auto model = new Model3d();
     readFromFile(model, "harvester.obj");
-    ModelManager::addModel("harvester", model);
+    if(!ModelManager::hasModel("harvester"))
+        ModelManager::addModel("harvester", model);
 
     real length = 1;
 
@@ -296,7 +297,6 @@ std::pair<bool, int> Harvester::getmoveDir(Vector2 dest, Vector2 geoDirection, V
 
 void Harvester::accelerate(Vector2 velocityTarget)
 {
-        // TODO: what if we do a similar thing as below but for acceleration, check current acceleration dir and how we need to amend it
     accelerationTarget = velocityTarget - geoVelocity;
     if(accelerationTarget.length() < 1e-6)
     {
@@ -305,75 +305,26 @@ void Harvester::accelerate(Vector2 velocityTarget)
         return;
     }
 
-    //if(velocityTarget.length() > 0.01 && velocityTarget.normalized()*geoDir < 0.999 && velocityTarget.normalized()*geoDir > -0.999)
-    //{
-    //    if(geoDir*velocityTarget > 0)
-    //        turn((geoDir.perp()*(velocityTarget) > 0));
-    //    else
-    //        turn((geoDir.perp()*(velocityTarget) < 0));
-    //}
-    //else
-    //    turnRate = 0;
-
-    // The above while more correct actually works worse in practice!
-    //if(velocityTarget.length() > 0.01 && velocityTarget.normalized()*geoDir < 0.999 && velocityTarget.normalized()*geoDir > -0.999)
-    //    turn(geoDir%velocityTarget > 0);
-    //else
-    //    turnRate = 0;
+    if(velocityTarget.length() > 0.01 && velocityTarget.normalized()*geoDir < 0.999)
+        turn(geoDir%velocityTarget > 0);
+    else
+        turnRate = 0;
 
     auto maxSpeed = this->maxSpeed.get<real>();
     auto maxForwardAcc = this->maxForwardAcc.get<real>();
     auto maxBreakAcc = this->maxBreakAcc.get<real>();
 
-    //auto radialAcc = geoDir.perp()*turnRate*maxSpeed;
+    auto radialAcc = geoDir.perp()*turnRate*maxSpeed;
 
-    //auto x = radialAcc;
-    //auto v = accelerationTarget;
-    //auto ct = !x ? 0 : x.normalized()*v.normalized();
-    //auto projAcc = ct ? x.length()*v.normalized()/ct - x : (v*geoDir)*geoDir;
+    auto x = radialAcc;
+    auto v = accelerationTarget;
+    auto ct = !x ? 0 : x.normalized()*v.normalized();
+    auto projAcc = ct ? x.length()*v.normalized()/ct - x : (v*geoDir)*geoDir;
 
-    //if(!this->isSelected())
-    //    std::cout << "turnRate is " << turnRate << std::endl;
-
-    //ShapeDrawer::drawArrow(pos, projAcc.to3(), projAcc.length(), 0.02, Vector3(1, 0, 1));
-
-    //accelerationTarget = velocityTarget; // Just testing stuff
-    //std::cout << velocityTarget <<  " " << geoDir << std::endl;
-
-    auto [b, t] = getmoveDir(velocityTarget, geoDir, geoVelocity, maxSpeed, maxForwardAcc, maxForwardAcc/2, maxBreakAcc, turnRadius.get<real>());
-
-    if(t)
-        turn(t > 0);
+    if(projAcc*geoDir < 0 && geoDir*geoVelocity <= 0) // We don't want to reverse at maxBreakAcc
+        acceleration = 0;
     else
-        turnRate = 0;
-
-    if(b)
-    {
-        if(geoDir*geoVelocity >= 0.f)
-        {
-            //std::cout << 1;
-            acceleration = std::min(accelerationTarget.length(), maxForwardAcc);
-        }
-        else
-        {
-            //std::cout << 2;
-            acceleration = maxBreakAcc;
-        }
-    }
-    else
-    {
-        if(geoDir*geoVelocity >= 0.f)
-        {
-            //std::cout << 3;
-            acceleration = -maxBreakAcc;
-        }
-        else
-        {
-            //std::cout << 4;
-            acceleration = -0.5f*maxForwardAcc;
-        }
-    }
-    ShapeDrawer::drawArrow(pos, geoDir.to3(), acceleration, 0.02, Vector3(1, 0, 1));
+        acceleration = std::max(-maxBreakAcc, std::min(maxForwardAcc, projAcc*geoDir));
 }
 
 void Harvester::brake()
@@ -403,280 +354,26 @@ void Harvester::update(real dt)
     if(constructing)
         return;
 
+    handleCommand(dt);
+
     velocityTarget = boidCalc();
     accelerate(velocityTarget);
 
-    handleCommand(dt);
-
-    // If we're turning past the intended direction, clamp the turning towards the direction
     auto newDir = geoDir.normalized().rotated(turnRate*dt);
     if((newDir%velocityTarget)*(geoDir%velocityTarget) < 0 && newDir*velocityTarget > 0)
-    {
         newDir = velocityTarget.normalized();
-        turnRate = 0;
-    }
     geoDir = newDir;
 
-    auto newGeoVelocity = geoVelocity + geoDir.normalized()*acceleration*dt;
-
-    if((newGeoVelocity*geoDir)*(geoVelocity*geoDir) < 0)
-        geoVelocity = { 0, 0 };
-    else
-        geoVelocity = newGeoVelocity;
+    geoVelocity += geoDir.normalized()*acceleration*dt;
 
     if(!velocityTarget)
+    {
         acceleration = 0;
+    }
 
     auto maxSpeed = this->maxSpeed.get<real>();
-    auto maxReverseSpeed = this->maxReverseSpeed.get<real>();
-
-    if(geoVelocity.length() > maxSpeed && geoVelocity*geoDir > 0)
+    if(geoVelocity.length() > maxSpeed)
         geoVelocity = geoVelocity.normalized()*maxSpeed;
-
-    else if(geoVelocity.length() > maxSpeed && geoVelocity*geoDir < 0)
-        geoVelocity = geoVelocity.normalized()*maxReverseSpeed;
-
-    auto time = glfwGetTime();
-
-    if(!pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && path.size())
-        addUnitPathfindingRequest(this, path.back());
-}
-
-Vector2 Harvester::calcSeekVector(Vector2 dest)
-{
-    /*if((dest-geoPos).normalized()*geoDir > 0.999)
-        return geoDir;
-
-    if((dest-geoPos).normalized()*geoDir < -0.999)
-        return -geoDir;*/
-
-    auto maxV = maxSpeed.get<real>();
-    auto maxRV = maxReverseSpeed.get<real>();
-    auto maxRA = maxRadialAcc.get<real>();
-
-    auto R = this->turnRadius.get<float>();
-    auto turnRate = std::min(maxV/R, maxRA/maxV);
-    R = maxV/turnRate;
-
-    auto pos = geoPos;
-    auto dir = geoDir;
-
-    auto c_l = pos + dir.perp()*R;
-    auto c_r = pos - dir.perp()*R;
-    
-    //if(auto a = (c_l-dest), b = (c_r-dest); a.length() < R || b.length() < R)
-    //    return (dest-pos);
-
-    real forwardAcc = maxForwardAcc.get<real>();
-    real reverseAcc = maxForwardAcc.get<real>()*0.5;
-    real breakAcc = maxBreakAcc.get<real>()*0.5;
-    auto speed = geoVelocity*geoDir;
-
-    auto leftHand = [&] () -> std::pair<real, Vector2> {
-        // Case 1: left hand turn
-
-        auto [a, b] = getTangents(c_l, R, dest);
-
-        Vector2 v_t = (c_l - dest) % (a - dest) > 0 ? a : b;
-
-        auto A = (pos - c_l).normalized(), B = (v_t - c_l).normalized();
-
-        auto angle = std::acos(A*B);
-        if(A%B < 0)
-            angle = 2*pi - angle;
-
-        auto t = getTime(speed, forwardAcc, breakAcc, maxV, angle*R + (v_t - dest).length());
-
-        auto d = dir*geoVelocity > 0 ? (dir + 0.1*dir.perp()).normalized() : (dir - 0.1*dir.perp()).normalized();
-
-        return { t, d };
-    };
-
-    auto rightHand = [&] () -> std::pair<real, Vector2> {
-        // Case 1: right hand turn
-
-        auto p = getTangents(c_r, R, dest);
-        auto a = p.first;
-        auto b = p.second;
-
-        auto v_t = (c_r - dest) % (a - dest) > 0 ? b : a;
-
-        auto A = (pos - c_r).normalized();
-        auto B = (v_t - c_r).normalized();
-
-        auto angle = std::acos(A*B);
-        if(A%B > 0)
-            angle = 2*pi - angle;
-
-        auto t = getTime(speed, forwardAcc, breakAcc, maxV, angle*R + (v_t - dest).length());
-
-        auto d = dir*geoVelocity > 0 ? (dir - 0.1*dir.perp()).normalized() : (dir + 0.1*dir.perp()).normalized();
-
-        return { t, d };
-    };
-
-    auto leftTwoPoint = [&] () -> std::pair<real, Vector2> {
-        // Case 2: left two point turn
-        auto v = (dest - c_l).normalized();
-        auto P = c_l + v*R;
-
-        auto P_r = P + v*R;
-
-        auto p = getTangents(P_r, R, dest);
-        auto a = p.first;
-        auto b = p.second;
-
-        auto v_t = (P_r - dest) % (a - dest) > 0 ? b : a;
-
-        auto A = (pos-c_l).normalized(), B = (P-c_l).normalized();
-        auto angle = std::abs(std::acos(A*B));
-        /*if(A%B > 0)
-            angle = 2*pi - angle;*/
-
-        real ret = 0.f;
-
-        ret += getTime(-speed, reverseAcc, breakAcc, maxRV, angle*R);
-
-        A = (v_t-P_r).normalized(), B = (P-P_r).normalized();
-        angle = std::acos(A*B);
-        if(A%B < 0)
-            angle = 2*pi - angle;
-
-        ret += getTime(0.f, forwardAcc, breakAcc, maxV, angle*R + (v_t - dest).length());
-
-        auto w = dir*(dest-pos) > 0 ? dir + dir.perp() : -dir + dir.perp();
-
-        return { ret, (w + dir.perp()).normalized() };
-    };
-
-    auto rightTwoPoint = [&] () -> std::pair<real, Vector2> {
-        // Case 2: right two point turn
-        auto v = (dest - c_r).normalized();
-        auto P = c_r + v*R;
-
-        auto P_l = P + v*R;
-
-        auto p = getTangents(P_l, R, dest);
-        auto a = p.first;
-        auto b = p.second;
-
-        auto v_t = (P_l - dest) % (a - dest) > 0 ? a : b;
-
-        auto A = (pos-c_r).normalized(), B = (P-c_r).normalized();
-        auto angle = std::abs(std::acos(A*B));
-        /*if(A%B < 0)
-            angle = 2*pi - angle;*/
-
-        real ret = 0.f;
-        ret += getTime(-speed, reverseAcc, breakAcc, maxRV, angle*R);
-
-        A = (v_t-P_l).normalized(), B = (P-P_l).normalized();
-        angle = std::acos(A*B);
-        if(A%B > 0)
-            angle = 2*pi - angle;
-
-        ret += getTime(0.f, forwardAcc, breakAcc, maxV, angle*R + (v_t - dest).length());
-
-        auto w = dir*(dest-pos) > 0 ? dir - 0.1*dir.perp() : -dir - 0.1*dir.perp();
-
-        return { ret, w.normalized() };
-    };
-
-    auto leftReverse = [&] () -> std::pair<real, Vector2> {
-        // Case 3: reverse left turn
-        auto p = getTangents(c_l, R, dest);
-        auto a = p.first;
-        auto b = p.second;
-
-        auto v_t = (c_l - dest) % (a - dest) < 0 ? a : b;
-
-        auto A = (pos - c_l).normalized();
-        auto B = (v_t - c_l).normalized();
-
-        auto angle = std::acos(A*B);
-        if(A%B > 0)
-            angle = 2*pi - angle;
-
-        auto D = angle*R + (v_t - dest).length();
-
-        auto t = getTime(-speed, reverseAcc, breakAcc, maxRV, D);
-
-        return { t, (-dir + 0.1*dir.perp()).normalized() };
-    };
-
-    auto rightReverse = [&] () -> std::pair<real, Vector2> {
-        // Case 3: reverse right turn
-        auto p = getTangents(c_r, R, dest);
-        auto a = p.first;
-        auto b = p.second;
-
-        auto v_t = (c_r - dest) % (a - dest) < 0 ? b : a;
-
-        auto A = (pos - c_r).normalized();
-        auto B = (v_t - c_r).normalized();
-
-        auto angle = std::acos(A*B);
-        if(A%B < 0)
-            angle = 2*pi - angle;
-
-        auto D = angle*R + (v_t - dest).length();
-
-        auto t = getTime(-speed, reverseAcc, breakAcc, maxRV, D);
-
-        return { t, (-dir - 0.1*dir.perp()).normalized() };
-    };
-
-    auto [lh, vlh] = leftHand();
-    auto [rh, vrh] = rightHand();
-    auto [rtp, vrtp] = rightTwoPoint();
-    auto [ltp, vltp] = leftTwoPoint();
-    auto [lr, vlr] = leftReverse();
-    auto [rr, vrr] = rightReverse();
-    real m = min(lh == lh ? lh : inf, rh == rh ? rh : inf, rtp == rtp ? rtp : inf, ltp == ltp ? ltp : inf, lr == lr ? lr : inf, rr == rr ? rr : inf);
-
-    //std::cout << lh << std::endl;
-    //std::cout << rh << std::endl;
-    //std::cout << rtp << std::endl;
-    //std::cout << ltp << std::endl;
-    //std::cout << lr << std::endl;
-    //std::cout << rr << std::endl;
-    //std::cout << "---------------------" << std::endl;
-
-    //std::cout << m << std::endl;
-
-    Vector2 v;
-    if(m == lh)
-    {
-        std::cout << 1;
-        v = vlh;
-    }
-    if(m == rh)
-    {
-        std::cout << 2;
-        v = vrh;
-    }
-    if(m == rtp)
-    {
-        std::cout << 3;
-        v = vrtp;
-    }
-    if(m == ltp)
-    {
-        std::cout << 4;
-        v = vltp;
-    }
-    if(m == lr)
-    {
-        std::cout << 5;
-        v = vlr;
-    }
-    if(m == rr)
-    {
-        std::cout << 6;
-        v = vrr;
-    }
-
-    return v;
 }
 
 void Harvester::handleCommand(real dt)
@@ -691,39 +388,14 @@ void Harvester::handleCommand(real dt)
     {
         if(!v->active)
         {
-            hasFoundPath = false;
             addUnitPathfindingRequest(this, v->destination);
             v->active = true;
         }
         else
         {        
             if(!pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && path.size())
-                addUnitPathfindingRequest(this, path.back());
-        }
-
-        if(!path.empty())
-        {
-            auto target = path.front();
-
-            auto v2 = calcSeekVector(target);
-            auto l = (target - geoPos).length();
-            auto R = path.size() < 2 ? getArrivalRadius(target, scene->getUnits()) : 0.5;
-            if(l < R)
             {
-                path.pop_front();
-                if(!path.empty())
-                    this->target = path.front().to3();
-                else
-                {
-                    if(hasFoundPath && !commandQueue.empty())
-                    {
-                        // TODO: Sometimes the reason path is empty is because we are still waiting for a path finding result, in which
-                        //       case we shouldn't clear the command queue. Right now we use the hasFoundPath to make sure we've found a
-                        //       path but this is set to true when setPath is called which might not be robust
-                        commandQueue.pop();
-                    }
-                    this->target = Vector3(0, 0, 0);
-                }
+                addUnitPathfindingRequest(this, path.back());
             }
         }
     }
@@ -768,16 +440,13 @@ Vector2 Harvester::seek()
         auto target = path.front();
         auto l = (target - geoPos).length();
 
-        if(path.empty())
-            return { 0, 0 };
         target = path.front();
         //target = path.back();
 
         // TODO: this could become NaN
         if(!l)
             return { 0, 0 };
-        //auto v2 = (target - geoPos).normalized();
-        auto v2 = calcSeekVector(target);
+        auto v2 = (target - geoPos).normalized();
 
         auto R = path.size() < 2 ? getArrivalRadius(target, scene->getUnits()) : 0.5;
         if(l < R)
@@ -786,7 +455,11 @@ Vector2 Harvester::seek()
             if(!path.empty())
                 this->target = path.front().to3();
             else
+            {
+                if(!commandQueue.empty())
+                    commandQueue.pop();
                 this->target = Vector3(0, 0, 0);
+            }
         }
 
         auto maxSpeed = this->maxSpeed.get<real>();
@@ -800,15 +473,15 @@ Vector2 Harvester::seek()
         return v2*speed;
     }
     else
-        return { 0, 0 };
+        return { 0.f, 0.f };
 }
 
 Vector2 Harvester::evade()
 {
-    Vector2 sum = { 0, 0 };
+    Vector2 sum = { 0.f, 0.f };
     for(auto unit : scene->getEntities())
     {
-        if(unit != this && !dynamic_cast<Projectile*>(unit) && !dynamic_cast<Building*>(unit) && !dynamic_cast<Rock*>(unit)) // TODO: this is getting stupid
+        if(unit != this && !dynamic_cast<Projectile*>(unit) && !dynamic_cast<Building*>(unit)) // TODO: this is getting stupid
         {
             auto pos1 = geoPos, pos2 = unit->geoPos;
             auto v1 = geoVelocity, v2 = unit->getGeoVelocity();
@@ -842,13 +515,17 @@ Vector2 Harvester::evade()
 
 Vector2 Harvester::avoid()
 {
-    auto pos2 = geoPos + geoVelocity;
+    if(!geoVelocity)
+        return { 0, 0 };
+    auto pos2 = geoPos + geoVelocity.normalized();
+    //ShapeDrawer::drawArrow(pos, (pos2 - pos.to2()).to3().normalized(), (pos2.to3() - pos).length(), 0.1, Vector3(1, 0, 0));
 
     auto [t, norm] = terrain->intersectCirclePathOcclusion(geoPos, pos2, 0.5);
+
     auto t2 = (pos2 - geoPos).length();
-    if(t > 0.05 && t < t2 && geoDir*norm < 0)
+    if(t > 0.05 && geoDir*norm < 0)
     {
-        auto v = norm*(1/t);
+        auto v = t2*norm*(1/t);
         return v;
     }
     return { 0, 0 };
@@ -860,7 +537,7 @@ Vector2 Harvester::separate()
     Vector2 sum = { 0, 0 };
     for(auto unit : scene->getEntities())
     {
-        if(unit != this && !dynamic_cast<Projectile*>(unit) && !dynamic_cast<Rock*>(unit))
+        if(unit != this && !dynamic_cast<Projectile*>(unit))
         {
             auto pos1 = geoPos, pos2 = unit->geoPos;
             if(pos1 == pos2)
@@ -892,13 +569,13 @@ Vector2 Harvester::boidCalc()
     if(boidDebug.varInt())
     {
         if(evade_)
-            ShapeDrawer::drawArrow(pos, evade_.to3(), evade_.length(), 0.02f, Vector3(1, 0, 0));
+            ShapeDrawer::drawArrow(pos, evade_.to3(), evade_.length(), 0.02f, Vector3(1.f, 0.f, 0.f));
         if(seek_)
-            ShapeDrawer::drawArrow(pos, seek_.to3(), seek_.length(), 0.02f, Vector3(0, 1, 0));
+            ShapeDrawer::drawArrow(pos, seek_.to3(), seek_.length(), 0.02f, Vector3(0.f, 1.f, 0.f));
         if(avoid_)
-            ShapeDrawer::drawArrow(pos, avoid_.to3(), avoid_.length(), 0.02f, Vector3(0, 0, 1));
+            ShapeDrawer::drawArrow(pos, avoid_.to3(), avoid_.length(), 0.02f, Vector3(0.f, 0.f, 1.f));
         if(separate_)
-            ShapeDrawer::drawArrow(pos, separate_.to3(), separate_.length(), 0.02f, Vector3(1, 1, 0));
+            ShapeDrawer::drawArrow(pos, separate_.to3(), separate_.length(), 0.02f, Vector3(1.f, 1.f, 0.f));
     }
 
     auto sum = evade_ + seek_ + avoid_ + separate_;

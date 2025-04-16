@@ -41,7 +41,8 @@ void Vehicle::loadModels()
 {
     auto model = new Model3d();
     readFromFile(model, "harvester.obj");
-    ModelManager::addModel("harvester", model);
+    if(!ModelManager::hasModel("harvester"))
+        ModelManager::addModel("harvester", model);
 
     real length = 1;
 
