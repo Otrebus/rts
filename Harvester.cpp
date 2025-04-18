@@ -1,7 +1,6 @@
 #include "GeometryUtils.h"
 #include "PathFinding.h"
 #include "Polysolver.h"
-#include "TankWreck.h"
 #include "Projectile.h"
 #include "SelectionMarkerMesh.h"
 #include "Harvester.h"
@@ -14,12 +13,11 @@
 #include "ModelLoader.h"
 
 ConsoleVariable Harvester::maxSpeed("harvesterMaxSpeed", 2.0f);
-ConsoleVariable Harvester::maxReverseSpeed("harvesterMaxReverseSpeed", 1.3f);
-ConsoleVariable Harvester::maxForwardAcc("harvesterMaxForwardAcc", 1.5f);
-ConsoleVariable Harvester::maxBreakAcc("harvesterMaxBreakAcc", 2.0f);
+ConsoleVariable Harvester::maxForwardAcc("harvesterMaxForwardAcc", 0.7f);
+ConsoleVariable Harvester::maxBreakAcc("harvesterMaxBreakAcc", 0.7f);
 
-ConsoleVariable Harvester::turnRadius("harvesterTurnRadius", 1.5f);
-ConsoleVariable Harvester::maxRadialAcc("harvesterMaxRadialAcc", 5.7f);
+ConsoleVariable Harvester::maxTurnRate("harvesterMaxTurnRate", 1.2f*pi/4.f);
+ConsoleVariable Harvester::maxRadialAcc("harvesterMaxRadialAcc", 4.f);
 
 // TODO: no need to get terrain since we have scene->getTerrain()
 Harvester::Harvester(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Unit(pos, dir, up), acceleration(0), terrain(terrain), constructing(false), constructionProgress(0.f)
@@ -181,6 +179,7 @@ void Harvester::draw(Material* mat)
         delete body;
     }
     //drawBoundingBox();
+    drawCommands();
 }
 
 
@@ -196,102 +195,6 @@ void Harvester::setDirection(Vector3 dir, Vector3 up)
     this->dir = dir;
     this->up = up;
     model->setDirection(dir, up);
-}
-
-
-real Harvester::getTime(real v, real a_f, real a_r, real maxV, real d)
-{
-    real ret = 0;
-    if(v < 0)
-    {
-        auto t = -v/a_r;
-        ret += t;
-        d += -a_r*t*t/2 - v*t;
-        v = 0;
-    }
-
-    auto tm = (maxV - v)/a_f;
-    auto t = -v/a_f + std::sqrt((v*v)/(a_f*a_f) + 2*d/a_f);
-
-    if(t < tm)
-    {
-        return ret + t;
-    }
-    else
-    {
-        d -= a_f*tm*tm/2 + v*tm;
-        ret += tm;
-        v = maxV;
-        return ret + t + d/maxV;
-    }
-}
-
-
-std::pair<bool, int> Harvester::getmoveDir(Vector2 dest, Vector2 geoDirection, Vector2 geoVelocity, real maxV, real a_f, real a_r, real a_b, real turnRadius)
-{
-    if(!dest)
-        return { geoVelocity*geoDirection < 0, 0 };
-    real R = turnRadius;
-
-    Vector2 pos = -geoDirection.perp()*R;
-
-    real v = geoDirection*geoVelocity;
-
-    auto dir = pos.perp().normalized(); // same as geodir...?
-
-    auto c_l = pos + dir.perp()*R;  
-        
-    auto C = dir%dest > 0 ? pos + dir.perp()*R : pos -dir.perp()*R;
-
-    auto pf = C - dest.perp().normalized()*R;
-    auto pb = C + dest.perp().normalized()*R;
-        
-    auto x = (pf-C).normalized()*(pos-C).normalized();
-
-    x = std::acos(std::min(1.0f, std::max(-1.0f, x)));
-
-    auto th_f = x;
-    auto th_b = -(pi-x);
-
-    if(dir%dest <= 0)
-    {
-        std::swap(th_f, th_b);
-
-        auto d1 = std::abs(th_f*R);
-        auto d2 = std::abs(th_b*R);
-
-        auto t1 = getTime(v, v > 0 ? a_f : a_r, a_b, maxV, d1);
-        auto t2 = getTime(-v, v > 0 ? a_r : a_f, a_b, maxV, d2);
-
-        int t;
-        // TODO: this is redundant now
-        if(t1 < t2)
-        {
-            t = v > 0 ? -1 : 1;
-        }
-        else
-            t = v > 0 ? -1 : 1;
-
-        return { t1 < t2, t };
-    }
-    else
-    {
-        auto d1 = std::abs(th_f*R);
-        auto d2 = std::abs(th_b*R);
-
-        auto t1 = getTime(v, v > 0 ? a_f : a_r, a_b, maxV, d1);
-        auto t2 = getTime(-v, v > 0 ? a_r : a_f, a_b, maxV, d2);
-
-        int t;
-        if(t1 < t2)
-        {
-            t = v > 0 ? 1 : -1;
-        }
-        else
-            t = v > 0 ? 1 : -1;
-
-        return { t1 < t2, t };
-    }
 }
 
 
@@ -337,8 +240,8 @@ void Harvester::brake()
 void Harvester::turn(bool left)
 {
     auto maxRadialAcc = this->maxRadialAcc.get<float>();
-    auto turnRadius = this->turnRadius.get<float>();
-    turnRate = std::min(geoVelocity.length()/turnRadius, maxRadialAcc/velocity.length());
+    auto maxTurnRate = this->maxTurnRate.get<float>();
+    turnRate = std::min(maxTurnRate, maxRadialAcc/velocity.length());
     if(!left)
         turnRate = -turnRate;
 }
@@ -354,10 +257,10 @@ void Harvester::update(real dt)
     if(constructing)
         return;
 
-    handleCommand(dt);
-
     velocityTarget = boidCalc();
     accelerate(velocityTarget);
+
+    handleCommand(dt);
 
     auto newDir = geoDir.normalized().rotated(turnRate*dt);
     if((newDir%velocityTarget)*(geoDir%velocityTarget) < 0 && newDir*velocityTarget > 0)
@@ -397,6 +300,8 @@ void Harvester::handleCommand(real dt)
             {
                 addUnitPathfindingRequest(this, path.back());
             }
+            if(!pathFindingRequest && !this->target)
+                commandQueue.pop();
         }
     }
     if(auto v = std::get_if<ExtractCommand>(&command))
@@ -423,12 +328,21 @@ void Harvester::handleCommand(real dt)
                 hasFoundPath = false;
                 addUnitPathfindingRequest(this, minRock->getGeoPosition() + (geoPos - minRock->getGeoPosition()).normalized());
                 v->active = true;
+                v->rock = minRock;
             }
         }
         else
         {
-            if(!pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && path.size())
-                addUnitPathfindingRequest(this, path.back());
+            if(v->rock && (geoPos - v->rock->getGeoPosition()).length() < 2.0f)
+            {
+                std::cout << "t";
+                turn(geoDir%(geoPos - v->rock->getGeoPosition()) < 0);
+            }
+            else
+            {
+                if(!pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && path.size())
+                    addUnitPathfindingRequest(this, path.back());
+            }
         }
     }
 }
@@ -456,8 +370,6 @@ Vector2 Harvester::seek()
                 this->target = path.front().to3();
             else
             {
-                if(!commandQueue.empty())
-                    commandQueue.pop();
                 this->target = Vector3(0, 0, 0);
             }
         }
@@ -481,7 +393,7 @@ Vector2 Harvester::evade()
     Vector2 sum = { 0.f, 0.f };
     for(auto unit : scene->getEntities())
     {
-        if(unit != this && !dynamic_cast<Projectile*>(unit) && !dynamic_cast<Building*>(unit)) // TODO: this is getting stupid
+        if(unit != this && !dynamic_cast<Projectile*>(unit) && !dynamic_cast<Building*>(unit) && !dynamic_cast<Rock*>(unit)) // TODO: this is getting stupid
         {
             auto pos1 = geoPos, pos2 = unit->geoPos;
             auto v1 = geoVelocity, v2 = unit->getGeoVelocity();
@@ -537,7 +449,7 @@ Vector2 Harvester::separate()
     Vector2 sum = { 0, 0 };
     for(auto unit : scene->getEntities())
     {
-        if(unit != this && !dynamic_cast<Projectile*>(unit))
+        if(unit != this && !dynamic_cast<Projectile*>(unit) && !dynamic_cast<Rock*>(unit))
         {
             auto pos1 = geoPos, pos2 = unit->geoPos;
             if(pos1 == pos2)

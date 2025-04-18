@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Vector2.h"
+#include "Rock.h"
 #include <variant>
 #include <deque>
 
@@ -22,6 +23,7 @@ struct ExtractCommand : public BaseCommand
 {
     real radius;
     Vector2 destination;
+    Rock* rock;
     ExtractCommand(Vector2 dest, real radius) : destination(dest), radius(radius) {}
 };
 

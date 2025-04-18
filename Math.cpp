@@ -61,7 +61,7 @@ const Matrix4 identityMatrix(
     0, 0, 1, 0,
     0, 0, 0, 1
 );
-const real pi = std::acos(-1.0f);
+const real pi = 3.1415926535;
 const real eps = 1e-6f;
 const real gravity = 1; // TODO: put in another file eventually, not a math constant
 

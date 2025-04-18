@@ -45,11 +45,10 @@ public:
 
     Model3d* body;
 
-    static ConsoleVariable turnRadius;
+    static ConsoleVariable maxTurnRate;
     static ConsoleVariable maxRadialAcc;
 
     static ConsoleVariable maxSpeed;
-    static ConsoleVariable maxReverseSpeed;
     static ConsoleVariable maxForwardAcc;
     static ConsoleVariable maxBreakAcc;
 
