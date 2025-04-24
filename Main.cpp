@@ -196,15 +196,6 @@ int main()
     std::vector<Vector3> vs = { { 0, 0, 0 }, { 1, 0, 0 }, { 0, 1, 1} };
     std::vector<std::pair<int, int>> vv = { { 0, 1 }, { 1, 2 }, { 2, 0 } };
 
-    auto mesh = new LineMesh3d(vs, vv);
-    Model3d lineModel;
-    lineModel.addMesh(*mesh);
-    lineModel.setScene(&scene);
-    lineModel.init();
-    lineModel.setPosition(Vector3(0, 0, 0));
-    lineModel.setDirection(Vector3(1, 0, 0), Vector3(0, 0, 1));
-    lineModel.setSize(Vector3(1, 1, 1));
-
     UserInterface interface(window, &scene, &cameraControl);
 
     int frames = 0;
@@ -284,9 +275,16 @@ int main()
             }
         }
 
-        lineModel.draw();
-
         checkError();
+
+        // TODO: what does setDead do again
+        for(auto entity : scene.getEntities())
+        {
+            if(entity->dead)
+            {
+                scene.removeEntity(entity);
+            }
+        }
 
         scene.updateEntities();
         scene.updateUnitList();

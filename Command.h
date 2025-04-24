@@ -24,7 +24,12 @@ struct ExtractCommand : public BaseCommand
     real radius;
     Vector2 destination;
     Rock* rock;
-    ExtractCommand(Vector2 dest, real radius) : destination(dest), radius(radius) {}
+
+    enum Status {
+        None, FindingPath, Moving, Rotating, Extracting
+    } status;
+
+    ExtractCommand(Vector2 dest, real radius) : destination(dest), radius(radius), status(None) {}
 };
 
 struct BuildCommand : public BaseCommand

@@ -306,8 +306,9 @@ void Harvester::handleCommand(real dt)
     }
     if(auto v = std::get_if<ExtractCommand>(&command))
     {
-        if(!v->active)
+        if(v->status == ExtractCommand::None)
         {
+            std::cout << "none" << std::endl;
             real minDist = inf;
             Rock* minRock = nullptr;
             for(auto e : scene->getEntities())
@@ -325,25 +326,49 @@ void Harvester::handleCommand(real dt)
             }
             if(minRock)
             {
-                hasFoundPath = false;
                 addUnitPathfindingRequest(this, minRock->getGeoPosition() + (geoPos - minRock->getGeoPosition()).normalized());
                 v->active = true;
                 v->rock = minRock;
-            }
-        }
-        else
-        {
-            if(v->rock && (geoPos - v->rock->getGeoPosition()).length() < 2.0f)
-            {
-                std::cout << "t";
-                turn(geoDir%(geoPos - v->rock->getGeoPosition()) < 0);
+                v->status = ExtractCommand::Moving;
             }
             else
             {
-                if(!pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && path.size())
-                    addUnitPathfindingRequest(this, path.back());
+                std::cout << "inactive" << std::endl;
+                v->active = false;
             }
         }
+        else if(v->status == ExtractCommand::Moving)
+        {
+            std::cout << "moving" << std::endl;
+            if(!pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && path.size())
+                addUnitPathfindingRequest(this, path.back());
+
+            if(v->rock && (geoPos - v->rock->getGeoPosition()).length() < 2.0f)
+                v->status = ExtractCommand::Rotating;
+            else
+                v->status = ExtractCommand::Moving;
+        }
+        else if(v->status == ExtractCommand::Rotating)
+        {
+            std::cout << "rotating" << std::endl;
+            if(((geoDir*(v->rock->getGeoPosition() - geoPos).normalized()) < 0.90))
+                turn(geoDir%(geoPos - v->rock->getGeoPosition()) < 0);
+            else
+            {
+                v->rock->setDead();
+                v->status = ExtractCommand::None;
+            }
+        }/*
+        else if(v->status == ExtractCommand::Extracting)
+        {
+            if(((geoDir*(v->rock->getGeoPosition() - geoPos).normalized()) < 0.99))
+                turn(geoDir%(geoPos - v->rock->getGeoPosition()) < 0);
+            else
+            {
+                v->rock->setDead();
+                v->status = ExtractCommand::Moving;
+            }
+        }*/
     }
 }
 
