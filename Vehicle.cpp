@@ -476,7 +476,7 @@ Vector2 Vehicle::calcSeekVector(Vector2 dest)
     auto leftHand = [&] () -> std::pair<real, Vector2> {
         // Case 1: left hand turn
 
-        auto [a, b] = getTangents(c_l, R, dest);
+        auto [a, b] = getCircleTangents(c_l, R, dest);
 
         Vector2 v_t = (c_l - dest) % (a - dest) > 0 ? a : b;
 
@@ -496,7 +496,7 @@ Vector2 Vehicle::calcSeekVector(Vector2 dest)
     auto rightHand = [&] () -> std::pair<real, Vector2> {
         // Case 1: right hand turn
 
-        auto p = getTangents(c_r, R, dest);
+        auto p = getCircleTangents(c_r, R, dest);
         auto a = p.first;
         auto b = p.second;
 
@@ -523,7 +523,7 @@ Vector2 Vehicle::calcSeekVector(Vector2 dest)
 
         auto P_r = P + v*R;
 
-        auto p = getTangents(P_r, R, dest);
+        auto p = getCircleTangents(P_r, R, dest);
         auto a = p.first;
         auto b = p.second;
 
@@ -557,7 +557,7 @@ Vector2 Vehicle::calcSeekVector(Vector2 dest)
 
         auto P_l = P + v*R;
 
-        auto p = getTangents(P_l, R, dest);
+        auto p = getCircleTangents(P_l, R, dest);
         auto a = p.first;
         auto b = p.second;
 
@@ -585,7 +585,7 @@ Vector2 Vehicle::calcSeekVector(Vector2 dest)
 
     auto leftReverse = [&] () -> std::pair<real, Vector2> {
         // Case 3: reverse left turn
-        auto p = getTangents(c_l, R, dest);
+        auto p = getCircleTangents(c_l, R, dest);
         auto a = p.first;
         auto b = p.second;
 
@@ -607,7 +607,7 @@ Vector2 Vehicle::calcSeekVector(Vector2 dest)
 
     auto rightReverse = [&] () -> std::pair<real, Vector2> {
         // Case 3: reverse right turn
-        auto p = getTangents(c_r, R, dest);
+        auto p = getCircleTangents(c_r, R, dest);
         auto a = p.first;
         auto b = p.second;
 

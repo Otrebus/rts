@@ -343,7 +343,7 @@ void Harvester::handleCommand(real dt)
             if(!pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && path.size())
                 addUnitPathfindingRequest(this, path.back());
 
-            if(v->rock && (geoPos - v->rock->getGeoPosition()).length() < 2.0f)
+            if(v->rock && (geoPos - v->rock->getGeoPosition()).length() < 3.0f)
                 v->status = ExtractCommand::Rotating;
             else
                 v->status = ExtractCommand::Moving;
@@ -355,20 +355,24 @@ void Harvester::handleCommand(real dt)
                 turn(geoDir%(geoPos - v->rock->getGeoPosition()) < 0);
             else
             {
+                v->status = ExtractCommand::Extracting;
+            }
+        }
+        else if(v->status == ExtractCommand::Extracting)
+        {
+            std::cout << "extracting" << std::endl;
+            if(glfwGetTime() - v->lastSpawnedParticle > 0.02f)
+            {
+                auto gp = new ConstructionParticle(pos + dir*0.5f, *v->rock);
+                v->lastSpawnedParticle = glfwGetTime();
+                scene->addParticle(gp);
+            }
+            v->rock->health -= 50*dt;
+            if(v->rock->health < .0f) {                
                 v->rock->setDead();
                 v->status = ExtractCommand::None;
             }
-        }/*
-        else if(v->status == ExtractCommand::Extracting)
-        {
-            if(((geoDir*(v->rock->getGeoPosition() - geoPos).normalized()) < 0.99))
-                turn(geoDir%(geoPos - v->rock->getGeoPosition()) < 0);
-            else
-            {
-                v->rock->setDead();
-                v->status = ExtractCommand::Moving;
-            }
-        }*/
+        }
     }
 }
 

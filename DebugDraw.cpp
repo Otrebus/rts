@@ -452,7 +452,7 @@ int drawVehiclePaths(GLFWwindow* window, int xres, int yres)
         auto leftHand = [&] (bool draw = false) {
             // Case 1: left hand turn
 
-            auto [a, b] = getTangents(c_l, R, dest);
+            auto [a, b] = getCircleTangents(c_l, R, dest);
 
             Vector2 v_t = (c_l - dest) % (a - dest) > 0 ? a : b;
 
@@ -471,7 +471,7 @@ int drawVehiclePaths(GLFWwindow* window, int xres, int yres)
 
         auto rightHand = [&] (bool draw = false) {
             // Case 1: right hand turn
-            auto p = getTangents(c_r, R, dest);
+            auto p = getCircleTangents(c_r, R, dest);
             auto a = p.first;
             auto b = p.second;
 
@@ -499,7 +499,7 @@ int drawVehiclePaths(GLFWwindow* window, int xres, int yres)
 
             auto P_r = P + v*R;
 
-            auto p = getTangents(P_r, R, dest);
+            auto p = getCircleTangents(P_r, R, dest);
             auto a = p.first;
             auto b = p.second;
 
@@ -535,7 +535,7 @@ int drawVehiclePaths(GLFWwindow* window, int xres, int yres)
 
             auto P_l = P + v*R;
 
-            auto p = getTangents(P_l, R, dest);
+            auto p = getCircleTangents(P_l, R, dest);
             auto a = p.first;
             auto b = p.second;
 
@@ -566,7 +566,7 @@ int drawVehiclePaths(GLFWwindow* window, int xres, int yres)
 
         /////////////////////// Case 3: reverse left turn
         auto leftReverse = [&] (bool draw = false) {
-            auto p = getTangents(c_l, R, dest);
+            auto p = getCircleTangents(c_l, R, dest);
             auto a = p.first;
             auto b = p.second;
 
@@ -590,7 +590,7 @@ int drawVehiclePaths(GLFWwindow* window, int xres, int yres)
 
         ///////////////////// Case 3: reverse right turn
         auto rightReverse = [&] (bool draw = false) {
-            auto p = getTangents(c_r, R, dest);
+            auto p = getCircleTangents(c_r, R, dest);
             auto a = p.first;
             auto b = p.second;
 

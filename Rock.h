@@ -17,5 +17,7 @@ public:
 
     Model3d* model;
 
+    real health;
+
     static BoundingBox rockBoundingBox;
 };

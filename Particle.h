@@ -8,6 +8,7 @@
 class Terrain;
 class Input;
 class Ray;
+class BoundingBox;
 
 class Random
 {
@@ -125,4 +126,16 @@ public:
 private:
     Vector3 normal;
     bool smoke;
+};
+
+
+class ConstructionParticle : public Particle
+{
+public:
+    ConstructionParticle(Vector3 nozzlePos, const Entity& target);
+
+    void update(real time);
+    bool isAlive();
+    bool isVisible();
+    SerializedParticle serialize();
 };

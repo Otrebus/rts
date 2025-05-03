@@ -140,6 +140,7 @@
 + Make better admissible-terrain-visualizer
 + TODO: 2x meshes?
 - Improve collision resolution
+- Fix the particle variable membership ("start", initialVelocity, etc), move some out of base class
 - // TODO: make a mouseCoordtoWorldCoord as well
 - Have tanks reverse in certain situations
 + Camera can strafe through terrain

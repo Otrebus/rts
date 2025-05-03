@@ -1,5 +1,7 @@
 #include "Particle.h"
 #include "Math.h"
+#include "BoundingBox.h"
+#include "Entity.h"
 
 
 Particle::Particle(const Vector3& pos, const Vector3& color) : pos(pos), color(color), time(0)
@@ -236,4 +238,45 @@ bool UnitHitParticle::isVisible()
 SerializedParticle UnitHitParticle::serialize()
 {
     return SerializedParticle(pos, 0.01f, Vector4(1.0f-(time-start)*1.5f, 1.0f-(time-start)*1.5f, 0.7f-(time-start)*1.5f, 1.f-(time-start)/lifeTime));
+}
+
+ConstructionParticle::ConstructionParticle(Vector3 nozzlePos, const Entity& target) : Particle(Vector3(0.f, 0.f, 0.f), Vector3(0.f, 0.f, 0.f))
+{
+    start = 0.f;
+    auto boundingBox = target.boundingBox;
+    auto targetUp = target.up;
+    auto targetDir = target.dir;
+    auto targetRight = target.dir % target.up;
+    auto targetPos = target.pos;
+
+    auto a = targetDir*(boundingBox.c2.x - boundingBox.c1.x)*getRandomFloat(0.f, 1.f);
+    auto b = targetRight*(boundingBox.c2.y - boundingBox.c1.y)*getRandomFloat(0.f, 1.f);
+    auto c = targetUp*(boundingBox.c2.z - boundingBox.c1.z)*getRandomFloat(0.f, 1.f);
+
+    pos = targetPos + a + b + c;
+
+    lifeTime = 0.3f;
+    velocity = (nozzlePos - pos)/0.3f;
+}
+
+void ConstructionParticle::update(real dt)
+{
+    time += dt;
+    if(time > start)
+        pos += velocity*dt;
+}
+
+bool ConstructionParticle::isAlive()
+{
+    return time < start + lifeTime;
+}
+
+bool ConstructionParticle::isVisible()
+{
+    return time > start;
+}
+
+SerializedParticle ConstructionParticle::serialize()
+{
+    return SerializedParticle(pos, 0.02, Vector4(0, 0.8, 0, 1.0f));
 }

@@ -18,6 +18,8 @@ Rock::Rock(Vector3 pos, Vector3 dir, Vector3 up, Terrain* terrain) : Entity(pos,
     geoVelocity = Vector2(0.f, 0.f);
 
     boundingBox = rockBoundingBox;
+
+    health = 100.0f;
 }
 
 void Rock::init(Scene* scene)

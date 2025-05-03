@@ -4,6 +4,8 @@
 #include "Rock.h"
 #include <variant>
 #include <deque>
+#include <GL/gl3w.h>
+#include <GLFW/glfw3.h>
 
 
 struct BaseCommand
@@ -23,13 +25,16 @@ struct ExtractCommand : public BaseCommand
 {
     real radius;
     Vector2 destination;
-    Rock* rock;
+    Rock* rock; // TODO: should store its id
+    real lastSpawnedParticle;
 
     enum Status {
         None, FindingPath, Moving, Rotating, Extracting
     } status;
 
-    ExtractCommand(Vector2 dest, real radius) : destination(dest), radius(radius), status(None) {}
+    ExtractCommand(Vector2 dest, real radius) : destination(dest), radius(radius), status(None) {
+        lastSpawnedParticle = glfwGetTime();
+    }
 };
 
 struct BuildCommand : public BaseCommand
