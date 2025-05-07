@@ -278,5 +278,5 @@ bool ConstructionParticle::isVisible()
 
 SerializedParticle ConstructionParticle::serialize()
 {
-    return SerializedParticle(pos, 0.02, Vector4(0, 0.8, 0, 1.0f));
+    return SerializedParticle(pos, 0.05, Vector4(0, 0.95, 0, 0.6f));
 }

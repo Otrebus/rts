@@ -102,14 +102,30 @@ void Unit::drawCommands()
             buildingLine.draw();
             P.push_back(v->destination + Vector2(w/2, h/2));
         }
+        else if(auto v = std::get_if<ExtractCommand>(&command))
+        {
+            P.push_back(v->destination);
+            auto pos = v->destination;
+            Line3d extractionLine;
+
+            std::vector<Vector3> vs;
+
+            real segmentWidth = 0.4;
+            const int N = std::max(20, int(v->radius*2*pi/segmentWidth));
+            for(int i = 0; i < N+1; i++)
+            {
+                auto w = v->destination + v->radius*Vector2(std::cos(i*2*pi/N), std::sin(i*2*pi/N));
+                vs.push_back(Vector3(w.x, w.y, scene->getTerrain()->getElevation(w.x, w.y)));
+            }
+
+            extractionLine.init(scene);
+            extractionLine.setVertices(vs);
+            extractionLine.setColor(Vector4(0.2f, 0.7f, 0.1f, 0.5f));
+            extractionLine.setInFront(true);
+            extractionLine.draw();
+        }
     }
     
-    /*for(int i = 0; i+1 < P.size(); i++)
-    {
-        auto pieces = scene->getTerrain()->chopLine(P[i], P[i+1]);
-        S.insert(S.end(), pieces.begin(), pieces.end());
-    }*/
-
     Line3d queueLine;
 
     std::reverse(P.begin(), P.end());
