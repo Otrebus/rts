@@ -15,6 +15,8 @@
 
 Building::Building(int x, int y, int length, int width, std::vector<int> footprint) : Unit(pos, { 1, 0, 0 }, { 0, 0, 1 }), length(length), width(width), footprint(footprint)
 {
+    lastSpawnedParticle = 0;
+    constructeeId = 0;
     height = 2;
     geoDir = dir.to2();
     pos = Vector3(x+real(length)/2, y+real(width)/2, 0);
@@ -140,6 +142,16 @@ void Building::init(Scene& scene)
 void Building::update(real dt)
 {
     selectionMarkerMesh->update(pos.to2());
+    if(auto constructee = scene->getEntity(constructeeId); constructee)
+    {
+        auto tank = dynamic_cast<Tank*>(constructee);
+        if(tank->constructing && glfwGetTime() - lastSpawnedParticle > 0.01f)
+        {
+            auto gp = new ConstructionParticle(int(lastSpawnedParticle*100)%2 ? pos + dir : pos - dir, *tank, false);
+            lastSpawnedParticle = glfwGetTime();
+            scene->addParticle(gp);
+        }
+    }
 }
 
 bool Building::buildingWithin(real posX, real posY, int length, int width) const
@@ -156,6 +168,8 @@ void Building::produceTank()
     scene->addEntity(tank);
     tank->init(scene);
     tank->commandQueue.push(MoveCommand((pos + tank->dir.normalized()*3).to2()));
+
+    constructeeId = tank->getId();
 }
 
 bool Building::pointWithinFootprint(int posX, int posY) const

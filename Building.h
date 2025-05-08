@@ -38,4 +38,6 @@ public:
 
     int length, width, height;
     static Material* fowMaterial;
+    int constructeeId;
+    real lastSpawnedParticle;
 };

@@ -240,7 +240,7 @@ SerializedParticle UnitHitParticle::serialize()
     return SerializedParticle(pos, 0.01f, Vector4(1.0f-(time-start)*1.5f, 1.0f-(time-start)*1.5f, 0.7f-(time-start)*1.5f, 1.f-(time-start)/lifeTime));
 }
 
-ConstructionParticle::ConstructionParticle(Vector3 nozzlePos, const Entity& target) : Particle(Vector3(0.f, 0.f, 0.f), Vector3(0.f, 0.f, 0.f))
+ConstructionParticle::ConstructionParticle(Vector3 nozzlePos, const Entity& target, bool direction) : Particle(Vector3(0.f, 0.f, 0.f), Vector3(0.f, 0.f, 0.f))
 {
     start = 0.f;
     auto boundingBox = target.boundingBox;
@@ -249,14 +249,17 @@ ConstructionParticle::ConstructionParticle(Vector3 nozzlePos, const Entity& targ
     auto targetRight = target.dir % target.up;
     auto targetPos = target.pos;
 
-    auto a = targetDir*(boundingBox.c2.x - boundingBox.c1.x)*getRandomFloat(0.f, 1.f);
-    auto b = targetRight*(boundingBox.c2.y - boundingBox.c1.y)*getRandomFloat(0.f, 1.f);
-    auto c = targetUp*(boundingBox.c2.z - boundingBox.c1.z)*getRandomFloat(0.f, 1.f);
+    auto a = targetDir*(boundingBox.c2.x - boundingBox.c1.x)*getRandomFloat(-0.5f, 0.5f);
+    auto b = targetRight*(boundingBox.c2.y - boundingBox.c1.y)*getRandomFloat(-0.5f, 0.5f);
+    auto c = targetUp*(boundingBox.c2.z - boundingBox.c1.z)*getRandomFloat(-0.5f, 0.5f);
 
-    pos = targetPos + a + b + c;
+    auto src = direction ? targetPos + a + b + c : nozzlePos;
+    auto dest = direction ? nozzlePos : targetPos + a + b + c;
 
-    lifeTime = 0.3f;
-    velocity = (nozzlePos - pos)/0.3f;
+    pos = src;
+
+    lifeTime = 0.4f;
+    velocity = (dest - src)/0.4f;
 }
 
 void ConstructionParticle::update(real dt)

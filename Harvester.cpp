@@ -363,7 +363,7 @@ void Harvester::handleCommand(real dt)
             std::cout << "extracting" << std::endl;
             if(glfwGetTime() - v->lastSpawnedParticle > 0.02f)
             {
-                auto gp = new ConstructionParticle(pos + dir*0.5f, *v->rock);
+                auto gp = new ConstructionParticle(pos + dir*0.5f, *v->rock, true);
                 v->lastSpawnedParticle = glfwGetTime();
                 scene->addParticle(gp);
             }

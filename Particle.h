@@ -132,7 +132,7 @@ private:
 class ConstructionParticle : public Particle
 {
 public:
-    ConstructionParticle(Vector3 nozzlePos, const Entity& target);
+    ConstructionParticle(Vector3 nozzlePos, const Entity& target, bool direction);
 
     void update(real time);
     bool isAlive();
