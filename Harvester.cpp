@@ -334,6 +334,7 @@ void Harvester::handleCommand(real dt)
             else
             {
                 std::cout << "inactive" << std::endl;
+                commandQueue.pop();
                 v->active = false;
             }
         }
@@ -384,7 +385,6 @@ Vector2 Harvester::seek()
         auto l = (target - geoPos).length();
 
         target = path.front();
-        //target = path.back();
 
         // TODO: this could become NaN
         if(!l)

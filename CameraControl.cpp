@@ -61,16 +61,20 @@ void CameraControl::changeMode(CameraMode cameraMode)
     this->cameraMode = cameraMode;
 }
 
-
 CameraMode CameraControl::getMode() const
 {
     return cameraMode;
 }
 
-
 void CameraControl::setPosFromTerrainPos()
 {
     cam->setPos(terrainPos - cam->getDir().normalized()*terrainDist);
+}
+
+Vector3 CameraControl::getPosFromTerrainPos(Vector3 pos)
+{
+    // Now that this exists we probably don't not need setPosFromTerrainPos, just use this + cam->setPos
+    return pos - cam->getDir().normalized()*terrainDist;
 }
 
 void CameraControl::setTerrainPosFromPos()
@@ -198,12 +202,12 @@ void CameraControl::setAngle(real theta, real phi)
 }
 
 
-void CameraControl::move(Vector2 dir, real t)
+void CameraControl::move(Vector2 dir, real dt)
 {
     auto camDir = cam->getDir(), camPos = cam->getPos(), camUp = cam->getUp();
     if(cameraMode == Freelook)
     {
-        auto dDir = (dir.x*camDir + (dir.y*camDir%camUp))*t*100.f;
+        auto dDir = (dir.x*camDir + (dir.y*camDir%camUp))*dt*100.f;
         auto w = terrain->intersect({ cam->getPos(), dDir.normalized() });
         if((w - camPos).length() < dDir.length() || (w - (camPos + dDir)).length() < 0.5)
             cam->setPos(w - dDir.normalized()*0.5f);
@@ -215,41 +219,19 @@ void CameraControl::move(Vector2 dir, real t)
         auto forward = camDir.to2().normalized();
         auto right = -forward.perp();
         auto newDir = (forward*dir.x + right*dir.y);
-        terrainPos += newDir.to3()*t*100.f;
-        setPosFromTerrainPos();
-    }
-}
 
+        auto posA = getPosFromTerrainPos(terrainPos), posB = getPosFromTerrainPos(terrainPos + newDir.to3()*100.f*dt);
+        auto dDir = posB - posA;
 
-void CameraControl::moveForward(real t)
-{
-    if(cameraMode == Freelook)
-    {
-        auto dDir = cam->getDir()*t*100.f;
-        auto w = terrain->intersect({ cam->getPos(), dDir.normalized() });
-        if(w.x < inf && ((w - (cam->getPos() + dDir)).length() < 1.0f || (cam->getPos() + dDir - w)*(dDir) > 0))
+        auto w = terrain->intersect({ posA, dDir.normalized() });
+        if((w - posA).length() < dDir.length() || (w - (posA + dDir)).length() < 0.5)
             cam->setPos(w - dDir.normalized()*0.5f);
         else
-            cam->setPos(cam->getPos() + dDir);
-    }
-    else
-    {
-        terrainPos += Vector3(cam->getDir().x, cam->getDir().y, 0).normalized()*t*100.f;
-        setPosFromTerrainPos();
+            cam->setPos(posB); 
+        setTerrainPosFromPos();
     }
 }
 
-
-void CameraControl::moveRight(real t)
-{
-    if(cameraMode == Freelook)
-        cam->setPos(cam->getPos() - cam->getUp()%cam->getDir()*t*100.f);
-    else
-    {
-        terrainPos += (Vector3(cam->getDir().x, cam->getDir().y, 0)%Vector3(0, 0, 1)).normalized()*t*100.f;
-        setPosFromTerrainPos();
-    }
-}
 
 void CameraControl::setResolution(int xres, int yres)
 {

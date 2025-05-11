@@ -63,6 +63,7 @@ class CameraControl
 
     void setPosFromTerrainPos();
     void setTerrainPosFromPos();
+    Vector3 getPosFromTerrainPos(Vector3 v);
 
 public:
     CameraControl(Camera* cam, Terrain* terrain, int xres, int yres);
@@ -79,8 +80,6 @@ public:
 
     void setAngle(real theta, real phi);
     void move(Vector2 dir, real t);
-    void moveForward(real t);
-    void moveRight(real t);
     void changeMode(CameraMode);
     CameraMode getMode() const;
 };
