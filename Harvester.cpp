@@ -11,6 +11,7 @@
 #include "UserInterface.h"
 #include "LambertianMaterial.h"
 #include "ModelLoader.h"
+#include "TankWreck.h"
 
 ConsoleVariable Harvester::maxSpeed("harvesterMaxSpeed", 2.0f);
 ConsoleVariable Harvester::maxForwardAcc("harvesterMaxForwardAcc", 0.7f);
@@ -310,17 +311,17 @@ void Harvester::handleCommand(real dt)
         {
             std::cout << "none" << std::endl;
             real minDist = inf;
-            Rock* minRock = nullptr;
+            Entity* minRock = nullptr;
             for(auto e : scene->getEntities())
             {
-                if(auto rock = dynamic_cast<Rock*>(e); rock)
+                if(e->canBeExtracted())
                 {
-                    auto rockPos = rock->getGeoPosition();
+                    auto rockPos = e->getGeoPosition();
                     auto d = (rockPos - geoPos).length();
                     if((rockPos - v->destination).length() < v->radius && d < minDist)
                     {
                         minDist = d;
-                        minRock = (Rock*) e;
+                        minRock = e;
                     }
                 }
             }
@@ -328,7 +329,7 @@ void Harvester::handleCommand(real dt)
             {
                 addUnitPathfindingRequest(this, minRock->getGeoPosition() + (geoPos - minRock->getGeoPosition()).normalized());
                 v->active = true;
-                v->rock = minRock;
+                v->entity = minRock;
                 v->status = ExtractCommand::Moving;
             }
             else
@@ -344,7 +345,7 @@ void Harvester::handleCommand(real dt)
             if(!pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && path.size())
                 addUnitPathfindingRequest(this, path.back());
 
-            if(v->rock && (geoPos - v->rock->getGeoPosition()).length() < 3.0f)
+            if(v->entity && (geoPos - v->entity->getGeoPosition()).length() < 3.0f)
                 v->status = ExtractCommand::Rotating;
             else
                 v->status = ExtractCommand::Moving;
@@ -352,8 +353,8 @@ void Harvester::handleCommand(real dt)
         else if(v->status == ExtractCommand::Rotating)
         {
             std::cout << "rotating" << std::endl;
-            if(((geoDir*(v->rock->getGeoPosition() - geoPos).normalized()) < 0.90))
-                turn(geoDir%(geoPos - v->rock->getGeoPosition()) < 0);
+            if(((geoDir*(v->entity->getGeoPosition() - geoPos).normalized()) < 0.90))
+                turn(geoDir%(geoPos - v->entity->getGeoPosition()) < 0);
             else
             {
                 v->status = ExtractCommand::Extracting;
@@ -364,13 +365,13 @@ void Harvester::handleCommand(real dt)
             std::cout << "extracting" << std::endl;
             if(glfwGetTime() - v->lastSpawnedParticle > 0.02f)
             {
-                auto gp = new ConstructionParticle(pos + dir*0.5f, *v->rock, true);
+                auto gp = new ConstructionParticle(pos + dir*0.5f, *v->entity, true);
                 v->lastSpawnedParticle = glfwGetTime();
                 scene->addParticle(gp);
             }
-            v->rock->health -= 50*dt;
-            if(v->rock->health < .0f) {                
-                v->rock->setDead();
+            v->entity->health -= 50*dt;
+            if(v->entity->health < .0f) {                
+                v->entity->setDead();
                 v->status = ExtractCommand::None;
             }
         }
@@ -422,7 +423,7 @@ Vector2 Harvester::evade()
     Vector2 sum = { 0.f, 0.f };
     for(auto unit : scene->getEntities())
     {
-        if(unit != this && !dynamic_cast<Projectile*>(unit) && !dynamic_cast<Building*>(unit) && !dynamic_cast<Rock*>(unit)) // TODO: this is getting stupid
+        if(unit != this && !dynamic_cast<Projectile*>(unit) && !dynamic_cast<Building*>(unit) && !dynamic_cast<Rock*>(unit) && !dynamic_cast<TankWreck*>(unit)) // TODO: this is getting stupid
         {
             auto pos1 = geoPos, pos2 = unit->geoPos;
             auto v1 = geoVelocity, v2 = unit->getGeoVelocity();

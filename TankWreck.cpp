@@ -153,6 +153,11 @@ void TankWreck::setDirection(Vector3 dir, Vector3 up)
     body->setDirection(dir, up);
 }
 
+bool TankWreck::canBeExtracted()
+{
+    return true;
+}
+
 void TankWreck::drawTurret(Material* mat)
 {
     turret->setDirection(absTurDir, absTurUp);

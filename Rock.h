@@ -14,6 +14,7 @@ public:
 
     void setPosition(Vector3 pos);
     void setDirection(Vector3 dir, Vector3 up);
+    bool canBeExtracted();
 
     Model3d* model;
 

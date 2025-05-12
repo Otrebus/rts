@@ -42,6 +42,8 @@ public:
 
     virtual void update(real dt) = 0;
 
+    virtual bool canBeExtracted();
+
     void setDead();
 
     void setVelocity(Vector3 velocity);
@@ -67,6 +69,7 @@ public:
 
     Scene* scene;
 
+    real health;
     bool dead;
     real lastBumped;
 };

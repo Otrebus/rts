@@ -25,7 +25,7 @@ struct ExtractCommand : public BaseCommand
 {
     real radius;
     Vector2 destination;
-    Rock* rock; // TODO: should store its id
+    Entity* entity; // TODO: should store its id
     real lastSpawnedParticle;
 
     enum Status {

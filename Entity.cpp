@@ -9,6 +9,7 @@
 
 Entity::Entity(Vector3 pos, Vector3 dir, Vector3 up) : pos(pos), dir(dir), up(up), velocity({ 0, 0, 0 }), lastBumped(0)
 {
+    health = 100.0f;
 }
 
 
@@ -70,6 +71,12 @@ void Entity::init(Scene* scene)
 
 void Entity::updateUniforms()
 {
+}
+
+
+bool Entity::canBeExtracted()
+{
+    return false;
 }
 
 
