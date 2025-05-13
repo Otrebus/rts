@@ -15,7 +15,7 @@
 
 ConsoleVariable Harvester::maxSpeed("harvesterMaxSpeed", 2.0f);
 ConsoleVariable Harvester::maxForwardAcc("harvesterMaxForwardAcc", 0.7f);
-ConsoleVariable Harvester::maxBreakAcc("harvesterMaxBreakAcc", 0.7f);
+ConsoleVariable Harvester::maxBreakAcc("harvesterMaxBreakAcc", 1.7f);
 
 ConsoleVariable Harvester::maxTurnRate("harvesterMaxTurnRate", 1.2f*pi/4.f);
 ConsoleVariable Harvester::maxRadialAcc("harvesterMaxRadialAcc", 4.f);
@@ -229,6 +229,9 @@ void Harvester::accelerate(Vector2 velocityTarget)
         acceleration = 0;
     else
         acceleration = std::max(-maxBreakAcc, std::min(maxForwardAcc, projAcc*geoDir));
+    if(acceleration < 0)
+        acceleration = -maxBreakAcc;
+    std::cout << acceleration << std::endl;
 }
 
 void Harvester::brake()
@@ -341,14 +344,20 @@ void Harvester::handleCommand(real dt)
         }
         else if(v->status == ExtractCommand::Moving)
         {
-            std::cout << "moving" << std::endl;
-            if(!pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && path.size())
-                addUnitPathfindingRequest(this, path.back());
+            //std::cout << "moving" << std::endl;
 
-            if(v->entity && (geoPos - v->entity->getGeoPosition()).length() < 3.0f)
+            if(v->entity && (geoPos - v->entity->getGeoPosition()).length() < 3.0f) {
+                std::cout << "clearing" << std::endl;
+                path.clear();
+            }
+            else if(!pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && (geoPos - v->entity->getGeoPosition()).length() < 3.0f)
+                addUnitPathfindingRequest(this, v->entity->getGeoPosition() + (geoPos - v->entity->getGeoPosition()).normalized());
+            if(v->entity && (geoPos - v->entity->getGeoPosition()).length() < 3.0f && geoVelocity.length() < 0.01f) {
                 v->status = ExtractCommand::Rotating;
-            else
+            }
+            else {
                 v->status = ExtractCommand::Moving;
+            }
         }
         else if(v->status == ExtractCommand::Rotating)
         {
@@ -481,6 +490,15 @@ Vector2 Harvester::separate()
     {
         if(unit != this && !dynamic_cast<Projectile*>(unit) && !dynamic_cast<Rock*>(unit))
         {
+            if(!commandQueue.empty()) {
+                auto c = commandQueue.front();
+                if(auto v = std::get_if<ExtractCommand>(&c)) {
+                    if(unit->canBeExtracted()) {
+                        std::cout << "..";
+                        continue;
+                    }
+                }
+            }
             auto pos1 = geoPos, pos2 = unit->geoPos;
             if(pos1 == pos2)
                 continue;
