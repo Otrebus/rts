@@ -154,24 +154,24 @@ int main()
     tank->constructing = true;
     scene.addEntity(tank);*/
 
-    //for(int y = 0; y < 3; y++)
-    //{
-    //    for(int x = 0; x < 3; x++)
-    //    {
-    //        auto enemy = new Tank({ 170.5f+x, 75.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
-    //        enemy->setEnemy(true);
-    //        scene.addEntity(enemy);
-    //    }
-    //}
+    for(int y = 0; y < 3; y++)
+    {
+        for(int x = 0; x < 3; x++)
+        {
+            auto enemy = new Tank({ 170.5f+x, 75.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+            enemy->setEnemy(true);
+            scene.addEntity(enemy);
+        }
+    }
 
-    //for(int y = 0; y < 3; y++)
-    //{
-    //    for(int x = 0; x < 3; x++)
-    //    {
-    //        auto tank = new Tank({ 170.5f+x, 55.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
-    //        scene.addEntity(tank);
-    //    }
-    //}
+    for(int y = 0; y < 3; y++)
+    {
+        for(int x = 0; x < 3; x++)
+        {
+            auto tank = new Tank({ 170.5f+x, 55.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+            scene.addEntity(tank);
+        }
+    }
 
     auto wreck = new TankWreck({ 167.5f, 85.15f, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
     wreck->init(&scene);

@@ -350,7 +350,7 @@ void Harvester::handleCommand(real dt)
                 std::cout << "clearing" << std::endl;
                 path.clear();
             }
-            else if(!pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && (geoPos - v->entity->getGeoPosition()).length() < 3.0f)
+            else if(path.empty() || !pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && (geoPos - v->entity->getGeoPosition()).length() < 3.0f)
                 addUnitPathfindingRequest(this, v->entity->getGeoPosition() + (geoPos - v->entity->getGeoPosition()).normalized());
             if(v->entity && (geoPos - v->entity->getGeoPosition()).length() < 3.0f && geoVelocity.length() < 0.01f) {
                 v->status = ExtractCommand::Rotating;
@@ -468,6 +468,7 @@ Vector2 Harvester::avoid()
 {
     if(!geoVelocity)
         return { 0, 0 };
+
     auto pos2 = geoPos + geoVelocity.normalized();
     //ShapeDrawer::drawArrow(pos, (pos2 - pos.to2()).to3().normalized(), (pos2.to3() - pos).length(), 0.1, Vector3(1, 0, 0));
 
@@ -486,11 +487,19 @@ Vector2 Harvester::avoid()
 Vector2 Harvester::separate()
 {
     Vector2 sum = { 0, 0 };
+    
+    // Don't let other units block us if we're trying to extract stuff
+    if(!commandQueue.empty()) {
+        auto c = commandQueue.front();
+        if(auto v = std::get_if<ExtractCommand>(&c)) {
+            return { 0, 0 };
+        }
+    }
     for(auto unit : scene->getEntities())
     {
         if(unit != this && !dynamic_cast<Projectile*>(unit) && !dynamic_cast<Rock*>(unit))
         {
-            if(!commandQueue.empty()) {
+            /*if(!commandQueue.empty()) {
                 auto c = commandQueue.front();
                 if(auto v = std::get_if<ExtractCommand>(&c)) {
                     if(unit->canBeExtracted()) {
@@ -498,7 +507,7 @@ Vector2 Harvester::separate()
                         continue;
                     }
                 }
-            }
+            }*/
             auto pos1 = geoPos, pos2 = unit->geoPos;
             if(pos1 == pos2)
                 continue;

@@ -140,6 +140,9 @@ void Model3d::setSize(Vector3 size)
 
 void Model3d::setDirection(Vector3 dir, Vector3 up)
 {
+    assert(std::abs(dir.length()-1) < 0.01f);
+    assert(std::abs(up.length()-1) < 0.01f);
+
     this->dir = dir;
     this->up = up;
     for(auto& mesh : meshes)
