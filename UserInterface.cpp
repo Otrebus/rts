@@ -589,7 +589,7 @@ bool UserInterface::handleInput(const Input& input, const std::vector<Unit*>& un
         movingUnit = 0;
     }
 
-    if(input.stateStart == InputType::KeyPress && input.key == GLFW_KEY_G)
+    if(input.stateStart == InputType::KeyPress && input.key == GLFW_KEY_B)
     {
         for(auto unit : units)
         {
@@ -820,3 +820,4 @@ void UserInterface::setCursor(int shape)
 
 ConsoleVariable UserInterface::showFps("showFps", 1);
 ConsoleVariable UserInterface::showCoordinates("showCoordinates", 1);
+ConsoleVariable UserInterface::drawCommands("drawCommands", 1);

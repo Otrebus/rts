@@ -88,6 +88,7 @@ public:
 
     static ConsoleVariable showFps;
     static ConsoleVariable showCoordinates;
+    static ConsoleVariable drawCommands;
 };
 
 void addUnitPathfindingRequest(Unit* unit, Vector2 pos);

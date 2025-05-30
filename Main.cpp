@@ -164,9 +164,9 @@ int main()
         }
     }
 
-    for(int y = 0; y < 3; y++)
+    for(int y = 0; y < 5; y++)
     {
-        for(int x = 0; x < 3; x++)
+        for(int x = 0; x < 6; x++)
         {
             auto tank = new Tank({ 170.5f+x, 55.15f+y, 3.07f }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
             scene.addEntity(tank);
@@ -177,11 +177,11 @@ int main()
     wreck->init(&scene);
     scene.addEntity(wreck);
 
-    for(int i = 0; i < 1000; i++) {
-        auto rock = new Rock({ coord(generator), coord(generator), 0 }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
-        rock->init(&scene);
-        scene.addEntity(rock);
-    }
+    //for(int i = 0; i < 1000; i++) {
+    //    auto rock = new Rock({ coord(generator), coord(generator), 0 }, { 1, 0, 0 }, { 0, 0, 1 }, &terrain);
+    //    rock->init(&scene);
+    //    scene.addEntity(rock);
+    //}
     
     scene.updateUnitList();
     for(auto& e : scene.getUnits())

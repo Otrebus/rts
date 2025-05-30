@@ -154,7 +154,7 @@ void Terrain::calcAdmissiblePoints()
                 admissiblePoints[width*y+x] = false;
                 admissiblePoints[width*y+x+1] = false;
                 admissiblePoints[width*(y+1)+x+1] = false;
-
+                
             }
             if(!isTriangleAdmissible(x, y, x+1, y+1, x, y+1))
             {
@@ -202,7 +202,7 @@ void Terrain::updateAdmissiblePoints()
         admissiblePoints[p] = true;
     for(auto p : currentBuildingPoints)
         admissiblePoints[p] = true;
-
+    
     for(auto p : buildingPoints)
     {
         recalcAdmissiblePoint(p%width, p/width);
@@ -343,6 +343,10 @@ Vector3 Terrain::intersectFast(const Ray& ray, real maxT)
             auto [t, u, v] = intersectTriangle(p1, p2, p3, ray);
             auto [t2, u2, v2] = intersectTriangle(p1, p3, p4, ray);
 
+            // TODO: run tests against this
+            if(dy > 0 && Y - ray.pos.y > maxT || dy < 0 && (ray.pos.y - (Y+1)) > maxT)
+                break;
+
             t = (t == -inf || t > maxT) ? inf : t;
             t2 = (t2 == -inf || t2 > maxT) ? inf : t2;
 
@@ -353,8 +357,10 @@ Vector3 Terrain::intersectFast(const Ray& ray, real maxT)
         }
         if(d.x > 0)
             xm = xM++;
-        else
+        else if(d.x < 0)
             xM = xm--;
+        else
+            break;
     }
     return { inf, inf, inf };
 }

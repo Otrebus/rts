@@ -231,7 +231,6 @@ void Harvester::accelerate(Vector2 velocityTarget)
         acceleration = std::max(-maxBreakAcc, std::min(maxForwardAcc, projAcc*geoDir));
     if(acceleration < 0)
         acceleration = -maxBreakAcc;
-    std::cout << acceleration << std::endl;
 }
 
 void Harvester::brake()
@@ -330,6 +329,7 @@ void Harvester::handleCommand(real dt)
             }
             if(minRock)
             {
+                std::cout << "none: adding pathfinding request" << std::endl;
                 addUnitPathfindingRequest(this, minRock->getGeoPosition() + (geoPos - minRock->getGeoPosition()).normalized());
                 v->active = true;
                 v->entity = minRock;
@@ -350,8 +350,10 @@ void Harvester::handleCommand(real dt)
                 std::cout << "clearing" << std::endl;
                 path.clear();
             }
-            else if(path.empty() || !pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && (geoPos - v->entity->getGeoPosition()).length() < 3.0f)
+            else if(path.empty() || !pathFindingRequest && time - pathLastCalculated > pathCalculationInterval && (geoPos - v->entity->getGeoPosition()).length() < 3.0f) {
+                std::cout << "moving: adding pathfinding request" << std::endl;
                 addUnitPathfindingRequest(this, v->entity->getGeoPosition() + (geoPos - v->entity->getGeoPosition()).normalized());
+            }
             if(v->entity && (geoPos - v->entity->getGeoPosition()).length() < 3.0f && geoVelocity.length() < 0.01f) {
                 v->status = ExtractCommand::Rotating;
             }

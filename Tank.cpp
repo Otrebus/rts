@@ -360,7 +360,8 @@ void Tank::draw(Material* mat)
         delete mat;
         delete body;
     }
-    drawCommands();
+    if(UserInterface::drawCommands.varInt())
+        drawCommands();
 }
 
 
