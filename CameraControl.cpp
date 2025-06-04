@@ -79,8 +79,6 @@ Vector3 CameraControl::getPosFromTerrainPos(Vector3 pos)
 
 void CameraControl::setTerrainPosFromPos()
 {
-    auto [p1, p2] = terrain->getBoundingBox();
-
     auto camPos = cam->getPos(), camDir = cam->getDir();
 
     if(!camDir.x)
@@ -219,15 +217,16 @@ void CameraControl::move(Vector2 dir, real dt)
         auto forward = camDir.to2().normalized();
         auto right = -forward.perp();
         auto newDir = (forward*dir.x + right*dir.y);
+        auto camDir = cam->getDir(), camPos = cam->getPos(), camUp = cam->getUp();
 
-        auto posA = getPosFromTerrainPos(terrainPos), posB = getPosFromTerrainPos(terrainPos + newDir.to3()*100.f*dt);
+        auto posA = camPos, posB = camPos + newDir.to3()*100.f*dt;
         auto dDir = posB - posA;
 
-        auto w = terrain->intersect({ posA, dDir.normalized() }, dDir.length());
+        auto w = terrain->intersect({ posA, dDir.normalized() });
         if((w - posA).length() < dDir.length() || (w - (posA + dDir)).length() < 0.5)
             cam->setPos(w - dDir.normalized()*0.5f);
         else
-            cam->setPos(posB); 
+            cam->setPos(posB);
         setTerrainPosFromPos();
     }
 }

@@ -5,7 +5,7 @@
 
 # My ignored files k
 screenshot.bmp
-glyphmap.glm
+*.glm
 *.ttf
 gl3w.c
 
